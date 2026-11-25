@@ -991,5 +991,8 @@
  "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "将所有构筑存为一个 JSON 文件：在导入中选择 JSON 文件即可全部恢复，与现有构筑并存。",
  "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "此构筑最后一次修改时使用的是 {0} 的游戏数据，而本应用的数据是 {1} 的：补丁改动的内容可能计算不同。下次修改会将其切换到这些数据。",
  "Enter: next match · Shift+Enter: previous · Ctrl+Enter: allocate or remove it": "Enter：下一个结果 · Shift+Enter：上一个 · Ctrl+Enter：点取或取消",
- "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "天赋树：拖动移动，滚轮或双指缩放，点击或轻触点取。可用搜索框通过键盘找到天赋。"
+ "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "天赋树：拖动移动，滚轮或双指缩放，点击或轻触点取。可用搜索框通过键盘找到天赋。",
+ "Copy this build as a new one": "将此构筑复制为新构筑",
+ "{0} (copy)": "{0}（副本）",
+ "What each number has more (green) or less (red) than the build you pick": "各数值比所选构筑多出（绿）或少出（红）的部分"
 }

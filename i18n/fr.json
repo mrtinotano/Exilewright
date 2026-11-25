@@ -991,5 +991,8 @@
  "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Tous les builds dans un fichier JSON : Fichier JSON dans Importer les récupère tous, à côté de ceux que vous avez.",
  "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "Ce build a été modifié pour la dernière fois avec les données du jeu du {0}, et cette application a celles du {1} : ce qu'un patch a changé peut compter différemment. Votre prochaine modification le passe à ces données.",
  "Enter: next match · Shift+Enter: previous · Ctrl+Enter: allocate or remove it": "Entrée : résultat suivant · Maj+Entrée : précédent · Ctrl+Entrée : l'allouer ou le retirer",
- "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "Arbre passif : faites glisser pour le déplacer, molette ou deux doigts pour zoomer, clic ou toucher pour allouer. La recherche atteint un passif au clavier."
+ "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "Arbre passif : faites glisser pour le déplacer, molette ou deux doigts pour zoomer, clic ou toucher pour allouer. La recherche atteint un passif au clavier.",
+ "Copy this build as a new one": "Copier ce build en un nouveau",
+ "{0} (copy)": "{0} (copie)",
+ "What each number has more (green) or less (red) than the build you pick": "Ce que chaque valeur a de plus (vert) ou de moins (rouge) que le build choisi"
 }

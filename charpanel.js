@@ -20,16 +20,22 @@ const NO_BASE = 'The class base life/mana is missing: it comes from regenerating
 const ico = k => `<img class="cp-ico ${k}" src="poe2_data/available/img/panel/${k}.webp" alt="">`;
 
 // editable in place: name (input), base class and ascendancy (each row opens its list); level follows the tree
-export function renderChar(el, b, sum, { asc, cls, points, need, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x }) {
-  const c = character(b, sum), R = c.res;
+export function renderChar(el, b, sum, { asc, cls, points, need, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x, others = [], vsId = null, vs = null }) {
+  const c = character(b, sum), R = c.res, o = vs && character(vs.b, vs.sum);
+  // compared with another build: what this one has more (green) or less (red) of each number
+  const free = x => x.spirit - (x.reserved || 0), D = o ? { life: c.life - o.life, es: c.es - o.es, mana: c.mana - o.mana, spirit: free(c) - free(o),
+    armour: c.armourPct != null ? c.armourPct - o.armourPct : c.armour - o.armour, evasion: c.evadePct != null ? c.evadePct - o.evadePct : c.evasion - o.evasion, block: c.block - o.block,
+    str: c.attrs.str - o.attrs.str, dex: c.attrs.dex - o.attrs.dex, int: c.attrs.int - o.attrs.int, ...Object.fromEntries(Object.keys(R).map(k => [k, R[k].capped - o.res[k].capped])) } : {};
+  const dv = k => { const x = Math.round(D[k]); return x ? `<i class="vs ${x > 0 ? 'up' : 'dn'}">${x > 0 ? '+' : ''}${fmt(x)}</i>` : ''; };
   const questsOpen = el.querySelector('.cp-quests')?.open, condsOpen = el.querySelector('.cp-conds')?.open, conds = condList(b, sum);   // drawn anew at every change: stays as it was left
   const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (ⓘ ${t('Not understood: it is not counted')})`)].map(esc).join(' · ');   // ⓘ: the app's own notice (.disc in index.html), in words alone: an option of a list takes no markup
-  const box = (k, label, val, title = '') => `<div class="cp-box ${k}" data-why="${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}</b></div>`;
+  const box = (k, label, val, title = '') => `<div class="cp-box ${k}" data-why="${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}${dv(k)}</b></div>`;
   const pctOr = (p, raw, what) => p != null ? Math.round(p) + '%' : n(raw);
-  const res = (k, label) => `<div class="cp-res ${k}" data-why="${k}" title="${t('Maximum {0}%', R[k].max)}">${ico(k)}<span>${t(label)}</span><b>${R[k].capped}% <i>(${R[k].value}%)</i></b></div>`;
+  const res = (k, label) => `<div class="cp-res ${k}" data-why="${k}" title="${t('Maximum {0}%', R[k].max)}">${ico(k)}<span>${t(label)}</span><b>${R[k].capped}% <i>(${R[k].value}%)</i>${dv(k)}</b></div>`;
   const all = { ...sum }; delete all.display_passive_attribute_text;
   el.innerHTML = `<div class="cp">
     <input class="cp-name" data-act="name" value="${esc(b.name)}" title="${t('Build name')}" spellcheck="false">
+    ${others.length ? `<label class="cp-vs" title="${t('What each number has more (green) or less (red) than the build you pick')}">${t('Compare with')} <select data-act="vs"><option value="">—</option>${others.map(([id, x]) => `<option value="${esc(id)}"${id === vsId ? ' selected' : ''}>${esc(x)}</option>`).join('')}</select></label>` : ''}
     <div class="cp-top">
       <div class="cp-id">
         <button class="cp-pick${picking === 'cls' ? ' open' : ''}" data-pick="cls" title="${t('Base class')}">${esc(cls ? clsLabel(cls) : '—')}</button>
@@ -37,7 +43,7 @@ export function renderChar(el, b, sum, { asc, cls, points, need, pending, classe
         <div class="cp-level${b.lvl && b.lvl < need ? ' over' : ''}" title="${t('Auto: the level your {0} passive points need, counting the passive points quests give in each act (as Path of Building 2 estimates it). Manual: the level you type.', points)}${b.lvl && b.lvl < need ? ' ' + t('The allocated points need level {0}.', need) : ''}">${t('Level {0}', `<input class="cp-lvl" type="number" min="1" max="100" data-act="level" value="${b.lvl || ''}" placeholder="${c.level}">`)}<button class="cp-auto" data-act="lvlmode">${t(b.lvl ? 'Manual' : 'Auto')}</button></div>
       </div>
       <div class="cp-portrait" title="${esc(asc ? ascLabel(asc) : '')}"${portrait ? ` style="background-image:url('poe2_data/available/img/${esc(portrait)}')"` : ''}>${portrait ? '' : esc((asc ? ascLabel(asc) : '?')[0])}</div>
-      <div class="cp-id cp-attr"><div class="str" data-why="str"><span>${t('Strength')}</span><b>${n(c.attrs.str)}</b></div><div class="dex" data-why="dex"><span>${t('Dexterity')}</span><b>${n(c.attrs.dex)}</b></div><div class="int" data-why="int"><span>${t('Intelligence')}</span><b>${n(c.attrs.int)}</b></div>${tributeOf(sum) ? `<div><span>${t('Tribute')}</span><b>${n(tributeOf(sum))}</b></div>` : ''}</div>
+      <div class="cp-id cp-attr"><div class="str" data-why="str"><span>${t('Strength')}</span><b>${n(c.attrs.str)}${dv('str')}</b></div><div class="dex" data-why="dex"><span>${t('Dexterity')}</span><b>${n(c.attrs.dex)}${dv('dex')}</b></div><div class="int" data-why="int"><span>${t('Intelligence')}</span><b>${n(c.attrs.int)}${dv('int')}</b></div>${tributeOf(sum) ? `<div><span>${t('Tribute')}</span><b>${n(tributeOf(sum))}</b></div>` : ''}</div>
     </div>
     ${picking ? `<div class="cp-classes">${(picking === 'cls' ? classes : ascOptions).map(k => `<button data-${picking}="${esc(k)}" class="${k === (picking === 'cls' ? cls : asc) ? 'on' : ''}">${esc(picking === 'cls' ? clsLabel(k) : ascLabel(k))}</button>`).join('')}</div>` : ''}
     <div class="cp-row4">${box('life', 'Life', n(c.life), c.life == null ? NO_BASE : '')}${box('es', 'Energy Shield', n(c.es))}${box('mana', 'Mana', n(c.mana), c.mana == null ? NO_BASE : '')}${box('spirit', 'Spirit', c.reserved ? `${n(c.spirit - c.reserved)} <i>/ ${n(c.spirit)}</i>` : n(c.spirit), c.reserved ? t('{0} reserved by your skills', c.reserved) : '')}</div>

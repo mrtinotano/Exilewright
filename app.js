@@ -301,6 +301,7 @@ function geo(g) {
   };
 }
 const playerSpeed = (more = 0) => SK.player_base_speed * (1 + ((rawSum()['base_movement_velocity_+%'] || 0) + more) / 100) / 10;   // more: a Banner's
+let vsId = null;   // the build the character panel compares this one with
 function renderStats() {
   const b = B();
   const pending = b.nodes.filter(id => N[id].type === 'attribute' && !(b.attrs || {})[id]).length; // game text always says "+5", so count them
@@ -310,7 +311,9 @@ function renderStats() {
   b.level = b.lvl || need;
   const sum = treeSum();   // after the level: the campaign rewards counted by default go by it
   renderPoints(b); if ($("treeFind").value) search();   // ascendancy may have changed what is visible
+  if (!builds[vsId] || vsId === cur) vsId = null;
   renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, need, pending, picking,
+    others: Object.entries(builds).filter(([id]) => id !== cur).map(([id, x]) => [id, x.name]), vsId, vs: vsId && { b: builds[vsId], sum: sumOf(builds[vsId]) },
     classes: CLASSES, ascOptions: [clsOf(b.asc), ...ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name)], portrait: portraitOf(b.asc),
     ascLabel: x => CLASSES.includes(x) ? t('No ascendancy') : tn(ascs.find(a => a.name === x)) || x, clsLabel });
   if (b.data && DATA && b.data !== DATA) $('charPanel').insertAdjacentHTML('afterbegin', `<p class="disc">${esc(t('This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.', b.data, DATA))}</p>`);
@@ -384,6 +387,7 @@ function addGem(name, level = 20) {   // level: the one an item that grants it s
 const edit = fn => e => { fn(e, B()); save(); renderSide(); drawTree(); if (!$('items').hidden) renderItems(); };  // the Equipment view shows what each item changes
 $('buildList').onchange = e => select(e.target.value);
 $('newBuild').onclick = () => { const id = String(Date.now()); builds[id] = blank(); save(); select(id); };
+$('dupBuild').onclick = () => { let id = Date.now(); while (builds[id]) id++; builds[id] = { ...structuredClone(B()), name: t('{0} (copy)', B().name) }; save(); select(String(id)); };
 $('delBuild').onclick = async () => {
   if (await ask(t('Delete the build «{0}»? This cannot be undone.', B().name), t('Delete')) !== 0) return;
   delete builds[cur]; if (!Object.keys(builds).length) builds[Date.now()] = blank();
@@ -392,6 +396,7 @@ $('delBuild').onclick = async () => {
 // character panel: name, base class and ascendancy are edited in place
 $('charPanel').onchange = e => {
   const d = e.target.dataset;
+  if (d.act === 'vs') { vsId = e.target.value || null; renderStats(); return; }
   if (d.act === 'name') edit((e, b) => b.name = e.target.value.trim() || t('New build'))(e);
   if (d.act === 'level') edit((e, b) => { const v = Math.round(+e.target.value); if (v >= 1) b.lvl = Math.min(100, v); else delete b.lvl; })(e);
   if (d.cond) edit((e, b) => { const C = b.conds ||= {}; if (e.target.checked) C[d.cond] = 1; else delete C[d.cond]; })(e);   // a condition of the character's (charpanel.js)
