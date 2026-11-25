@@ -434,7 +434,7 @@ export function initScene(el, api) {
     stats.dealt += got; B.n += got; B.x++; lastHit = d; record('hit', src, d.mon.name, got, css(S?.el || 'physical'));
     d.flash = .18; if (!quiet) d.wob = Math.min(1, d.wob + .25 + 2 * Math.min(1, n / (d.max + d.maxEs)));
     const e = noEs ? 0 : Math.min(d.es, n); d.es -= e; d.life -= n - e;
-    if (d.life <= 0) { ash(d, -d.life, S); const TO = S?.src !== 'trample' && sheet().uEv?.overkill; if (TO) for (const e of inside(d.pos, 2)) if (e !== d) damage(e, takes(e, 'physical', -d.life * TO / 100), { ...S, src: 'trample' }); kill(d, S); }   // Trampletoe: its share of the overkill as physical within 2 m
+    if (d.life <= 0) { ash(d, -d.life, S); const TO = S?.src !== 'trample' && sheet().uEv?.overkill; if (TO) for (const e of inside(d.pos, 2)) if (e !== d) damage(e, takes(e, 'physical', -d.life * TO / 100), { ...S, src: 'trample' }); kill(d, S, quiet); }   // Trampletoe: its share of the overkill as physical within 2 m
   }
   // Herald of Ash: an attack (not a herald's) that overkills an enemy by its share of its maximum life explodes there,
   // its area Burning the other enemies in it for its share of the overkill per minute, for its duration
@@ -1137,7 +1137,8 @@ export function initScene(el, api) {
       if (AL.ignite || eroll(d.flam.reduce((t, f) => t + f.v, 0))) { if (FF > 1) clear(d, 'freeze'); inflict(d, 'ignite', S, 1, { ...raw, fire: xa('ignite', 'fire') }, { dur: DUR.ignite * A.igniteTime * pellets * VS('ignite', 'dur'), eff: FF * A.igniteEffect * VS('ignite', 'eff') * (S.heated ? 1 + (S.dmg.stats['ignite_effect_+%_final_if_heat_is_consumed'] || 0) / 100 : 1) }); ex(['fire'], E.onIgnite); if (SU.inflict_cold_exposure_on_ignite) expo(d, ['cold'], EXPO.res * E.effect); }   // Blessed Bonds: cold exposure on ignite   // Incendiary Shot's Heat
     }
     const W = d.wet?.until > time ? d.wet : null;   // Thunderstorm's drench
-    if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll(xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier * A.shockChance * EAx * AR * (d.st.electrocute > 0 ? A.shockElectro || 1 : 1) * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
+    // hand wraps: "Projectiles have x% chance to Shock", on top of the chance the damage gives
+    if (xa('shock', 'lightning') && !N.shock && (AL.shock || eroll((xa('shock', 'lightning') / thr * GC.ShockChanceMultiplier + (S.P.projectile && SU['projectile_shock_chance_%'] || 0)) * A.shockChance * EAx * AR * (d.st.electrocute > 0 ? A.shockElectro || 1 : 1) * (1 + (W?.shock || 0) / 100) * (1 + (me.galv?.dmg.stats['galvanic_field_shock_chance_+%_final'] || 0) / 100) * (1 + (me.thrill?.until > time && me.thrill.X['support_thrill_of_the_kill_buff_shock_chance_+%'] || 0) / 100)))) {
       const so = { dur: DUR.shock * A.shockTime * VS('shock', 'dur'), mag: GC.BaseShockMagnitude * A.shockEffect * VS('shock', 'eff') * (S.shockX || 1) }; inflict(d, 'shock', S, 1, raw, so); ex(['lightning'], E.onShock); if (SU.inflict_fire_exposure_on_shock) expo(d, ['fire'], EXPO.res * E.effect);   // S.shockX: Vivid Stampede's more per leap
       if (me.galv) galvanic(d);
       // Shock Conduction: its chance to shock each other enemy within its radius too
@@ -1467,7 +1468,7 @@ export function initScene(el, api) {
     Object.assign(v, { visage: d, share: st['time_rip_damage_share_%'], until: time + DUR[a] * (a === 'freeze' ? S.dmg.ail.freezeTime : 1) });
   }
   const onsl = () => time < me.wildUntil || time < me.onsUntil || !!sheet().onsAlways || me.cu.some(u => u?.c.ons);   // Onslaught (Savage Fury's frenzy, the tree's on kill)
-  function kill(d, S) {
+  function kill(d, S, dot) {   // dot: damage over time did it, not a hit
     if (d.spectral) spectralBlow(d);
     const HS = d.curse && sheet().uEv?.hexSpread; if (HS) for (const e of inside(d.pos, 3).filter(e => e !== d && !e.curse).slice(0, HS)) e.curse = { ...d.curse };   // Veilpiercer: the curse spreads to that many enemies within its text's 3 m
     const KU = sheet().uDef || {}; if (Math.random() * 100 < (KU.esKill || 0)) me.hurt = -99; if (KU.wardKill && me.maxW) me.ward = Math.min(me.maxW, me.ward + me.maxW * KU.wardKill / 100);   // uniques: energy shield recharge starts, Runic Ward
@@ -1557,6 +1558,7 @@ export function initScene(el, api) {
     if (frozen) {   // frozen enemies shatter: no corpse
       fx.emit(46, { p: { x: p.x, y: 1, z: p.z }, r: .3, h: 1, v: 5, up: 2, life: .8, size: .2, c: 'ice', c2: 'white', g: 9 });
       fx.ring(p, .3, 1.8, 'ice', .4); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;
+    } else if (S && !S.src && !dot && sheet().killDestroys) { pop(p, .8, 'blood'); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;   // hand wraps: "Enemies killed by your Hits are destroyed": no corpse either
     } else { d.corpse = SIM.corpseTime; d.fall = 0; }
   }
   function herald(T, p, blood = 0) {
@@ -6007,7 +6009,7 @@ export function initScene(el, api) {
     // the tree's Debilitate and Blind (Bastion of Light) in front of your raised Shield, each within its metres
     const DB = sheet().debilShield, BS = sheet().blindShield, WP = sheet().raisedExpo; if ((DB || BS || WP) && time < (me.raised?.until ?? -9)) for (const d of dummies) if (!d.dead && (d.pos.x - pp.x) * Math.sin(facing) + (d.pos.z - pp.z) * Math.cos(facing) > 0) {
       if (dist(d.pos, pp) <= DB) d.debil = time + DEBIL.time; if (dist(d.pos, pp) <= BS) d.st.blind = Math.max(d.st.blind || 0, BLIND.time); if (dist(d.pos, pp) <= WP) expo(d, ELEM); }   // Window to Paradise: Elemental Exposure
-    for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); const PW = sheet().presWither; if (PW && inP && !d.inPres && !d.wither?.some(u => u.until > time)) withers(d, PW); if (d.inPres && !inP) d.leftAt = time; if (inP && !d.inPres) d.enterAt = time; d.inPres = inP; }   // the tree's: Withered on entering your Presence
+    for (const d of dummies) { const inP = !d.dead && dist(d.pos, pp) <= sheet().overgrow.r; if (HD && inP && !d.inPres) d.intim = Math.max(d.intim || 0, time + HD.dmg.sum[HK] / 1000); const PW = sheet().presWither; if (PW && inP && !d.inPres && !d.wither?.some(u => u.until > time)) withers(d, PW); if (sheet().presAggr && inP && !d.inPres && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32); }   /* Beetlebite */ if (d.inPres && !inP) d.leftAt = time; if (inP && !d.inPres) d.enterAt = time; d.inPres = inP; }   // the tree's: Withered on entering your Presence
     daemons();
     divine = divine.filter(f => f.until > time || f.dec.remove());
     if (sheet().ordained && time - (me.fragAt ?? -9) >= DIVINE.every) { me.fragAt = time; const p = around(pp, sheet().overgrow.r); divine.push({ p, until: time + DIVINE.time, dec: fx.decal(p, .35, 'rune', 'lightning', { a: .8, spin: 1 }) }); }
@@ -6056,7 +6058,8 @@ export function initScene(el, api) {
     const SP = me.spectral; if (SP && time - SP.at >= SP.wait) { me.spectral = null; for (let k = 0; k < SP.n; k++) later(k * SP.every, () => { const X = { ...SP.S, spent: 0 }; aim(X, near(pp, 15)?.pos ?? { x: pp.x + SP.S.dx, z: pp.z + SP.S.dz }); K.projectile(X); }); }   // Spectral Volley
     const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
     // Consecrated Ground: on it you regenerate 5% of your maximum life a second (keywords.json), more by its effect (Consecrate)
-    const CG = grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r);
+    // Gifts from Above: you have it around you while stationary (note: its radius is not in the data: it is under you alone)
+    const CG = grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r) || sheet().holyStill && !walk && !move && {};
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
     // Dread Banner's flask charges, Alchemist's Boon's while it is on
     const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); const GN = sheet().chargeGen || [];
@@ -6125,6 +6128,7 @@ export function initScene(el, api) {
     if (c.lifeDegen) me.life = Math.max(1, me.life - L * c.lifeDegen / 6000 * dt);   // uniques' loss of maximum life a second (note: it stops at 1 here)
     if (c.esDegen) me.es = Math.max(0, me.es - E * c.esDegen / 6000 * dt);
     if (c.furyGround && (walk || move) && time - (me.furyAt ?? -9) >= .5) { me.furyAt = time; ground('burning', { x: pp.x, z: pp.z }, .8, 8, { el: 'fire', els: ['fire'], ail: ['ignite'], src: 'ground', label: 'Birth of Fury', raw: { fire: L * c.furyGround / 100 } }); }   // Birth of Fury: Ignited Ground while moving, 8 s (note: its radius is not in the data)
+    if (c.shockTrail && (walk || move) && time - (me.wakeAt ?? -9) >= .5) { me.wakeAt = time; ground('shocked', { x: pp.x, z: pp.z }, .8, 8, { el: 'lightning', els: ['lightning'], ail: ['shock'], src: 'ground', label: 'Wake of Destruction' }); }   // Wake of Destruction: Shocked Ground while moving, 8 s (note: its radius is not in the data: Birth of Fury's here)
     if (c.divinity) me.div = Math.min(c.divinity, (me.div ?? c.divinity) + c.divinity * .25 * dt);   // Divinity regenerates 25% a second (KeywordPopups Divinity)
     if (c.regrow) me.regrow = Math.min(c.regrow.max, (me.regrow || 0) + c.regrow.gain * dt);   // Dustbloom: Fragile Regrowth a second, up to its most
     if (c.bloodPrice) for (const d of inside(pp, c.overgrow.r)) d.life = Math.min(d.life, d.max * (1 - c.bloodPrice / 100));   // Blood Price: enemies in your Presence keep that share reserved

@@ -168,9 +168,11 @@ export function gemStats(g, sum = {}) {
 // and gear give every skill or those of one of its tags (reservation_efficiency_+%_of_herald_skills).
 // Blasphemy's: its amount per curse socketed in it (the build b's gems in it). note: rounded to the nearest, as Path of Building 2 does
 // Atziri's Communion: no Spirit, its % of maximum life per base Spirit instead (life: that %)
-export function reservation(g, sum = {}, b, life = false) {
+export function reservation(g, sum = {}, b, life = false, maxLife) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
-  const eff = (st[id] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
+  // Prism Guardian: Buff skills' own per 100 maximum life (maxLife: character() gives it, which asks for this itself)
+  const PG = sum['buff_skills_spirit_reservation_efficiency_+%_per_100_maximum_life'], perLife = PG && b && GEM[g.name]?.tags?.includes('buff') ? PG * Math.floor((maxLife ?? character(b, sum).life ?? 0) / 100) : 0;
+  const eff = perLife + (st[id] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   // Skeletal Warrior: its first minions reserve no Spirit. note: the planner has no number of minions per gem; those first ones
   const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
@@ -352,7 +354,7 @@ export function character(b, sum) {
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
     spirit: sum.spirit_does_not_exist ? 0 : Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
     // spirit reserved by the build's persistent skills
-    reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b), 0),
+    reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, false, 0), 0),   // (Prism Guardian's share once the life is known, below)
     es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield') + pieceS + P('body', 'energy_shield') * v(sum, 'maximum_energy_shield_from_body_armour_+%') / 100) * esInc + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     evaDouble: !!sum.double_evasion_rating_if_you_havent_been_hit_recently,   // Hyrri's Ire: doubled while not hit recently (the scene checks it)
@@ -448,7 +450,7 @@ export function character(b, sum) {
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
-    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, true), 0),   // Infernalist's Beidat's Gaze and Atziri's Communion: their share of life reserved
+    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, true, 0), 0),   // Infernalist's Beidat's Gaze and Atziri's Communion: their share of life reserved
     presCd: v(sum, 'enemies_in_presence_cooldown_recovery_+%'),   // the increased (reduced) cooldown recovery of enemies in your Presence
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
@@ -495,6 +497,8 @@ export function character(b, sum) {
     volCold: v(sum, 'volatility_physical_damage_taken_%_as_cold'),   // Dream Fragments
     molten: v(sum, 'local_%_chance_to_trigger_molten_shower_on_hit_with_this_weapon_per_25_strength') * Math.floor((at.str || 0) / 25),   // Brutus' Lead Sprinkler: its chance per 25 Strength
     furyGround: v(sum, 'unique_boots_secondary_ground_ignite_while_moving_base_fire_damage_%_of_life'),   // Birth of Fury
+    shockTrail: !!sum.unique_boots_secondary_ground_shock_while_moving, holyStill: !!sum.gifts_from_above_consecrated_ground_while_stationary,   // Wake of Destruction, Gifts from Above
+    presAggr: !!sum.aggravate_bleeding_on_enemies_when_they_enter_your_presence, killDestroys: !!sum.enemies_explode_on_kill,   // Beetlebite; hand wraps: "Enemies killed by your Hits are destroyed"
     lethal: { pct: v(sum, 'consume_%_of_maximum_life_flask_charges_on_bow_attack'), add: v(sum, 'bow_attacks_deal_added_physical_damage_equal_to_x%_of_life_flask_recovery_amount') },   // The Lethal Draw
     allyRegen: v(sum, 'allies_in_presence_life_regeneration_rate_per_minute_equal_to_your_maximum_life_%'), allyRegenOwn: v(sum, 'allies_in_presence_life_regeneration_rate_per_minute_equal_to_their_maximum_life_%'), allyRegenBase: v(sum, 'base_life_regeneration_rate_per_minute') * v(sum, 'total_base_life_regeneration_rate_per_minute_%_granted_to_allies_in_your_presence') / 100 + v(sum, 'allies_in_presence_life_regeneration_rate_per_minute'),   // Allies in your Presence regenerate life per minute: its % of your maximum life, Sacred Flame's of their own, Guiding Palm's share of your base life regeneration
     stunDecay: v(sum, 'heavy_stun_poise_decay_rate_+%'), stunDecayParry: v(sum, 'parry_heavy_stun_poise_decay_rate_+%_if_youve_successfully_parried_recently'), reviveCmd: v(sum, 'revive_persistent_minion_%_chance_when_you_use_a_command_skill'),
@@ -595,6 +599,7 @@ export function character(b, sum) {
   if (sum.base_cannot_evade) c.evadePct = c.evadeMax = 0;   // Bramblejack: no chance to evade with whatever evasion (the hits roll against evadeMax; what is worked out from the evasion still counts it)
   if (sum.resolute_technique) c.accuracy *= 2;
   if (sum.keystone_lord_of_the_wilds) c.spirit = Math.round(c.spirit / 2);
+  if (sum['buff_skills_spirit_reservation_efficiency_+%_per_100_maximum_life']) c.reserved = (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, false, c.life || 0), 0);   // Prism Guardian
   if (sum.base_darkness) { c.spirit = 0; c.darkness = Math.round((sum.base_darkness + v(sum, 'darkness_per_level') * lvl) * (pct('maximum_darkness_+%') + v(sum, 'maximum_darkness_+%_per_capped_chaos_damage_resistance') * Math.max(0, c.res.chaos.capped) / 100)); c.darkFor = v(sum, 'base_darkness_refresh_rate_ms') / 1000; }
   return c;
 }
@@ -1639,10 +1644,10 @@ export function skill(g, b, treeGear) {
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
     projectiles: st.base_number_of_projectiles ? st.base_number_of_projectiles + both('number_of_additional_projectiles') + (own.includes('grenade') ? v(sum, 'grenade_skill_number_of_additional_projectiles') : 0) : null,   // Cluster Bombs
     // the tree's chances for more projectiles: "Surpassing" (each full 100% one more, the rest a chance), with bow
-    // attacks too; spells' chance for 2 more
+    // attacks too; spells' chance for 2 more. Hand wraps: "Melee Attacks fire an additional Projectile" (a full 100% each)
     // the tree's chance for another Aftershock with Mace Slams or Shapeshift Slams (as "your_slam_aftershock_chance_%", by the scene)
     aftershock: own.includes('slam') ? v(sum, 'slam_aftershock_chance_%') + (tags.includes('mace') && attack ? v(sum, 'your_mace_slam_aftershock_chance_%') : 0) + (own.includes('shapeshift') ? v(sum, 'shapeshift_slam_skill_aftershock_chance_%') : 0) : 0,
-    extraProj: st.base_number_of_projectiles || own.includes('projectile') ? { chance: v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover') + (attack && tags.includes('bow') ? v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover_with_bow_attacks') : 0),
+    extraProj: st.base_number_of_projectiles || own.includes('projectile') ? { chance: v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover') + (attack && tags.includes('bow') ? v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover_with_bow_attacks') : 0) + (attack && own.includes('melee') ? 100 * v(sum, 'melee_attacks_number_of_additional_projectiles') : 0),
       two: spell ? v(sum, 'spell_skills_fire_2_additional_projectiles_final_chance_%') : 0 } : null,
     detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (1 + v(finals, 'support_ritual_curse_curse_delay_+%_final') / 100) * (1 + v(finals, 'support_focus_curse_curse_delay_+%_final') / 100) * (sum.keystone_hex_master ? 2 : 1)),
     duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100),
