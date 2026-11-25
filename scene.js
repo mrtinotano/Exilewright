@@ -674,7 +674,9 @@ export function initScene(el, api) {
       if (S.perfect && Math.random() * 100 < H.perfectEndurance) chargeBy('endurance', S);
       if (D.combo?.strike && !(time < me.finality)) { me.combo = comboNow() + 1 + (D.combo.more || 0) + (Math.random() * 100 < D.combo.extra ? 1 : 0); me.comboAt = time; }
     }
-    const full = d.life >= d.max; d.by = S; damage(d, total, S);
+    const full = d.life >= d.max; d.by = S;
+    if (full && own && D?.sum?.decimating_strike) { damage(d, d.max * rnd(.05, .3), S, true, true); fx.text(over(d), t('Decimating Strike'), css('physical'), .36); }   // Decimating Strike (KeywordPopups): a hit on a full life enemy removes 5-30% of its life before its damage
+    damage(d, total, S);
     if (FO && d.focusMax > 0) { d.focus = Math.max(0, d.focus - total * FO.drain / 100); d.focusAt = time; }
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
@@ -1085,7 +1087,7 @@ export function initScene(el, api) {
     if (isHit && ELEM.includes(el) && d.st.freeze > 0 && SE.frozenNoRes && st.res[el] > 0) st = { ...st, res: { ...st.res, [el]: 0 } };   // the tree's: hits ignore a Frozen enemy's non-negative elemental resistances
     if (inv && ELEM.includes(el)) st = { ...st, res: { ...st.res, [el]: -(st.res[el] || 0) } };   // its elemental resistance treated as inverted
     if (el === 'physical' && sheet().hazArmour && time - (d.hazAt ?? -99) <= RECENT) st = { ...st, armour: st.armour * (1 + sheet().hazArmour / 100) };   // the tree's armour of the enemies your Hazards affected recently
-    if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? 0 : Math.max(0, st.armour - d.cut - CA) };
+    if (el === 'physical' && (d.cut > 0 || d.st.armour > 0 || CA)) st = { ...st, armour: d.st.armour > 0 ? -(d.over || 0) : Math.max(0, st.armour - d.cut - CA) };   // Imploding Impacts: below 0 while Fully Broken
     const low = (d.st.expo > 0 && d.expo?.els.includes(el) ? (d.expo.mag + (sheet().expoExtra || 0)) * st.expoEffect : 0) - (el === 'fire' && d.st.ignite > 0 ? sheet().ignitedRes || 0 : 0) - (ELEM.includes(el) && (d.st.ignite > 0 || d.st.chill > 0) ? sheet().igChillRes || 0 : 0) - (el === 'fire' && dist(d.pos, pp) <= sheet().overgrow.r ? sheet().presFireRes || 0 : 0) - curseFx(d, C => C?.res[el]) - (el === 'cold' && d.st.freeze > 0 ? sheet().frozenRes || 0 : 0) - (el === 'chaos' && d.curse ? sheet().cursed?.chaos || 0 : 0);   // Deep Freeze: the Frozen's cold resistance; the tree's chaos resistance of enemies you curse
     if (low) st = { ...st, res: { ...st.res, [el]: st.res[el] - low } };
     const W = (el === 'chaos' || el === 'fire' && sheet().witherFire) && d.wither ? (d.wither = d.wither.filter(u => u.until > time)).reduce((t, u) => t + u.pct, 0) : 0;
@@ -1108,6 +1110,9 @@ export function initScene(el, api) {
     'added_physical_damage_%_ward_cost': [['freeze'], ['physical']], chaos_damage_can_freeze: [['freeze'], ['chaos']], chaos_damage_can_shock: [['shock'], ['chaos']], base_chaos_damage_can_ignite: [['ignite'], ['chaos']],   // Tul's Stillness, Esh's Radiance, Xoph's Pyre
     base_chaos_damage_can_electrocute: [['electrocute'], ['chaos']], elemental_damage_also_contributes_to_flammability_ignite_chill_freeze_and_shock: [['ignite', 'chill', 'freeze', 'shock'], ['fire', 'cold', 'lightning']],
     elemental_damage_can_inflict_bleeding: [['bleed'], ['fire', 'cold', 'lightning']], fire_damage_can_inflict_bleeding: [['bleed'], ['fire']] };
+  // Acolyte of Chayula's Unravelling (KeywordPopups UnravellingBuff): your chaos damage also contributes to Freeze buildup,
+  // to Flammability and Ignite, or to Shock chance, one of them at random, changing every its interval
+  const unravel = SU => { const X = SU.unravelling_cycling_buff_every_x_ms; if (!X) return null; if (!(time < me.unravel?.until)) me.unravel = { until: time + X / 1000, a: ['freeze', 'ignite', 'shock'][Math.floor(rnd(3))] }; return me.unravel.a; };
   let critHit = null;   // the skill whose critical hit is inflicting ailments now
   function afflict(d, S, raw, o = {}) { critHit = o.crit ? S : null; try { afflict0(d, S, raw, o); } finally { critHit = null; } }
   function afflict0(d, S, raw, o = {}) {
@@ -1121,7 +1126,7 @@ export function initScene(el, api) {
     const can = a => PN && a !== 'electrocute' || SU[`all_damage_can_${a}`] || S.P.attack && SU[`local_all_damage_can_${a}`] || a === 'ignite' && SU.you_and_allies_in_presence_all_damage_can_ignite
       || a === 'electrocute' && S.P.attack && SU.all_attack_damage_can_electrocute
       || a === 'chill' && (SU.all_damage_to_bleeding_enemies_contributes_to_chill && has(d, 'bleed') || SU.all_damage_to_poisoned_enemies_contributes_to_chill && has(d, 'poison'));
-    const adds = a => [...Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), ...a === 'ignite' && S.dmg.blackflame ? ['chaos'] : []], TD = SU.unique_fire_damage_shocks && { ignite: 'cold', shock: 'fire', freeze: 'lightning', chill: '-' }, xa = (a, e) => can(a) ? allD : [...new Set([TD?.[a] ?? e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
+    const adds = a => [...Object.entries(EXTRA).flatMap(([k, [as, es]]) => SU[k] && as.includes(a) ? es : []), ...a === 'ignite' && S.dmg.blackflame ? ['chaos'] : [], ...!S.src && a === unravel(SU) ? ['chaos'] : []], TD = SU.unique_fire_damage_shocks && { ignite: 'cold', shock: 'fire', freeze: 'lightning', chill: '-' }, xa = (a, e) => can(a) ? allD : [...new Set([TD?.[a] ?? e, ...adds(a)])].reduce((t, k) => t + x(k), 0);
     // Frostflame Nova on an Ignited enemy: the Ignite's duration starts over, its Freeze buildup is more per 1% of the
     // enemy's ailment threshold the Ignite deals a second, and no other Ignite takes until that one ends
     const FF = S.dmg.stats?.[FROSTFLAME], FFm = FF != null ? 1 + FF / 10000 * (d.burn.ignite?.dps || 0) / thr * 100 : 1;
@@ -1205,10 +1210,12 @@ export function initScene(el, api) {
       + x('physical') * (d.mark?.S?.dmg?.sum?.['marked_target_%_physical_damage_taken_as_armour_break'] || 0) / 100   // Mark for Death: hits on the enemy its Mark is on
       + (S.P.spell && o.crit ? x('physical') * (S.dmg.sum?.['armour_break_equal_to_%_physical_damage_dealt_on_critical_strike_with_spells'] || 0) / 100 : 0)
       + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * ((S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) + (S.final ? S.chain0?.sum?.['final_strike_attack_damage_%_dealt_as_armour_break'] || 0 : 0) + (S.P.attack ? S.dmg.sum?.['local_armour_break_damage_%_dealt_as_armour_break'] || 0 : 0)) / 100) * A.breakMore * (A.breakAil && [...EL_AIL, 'bleed', 'poison'].some(a => d.st[a] > 0) ? A.breakAil : 1);   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
+    // Warbringer's Imploding Impacts: Armour Break on a Fully Broken enemy takes its armour below 0, as far as its armour (KeywordPopups ArmourOverbreak)
+    if (brk > 0 && d.st.armour > 0 && sheet().overbreak) d.over = Math.min(d.stat.armour, (d.over || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1));
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0) && !(d.riven?.until > time)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
-      if (d.cut >= d.stat.armour) { d.cut = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000, S); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
+      if (d.cut >= d.stat.armour) { d.cut = d.over = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000, S); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
     }
   }
   // freeze, heavy stun, electrocute and pin bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill
@@ -1792,7 +1799,8 @@ export function initScene(el, api) {
       thing(m, (s.base_remnant_duration_ms || SIM.lifetime * 1000) / 1000, { name: S.name, c,
         tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; collect(S, V, c); if (!again && s.remnants_you_create_reappear_X_ms_after_being_collected) later(s.remnants_you_create_reappear_X_ms_after_being_collected / 1000, () => drop(V, c, true)); } } });   // Stormweaver's reappearing once
     };
-    for (let j = 0; j < n; j++) drop(R.kinds ? R.kinds[Math.floor(rnd(R.kinds.length))] : R, j ? around(p, SIM.pickup) : { x: p.x, z: p.z });
+    const only = ['red', 'blue', 'purple'].findIndex(c => s[`can_only_spawn_${c}_flame_of_chayula_remnants`]);   // Acolyte of Chayula's Choice of Life / Mana / Power: every Flame is that one
+    for (let j = 0; j < n; j++) drop(R.kinds ? R.kinds[only >= 0 && S.name === 'Into the Breach' ? only : Math.floor(rnd(R.kinds.length))] : R, j ? around(p, SIM.pickup) : { x: p.x, z: p.z });
   }
   function collect(S, R, c) {
     const s = rstats(S), k = 1 + (s['remnant_effect_+%'] || 0) / 100;
@@ -5562,7 +5570,7 @@ export function initScene(el, api) {
     for (const el in AH) {
       if (Math.random() * 100 < (OR.avoidDmg?.[el] || 0)) continue;   // Perfidy: that type of the hit avoided
       const [lo, hi] = AH[el]; let got = playerTakes(c, el, raw[el] = Math.max(0, (lo + rollOf(el) * (hi - lo)) * cm * ALT + (el === 'physical' ? flat : 0)), true, true, a.pen) * TW;
-      if (me.aegis > 0 && ELEM.includes(el)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward
+      if (me.aegis > 0 && (ELEM.includes(el) || SE.wardAll)) { const k = Math.min(me.aegis, got); me.aegis -= k; got -= k; me.aegisAt = time; }   // Sorcery Ward (Ceremonial Ablution: physical and chaos too)
       if (el === 'physical' && IW) me.iron = Math.min(IW.warding_steel_maximum_stored_mitigated_physical_damage, (me.iron || 0) + (raw[el] - got) * IW['warding_steel_gains_%_of_damage_from_mitigated_physical_damage'] / 100);   // Iron Ward
       if (AD && ELEM.includes(el)) got *= (1 + AD.less / 100) * (1 + AD.per * me.adapt.filter(u => u.el === el).length / 100);   // Adaptations: less of a type per matching one
       dealt[el] = got; total += got; if (el === 'chaos') chaos += got; if (got > best) { best = got; top = el; }

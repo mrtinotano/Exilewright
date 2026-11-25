@@ -973,5 +973,6 @@
  "Not simulated": "未模擬",
  "That is not a waystone.": "這不是換界石。",
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "地圖詞綴會套用於模擬器中的所有敵人和你的角色。地圖擁有的每種地面會在房間中放置一個區域；其獎勵不會模擬。",
- "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright 無法啟動：這台電腦的連接埠 {0} 無法使用（其他程式正在使用，或由 Windows 保留）。"
+ "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright 無法啟動：這台電腦的連接埠 {0} 無法使用（其他程式正在使用，或由 Windows 保留）。",
+ "Decimating Strike": "屠戮打擊"
 }

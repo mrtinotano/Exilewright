@@ -973,5 +973,6 @@
  "Not simulated": "ไม่ได้จำลอง",
  "That is not a waystone.": "นี่ไม่ใช่ศิลานำทาง",
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "ม็อดของแผนที่มีผลกับศัตรูทุกตัวและตัวละครของคุณในเครื่องจำลอง พื้นแต่ละชนิดของแผนที่จะเป็นหนึ่งพื้นที่ในห้อง รางวัลของแผนที่ไม่ได้จำลอง",
- "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright เริ่มทำงานไม่ได้: พอร์ต {0} ของคอมพิวเตอร์เครื่องนี้ไม่ว่าง (โปรแกรมอื่นใช้อยู่ หรือ Windows สงวนไว้)"
+ "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright เริ่มทำงานไม่ได้: พอร์ต {0} ของคอมพิวเตอร์เครื่องนี้ไม่ว่าง (โปรแกรมอื่นใช้อยู่ หรือ Windows สงวนไว้)",
+ "Decimating Strike": "จู่โจมเปิดฉาก"
 }
