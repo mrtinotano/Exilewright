@@ -345,7 +345,7 @@ export function initScene(el, api) {
     f.upper.rotation.set(0, 0, 0); f.group.visible = f.plate.visible = true;
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
-  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.hexes = me.prev = me.whisp = me.drain = null; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
+  function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.hexes = me.prev = me.whisp = me.drain = null; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.widow = 0; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
     Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
@@ -1503,6 +1503,10 @@ export function initScene(el, api) {
       later(.1, () => { pop(p, A, 'chaos'); boom(p, A, { ...CF, gm: (CF.gm ?? 1) * (1 + cs['crushing_fear_damage_+%_final_per_power_of_culled_enemy'] * pw / 100) }); });
     }
     if (st.shock > 0) gainBuff(S, 'shockKill');
+    // Earthbound: Spark triggered from where a Shocked enemy you kill was, away from you. note: the triggered Spark's own
+    // numbers are not in the data: it is the build's Spark ("Add" on the Skills tab), at no cost
+    const EB = st.shock > 0 && S && !S.src && sheet().sparkKill && base(byName('Spark'));
+    if (EB) { const l = dist(p, pp) || 1; me.trigAt = time; later(.05, () => K.projectile({ ...EB, from: p, dx: (p.x - pp.x) / l, dz: (p.z - pp.z) / l })); }
     if (st.electrocute > 0) trigger(S, 'electrocuteKill', d);
     // Bursting Fen Toad: its chance on a kill for a toad that leaps about and explodes in its area, always Poisoning. note:
     // how long it leaps is not in the data (half a second, as Doedre's toads here)
@@ -2234,7 +2238,7 @@ export function initScene(el, api) {
     const UL = !S.src && !o.forked && !o.split && !o.back && !o.shard && sheet().ulaman ? Math.floor(Math.random() * 4) : -1;
     const D = UL === 0 ? { ...sh(S), forks: (sh(S).forks || 0) + 1 } : sh(S), seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
     const pierceN = S.P.spell && sheet().spellNoPierce ? 0 : Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
-    let pierced = o.pierced || 0;
+    let pierced = o.pierced || 0, brokeP = false;   // brokeP: it has pierced a target whose armour was fully broken (Ironbound)
     // Point Blank / Far Shot (their text): all of the first's more within the first 3.5 metres, scaling down to none at 7;
     // the second's none within 3.5 scaling up to all of it at 7
     const left0 = left, went = () => (o.went || 0) + left0 - left, PB = sheet().shot, far = () => { const k = Math.min(1, Math.max(0, (went() - 3.5) / 3.5)); return PB ? 1 + (PB[0] * (1 - k) + PB[1] * k) / 100 : 1; };
@@ -2243,7 +2247,7 @@ export function initScene(el, api) {
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
-      const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times; if (DR && pierced >= DR) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Drillneck: it returns to you after piercing that many times
+      const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times, IB = brokeP && cur.P.attack && !o.back && cur.dmg?.sum?.arrow_projectiles_return_if_they_have_pierced_a_fully_armour_broken_target; if (DR && pierced >= DR || IB) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Ironbound: so if it pierced a target with fully broken armour. Drillneck: it returns to you after piercing that many times
       const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur.name, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
       if ((P.chains || S.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
         chain(m.position.clone(), hitD, cur, Math.max(SC, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0)), seen, mult());
@@ -2291,7 +2295,7 @@ export function initScene(el, api) {
               for (const e of nearest(d.pos, N, e => e !== d && dist(e.pos, d.pos) <= left)) { const l = dist(e.pos, m.position) || 1; shoot(cur, m.position, (e.pos.x - m.position.x) / l, (e.pos.z - m.position.z) / l, { speed, range: left, seen: [d], split: true }); }
             }
             if (slow) hit(d, cur);
-            else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || d.st.ignite > 0 && Math.random() * 100 < (cur.dmg?.sum?.['chance_to_pierce_ignited_enemy_%'] || 0) || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0) || !cur.src && d.st.armour > 0 && sheet().pierceBroken) { hit(d, cur, how({ pierced })); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
+            else if (pierced < pierceN || forked && D.pierceForked || d.st.ignite > 0 && cur.dmg?.sum?.always_pierce_burning_enemies || d.st.ignite > 0 && Math.random() * 100 < (cur.dmg?.sum?.['chance_to_pierce_ignited_enemy_%'] || 0) || !cur.src && dist(d.pos, pp) <= 3 && Math.random() * 100 < (cur.dmg?.sum?.['projectile_chance_to_piece_vs_enemies_within_3m_distance_of_player'] || 0) || !cur.src && d.st.armour > 0 && sheet().pierceBroken) { brokeP ||= d.st.armour > 0; hit(d, cur, how({ pierced })); pierced++; fx.flash(m.position, cur.el, 6, .12, 3); }   // the tree's chance to Pierce enemies within 3 m of you
             else if (forked < (D.forks || 0) || !forked && Math.random() * 100 < (d.st.freeze > 0 ? cur.dmg?.sum?.['chance_to_fork_from_frozen_enemy_%'] || 0 : 0) + (cur.dmg?.sum?.['projectile_chance_to_fork_%'] || 0)) {   // Flamepierce (above), Freezefork: on Ignited / Frozen enemies
               hit(d, cur, how({ pierced })); q.dead = true; fx.flash(m.position, cur.el, 8, .15, 4);
               const fk = Math.random() * 100 < (cur.dmg?.sum?.['chance_to_fork_extra_projectile_%'] || 0) ? [-1, 0, 1] : [-1, 1];   // the tree's chance for one more when forking
@@ -4229,8 +4233,9 @@ export function initScene(el, api) {
   // what a use costs: mana (a channel's for one tick, or `held` s), and life
   function costOf(S, held) {
     const AM = archmage(S), per = S.dmg?.costPerSecond ? held ?? SIM.channelTick : 1, LP = S.dmg?.lifePerRecent;
-    // mana cost efficiency during a mana flask (Uhtred's Rite; attacks': Lavianga's Brew) and on Low Mana (Mental Toughness)
-    const CS = S.dmg?.sum || {}, UE = (me.drink[1] ? (CS['base_mana_cost_efficiency_+%_during_mana_flask'] || 0) + (S.P?.attack ? CS['attack_mana_cost_efficiency_+%_during_mana_flask'] || 0 : 0) : 0) + (lowMana() ? CS['base_mana_cost_efficiency_+%_while_on_low_mana'] || 0 : 0), ue = S.dmg?.manaEff || 1;
+    // mana cost efficiency during a mana flask (Uhtred's Rite; attacks': Lavianga's Brew) and on Low Mana (Mental Toughness);
+    // of skills from Corrupted gems during any flask (Zerphi's Genesis)
+    const CS = S.dmg?.sum || {}, UE = (me.drink[1] ? (CS['base_mana_cost_efficiency_+%_during_mana_flask'] || 0) + (S.P?.attack ? CS['attack_mana_cost_efficiency_+%_during_mana_flask'] || 0 : 0) : 0) + (lowMana() ? CS['base_mana_cost_efficiency_+%_while_on_low_mana'] || 0 : 0) + (S.g?.corrupted && (me.drink[0] || me.drink[1]) ? CS['corrupted_skills_have_+%_increased_skill_cost_efficiency_during_flask_effect'] || 0 : 0), ue = S.dmg?.manaEff || 1;
     const mana = (S.dmg?.cost || 0) * per * (S.costX || 1) * (1 + (sheet().uDef?.indigonCost || 0) * spent200() / 100) * (UE ? ue / (ue + UE / 100) : 1) * (1 + banner('toxic_domain_mana_cost_+%') / 100) + (AM ? me.maxM * AM.archmage_max_mana_permyriad_to_add_to_non_channelled_spell_mana_cost / 1e4 : 0);
     const toLife = me.drink[0] ? mana * Math.min(100, sheet().flaskLifeCost || 0) / 100 : 0;   // the tree's share of mana costs paid with life during a life flask
     return { cost: mana - toLife, life: (S.dmg?.lifeCost || 0) * per + toLife + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
@@ -5270,11 +5275,12 @@ export function initScene(el, api) {
     const GW = hit && sheet().wounds; if (GW && left > 0) { me.wounds.push({ rate: left * GW / 400, until: time + 4 }); left *= 1 - GW / 100; }
     // Amanamu's Defiance (Undying Hate's keystone): its share of the life a hit takes is prevented, then that times its loss is lost over 4 seconds
     const AD = hit && sheet().amanamu; if (AD && left > 0) { const p = left * AD.prevent / 100; me.wounds.push({ rate: p * AD.lose / 400, until: time + 4 }); left -= p; }
-    if (!(sheet().eternal && es0 > 0)) me.life -= left;   // Lich's Eternal Life: life cannot change while you have energy shield
+    const life0 = me.life; if (!(sheet().eternal && es0 > 0)) me.life -= left;   // Lich's Eternal Life: life cannot change while you have energy shield
     // Runic Ward (keywords.json): damage that would take your life to 0 leaves you at 1, the ward taking the rest
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
     if (me.life < 1 && time < me.sight) me.life = 1;   // Future-Past's Sight Beyond Sight
     if (me.life <= 0 && hit && Math.random() * 100 < (sheet().avoidDeath || 0)) me.life = 1;   // the tree's chance to Avoid Death from Hits
+    if (sheet().widowFor && me.life < life0) { me.widow = (me.widow || 0) + life0 - me.life; me.widowAt = time; }   // Widow's Reign: the life the damage took is reserved (vitals)
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -5972,6 +5978,7 @@ export function initScene(el, api) {
       * (1 + (c.defWhile || []).filter(w => w.to.includes('s') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
     if (c.lifeReserved) me.life = Math.min(me.life, me.maxL * (1 - c.lifeReserved / 100));   // the reserved life cannot be filled
+    if (me.widow) { if (time - me.widowAt >= c.widowFor) me.widow = 0; else me.life = Math.min(me.life, me.maxL * (1 - (c.lifeReserved || 0) / 100) - me.widow); }   // Widow's Reign: nor what damage took, until none takes life for its time
     for (const a in me.st) if (me.st[a] > 0 && immune(a)) { me.st[a] = 0; delete me.burn[a]; }   // a state that makes you immune ends the ailment
     if (me.mounted && (!c.mountOk || !tog['Rhoa Mount'])) me.mounted = false;   // no Bow or Spear, or Rhoa Mount off: on foot
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
