@@ -23,7 +23,9 @@ The extraction takes a while (ten languages).
   gem_cutting | lineage_drop | passive_or_ascendancy | unique_item | item_mod | item_base | weapon_default | tradeable
   (no source in the tables but in GGG's trade list). Gems not in the current patch (no source and not in the trade
   list, or cuttable/lineage ones no longer in it) are left out: the official list `api/trade2/data/items` is
-  downloaded on every run.
+  downloaded on every run. Also left out: an old gem the game turned into another (`BaseItemTypes.FragmentBaseItemType`:
+  Hypothermia -> Elemental Weakness), one marked [DNT] in its description, a skill only an item modifier grants while
+  no live unique has that modifier or "Grants Skill: <it>" on its poe2db page, and a base's skill while the base is gone.
   A meta gem has `holds`: the skill types its sockets take (its own support part's require / exclude, the same
   expressions as a support gem's): Mortar Cannon takes grenades.
 - `passive_tree.json` — only nodes in the real tree graph (passiveskillgraph.psg), no unused ascendancies; with

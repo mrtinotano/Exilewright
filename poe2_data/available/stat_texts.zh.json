@@ -11440,30 +11440,6 @@
  },
  {
   "stats": [
-   "support_greatwood_maximum_life_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "被輔助的技能所創造的[Totem|圖騰]有{0}%更多生命",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "被輔助的技能所創造的[Totem|圖騰]有{0}%更少生命",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "support_greatwood_maximum_number_of_active_totems_in_radius_for_effects"
   ],
   "rows": [
@@ -19362,28 +19338,6 @@
      "#"
     ],
     "t": "無法有超過{0}個已召喚的先祖戰士圖騰",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "non_skill_base_all_damage_%_to_gain_as_cold_with_spells_from_buff"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "[Empowered|強化][Spell|法術][Gain|獲得]的傷害視為[Cold|冰冷]傷害@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Empowered|強化][Spell|法術][Gain|獲得]等同於傷害{0}%的[Cold|冰冷]傷害",
     "h": []
    }
   ]
@@ -110182,83 +110136,6 @@
     "c": [
      "10"
     ],
-    "t": "[Curse|詛咒]範圍為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]範圍為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_lightning_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]使[Lightning|閃電]抗性{0:+d}%",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|詛咒]持續時間為{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]持續時間為{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
     "t": "[ConsecratedGround|奉獻地面]範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110550,31 +110427,6 @@
   "skill": [
    "Decompose",
    "Decompose"
-  ]
- },
- {
-  "stats": [
-   "mana_tempest_mana_cost_%_to_add_to_cost_per_second"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "已消耗的魔力和生命增加至消耗@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "處於風暴內所消耗魔力和生命的{0}%\\n增加至此技能的每秒魔力消耗",
-    "h": []
-   }
-  ],
-  "skill": [
-   "His Dark Horizon"
   ]
  },
  {
@@ -113102,83 +112954,6 @@
   ],
   "skill": [
    "Flame Wall"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|詛咒]範圍為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]範圍為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_fire_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]使[Fire|火焰]抗性{0:+d}%",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|詛咒]持續時間為{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]持續時間為{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
   ]
  },
  {
@@ -116334,83 +116109,6 @@
   ],
   "skill": [
    "Hollow Shell"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|詛咒]範圍為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]範圍為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_cold_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]使[Cold|冰冷]抗性{0:+d}%",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|詛咒]持續時間為{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|詛咒]持續時間為{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
   ]
  },
  {

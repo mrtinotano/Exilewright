@@ -593,8 +593,6 @@ export function initScene(el, api) {
       const CL = d.boils > 0 && D?.sum?.['ascendancy_ritualist_damage_+%_final_vs_enemies_affected_by_blood_boil']; if (CL) for (const e in raw) raw[e] *= 1 + CL / 100;   // Corrupted Lifeforce: more damage against an enemy with Blood Boils
       const DC = S.P.spell && !S.src && sheet().rage?.spellPer2; if (DC) for (const e in raw) raw[e] *= 1 + Math.floor(me.rage / 2) * DC / 100;   // Druidic Champion: more spell damage per 2 Rage
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
-      const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of your own Heavy Stun buildup (its description)
-      if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((me.bar.stun || 0) / 5) / 100;
       const CM = S.comp && d.mark && sheet().compMarked; if (CM) for (const e in raw) raw[e] *= 1 + CM / 100;   // Sylvan's Effigy: your Companions' increased damage to your Marked targets. note: as a factor
       const VK = !S.src && d.vile >= 1 && sheet().vile; if (VK) for (const e in raw) raw[e] *= 1 + Math.min(200, VK * Math.floor(d.vile)) / 100;   // The Vile Knight: increased hit damage per second, up to 200% (its text's). note: as a factor
       const AT = d.attr >= 1 && attr();   // Attrition
@@ -1312,7 +1310,7 @@ export function initScene(el, api) {
   }
   // the skill a meta gem triggers: the build's first triggerable spell (Feral Invocation: a Shapeshifting attack)
   const trigOf = T => api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && !NOHIT.has(b.kind) && (T.manaPer ? b.P.attack && api.info(g).gem?.types?.includes('Shapeshift') : b.P.triggerable && b.P.spell); });
-  // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power (per block: Cast / Curse on Block)
+  // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power (per block: Cast on Block)
   // of the enemy (Feral Invocation: per its mana spent), more by its increased energy; its maximum is 1 per its ms of the
   // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
   // many times as its energy covers. Modifiers to its total use time count as though double (keywords.json Energy): the

@@ -11443,30 +11443,6 @@
  },
  {
   "stats": [
-   "support_greatwood_maximum_life_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "[Totem|Totens] criados por habilidades reforçadas têm +{0}% de vida",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "[Totem|Totens] invocados por habilidades reforçadas têm -{0}% de vida",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "support_greatwood_maximum_number_of_active_totems_in_radius_for_effects"
   ],
   "rows": [
@@ -19364,28 +19340,6 @@
      "#"
     ],
     "t": "Não pode ter mais do que {0} Totens do Guerreiro Ancestral ativos",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "non_skill_base_all_damage_%_to_gain_as_cold_with_spells_from_buff"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "Dano [Spell|mágico] [Empowered|fortalecido] [Gain|ganho] como dano de [Cold|frio]@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Spell|Magias] [Empowered|fortalecidas] [Gain|ganham] {0}% do dano como dano de [Cold|frio]",
     "h": []
    }
   ]
@@ -110167,83 +110121,6 @@
     "c": [
      "10"
     ],
-    "t": "Raio de alcance da [Curse|maldição]: {0} metro",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Raio de alcance da [Curse|maldição]: {0} metros",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_lightning_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|Maldição] inflige {0:+d}% à resistência a dano [Lightning|elétrico]",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|Maldição] dura {0} segundo",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|Maldição] dura {0} segundos",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
     "t": "Raio do [ConsecratedGround|chão consagrado]: {0} metro",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110535,31 +110412,6 @@
   "skill": [
    "Decompose",
    "Decompose"
-  ]
- },
- {
-  "stats": [
-   "mana_tempest_mana_cost_%_to_add_to_cost_per_second"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "Mana e vida gastos adicionados ao custo@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "{0}% de mana e vida gastos enquanto na tempestade é\\nadicionado ao custo de mana desta habilidade por segundo",
-    "h": []
-   }
-  ],
-  "skill": [
-   "His Dark Horizon"
   ]
  },
  {
@@ -113086,83 +112938,6 @@
   ],
   "skill": [
    "Flame Wall"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "Raio de alcance da [Curse|maldição]: {0} metro",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Raio de alcance da [Curse|maldição]: {0} metros",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_fire_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|Maldição] inflige {0:+d}% à resistência a dano de [Fire|fogo]",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|Maldição] dura {0} segundo",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|Maldição] dura {0} segundos",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
   ]
  },
  {
@@ -116318,83 +116093,6 @@
   ],
   "skill": [
    "Hollow Shell"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "Raio de alcance da [Curse|maldição]: {0} metro",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Raio de alcance da [Curse|maldição]: {0} metros",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_cold_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|Maldição] inflige {0:+d}% à resistência a dano de [Cold|frio]",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|Maldição] dura {0} segundo",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|Maldição] dura {0} segundos",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
   ]
  },
  {

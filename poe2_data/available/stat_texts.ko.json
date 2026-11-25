@@ -11439,30 +11439,6 @@
  },
  {
   "stats": [
-   "support_greatwood_maximum_life_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "보조 대상 스킬로 생성된 [Totem|토템]의 생명력 {0}% 증폭",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "보조 대상 스킬로 생성된 [Totem|토템]의 생명력 {0}% 감폭",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "support_greatwood_maximum_number_of_active_totems_in_radius_for_effects"
   ],
   "rows": [
@@ -19372,28 +19348,6 @@
      "#"
     ],
     "t": "선대의 전사 토템 {0}개만 활성화 가능",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "non_skill_base_all_damage_%_to_gain_as_cold_with_spells_from_buff"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "[Cold|냉기] 피해로 [Gain|획득]하는 [Empowered|강화]된 [Spell|주문] 피해@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Empowered|강화]된 [Spell|주문]이 피해의 {0}%를 [Cold|냉기] 피해로 [Gain|획득]",
     "h": []
    }
   ]
@@ -110158,83 +110112,6 @@
     "c": [
      "10"
     ],
-    "t": "[Curse|저주] 반경 {0}미터",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주] 반경 {0}미터",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_lightning_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주]가 [Lightning|번개] 저항 {0:+d}% 유발",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|저주] 지속시간 {0}초",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주] 지속시간 {0}초",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
     "t": "[ConsecratedGround|신성화 지대] 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110526,31 +110403,6 @@
   "skill": [
    "Decompose",
    "Decompose"
-  ]
- },
- {
-  "stats": [
-   "mana_tempest_mana_cost_%_to_add_to_cost_per_second"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "소모량에 추가되는 마나와 생명력 소모@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "폭풍 안에 있는 동안 소모한 마나와 생명력의 {0}%가\\n이 스킬의 초당 마나 소모량에 추가",
-    "h": []
-   }
-  ],
-  "skill": [
-   "His Dark Horizon"
   ]
  },
  {
@@ -113079,83 +112931,6 @@
   ],
   "skill": [
    "Flame Wall"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|저주] 반경 {0}미터",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주] 반경 {0}미터",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_fire_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주]가 [Fire|화염] 저항 {0:+d}% 유발",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|저주] 지속시간 {0}초",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주] 지속시간 {0}초",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
   ]
  },
  {
@@ -116308,83 +116083,6 @@
   ],
   "skill": [
    "Hollow Shell"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|저주] 반경 {0}미터",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주] 반경 {0}미터",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_cold_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주]가 [Cold|냉기] 저항 {0:+d}% 유발",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|저주] 지속시간 {0}초",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|저주] 지속시간 {0}초",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
   ]
  },
  {

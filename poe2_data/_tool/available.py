@@ -1,7 +1,7 @@
 import re
 """Filter the raw dump down to what a player can actually obtain. Writes ../available/*.json.
 Usage: python -I available.py   (run after extract.mjs)"""
-import json, math, os, struct
+import html, json, math, os, struct
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 OUT = os.path.join(ROOT, 'available')
@@ -146,8 +146,8 @@ PANEL = 'Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/'
 gems = []
 for i, g in enumerate(skill_gems):
     b = bases[g['BaseItemType']]
-    if not ok(b['Name']):
-        continue
+    if not ok(b['Name']) or b['FragmentBaseItemType'] is not None:
+        continue                         # FragmentBaseItemType: an old gem the game turned into another (Hypothermia -> Elemental Weakness)
     if g['CraftingTypes']:
         source = 'gem_cutting'          # appears in the uncut-gem menu
     elif i in lineage_ids:
@@ -206,6 +206,25 @@ for x in load('SkillGemsForUniqueStat'):
     for g in gems:
         if g['skill_gems_index'] in x['SkillGems']:
             g['specific'] = x['Index']
+# a skill an item modifier grants counts while a live unique grants it: that modifier on one (uniques.py's
+# unique_items.json, its Fists of Stone form too) or "Grants Skill: <skill>" on a live unique's poe2db page (The Unborn
+# Lich grants one of five). Curse on Block's is on none. And what the game marks unfinished in its description
+# ([DNT-UNUSED] His Dark Horizon, [DNT] Kinetic Bash) is not in it
+_mod_id = [m['Id'] for m in load('Mods')]
+_grant_mods = {}
+for x in load('ModGrantedSkills'):
+    _grant_mods.setdefault(x['Skill'], set()).add(_mod_id[x['Mod']])
+_uq_mods = {m['id'] for u in json.load(open(os.path.join(OUT, 'unique_items.json'), encoding='utf8')) for m in u['mods'] + u.get('stonefist', [])}
+_uq_pages, _uq_titles = [], set(trade_uniques) | {f'{u} {b}' for u, b in trade_uniques.items()}
+for f in os.listdir(os.path.join(ROOT, 'poe2db_cache')):
+    if f.endswith('.html'):
+        t = open(os.path.join(ROOT, 'poe2db_cache', f), encoding='utf8').read()
+        m = re.search(r'<title>(.*?) - PoE2DB', t)
+        if m and html.unescape(m.group(1)) in _uq_titles:   # its name, or its name and base
+            _uq_pages.append(html.unescape(re.sub(r'<[^>]+>', '', t)))
+_uq_text = ' '.join(_uq_pages)
+gems = [g for g in gems if not any(b in (g.get('description') or '') for b in BAD) and (g['source'] != 'item_mod'
+        or _grant_mods.get(g['skill_gems_index'], set()) & _uq_mods or re.search(r'Grants Skill:\s*(?:Level \d+ )?' + re.escape(g['name']), _uq_text))]
 save('gems.json', gems)
 # what the keywords of those descriptions mean (KeywordPopups: the game's help on hovering "[Ignite|ignited]"), the
 # ones they use: {id: {term, def, term_<code>, def_<code>}}

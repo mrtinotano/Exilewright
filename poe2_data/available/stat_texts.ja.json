@@ -11439,30 +11439,6 @@
  },
  {
   "stats": [
-   "support_greatwood_maximum_life_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "サポートされたスキルにより生成された[Totem|トーテム]はライフが{0}%上昇する",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "サポートされたスキルにより生成された[Totem|トーテム]はライフが{0}%低下する",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "support_greatwood_maximum_number_of_active_totems_in_radius_for_effects"
   ],
   "rows": [
@@ -19363,28 +19339,6 @@
      "#"
     ],
     "t": "アクティブなアンセストラルトーテムを{0}体以上出すことができない",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "non_skill_base_all_damage_%_to_gain_as_cold_with_spells_from_buff"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "[Empowered|強化]された[Spell|スペル]はダメージの何%を[Cold|冷気]ダメージとして[Gain|獲得]するか@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Empowered|強化]された[Spell|スペル]はダメージの{0}%を[Cold|冷気]ダメージとして[Gain|獲得]する",
     "h": []
    }
   ]
@@ -110170,83 +110124,6 @@
     "c": [
      "10"
     ],
-    "t": "[Curse|呪い]の半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]の半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_lightning_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]は[Lightning|雷]耐性 {0:+d}%を付与する",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|呪い]の持続時間は{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]の持続時間は{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
     "t": "[ConsecratedGround|神聖領域]の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110538,31 +110415,6 @@
   "skill": [
    "Decompose",
    "Decompose"
-  ]
- },
- {
-  "stats": [
-   "mana_tempest_mana_cost_%_to_add_to_cost_per_second"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "使用したマナとライフの何%がコストに追加されるか@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "ストームの中にいる時に使用したマナとライフの{0}%が\\nスキルの毎秒のマナコストに追加される",
-    "h": []
-   }
-  ],
-  "skill": [
-   "His Dark Horizon"
   ]
  },
  {
@@ -113089,83 +112941,6 @@
   ],
   "skill": [
    "Flame Wall"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|呪い]の半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]の半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_fire_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]は[Fire|火]耐性 {0:+d}%を付与する",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|呪い]の持続時間は{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]の持続時間は{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
   ]
  },
  {
@@ -116321,83 +116096,6 @@
   ],
   "skill": [
    "Hollow Shell"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|呪い]の半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]の半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_cold_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]は[Cold|冷気]耐性 {0:+d}%を付与する",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|呪い]の持続時間は{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|呪い]の持続時間は{0}秒",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
   ]
  },
  {

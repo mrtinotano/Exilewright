@@ -11440,30 +11440,6 @@
  },
  {
   "stats": [
-   "support_greatwood_maximum_life_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "[Totem|Totems] created by Supported Skills have {0}% more Life",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "[Totem|Totems] created by Supported Skills have {0}% less Life",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "support_greatwood_maximum_number_of_active_totems_in_radius_for_effects"
   ],
   "rows": [
@@ -19362,28 +19338,6 @@
      "#"
     ],
     "t": "Cannot have more than {0} Ancestral Warrior Totems active",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "non_skill_base_all_damage_%_to_gain_as_cold_with_spells_from_buff"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "[Empowered] [Spell] damage [Gain|Gained] as [Cold|Cold]@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Empowered] [Spell|Spells] [Gain] {0}% of damage as [Cold|Cold] Damage",
     "h": []
    }
   ]
@@ -110169,83 +110123,6 @@
     "c": [
      "10"
     ],
-    "t": "[Curse] radius is {0} metre",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] radius is {0} metres",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_lightning_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] inflicts {0:+d}% to [Lightning|Lightning] Resistance",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse] duration is {0} second",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] duration is {0} seconds",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
     "t": "[ConsecratedGround|Consecrated Ground] radius is {0} metre",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110537,31 +110414,6 @@
   "skill": [
    "Decompose",
    "Decompose"
-  ]
- },
- {
-  "stats": [
-   "mana_tempest_mana_cost_%_to_add_to_cost_per_second"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "Mana and Life spent added to Cost@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "{0}% of Mana and Life spent while in the storm is\\nadded to this Skill's Mana Cost per Second",
-    "h": []
-   }
-  ],
-  "skill": [
-   "His Dark Horizon"
   ]
  },
  {
@@ -113089,83 +112941,6 @@
   ],
   "skill": [
    "Flame Wall"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse] radius is {0} metre",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] radius is {0} metres",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_fire_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] inflicts {0:+d}% to [Fire|Fire] Resistance",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse] duration is {0} second",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] duration is {0} seconds",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
   ]
  },
  {
@@ -116323,83 +116098,6 @@
   ],
   "skill": [
    "Hollow Shell"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse] radius is {0} metre",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] radius is {0} metres",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_cold_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] inflicts {0:+d}% to [Cold|Cold] Resistance",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse] duration is {0} second",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse] duration is {0} seconds",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
   ]
  },
  {

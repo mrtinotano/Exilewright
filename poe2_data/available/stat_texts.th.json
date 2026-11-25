@@ -11439,30 +11439,6 @@
  },
  {
   "stats": [
-   "support_greatwood_maximum_life_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "[Totem|โทเทม]ที่สร้างจากสกิลที่เสริม มีพลังชีวิต เพิ่มขึ้น อีก {0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "[Totem|โทเทม]ที่สร้างจากสกิลที่เสริม มีพลังชีวิต ลดลง อีก {0}%",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "support_greatwood_maximum_number_of_active_totems_in_radius_for_effects"
   ],
   "rows": [
@@ -19361,28 +19337,6 @@
      "#"
     ],
     "t": "ไม่สามารถมี โทเทมนักรบบรรพชน ได้มากกว่า {0} เสา",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
-   "non_skill_base_all_damage_%_to_gain_as_cold_with_spells_from_buff"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "ความเสียหาย [Spell|เวท][Empowered|เสริมฤทธิ์] ที่[Gain|เสริม]เป็น [Cold|น้ำแข็ง]@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Spell|เวท]ที่ถูก[Empowered|เสริมฤทธิ์] นำความเสียหาย {0}% ไป[Gain|เสริม]เป็น [Cold|น้ำแข็ง]",
     "h": []
    }
   ]
@@ -110168,83 +110122,6 @@
     "c": [
      "10"
     ],
-    "t": "[Curse|คำสาป] มีรัศมี {0} เมตร",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] มีรัศมี {0} เมตร",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_lightning_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] ทำให้ค่าต้านทาน [Lightning|สายฟ้า] {0:+d}%",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Conductivity"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
     "t": "[ConsecratedGround|พื้นศักดิ์สิทธิ์] มีรัศมี {0} เมตร",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110536,31 +110413,6 @@
   "skill": [
    "Decompose",
    "Decompose"
-  ]
- },
- {
-  "stats": [
-   "mana_tempest_mana_cost_%_to_add_to_cost_per_second"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "ค่าใช้งานพลังชีวิตและมานา ที่ถูกเพิ่มไปในค่าใช้งาน@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "{0}% ของมานาและพลังชีวิตที่จ่ายไป ขณะอยู่ในมรสุม\\nจะถูกเพิ่มเข้าไปใน ค่าใช้งานมานาของสกิลนี้ ต่อวินาที",
-    "h": []
-   }
-  ],
-  "skill": [
-   "His Dark Horizon"
   ]
  },
  {
@@ -113087,83 +112939,6 @@
   ],
   "skill": [
    "Flame Wall"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|คำสาป] มีรัศมี {0} เมตร",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] มีรัศมี {0} เมตร",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_fire_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] ทำให้ค่าต้านทาน [Fire|ไฟ] {0:+d}%",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Flammability"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Flammability"
   ]
  },
  {
@@ -116319,83 +116094,6 @@
   ],
   "skill": [
    "Hollow Shell"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "[Curse|คำสาป] มีรัศมี {0} เมตร",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] มีรัศมี {0} เมตร",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_buff_cold_damage_resistance_%_to_apply"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] ทำให้ค่าต้านทาน [Cold|น้ำแข็ง] {0:+d}%",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Hypothermia"
-  ]
- },
- {
-  "stats": [
-   "base_skill_effect_duration"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1000"
-    ],
-    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
-    "h": [
-     "milliseconds_to_seconds_2dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Hypothermia"
   ]
  },
  {
