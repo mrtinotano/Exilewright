@@ -2064,25 +2064,35 @@ export function initScene(el, api) {
     if (j < 0 || !P.spell || P.channel || S.dmg?.cooldown || !damaging(S) || P.spend.includes('power') || P.spendOne || !(charges.power > 0) || ['item_base', 'unique_item', 'item_mod'].includes(src)) return;
     charges.power--; chargesSpent(1, 'power');
     const D = SK.skills['Abyssal Apparition'], g = api.build().gems[j], more = 1 + ((D.levels[g.level] || D.levels[1])['damage_+%_final_from_lich_apparition_cloned_skill'] || 0) / 100;
-    const p = { x: pp.x - S.dz * 1.4 - S.dx * .7, z: pp.z + S.dx * 1.4 - S.dz * .7 }, at = { ...S.at }, G = makeHumanoid(fx), halo = new THREE.Mesh(new THREE.TorusGeometry(.2, .018, 6, 28), fx.glowMat(ABYSS, 2.4, .9));
-    G.group.position.set(p.x, 0, p.z); G.group.rotation.y = Math.atan2(at.x - p.x, at.z - p.z); halo.position.set(0, 1.78, -.12); G.group.add(halo);
-    let cast = .25;
-    const dye = a => G.group.traverse(o => { if (!o.isMesh || o === halo || !o.material?.color) return;
-      if (!o.userData.dyed) { o.userData.dyed = true; o.material = o.material.clone(); o.material.color.set(0x3a3c42); o.material.emissive?.set(ABYSS); o.material.emissiveIntensity = .09; o.castShadow = false; }
-      o.material.transparent = true; o.material.opacity = a; });
-    fx.emit(24, { p: { x: p.x, y: .2, z: p.z }, r: .5, h: 1.6, v: 1.2, up: 1.5, life: .4, size: .22, c: ABYSS, c2: 0x26272b, k: 1.6, drag: 2 });
-    fx.ring(p, .2, 1.1, ABYSS, .35, { a: .6 });
-    thing(G.group, 1.4, { name: 'Abyssal Apparition',
+    const p = { x: pp.x - S.dz * 1.4 - S.dx * .7, z: pp.z + S.dx * 1.4 - S.dz * .7 }, at = { ...S.at }, halo = new THREE.Mesh(new THREE.TorusGeometry(.2, .018, 6, 28), fx.glowMat(ABYSS, 2.4, .9));
+    halo.position.set(0, 1.78, -.12);
+    visage(p, at, { name: 'Abyssal Apparition', c: ABYSS, body: 0x3a3c42, glow: .09, a: .92, dark: 0x26272b, halo, back: { x: -S.dx, z: -S.dz } },
+      () => use(i, { at, src: 'apparition', here: true, more }), P, S);
+  }
+  // a figure of you at p facing at (Abyssal Apparition, Align Fate's visage): it appears in its colour, casts after a
+  // quarter second (by moving you there for the use, as mirage()) and fades out by 1.4 s. o: c (glow colour), body,
+  // glow (its emissive), a (opacity), dark (second spark colour), halo (a mesh over its head), back (where its fade
+  // blows), spawn (its own appearing instead of the sparks and ring)
+  function visage(p, at, o, cast, P, S) {
+    const G = makeHumanoid(fx), halo = o.halo;
+    G.group.position.set(p.x, 0, p.z); G.group.rotation.y = Math.atan2(at.x - p.x, at.z - p.z); if (halo) G.group.add(halo);
+    let wait = .25;
+    const dye = a => G.group.traverse(m => { if (!m.isMesh || m === halo || !m.material?.color) return;
+      if (!m.userData.dyed) { m.userData.dyed = true; m.material = m.material.clone(); m.material.color.set(o.body); m.material.emissive?.set(o.c); m.material.emissiveIntensity = o.glow; m.castShadow = false; }
+      m.material.transparent = true; m.material.opacity = a; });
+    if (o.spawn) o.spawn(p);
+    else { fx.emit(24, { p: { x: p.x, y: .2, z: p.z }, r: .5, h: 1.6, v: 1.2, up: 1.5, life: .4, size: .22, c: o.c, c2: o.dark, k: 1.6, drag: 2 }); fx.ring(p, .2, 1.1, o.c, .35, { a: .6 }); }
+    thing(G.group, 1.4, { name: o.name,
       tick(dt, e) {
-        G.update(dt, {}); const a = e.s < .15 ? e.s / .15 : e.s > .9 ? Math.max(0, (1.4 - e.s) / .5) : 1; dye(.92 * a); halo.material.opacity = .9 * a;
-        if (Math.random() < a * .25) fx.emit(1, { p: { x: p.x, y: rnd(.2, 1.7), z: p.z }, r: .45, v: .4, up: .8, life: .35, size: .1, c: ABYSS, k: 1.4, drag: 1 });
-        if (cast > 0 && (cast -= dt) <= 0) {
+        G.update(dt, {}); const a = e.s < .15 ? e.s / .15 : e.s > .9 ? Math.max(0, (1.4 - e.s) / .5) : 1; dye(o.a * a); if (halo) halo.material.opacity = .9 * a;
+        if (Math.random() < a * .25) fx.emit(1, { p: { x: p.x, y: rnd(.2, 1.7), z: p.z }, r: .45, v: .4, up: .8, life: .35, size: .1, c: o.c, k: 1.4, drag: 1 });
+        if (wait > 0 && (wait -= dt) <= 0) {
           G.act(clipOf(P, S.kind, G.family()), .5);
-          const o = { x: pp.x, z: pp.z }; pp.x = p.x; pp.z = p.z; use(i, { at, src: 'apparition', here: true, more }); pp.x = o.x; pp.z = o.z;   // ponytail: cast from where it stands by moving you there for the use, as mirage()
+          const q = { x: pp.x, z: pp.z }; pp.x = p.x; pp.z = p.z; cast(); pp.x = q.x; pp.z = q.z;
         }
-        if (e.s > .9 && Math.random() < .5) fx.emit(2, { p: { x: p.x, y: rnd(.3, 1.6), z: p.z }, r: .35, dir: V(-S.dx, .6, -S.dz), v: 1.5, life: .3, size: .2, c: ABYSS, k: 1.6, drag: 1.5 });   // the fade's ribbons
+        if (e.s > .9 && Math.random() < .5) fx.emit(2, { p: { x: p.x, y: rnd(.3, 1.6), z: p.z }, r: .35, dir: V(o.back?.x || 0, .6, o.back?.z || 0), v: 1.5, life: .3, size: .2, c: o.c, k: 1.6, drag: 1.5 });   // the fade's ribbons
       },
-      off() { G.dispose(); halo.geometry.dispose(); } });
+      off() { G.dispose(); halo?.geometry.dispose(); } });
   }
   // Skittering Stone: enough enemies killed within its radius of an earthen object of the supported skill shatter it,
   // releasing its stones (calc.js minionOf: the game's monster), each for its duration, up to its most
@@ -2914,9 +2924,9 @@ export function initScene(el, api) {
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
       else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
-      // (Alchemist's Boon: nothing on you while it is on, as the game's: only its flask spreading, fx.boon)
+      // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
-      else if (k !== "Alchemist's Boon") { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
+      else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
     },
     // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
@@ -3888,6 +3898,8 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const FATE = 0x8fb4ff;   // Align Fate's blue (imageGlow_Skin.mat's RGB multiplier 0.94 / 1.28 / 2.5)
   function fate() {
     const F = onS('Align Fate'), st = F?.dmg?.stats; if (!st) return;
     const ok = [...api.build().gems.keys()].filter(j => { const b = api.byHand(j) && base(j); return b && b.P.spell && !b.P.channel && !b.dmg?.cooldown && !NOHIT.has(b.kind); });
@@ -3895,7 +3907,13 @@ export function initScene(el, api) {
     me.fateAt = time + st.base_cooldown_modifiable_repeat_interval_ms / 1000 / (1 + st['spellflux_frequency_+%_final_per_socketed_valid_spell'] * ok.length / 100) / (1 + (F.dmg.sum?.['cooldown_speed_+%'] || 0) / 100);
     const j = ok[Math.floor(rnd(ok.length))], b = base(j);
     empower = empower.filter(e => e.type !== 'fate'); empower.push({ type: 'fate', spell: b.name, label: F.label, mult: 1 + st['spellflux_spell_damage_+%_final_if_matching_flux_cast'] / 100 });
-    fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1, 'gold', .4); use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta' });
+    // its visage (spell_flux_clone.epk): a pale blue see-through you (imageBase_Skin / imageGlow_Skin.mat's blue) that
+    // appears in a shimmering wave and a flare (spellFlux_Spawn.pet: 0.4 s), casts and fades in blue wisps. note: where
+    // it appears is not in the data: a random spot 1.5-2.5 m around you
+    const d = near(pp, 30), a = rnd(TAU), r = rnd(1.5, 2.5), p = { x: pp.x + Math.cos(a) * r, z: pp.z + Math.sin(a) * r }, at = d ? { x: d.pos.x, z: d.pos.z } : { x: p.x + Math.cos(a), z: p.z + Math.sin(a) };
+    visage(p, at, { name: F.name, c: FATE, body: 0xa6c9ff, glow: .6, a: .5, back: { x: 0, z: 0 },
+      spawn: q => { fx.ball({ x: q.x, y: 1, z: q.z }, 1, FATE, .4, .5); fx.glow({ x: q.x, y: 1.3, z: q.z }, 1.8, FATE, .45, 1.8); fx.emit(30, { p: { x: q.x, y: .2, z: q.z }, r: .45, h: 1.6, v: .8, up: 1, life: .6, size: .16, c: FATE, c2: 'white', k: 1.8, drag: 2 }); } },
+      () => use(j, { at, src: 'meta' }), b.P, b);
   }
   function mirrors(dt) {
     const S = onS('Mirror of Refraction'), st = S?.dmg?.stats; if (!st) return;
@@ -4471,7 +4489,7 @@ export function initScene(el, api) {
         else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n + (S.P.attack && sheet().lioneye && !inside(pp, sheet().overgrow.r).length ? sheet().lioneye : 0); S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
           lengthen(E, S); say(`${E.label}: ${S.label}`, 'fire'); }
-        else if (E.type === 'fate' && !auto && S.name === E.spell) { S.mult *= E.mult; empower.splice(k, 1); say(`${E.label}: ${S.label}`, 'gold'); }
+        else if (E.type === 'fate' && !auto && S.name === E.spell) { S.mult *= E.mult; empower.splice(k, 1); say(`${E.label}: ${S.label}`, FATE); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 2.4, FATE, .6, 2.4); fx.ring(pp, .3, 1.5, FATE, .5); fx.emit(20, { p: { x: pp.x, y: .3, z: pp.z }, r: .4, h: 1.4, up: 1.4, life: .7, size: .14, c: FATE, c2: 'white', k: 1.8, drag: 1.5 }); }
         else if (E.type === 'mantra' && P.attack && P.melee && hits) { S.mantra = E; if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'temper' && P.attack && P.melee && hits) { S.combust = { T: E.T }; if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'wave' && P.attack && P.melee && hits) { const c = { ...S.at }; later(.15, () => boom(c, E.X.A, E.X)); if (spendEmp(E)) empower.splice(k, 1); }
