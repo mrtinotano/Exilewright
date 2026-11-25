@@ -2346,7 +2346,7 @@ export function initScene(el, api) {
         }
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
-        fx.emit(slow ? 2 : 1, { p: m.position, v: .4, life: .35, size: slow ? .3 : .16, c: cur.el, c2: 'white', drag: 1 });
+        fx.trail(m.position, cur.el, slow);
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
@@ -3024,7 +3024,8 @@ export function initScene(el, api) {
         }
         return;
       }
-      fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: .35 }); fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);
+      fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: S.el === 'cold' || S.el === 'lightning' ? .15 : .35 });   // the shards and forks below are the look of those fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);
+      if (S.el === 'cold') fx.shards(c, R, dur); else if (S.el === 'lightning') fx.forks(c, R);
       fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
       // Enervating Nova: none within its secondary radius; beyond it, more damage with distance up to its most at the edge
       // (linear: note: the curve is not in the data), and the enemies hit can be Electrocuted by any lightning damage for

@@ -279,36 +279,76 @@ export function createFx(scene) {
     },
     nums: 0,
 
-    // ---------- composite explosion by element
+    // ---------- composite explosion by element, after the game's own skill videos (Fireball, Ice Nova, Spark, Contagion):
+    // no ring or outline at the edge, the burst itself fills the area
     explode(p, r, el, o = {}) {
       const c = hex(el), n = Math.min(150, Math.round(14 + r * r * 7)), y = p.y || 0, at = { x: p.x, y: y + .3, z: p.z };
-      fx.disc(p, r, c, .32, { a: .75 });
-      fx.ring(p, r * .25, r, c, .42);
-      fx.decal(p, r, 'outline', c, { a: .5, rot: 0 }).remove();
+      fx.disc(p, r, c, .3, { a: .35 });
       flash(p, c, 30 + r * 22, .35, 8 + r * 3);
-      if (!o.soft) fx.ball({ x: p.x, y: y + .5, z: p.z }, Math.min(r * .6, 2.2), c, .28);
-      if (el === 'fire') {
+      if (!o.soft) fx.ball({ x: p.x, y: y + .5, z: p.z }, Math.min(r * .4, 1.6), c, .2);
+      if (el === 'fire') {   // tongues of flame over the whole area, a few left burning for a moment on the scorch
         emit(n, { p: at, r: r * .5, v: r * 2.4, up: 3.5, life: .7, size: .28, c: 'fire', c2: 'ember', g: 3, drag: 1.2 });
+        emit(n * .6, { p: { x: p.x, y: y + .1, z: p.z }, r: r * .9, v: .5, up: 3, life: .5, size: .75, grow: .3, c: 'fire', c2: 'ember', k: 1.6, drag: 2 });
         emit(n / 4, { p: at, r: r * .6, v: 1, up: 2.2, life: 1.3, size: .9, grow: 2.4, c: 'smoke', smoke: true, a: .45, drag: .6 });
+        fx.burn(p, r * .8, 1.4);
         fx.disc(p, r * .85, 0x050302, 4, { dark: true, a: .55, tex: 'patch', hold: .6, y: .03 });
-      } else if (el === 'cold') {
+      } else if (el === 'cold') {   // ice shards bursting out in a star
+        fx.shards(p, r);
         emit(n, { p: at, r: r * .4, v: r * 3, up: 2, life: .8, size: .2, c: 'ice', c2: 'cold', g: 7, drag: .8 });
         emit(n / 3, { p: at, r: r * .8, v: .8, up: .5, life: 1.2, size: .8, grow: 2, c: 'cold', k: .5, drag: 1 });
         fx.disc(p, r, 'ice', 2.5, { tex: 'cracks', a: .55, hold: .5, k: 1.1 });
-      } else if (el === 'lightning') {
+      } else if (el === 'lightning') {   // forks crackling along the ground, besides the strikes from above
         for (let i = 0; i < 2 + Math.min(3, r | 0); i++) {
           const q = new THREE.Vector3(p.x + rnd(-r, r) * .5, y, p.z + rnd(-r, r) * .5);
           fx.bolt(new THREE.Vector3(q.x + rnd(-1.5, 1.5), 11, q.z + rnd(-1.5, 1.5)), q, 'lightning', .2, .06, .5);
         }
+        fx.forks(p, r);
         emit(n, { p: at, r: r * .5, v: r * 4.5, up: 2, life: .35, size: .16, c: 'lightning', c2: 'white', drag: 2.5, k: 3 });
-      } else if (el === 'chaos') {
+      } else if (el === 'chaos') {   // dark violet wisps rising
         emit(n, { p: at, r: r * .8, v: 1.4, up: 2.4, life: 1.1, size: .26, c: 'chaos', c2: 'poison', drag: 1 });
-        emit(n / 4, { p: at, r: r * .7, v: .6, up: .8, life: 1.4, size: 1, grow: 2, c: 0x2a1040, smoke: true, a: .5 });
+        emit(n / 2, { p: { x: p.x, y: y + .1, z: p.z }, r: r * .8, v: .3, up: 1.6, life: 1.6, size: 1, grow: 2, c: 0x2a1040, smoke: true, a: .6, drag: .8 });
       } else if (el === 'physical') {
         emit(n * .7, { p: at, r: r * .5, v: r * 2.2, up: 4, life: .8, size: .13, c: 'dust', c2: 0xb8a890, g: 12, drag: .5, k: 1 });
         emit(n / 3, { p: at, r: r * .8, v: 1.6, up: 1.2, life: 1.1, size: 1, grow: 2.2, c: 'dust', smoke: true, a: .4, drag: 1.2 });
         fx.disc(p, r, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .8, hold: .6, y: .03 });
       } else emit(n, { p: at, r: r * .5, v: r * 2.6, up: 2, life: .6, size: .2, c, c2: 'white', drag: 1.5 });
+    },
+
+    // ice shards bursting out from p in a star, reaching r in about `dur` seconds (Ice Nova's look)
+    shards(p, r, dur = .22) {
+      const y = p.y || 0;
+      for (let i = 0, N = Math.min(30, 8 + r * 7); i < N; i++) {
+        const a = rnd(TAU), l = r * rnd(.55, 1);
+        fx.streak(new THREE.Vector3(p.x, y + .2, p.z), new THREE.Vector3(p.x + Math.cos(a) * l, y + rnd(.05, .5), p.z + Math.sin(a) * l), 'ice', dur * rnd(.75, 1.2), rnd(.03, .055), rnd(.7, 1.5));
+      }
+    },
+    // lightning forking out from p along the ground (Spark's look)
+    forks(p, r) {
+      const y = p.y || 0;
+      for (let i = 0, N = 3 + Math.min(6, r * 2 | 0); i < N; i++) {
+        const a = rnd(TAU), l = r * rnd(.6, 1);
+        fx.bolt(new THREE.Vector3(p.x, y + .25, p.z), new THREE.Vector3(p.x + Math.cos(a) * l, y + .1, p.z + Math.sin(a) * l), 'lightning', rnd(.12, .22), .03, .35);
+      }
+    },
+    // flames left on the ground for `dur` seconds, dying down
+    burn(p, r, dur) {
+      return add(new THREE.Object3D(), dur, (k, e, dt) => {
+        const n = 40 * r * dt * (1 - k); for (let i = 0; i < (n | 0) + (Math.random() < n % 1 ? 1 : 0); i++)
+          emit(1, { p: { x: p.x, y: (p.y || 0) + .05, z: p.z }, r, up: 1.6, life: .45, size: .35, grow: .2, c: 'fire', c2: 'ember', k: 1.5, drag: 2 });
+      });
+    },
+    // a projectile's trail, one frame of it (big: a slow, large one)
+    trail(p, el, big) {
+      if (el === 'fire') {
+        emit(big ? 3 : 2, { p, r: .05, v: .3, up: .5, life: .3, size: big ? .42 : .26, grow: .1, c: 'fire', c2: 'ember', k: 1.8, drag: 2 });
+        emit(1, { p, v: .2, up: .8, life: .7, size: .3, grow: 2, c: 'smoke', smoke: true, a: .25 });
+      } else if (el === 'lightning') {   // little arcs crackling around it
+        emit(2, { p, r: .08, v: 2.5, life: .15, size: .1, c: 'lightning', c2: 'white', k: 3, drag: 3 });
+        if (Math.random() < .5) { const a = rnd(TAU), l = rnd(.3, big ? 1 : .7); fx.bolt(new THREE.Vector3(p.x, p.y, p.z), new THREE.Vector3(p.x + Math.cos(a) * l, p.y + rnd(-.4, .2), p.z + Math.sin(a) * l), 'lightning', .08, .018, .25); }
+      }
+      else if (el === 'cold') emit(2, { p, r: .05, v: .3, life: .45, size: big ? .24 : .16, c: 'ice', c2: 'cold', g: 2, drag: 1 });
+      else if (el === 'chaos') { emit(1, { p, v: .3, life: .4, size: .18, c: 'chaos', drag: 1 }); emit(1, { p, v: .2, up: .4, life: .8, size: .35, grow: 2, c: 0x2a1040, smoke: true, a: .4 }); }
+      else emit(big ? 2 : 1, { p, v: .4, life: .35, size: big ? .3 : .16, c: el, c2: 'white', drag: 1 });
     },
 
     // ---------- small props used by the skills
