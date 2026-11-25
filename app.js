@@ -638,7 +638,7 @@ function renderPoints(b) {
     + (lvlAt != null ? `<label class="lvlbar">${t('{0} points', lvlPoints(lvlAt))}<input type="range" min="1" max="100" value="${lvlAt}" data-lvlat></label>` : '')
     + `<button id="treeReset" title="${t('Remove every allocated passive, ascendancy and weapon set point')}">${t('Reset')}<b>⟲</b></button>`;
 }
-$('treePts').oninput = e => { if (e.target.dataset.lvlat == null) return; lvlAt = +e.target.value; const b = B();   // redrawn without the bar (keeps the drag)
+$('treePts').oninput = e => { if (e.target.dataset.lvlat == null) return; lvlAt = +e.target.value;   // redrawn without the bar (keeps the drag)
   $('treePts').querySelector('[data-lvl] b').textContent = t('Level {0}', lvlAt); e.target.parentNode.firstChild.textContent = t('{0} points', lvlPoints(lvlAt)); drawTree(); };
 $('treePts').onclick = async e => {
   if (e.target.closest('[data-lvl]')) { lvlAt = lvlAt == null ? B().level || 1 : null; renderPoints(B()); drawTree(); return; }
@@ -792,9 +792,9 @@ const lvlPoints = L => { let k = 0; while (k < TOTAL.tree && requiredLevel(k + 1
 const lvlNodes = b => levelOrder(b).slice(0, lvlPoints(lvlAt) + 1);
 // in that view a click on a passive taken later takes it (and what it hangs from) at this level, before the last ones
 function takeSooner(b, id) {
-  const now = lvlNodes(b); if (now.includes(id)) return;
-  const all = levelOrder(b), p = pathTo(now, id, w => all.includes(w)), k = Math.max(1, now.length - p.length);
-  setNodes(b, levelOrder(b, [...now.slice(0, k), ...p, ...all.filter(x => !p.includes(x) && !now.slice(0, k).includes(x))]));
+  const all = levelOrder(b), now = all.slice(0, lvlPoints(lvlAt) + 1); if (now.includes(id)) return;
+  const p = pathTo(now, id, w => all.includes(w)), head = now.slice(0, Math.max(1, now.length - p.length));
+  setNodes(b, levelOrder(b, [...head, ...p, ...all.filter(x => !p.includes(x) && !head.includes(x))]));
 }
 // what clicking `id` would allocate (empty if it is allocated already or unreachable)
 function preview(id, b = B()) {
