@@ -5260,7 +5260,7 @@ export function initScene(el, api) {
       case 'nova': case 'warcry': circle(astral(S) ? c : pp, S.kind === 'nova' ? stageR(S) : S.A); break;
       case 'aura': case 'herald': if (S.R) circle(pp, S.R); break;
       case 'field': circle(pp, S.A); break;
-      case 'meta': case 'minion': case 'buff': break;
+      case 'meta': case 'minion': case 'buff': case 'chayula': case 'apocalypse': break;   // not aimed: Archon of Chayula's tornadoes come from you, Apocalypse's skills fall around enemies near you
       case 'strike': { const reach = strikeR(S), d = near(cursor, SIM.snap, e => dist(e.pos, pp) <= reach); if (d) circle(d.pos, S.R || .7); else sector(2, .95); break; }
       case 'sweep': case 'cone': sector(S.R || meleeR(S), coneHalf(S)); break;
       case 'beam': strip(pp, S.dx, S.dz, S.R || 10, 1); break;
