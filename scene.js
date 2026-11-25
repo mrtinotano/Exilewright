@@ -4287,6 +4287,14 @@ export function initScene(el, api) {
     const toLife = me.drink[0] ? mana * Math.min(100, sheet().flaskLifeCost || 0) / 100 : 0;   // the tree's share of mana costs paid with life during a life flask
     return { cost: mana - toLife, life: (S.dmg?.lifeCost || 0) * per + toLife + (LP ? me.maxL * Math.min(LP.max, LP.pct * used.filter(u => u.name === S.name && time - u.t <= RECENT).length) / 100 : 0) };
   }
+  // The Flesh Poppet: shapeshifting to an animal form, a random modifier of each enemy in your Presence for its time (its
+  // text: the stat / 100 seconds), as Headhunter's; those of the shapeshift before are lost
+  function poppet() {
+    const T = sheet().poppet; if (!T) return;
+    me.hh = (me.hh || []).filter(h => !h.poppet);
+    for (const d of inside(pp, sheet().overgrow.r)) { const ids = (d.modKey || '').split(',').filter(Boolean); if (ids.length) me.hh.push({ stats: modStats([ids[Math.floor(rnd(ids.length))]]), until: time + T, poppet: true }); }
+    shC.at = -99;
+  }
   function use(i, o = {}) {
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
@@ -4718,7 +4726,7 @@ export function initScene(el, api) {
     // Shapeshifting: a Shapeshift skill turns you into its form (Demon Form is no animal), any other you use reverts you
     const HB = !auto && S.shape && S.dmg?.sum?.support_hide_of_helbrym_soak_duration_ms;   // Helbrym's Hide (keywords.json HelbrymsComposure)
     if (HB) { const U = S.dmg.sum, C = me.helb = { until: time + HB / 1000, n: 0 }; later(HB / 1000, () => { guardFor(C.n * U['support_hide_of_helbrym_gain_guard_from_%_of_damage_taken'] / 100, U.support_hide_of_helbrym_guard_duration_ms / 1000); gainRage(C.n * U['support_hide_of_helbrym_gain_rage_from_%_of_damage_taken'] / 100); }); }
-    if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') me.shiftAt = time; me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { const SV = sheet().shiftMore?.surge; if (SV && time - (me.shiftAt ?? time) >= SV) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000); me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
+    if (!auto && S.shape) { if (me.form !== S.name && S.name !== 'Demon Form') { me.shiftAt = time; poppet(); } me.form = S.name; } else if (!auto && me.form && !['totem', 'minion', 'raise'].includes(S.kind)) { const SV = sheet().shiftMore?.surge; if (SV && time - (me.shiftAt ?? time) >= SV) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000); me.form = null; me.revertAt = time; const RV = sheet().revertRage; if (RV && me.rage > 0) { me.life = Math.min(me.maxL, me.life + me.maxL * RV * me.rage / 100); me.rage = 0; } }   // all Rage consumed for life on reverting
     const CL = S.chaos && sheet().chaosLoss; if (CL) { me.life = Math.max(1, me.life - me.maxL * CL / 100); me.es = Math.max(0, me.es - me.maxE * CL / 100); }   // the tree's life and energy shield lost using a Chaos skill
     { const U = sheet().uDef || {}, q = me.leech.life;   // uniques on casting a spell / attacking: life leeched, life sacrificed for energy shield (Runic Ward at half)
       if (S.P.spell && U.spellLeech) { q.left += me.maxL * U.spellLeech / 100; q.rate = q.left; }
