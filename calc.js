@@ -431,7 +431,7 @@ export function character(b, sum) {
     // past 4 seconds; Kurgal's Ambition, mana regeneration Overflows; Kulemak's Sovereignty, 1% more damage per 2 total
     // Power of your Undead minions
     tecrod: sum.keystone_tecrods_brutality ? { per: 16, secs: 4 } : null, kurgal: !!sum.keystone_kurgals_ambition, kulemak: sum.keystone_kulemaks_sovereignty ? 2 : 0,
-    ulaman: !!sum.keystone_ulamans_vision,   // Ulaman's Vision: each projectile Forks or Chains once more, or Chains from terrain, or cannot collide
+    ulaman: !!sum.keystone_ulamans_vision, cadiro: !!sum.each_arrow_fired_gains_random_perdandus_prefix,   // Ulaman's Vision: each projectile Forks or Chains once more, or Chains from terrain, or cannot collide
     headhunter: sum.gain_rare_monster_mods_on_kill_ms ? 60 : 0,   // Headhunter: its text's 60 seconds
     esLowMore: v(sum, 'djinn_ascendancy_energy_shield_recharge_rate_+%_final_on_low_energy_shield'),   // The Fourth Teaching: more recharge rate on low energy shield
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions

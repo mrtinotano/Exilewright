@@ -549,6 +549,7 @@ export function initScene(el, api) {
       if (IC) { let n = 1; while (n < 99 && !(Math.random() * 100 < pc)) n++; crit = true; W.critBonus *= Math.max(0, 1 + IC * n / 100); }
       // Trephina: always a critical hit against a Heavy Stunned enemy; Nebuloch: an attack consumes an Endurance Charge to crit
       if (!crit && D.attack && !S.src) { if (D.sum?.local_always_crit_heavy_stunned_enemies && d.st.stun > 0) crit = true; else if (D.sum?.attack_consume_endurance_charge_to_always_crit && charges.endurance > 0) { charges.endurance--; chargesSpent(1, 'endurance'); crit = true; } }
+      if (S.diamond) { crit = true; W.critBonus *= 1 + S.diamond / 100; }   // Cadiro's Gambit's Diamond Arrows
       if (crit) (me.critAt ||= {})[S.name] = time; else me.nonCritAt = time;
       if (crit && D.sum?.critical_strikes_ignore_positive_elemental_resistances) for (const e of ELEM) W.pen[e] = Infinity;   // Invoker: a critical hit ignores non-negative elemental resistances
       // Shocking Leap: the first critical hit of a supported leap's use leaves its Shocked Ground there
@@ -1663,14 +1664,14 @@ export function initScene(el, api) {
     const to = chest(d), R = sh(S).chainRange || SIM.chainRange;
     if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
     fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
-    seen.add(d); hit(d, S, { mult });
+    seen.add(d); hit(d, S, { mult: mult * (S.perChain ? 1 + S.perChain * (S.chained || 0) / 100 : 1) });   // Crescendo Arrows: per time it has Chained
     const free = d.curse && flagOf(S.name, 'always_chain_from_cursed_enemies');   // Coiling Bolts: through any number of Cursed targets
     if (n <= 0 && !free) return;
     later(.07, () => {
       // a lightning rod within reach takes the bolt and pulses over its whole area
       if (S.els.includes('lightning')) for (const o of objs) if (o.rod && !o.dead && !seen.has(o) && o !== S.self && dist(o.pos, d.pos) <= R) { seen.add(o); fx.bolt(to, V(o.pos.x, 1.7, o.pos.z), S.el, .18); o.pulse(S); break; }
       const e = near(d.pos, R, e => !seen.has(e));
-      if (e) chain(to, e, S, free ? n : n - 1, seen, mult);
+      if (e) chain(to, e, S.perChain ? { ...S, chained: (S.chained || 0) + 1 } : S, free ? n : n - 1, seen, mult);
     });
   }
   // Rime: an enemy in the chilled ground of a skill it supports builds up freeze as though dealing its less damage
@@ -2260,7 +2261,13 @@ export function initScene(el, api) {
     // Ulaman's Vision: each projectile you fire does one of these at random: Fork once more (0), Chain once more (1), Chain
     // from terrain once more (2: the scene has no terrain, so nothing), cannot collide with targets (3: it flies through them)
     const UL = !S.src && !o.forked && !o.split && !o.back && !o.shard && sheet().ulaman ? Math.floor(Math.random() * 4) : -1;
-    const D = UL === 0 ? { ...sh(S), forks: (sh(S).forks || 0) + 1 } : sh(S), seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
+    // Cadiro's Gambit: each arrow you fire is one of its six kinds at random (KeywordPopups UniqueArrowModifier*): Crescendo
+    // (0) Chains 6 more times, 60% increased damage per time it has Chained; Splintering (1) Splits toward 6 targets;
+    // Reversing (2) Pierces all targets and Returns; Diamond (3) always crits, 60% increased critical damage bonus; Covetous
+    // (4) more rarity (nothing here); Blunt (5) 600% increased Stun buildup. note: the increases as factors of their own
+    const CG = !S.src && P.attack && !o.back && !o.split && !o.forked && !o.shard && sheet().cadiro ? Math.floor(Math.random() * 6) : -1;   // a split or forked one is the same arrow (cur keeps its kind)
+    if (CG === 0 || CG === 3 || CG === 5) cur = { ...cur, ...[{ perChain: 60, addChains: (cur.addChains || 0) + 6 }, , , { diamond: 60 }, , { stunX: (cur.stunX || 1) * 7 }][CG] };
+    const D0 = UL === 0 ? { ...sh(S), forks: (sh(S).forks || 0) + 1 } : sh(S), D = CG === 1 ? { ...D0, split: 6 } : CG === 2 ? { ...D0, pierce: Infinity } : D0, seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
     const pierceN = S.P.spell && sheet().spellNoPierce ? 0 : Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
     let pierced = o.pierced || 0, brokeP = false;   // brokeP: it has pierced a target whose armour was fully broken (Ironbound)
     // Point Blank / Far Shot (their text): all of the first's more within the first 3.5 metres, scaling down to none at 7;
@@ -2271,10 +2278,10 @@ export function initScene(el, api) {
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
-      const RS = cur.P.attack && !o.back && cur.dmg?.sum, DR = RS?.attack_projectiles_return_after_piercing_X_times, IB = brokeP && RS?.arrow_projectiles_return_if_they_have_pierced_a_fully_armour_broken_target; if (DR && pierced >= DR || IB) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Ironbound: so if it pierced a target with fully broken armour. Drillneck: it returns to you after piercing that many times
+      const RS = cur.P.attack && !o.back && cur.dmg?.sum, DR = RS?.attack_projectiles_return_after_piercing_X_times, IB = brokeP && RS?.arrow_projectiles_return_if_they_have_pierced_a_fully_armour_broken_target; if (DR && pierced >= DR || IB || CG === 2) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Ironbound: so if it pierced a target with fully broken armour. Drillneck: it returns to you after piercing that many times
       const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur.name, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
-      if ((P.chains || S.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
-        chain(m.position.clone(), hitD, cur, Math.max(SC, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0)), seen, mult());
+      if ((P.chains || cur.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
+        chain(m.position.clone(), hitD, cur, Math.max(SC, (D.chains || 0) + (cur.addChains || 0) + (UL === 1 ? 1 : 0)), seen, mult());
         // Lightning Arrow: bolts from the one hit to the nearest others in its area ("up to 2 extra targets")
         const by = chest(hitD);
         for (const e of nearest(hitD.pos, D.extraTargets || 0, e => !seen.has(e) && dist(e.pos, hitD.pos) <= S.A)) {
