@@ -2884,13 +2884,14 @@ export function initScene(el, api) {
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
       me.totemAt = time;
-      const e = { pos: f.group.position, r: .4, dead: false, s: 0, totemOf: S.name,
+      const e = { pos: f.group.position, r: .4, dead: false, s: 0, shot: time, totemOf: S.name,
         update(dt) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
           const sg = e.segs?.[0], rg = sg && (S.dmg.totemRegen || 0) + (GR && gwN() * GR / 60); if (rg) sg.life = Math.min(sg.max, sg.life + sg.max * rg / 100 * dt);   // the tree's totem life regeneration; Greatwood's per other totem in its radius
           if ((wait -= dt) > 0) return;
+          if (sheet().totemOnShot && !(me.shotAt > e.shot)) return;   // Cannons, Ready!: it only uses its skill when you fire an Attack Projectile (once for each, no faster than it can)
           const d = near(e.pos, far ? 12 : R0 + 1); if (!d) { wait = .2; return; }
-          wait = every / (F.P?.spell && sheet().totemCast ? 1 + sheet().totemCast * objs.filter(o => o.totemOf && !o.dead).length / 100 : 1);   // the tree's totem cast speed per summoned totem
+          e.shot = time; wait = every / (F.P?.spell && sheet().totemCast ? 1 + sheet().totemCast * objs.filter(o => o.totemOf && !o.dead).length / 100 : 1);   // the tree's totem cast speed per summoned totem
           const k = dist(d.pos, e.pos) || 1, a0 = f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
           const gw = gwN();
           const TS = gw ? { ...TS0, mult: TS0.mult * (1 + gw * su['damage_+%_final_per_totem_in_radius_from_support_greatwood'] / 100) } : TS0, R = R0 * Math.sqrt(1 + gw * (su['area_of_effect_+%_per_totem_in_radius_from_support_greatwood'] || 0) / 100);
@@ -2908,7 +2909,7 @@ export function initScene(el, api) {
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
       // its life (calc.js totemLife): enemies nearer to it than to you attack it, and it dies at none left
       const TL = S.dmg?.totemLife * (S.totemLife || 1) * less('support_splinter_totem_maximum_life_+%_final_each_splinter');   // Spell Totem: more per Endurance Charge consumed; Splinter Totem: less each time it splintered
-      if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, res: S.dmg.totemRes, hurt(n) { if (e.dead) return; const RC = sheet().recoup, g = n * (RC?.totem || 0) / 100; if (g) me.recoup.push({ k: 'life', left: g, rate: g / RC.time }); if (this.life > 0 && (this.life -= n) <= 0) e.die(); } }] });   /* Watchtowers: its share of the damage your totems take recouped as your life */
+      if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, res: S.dmg.totemRes, hurt(n) { if (e.dead) return; const RC = sheet().recoup, g = n * (RC?.totem || 0) / 100; if (g) me.recoup.push({ k: 'life', left: g, rate: g / RC.time }); if (this.life > 0 && (this.life -= n) <= 0) sheet().lastTremor ? later(sheet().lastTremor, () => e.dead || e.die()) : e.die(); } }] });   /* Unnamed Heartwood: it dies that long after its life is gone */   /* Watchtowers: its share of the damage your totems take recouped as your life */
       objs.push(e);
     },
     travel(S) {
@@ -4682,7 +4683,7 @@ export function initScene(el, api) {
       const SAC = (S.P.spell ? U.spellES || 0 : 0) + (S.P.attack ? U.attackWard || 0 : 0), n = Math.min(me.life - 1, me.maxL * SAC / 100);
       if (n > 0) { me.life -= n; if (S.P.spell && U.spellES) me.es = Math.min(me.maxE, me.es + n); else if (me.maxW) me.ward = Math.min(me.maxW, me.ward + n / 2); } }
     if (!auto) { const T = S.dmg?.useTime || (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime); me.use = { S, until: time + T, k: Math.floor(T / .25) }; }   // the skill you are using, for its use time; k: per 250 ms of it (Energy Barrier, Unyielding...)
-    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', gren: S.kind === 'grenade', mark: S.kind === 'mark', warcry: S.kind === 'warcry', cmd: isCmd(S), dmg: damaging(S), t: time }); while (used[0]?.t < time - 15) used.shift();   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
+    used.push({ name: S.name, elemental: S.elemental, cd: !!S.dmg?.cooldown, spell: !!S.P.spell, attack: !!S.P.attack && S.kind !== 'totem', gren: S.kind === 'grenade', mark: S.kind === 'mark', warcry: S.kind === 'warcry', cmd: isCmd(S), dmg: damaging(S), t: time }); while (used[0]?.t < time - 15) used.shift(); if (S.P.attack && S.P.projectile && S.kind !== 'totem') me.shotAt = time;   // the last 15 s (Varashta's Blessing; Uhtred's Constellation: 8 s); placing a totem is not attacking
     if (S.echo) for (let k = 1; k <= S.echoN; k++) later(.42 * k, () => { say(t('Aftershock of {0} ({1})', S.label, S.echo), 'gold'); shake = Math.max(shake, .25); run({ ...S, mult: S.mult * .7, echo: null, spent: 0 }); });
     // Triskelion Cascade: the empowered spell cascades from you to its areas along three arms, its number on each
     if (S.trisk) for (let a = 0; a < 3; a++) for (let k = 1; k <= S.trisk.n; k++) { const q = a * TAU / 3 + facing, r = S.A * 2 * k; later(k * .12, () => run({ ...S, trisk: null, at: { x: pp.x + Math.sin(q) * r, z: pp.z + Math.cos(q) * r } })); }
