@@ -995,5 +995,11 @@
  "Copy this build as a new one": "คัดลอกบิลด์นี้เป็นบิลด์ใหม่",
  "{0} (copy)": "{0} (สำเนา)",
  "What each number has more (green) or less (red) than the build you pick": "ค่าที่แต่ละตัวเลขมากกว่า (เขียว) หรือน้อยกว่า (แดง) บิลด์ที่เลือก",
- "Compared with {0}": "เทียบกับ {0}"
+ "Compared with {0}": "เทียบกับ {0}",
+ "A .filter file of yours: its rules come in here to edit": "ไฟล์ .filter ของคุณ: กฎในไฟล์จะเข้ามาที่นี่เพื่อแก้ไข",
+ "Import a .filter file\u2026": "นำเข้าไฟล์ .filter…",
+ "No rules found in {0}": "ไม่พบกฎใน {0}",
+ "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} มีกฎ {1} ข้อ จะแทนที่กฎของคุณ หรือเพิ่มต่อท้ายกฎของคุณ?",
+ "{0} rules imported.": "นำเข้ากฎ {0} ข้อแล้ว",
+ "{0} lines the creator has no field for were left out.": "ข้าม {0} บรรทัดที่ตัวสร้างไม่มีช่องรองรับ"
 }

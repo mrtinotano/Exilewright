@@ -995,5 +995,11 @@
  "Copy this build as a new one": "Скопировать этот билд как новый",
  "{0} (copy)": "{0} (копия)",
  "What each number has more (green) or less (red) than the build you pick": "Насколько каждое значение больше (зелёным) или меньше (красным), чем у выбранного билда",
- "Compared with {0}": "В сравнении с {0}"
+ "Compared with {0}": "В сравнении с {0}",
+ "A .filter file of yours: its rules come in here to edit": "Ваш файл .filter: его правила попадут сюда для правки",
+ "Import a .filter file\u2026": "Импортировать файл .filter…",
+ "No rules found in {0}": "В {0} нет правил",
+ "{0} has {1} rules. Replace yours with them, or add them after yours?": "В {0} правил: {1}. Заменить ими ваши или добавить после ваших?",
+ "{0} rules imported.": "Импортировано правил: {0}.",
+ "{0} lines the creator has no field for were left out.": "Пропущено строк, для которых в редакторе нет поля: {0}."
 }

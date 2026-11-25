@@ -995,5 +995,11 @@
  "Copy this build as a new one": "このビルドを新しいビルドとしてコピー",
  "{0} (copy)": "{0}（コピー）",
  "What each number has more (green) or less (red) than the build you pick": "選んだビルドと比べて各数値が多い分（緑）・少ない分（赤）",
- "Compared with {0}": "{0}と比較"
+ "Compared with {0}": "{0}と比較",
+ "A .filter file of yours: its rules come in here to edit": "自分の .filter ファイル：そのルールをここで編集できます",
+ "Import a .filter file\u2026": ".filter ファイルをインポート…",
+ "No rules found in {0}": "{0} にルールがありません",
+ "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} には {1} 個のルールがあります。今のルールを置き換えますか、それとも後ろに追加しますか？",
+ "{0} rules imported.": "{0} 個のルールをインポートしました。",
+ "{0} lines the creator has no field for were left out.": "エディタに項目のない {0} 行は除外しました。"
 }

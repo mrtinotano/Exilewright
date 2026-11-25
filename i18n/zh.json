@@ -995,5 +995,11 @@
  "Copy this build as a new one": "将此构筑复制为新构筑",
  "{0} (copy)": "{0}（副本）",
  "What each number has more (green) or less (red) than the build you pick": "各数值比所选构筑多出（绿）或少出（红）的部分",
- "Compared with {0}": "与{0}比较"
+ "Compared with {0}": "与{0}比较",
+ "A .filter file of yours: its rules come in here to edit": "你自己的 .filter 文件：其规则导入到这里编辑",
+ "Import a .filter file\u2026": "导入 .filter 文件…",
+ "No rules found in {0}": "{0} 中没有规则",
+ "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} 有 {1} 条规则。用它们替换你的规则，还是添加到你的规则之后？",
+ "{0} rules imported.": "已导入 {0} 条规则。",
+ "{0} lines the creator has no field for were left out.": "已略过 {0} 行编辑器没有对应项的内容。"
 }

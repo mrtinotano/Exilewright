@@ -995,5 +995,11 @@
  "Copy this build as a new one": "Copiar esta build como uma nova",
  "{0} (copy)": "{0} (cópia)",
  "What each number has more (green) or less (red) than the build you pick": "O que cada número tem a mais (verde) ou a menos (vermelho) que a build escolhida",
- "Compared with {0}": "Comparado com {0}"
+ "Compared with {0}": "Comparado com {0}",
+ "A .filter file of yours: its rules come in here to edit": "Um arquivo .filter seu: as regras dele vêm para cá para editar",
+ "Import a .filter file\u2026": "Importar um arquivo .filter…",
+ "No rules found in {0}": "Nenhuma regra encontrada em {0}",
+ "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} tem {1} regras. Substituir as suas por elas ou adicioná-las depois das suas?",
+ "{0} rules imported.": "{0} regras importadas.",
+ "{0} lines the creator has no field for were left out.": "{0} linhas para as quais o editor não tem campo foram deixadas de fora."
 }

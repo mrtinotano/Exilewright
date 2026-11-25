@@ -47,6 +47,46 @@ export function filterText({ name, rules, rest }) {
   return out.join('\n');
 }
 
+// a .filter file (one of yours, or a downloaded one) back into rules: what the creator has a field for; any other line
+// is left out and counted (skipped). A block that is neither Show nor Hide (Minimal…) is left out whole
+export function parseFilter(text) {
+  const rules = [], hex = (r, g, b) => '#' + [r, g, b].map(x => Math.max(0, Math.min(255, +x || 0)).toString(16).padStart(2, '0')).join('');
+  const words = s => [...s.matchAll(/"([^"]*)"|(\S+)/g)].map(m => m[1] ?? m[2]);
+  let rest = true, skipped = 0, r = null, bare = false;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.replace(/#.*$/, '').trim(); if (!line) continue;
+    const [k, ...a] = words(line);
+    if (/^(Show|Hide)$/.test(k)) { r = { ...newRule(), min: {}, show: k === 'Show' }; rules.push(r); bare = true; continue; }
+    if (!/^\s/.test(raw)) { r = null; skipped++; continue; }   // another kind of block (its heading is not indented)
+    if (!r) { skipped++; continue; }
+    bare = false;
+    const op = /^(==|=|>=|>|<=|<|!=?)$/.test(a[0]) ? a.shift() : '=', v = a;
+    if ((k === 'Class' || k === 'BaseType') && (op === '=' || op === '==')) r[k === 'Class' ? 'classes' : 'bases'].push(...v);
+    else if (k === 'Rarity') {
+      const i = RARITIES.indexOf(v[0]);
+      r.rarity = op === '=' || op === '==' ? v.filter(x => RARITIES.includes(x)) : RARITIES.filter((_, j) => ({ '>=': j >= i, '>': j > i, '<=': j <= i, '<': j < i })[op] ?? true);
+    }
+    else if (NUMS.some(([n]) => n === k) && (op === '>=' || op === '>')) r.min[k] = +v[0] + (op === '>' ? 1 : 0);
+    else if (k === 'SetFontSize') r.size = +v[0];
+    else if (k === 'SetTextColor' || k === 'SetBorderColor' || k === 'SetBackgroundColor') r[{ SetTextColor: 'text', SetBorderColor: 'border', SetBackgroundColor: 'bg' }[k]] = hex(...v);
+    else if (k === 'PlayAlertSound') { r.sound = +v[0]; r.volume = v[1] != null ? +v[1] : 300; }
+    else if (k === 'CustomAlertSound') { r.sound = 'own'; r.own = v[0]; r.volume = v[1] != null ? +v[1] : 300; }
+    else if (k === 'PlayEffect' && COLOURS.includes(v[0])) { r.effect = v[0]; r.temp = v[1] === 'Temp'; }
+    else if (k === 'MinimapIcon' && v.length >= 3 && +v[0] >= 0) r.icon = { size: Math.min(2, +v[0]), colour: v[1], shape: v[2] };
+    else skipped++;
+  }
+  // a last Show / Hide with no conditions is what happens to every other item
+  if (bare && rules.length) { const last = rules.pop(); rest = last.show; }
+  return { rules, rest, skipped };
+}
+{
+  const S0 = { name: 'x', rest: false, rules: [{ ...newRule(), classes: ['Rings'], bases: ['Gold Ring'], rarity: ['Rare', 'Unique'], min: { ItemLevel: 80 }, text: '#ff0000', size: 40, sound: 3, volume: 200, effect: 'Red', temp: true, icon: { size: 0, colour: 'Red', shape: 'Star' } }] };
+  const P = parseFilter(filterText(S0));
+  console.assert(P.skipped === 0 && P.rest === false && JSON.stringify(P.rules) === JSON.stringify(S0.rules), 'parseFilter: a written filter reads back the same');
+  const Q = parseFilter('Show\n\tRarity >= Rare\n\tItemLevel > 80\n\tContinue\nMinimal\n\tClass == "Gems"\nShow');
+  console.assert(Q.rules.length === 1 && Q.rules[0].rarity.join() === 'Rare,Unique' && Q.rules[0].min.ItemLevel === 81 && Q.skipped === 3 && Q.rest === true, 'parseFilter: operators, an unknown line and block');
+}
+
 export function initFilter(el) {
   const opt = (v, text, on) => `<option value="${esc(v)}"${on ? ' selected' : ''}>${esc(text)}</option>`;
   let D = null, msg = '', err = false;
@@ -100,7 +140,8 @@ export function initFilter(el) {
       <div class="optrow"><button data-do="add">${t('Add rule')}</button>
         <label>${t('Every other item')} <select data-s="rest">${opt(1, t('Show'), S.rest)}${opt(0, t('Hide'), !S.rest)}</select></label></div>
       <section><div class="optrow"><label>${t('File name')} <input data-s="name" value="${esc(S.name)}" maxlength="60"></label>
-        <button data-do="write">${t('Save to the game folder')}</button><button data-do="download">${t('Download')}</button></div>
+        <button data-do="write">${t('Save to the game folder')}</button><button data-do="download">${t('Download')}</button>
+        <label class="fown" title="${esc(t('A .filter file of yours: its rules come in here to edit'))}">${t('Import a .filter file…')}<input type="file" accept=".filter,.txt" data-import hidden></label></div>
         <p class="note">${t('In the game: Options, Game, Item Filter, and pick it from the list.')}</p>
         ${msg ? `<p class="${err ? 'opterr' : 'optmsg'}">${esc(msg)}</p>` : ''}
         <details><summary>${t('The file')}</summary><pre class="ftext">${esc(filterText(S))}</pre></details></section>
@@ -141,6 +182,7 @@ export function initFilter(el) {
   };
   el.onchange = e => {
     const x = e.target, ds = x.dataset, r = ruleOf(e);
+    if ('import' in ds) return importFile(x.files[0]);
     if (ds.s) { S[ds.s] = ds.s === 'rest' ? x.value === '1' : x.value.replace(/[<>:"/\\|?*]/g, '').trim() || 'Exilewright'; return done(); }
     if (!r) return;
     if ('own' in ds) return own(r, x.files[0]);
@@ -153,6 +195,17 @@ export function initFilter(el) {
     else if (ds.f) r[ds.f] = x.type === 'checkbox' ? x.checked : ds.f === 'show' ? x.value === '1' : x.type === 'number' ? (x.value === '' ? '' : +x.value) : x.value;
     done();
   };
+  async function importFile(file) {
+    if (!file) return;
+    const P = parseFilter(await file.text());
+    if (!P.rules.length) { msg = t('No rules found in {0}', file.name); err = true; return render(); }
+    const how = S.rules.length ? await ask(t('{0} has {1} rules. Replace yours with them, or add them after yours?', file.name, P.rules.length), t('Replace'), t('Add')) : 0;
+    if (how < 0) return;
+    S.rules = how === 0 ? P.rules : [...S.rules, ...P.rules];
+    if (how === 0) { S.rest = P.rest; S.name = file.name.replace(/\.[^.]*$/, '').replace(/[<>:"/\\|?*]/g, '').trim() || S.name; }
+    msg = t('{0} rules imported.', P.rules.length) + (P.skipped ? ' ' + t('{0} lines the creator has no field for were left out.', P.skipped) : ''); err = false;
+    done();
+  }
   // a sound of the user's own: copied into the game's folder (serve.py /filtersound), where CustomAlertSound finds it
   async function own(r, file) {
     if (!file) return;
