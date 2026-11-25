@@ -3,8 +3,7 @@
   dist/Exilewright/Exilewright.exe     the program (its folder is what the installer installs)
   dist/Exilewright-portable.zip         the same folder with a "portable" file: it keeps its data next to the exe
   dist/Exilewright-setup.exe            the installer (installer.iss): it needs Inno Setup 6, and ends in an error without it
-"build_app.py app" builds only the program and "build_app.py package" only the zip and installer from it, so the
-release workflow can sign the program in between (.github/workflows/release.yml)."""
+"build_app.py app" builds only the program and "build_app.py package" only the zip and installer from it."""
 import glob
 import os
 import re
