@@ -1453,7 +1453,8 @@ export function skill(g, b, treeGear) {
   const noEl = !!sum.deal_no_elemental_damage;   // Splinter of Lorrata
   for (const t of DMG) {
     const [lo, hi] = noEl && ['fire', 'cold', 'lightning'].includes(t) ? [0, 0] : base[t];
-    if (hi) out.hits[t] = [Math.round(lo * mult * scale(t)), Math.round(hi * mult * scale(t))];
+    const RC = attack && t === 'physical' ? [v(sum, 'unique_ryslathas_coil_minimum_physical_attack_damage_+%_final'), v(sum, 'unique_ryslathas_coil_maximum_physical_attack_damage_+%_final')].map(x => 1 + x / 100) : [1, 1];   // Ryslatha's Coil: more maximum, less minimum physical attack damage
+    if (hi) out.hits[t] = [Math.round(lo * mult * scale(t) * RC[0]), Math.round(hi * mult * scale(t) * RC[1])];
     // damage over time of the skill itself (Contagion, burning ground...), per second
     const perMin = st[`base_${t}_damage_to_deal_per_minute`];
     if (perMin) out.dot[t] = perMin / 60 * scale(t, true);
