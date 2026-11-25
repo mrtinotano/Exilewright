@@ -1002,5 +1002,6 @@
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} には {1} 個のルールがあります。今のルールを置き換えますか、それとも後ろに追加しますか？",
  "{0} rules imported.": "{0} 個のルールをインポートしました。",
  "{0} lines the creator has no field for were left out.": "エディタに項目のない {0} 行は除外しました。",
- "This build is already here: \u00ab{0}\u00bb. It is open.": "このビルドはすでにあります：「{0}」。開いています。"
+ "This build is already here: \u00ab{0}\u00bb. It is open.": "このビルドはすでにあります：「{0}」。開いています。",
+ "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "「{0}」をPath of Buildingから更新しました。元に戻すで前の状態に戻ります。"
 }

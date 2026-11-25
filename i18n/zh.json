@@ -1002,5 +1002,6 @@
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} 有 {1} 条规则。用它们替换你的规则，还是添加到你的规则之后？",
  "{0} rules imported.": "已导入 {0} 条规则。",
  "{0} lines the creator has no field for were left out.": "已略过 {0} 行编辑器没有对应项的内容。",
- "This build is already here: \u00ab{0}\u00bb. It is open.": "此构筑已经存在：「{0}」。已打开。"
+ "This build is already here: \u00ab{0}\u00bb. It is open.": "此构筑已经存在：「{0}」。已打开。",
+ "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "「{0}」已从 Path of Building 更新。撤销可恢复原状。"
 }

@@ -523,10 +523,22 @@ const openShare = async exporting => {
   const importXML = (xml, name) => {
     const ctx = shareCtx(), { build, warn, specs, active } = fromXML(xml, ctx, blank);
     if (name) build.name = name;
+    // one from a Path of Building file replaces the build that came from that file (the newest, if several; before builds
+    // kept their file, the one of the same name), so changing it there and importing it again updates it; Undo brings it back
+    let upd = false;
+    const put = (o, key) => {
+      if (!name) return addBuild(o);
+      o.pob = key;
+      const id = Object.keys(builds).filter(k => builds[k].pob === key || !builds[k].pob && builds[k].name === o.name).sort((x, y) => y - x)[0];
+      if (!id) return addBuild(o);
+      if (sig(builds[id]) === sig(o)) { select(id); return builds[id]; }
+      select(id); builds[id] = o; save(); select(id); upd = true; return null;
+    };
     // Path of Building's other trees (levelling stages, other versions): each a build of its own, the open one last (shown)
-    specs.forEach((title, i) => { if (i === active) return; const o = fromXML(xml, ctx, blank, i).build; o.name = `${build.name} — ${title || t('Tree') + ' ' + (i + 1)}`; addBuild(o); });
-    const had = addBuild(build); d.querySelector('[data-in]').value = '';
+    specs.forEach((title, i) => { if (i === active) return; const o = fromXML(xml, ctx, blank, i).build; o.name = `${build.name} — ${title || t('Tree') + ' ' + (i + 1)}`; put(o, name + '#' + i); });
+    const had = put(build, name); d.querySelector('[data-in]').value = '';
     if (had) return void (inmsg.textContent = t('This build is already here: «{0}». It is open.', had.name));
+    if (upd) return void (inmsg.textContent = t('«{0}» updated from Path of Building. Undo brings back how it was.', build.name));
     inmsg.textContent = (warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.')) + (specs.length > 1 ? ' ' + t('Each of its {0} trees is a build of its own.', specs.length) : '');
   };
   if (pob) pob.onchange = async () => {
