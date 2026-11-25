@@ -99,7 +99,6 @@ lineage_ids = {s['SkillGem'] for s in supports if s['IsLineage']}
 granted_by_passive = {p['GrantedSkill'] for p in load('PassiveSkills') if p['GrantedSkill'] is not None}
 granted_by_mod = {x['Skill'] for x in load('ModGrantedSkills')}
 granted_by_unique = {s for x in load('SkillGemsForUniqueStat') for s in x['SkillGems']}
-granted_by_base = {s for x in load('ItemInherentSkills') for s in x['SkillsGranted']}
 weapon_default = {s for x in load('CharacterMeleeSkills') for s in x['SkillGems']}
 
 # what exists in the live patch: GGG's official trade list. Downloaded again on every run so removed gems/uniques/bases
