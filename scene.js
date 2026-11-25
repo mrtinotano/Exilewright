@@ -193,9 +193,15 @@ export function initScene(el, api) {
   const shrineOn = () => {
     if (me?.hh) me.hh = me.hh.filter(h => h.until > time);
     const foe = dummies.flatMap(d => d.dead || !d.stat?.foe ? [] : d.stat.foe.filter(a => dist(d.pos, pp) <= a.r).map(a => a.stats));
-    const L = [me?.shrineBuff?.until > time && me.shrineBuff.stats, ...(me?.hh || []).map(h => h.stats), ...foe].filter(Boolean);
+    const L = [me?.shrineBuff?.until > time && me.shrineBuff.stats, ...(me?.hh || []).map(h => h.stats), ...foe, ...embank()].filter(Boolean);
     return L.length ? addStats(L) : null;
   };
+  // Tactician's Strategic Embankments (KeywordPopups TacticianTotemBuff, BuffDefinitions tactician_*_aura): each kind of
+  // totem of yours you are within the Presence of gives you its aura, once. note: the totem's Presence is yours here
+  const EMBANK = { 'Artillery Ballista': { 'skill_speed_+%': 20 }, 'Siege Ballista': { 'tactician_artillery_ballista_aura_damage_+%_final_vs_immobilised_enemies': 25 },
+    'Mortar Cannon': { 'non_skill_base_all_damage_%_to_gain_as_fire': 25 }, 'Shockwave Totem': { 'base_skill_area_of_effect_+%': 30 }, 'Ancestral Warrior Totem': { 'glory_generation_+%': 40 },
+    'Dark Effigy': { 'damage_over_time_+%': 40 }, 'Spell Totem': { 'critical_strike_chance_+%': 50 } };
+  const embank = () => shC.v.embank ? [...new Set(objs.filter(o => o.embank && !o.dead && dist(o.pos, pp) <= (shC.v.overgrow?.r || 4)).map(o => o.embank))].map(k => EMBANK[k]) : [];
   const sheet = () => { if (time - shC.at > .5) shC = { at: time, v: api.sheet?.(shrineOn()) || {} }; return shC.v; };
   const short = n => n < 99999.5 ? fmt(Math.round(n)) : n < 999950 ? fmt(n / 1e3, 1) + 'k' : fmt(n / 1e6, 2) + 'M';
   const NUMC = el => el === 'physical' ? '#f2ead8' : css(el);
@@ -627,7 +633,8 @@ export function initScene(el, api) {
       // mitigation; your later attack hits on that enemy gain as much added physical damage, and its armour breaks no further
       if (!S.src && S.P.attack && d.riven?.until > time) raw.physical = (raw.physical || 0) + d.riven.mag;
       if (riven) d.riven = { until: time + riven.base_skill_effect_duration / 1000, mag: (raw.physical || 0) * riven['exploit_debuff_attack_damage_to_convert_to_magnitude_%'] / 100 };
-      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el], INV, ZR); total += got; if (got > best) { best = got; top = el; } }
+      const EI = !S.src && has(d, 'immobilised') ? 1 + (shrineOn()?.['tactician_artillery_ballista_aura_damage_+%_final_vs_immobilised_enemies'] || 0) / 100 : 1;   // Siege Ballista's Embankment
+      for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el], INV, ZR) * EI; total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
       if (LC && !S.src) clear(d, 'shock');
       const LX = LC && !S.src && !S.conduit && S.dmg.stats.lightning_conduit_x_additional_strikes_if_consumed_a_shock;
@@ -1211,10 +1218,11 @@ export function initScene(el, api) {
       + (S.P.spell && o.crit ? x('physical') * (S.dmg.sum?.['armour_break_equal_to_%_physical_damage_dealt_on_critical_strike_with_spells'] || 0) / 100 : 0)
       + ['physical', 'fire', 'cold', 'lightning', 'chaos'].reduce((t, e) => t + x(e), 0) * ((S.dmg.sum?.['armour_break_damage_%_dealt_as_armour_break'] || 0) + (S.final ? S.chain0?.sum?.['final_strike_attack_damage_%_dealt_as_armour_break'] || 0 : 0) + (S.P.attack ? S.dmg.sum?.['local_armour_break_damage_%_dealt_as_armour_break'] || 0 : 0)) / 100) * A.breakMore * (A.breakAil && [...EL_AIL, 'bleed', 'poison'].some(a => d.st[a] > 0) ? A.breakAil : 1);   // Anvil's Weight: a share of all its damage; Tumult's consumed frenzy charge; Uul-Netol's Embrace's share of chaos, Smash to Smithereens' of fire; Styrn's Ferocity's share of physical against the Crushed
     // Warbringer's Imploding Impacts: Armour Break on a Fully Broken enemy takes its armour below 0, as far as its armour (KeywordPopups ArmourOverbreak)
-    if (brk > 0 && d.st.armour > 0 && sheet().overbreak) d.over = Math.min(d.stat.armour, (d.over || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1));
+    const rb = brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
+    if (brk > 0 && d.st.armour > 0 && sheet().overbreak) d.over = Math.min(d.stat.armour, (d.over || 0) + rb);
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0) && !(d.riven?.until > time)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
-      d.cut = (d.cut || 0) + brk * (d.stat.rarity === 'normal' ? A.breakNormal : d.stat.rarity === 'magic' ? A.breakMagic : 1);
+      d.cut = (d.cut || 0) + rb;
       if (d.cut >= d.stat.armour) { d.cut = d.over = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000, S); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
     }
   }
@@ -2892,7 +2900,7 @@ export function initScene(el, api) {
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
       me.totemAt = time;
-      const e = { pos: f.group.position, r: .4, dead: false, s: 0, shot: time, totemOf: S.name,
+      const e = { pos: f.group.position, r: .4, dead: false, s: 0, shot: time, totemOf: S.name, embank: EMBANK[S.name] ? S.name : F.P?.spell ? 'Spell Totem' : null,
         update(dt) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
           const sg = e.segs?.[0], rg = sg && (S.dmg.totemRegen || 0) + (GR && gwN() * GR / 60); if (rg) sg.life = Math.min(sg.max, sg.life + sg.max * rg / 100 * dt);   // the tree's totem life regeneration; Greatwood's per other totem in its radius
@@ -4847,7 +4855,7 @@ export function initScene(el, api) {
       else toast(t('Point at an enemy to turn it into a corpse'));
     }
     else if (c === K.charges) { for (const k in charges) { charges[k] = maxC(k); chargeAt[k] = time; } fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
-    else if (c === K.swap && api.swapSet) { const n = api.swapSet(); fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }   // the game's weapon swap
+    else if (c === K.swap && api.swapSet) { const n = api.swapSet(); if (!sheet().comboKeep) me.combo = 0; fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }   // the game's weapon swap: Combo is lost (KeywordPopups Combo), not with Martial Master
     else if (c === K.roll) roll();
   });
   const rollHeld = () => keys[settings().keys.roll] || padWas[1];
@@ -5952,7 +5960,8 @@ export function initScene(el, api) {
     if (sheet().presExpo && dist(d.pos, pp) <= sheet().overgrow.r) expo(d, ELEM, EXPO.res, .5);   // Turning of the Seasons: Exposure (the glossary's) while in your Presence
     if (d.st.freeze > 0 || d.st.stun > 0 || d.lstun > time || d.st.electrocute > 0 || d.halt > time || d.st.pin > 0 && sheet().pinStop) { d.wind = null; return; }   // frozen, stunned, electrocuted and time-stopped enemies cannot act
     // chill and a curse's slower actions (Temporal Chains) slow everything they do
-    let k = (d.st.chill > 0 ? 1 - ((d.mag.chill ?? CHILL_MIN) + mag2(d, 'chill')) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100);
+    let k = (d.st.chill > 0 ? 1 - ((d.mag.chill ?? CHILL_MIN) + mag2(d, 'chill')) * d.stat.slowEffect / 100 : 1) * (1 + curseFx(d, C => C?.speed) / 100)
+      * (sheet().apex && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + sheet().apex * d.stat.slowEffect / 100 : 1);   // Chronomancer's Apex of the Moment: Slowed in your Presence (KeywordPopups Slow: everything they do)
     if (k < 1) dt *= Math.max(SLOW_FLOOR, k);
     if (d.gm && time - d.gm.at >= GRUEL.decay) { d.gm.at = time; if (!--d.gm.n) d.gm = null; }
     const GP = d.gm ? 1 + GRUEL.pot * (d.gm.n - 1) / 100 : 1;   // Gruelling Madness: more slow potency per stack after the first
