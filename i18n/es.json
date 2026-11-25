@@ -1007,5 +1007,8 @@
  "Delete several…": "Borrar varias…",
  "Pick builds to delete at once": "Elige builds para borrarlas de una vez",
  "Delete the selected ({0})": "Borrar las marcadas ({0})",
- "Delete {0} builds? This cannot be undone.": "¿Borrar {0} builds? No se puede deshacer."
+ "Delete {0} builds? This cannot be undone.": "¿Borrar {0} builds? No se puede deshacer.",
+ "Update from Path of Building": "Actualizar desde Path of Building",
+ "Import «{0}» again from Path of Building 2, with the changes made there": "Importa «{0}» otra vez desde Path of Building 2, con los cambios hechos allí",
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}» no está entre las builds de Path of Building 2 de este ordenador."
 }

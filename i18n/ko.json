@@ -1007,5 +1007,8 @@
  "Delete several…": "여러 개 삭제…",
  "Pick builds to delete at once": "한 번에 삭제할 빌드 선택",
  "Delete the selected ({0})": "선택한 항목 삭제 ({0})",
- "Delete {0} builds? This cannot be undone.": "빌드 {0}개를 삭제할까요? 되돌릴 수 없습니다."
+ "Delete {0} builds? This cannot be undone.": "빌드 {0}개를 삭제할까요? 되돌릴 수 없습니다.",
+ "Update from Path of Building": "Path of Building에서 업데이트",
+ "Import «{0}» again from Path of Building 2, with the changes made there": "Path of Building 2에서 «{0}»을(를) 다시 가져와 그곳에서 한 변경 사항을 반영합니다",
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}»은(는) 이 컴퓨터의 Path of Building 2 빌드에 없습니다."
 }

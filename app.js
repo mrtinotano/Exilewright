@@ -135,6 +135,7 @@ function renderSide() {
   // builds of the same name (versions of one build) told apart by their level
   const names = Object.values(builds).map(x => x.name);
   $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(x.name)}${names.indexOf(x.name) !== names.lastIndexOf(x.name) ? ' · ' + t('Level {0}', x.level) : ''}</option>`).join('');
+  $('pobAgain').hidden = !b.pob; if (b.pob) $('pobAgain').title = t('Import «{0}» again from Path of Building 2, with the changes made there', b.pob.split('#')[0]);
   $('notes').value = b.notes;
   $('notesBtn').textContent = t('Notes') + (b.notes ? ' •' : '');
   renderStats();
@@ -395,6 +396,7 @@ function addGem(name, level = 20) {   // level: the one an item that grants it s
 const edit = fn => e => { fn(e, B()); save(); renderSide(); drawTree(); if (!$('items').hidden) renderItems(); };  // the Equipment view shows what each item changes
 $('buildList').onchange = e => select(e.target.value);
 $('newBuild').onclick = () => { const id = String(Date.now()); builds[id] = blank(); save(); select(id); };
+$('pobAgain').onclick = () => openShare(false, B().pob.split('#')[0] + '.xml');
 $('dupBuild').onclick = () => { let id = Date.now(); while (builds[id]) id++; builds[id] = { ...structuredClone(B()), name: t('{0} (copy)', B().name) }; save(); select(String(id)); };
 $('delBuild').onclick = async () => {
   if (await ask(t('Delete the build «{0}»? This cannot be undone.', B().name), t('Delete')) !== 0) return;
@@ -518,7 +520,8 @@ const addBuild = b => {
   let n = Date.now(); while (builds[n]) n++; const id = String(n); builds[id] = b; save(); select(id); return null;
 };
 // one panel, with what the header button asked for: taking a build in, or giving this one out
-const openShare = async exporting => {
+// again: a Path of Building file to import at once (Update from Path of Building)
+const openShare = async (exporting, again) => {
   const d = document.createElement('div');
   d.className = 'ask'; d.id = 'sharePanel';
   const code = exporting ? await encode(toXML(B(), shareCtx())) : '';
@@ -544,9 +547,11 @@ const openShare = async exporting => {
   // character of the account gets here, the game's site hands them to registered programs only
   const pob = d.querySelector('[data-pob]');
   if (pob) fetch('pob').then(r => r.ok ? r.json() : []).catch(() => []).then(names => {
+    if (again && !names.includes(again)) inmsg.textContent = t('«{0}» is not among the builds of Path of Building 2 on this computer.', again.replace(/\.xml$/i, ''));
     if (!names.length) return;
     pob.innerHTML = `<option value="">${t('From Path of Building 2 on this computer…')}</option>` + names.map(n => `<option value="${esc(n)}">${esc(n.replace(/\.xml$/i, ''))}</option>`).join('');
     pob.hidden = false;
+    if (names.includes(again)) { pob.value = again; pob.onchange(); }
   });
   // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
   const importXML = (xml, name) => {

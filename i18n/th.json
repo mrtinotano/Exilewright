@@ -1007,5 +1007,8 @@
  "Delete several…": "ลบหลายรายการ…",
  "Pick builds to delete at once": "เลือกบิลด์ที่จะลบพร้อมกัน",
  "Delete the selected ({0})": "ลบที่เลือก ({0})",
- "Delete {0} builds? This cannot be undone.": "ลบ {0} บิลด์? ไม่สามารถย้อนกลับได้"
+ "Delete {0} builds? This cannot be undone.": "ลบ {0} บิลด์? ไม่สามารถย้อนกลับได้",
+ "Update from Path of Building": "อัปเดตจาก Path of Building",
+ "Import «{0}» again from Path of Building 2, with the changes made there": "นำเข้า «{0}» จาก Path of Building 2 อีกครั้ง พร้อมการเปลี่ยนแปลงที่ทำไว้ที่นั่น",
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}» ไม่อยู่ในบิลด์ของ Path of Building 2 บนคอมพิวเตอร์นี้"
 }

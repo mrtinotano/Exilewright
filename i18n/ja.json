@@ -1007,5 +1007,8 @@
  "Delete several…": "まとめて削除…",
  "Pick builds to delete at once": "まとめて削除するビルドを選ぶ",
  "Delete the selected ({0})": "選択したものを削除（{0}）",
- "Delete {0} builds? This cannot be undone.": "{0}個のビルドを削除しますか？元に戻せません。"
+ "Delete {0} builds? This cannot be undone.": "{0}個のビルドを削除しますか？元に戻せません。",
+ "Update from Path of Building": "Path of Buildingから更新",
+ "Import «{0}» again from Path of Building 2, with the changes made there": "「{0}」をPath of Building 2から再インポートし、そこでの変更を反映します",
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "「{0}」はこのコンピューターのPath of Building 2のビルドにありません。"
 }

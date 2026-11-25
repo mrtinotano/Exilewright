@@ -1007,5 +1007,8 @@
  "Delete several…": "Удалить несколько…",
  "Pick builds to delete at once": "Выберите билды, чтобы удалить их разом",
  "Delete the selected ({0})": "Удалить выбранные ({0})",
- "Delete {0} builds? This cannot be undone.": "Удалить билды ({0})? Это нельзя отменить."
+ "Delete {0} builds? This cannot be undone.": "Удалить билды ({0})? Это нельзя отменить.",
+ "Update from Path of Building": "Обновить из Path of Building",
+ "Import «{0}» again from Path of Building 2, with the changes made there": "Снова импортировать «{0}» из Path of Building 2 с изменениями, сделанными там",
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}» нет среди билдов Path of Building 2 на этом компьютере."
 }
