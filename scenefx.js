@@ -333,8 +333,7 @@ export function createFx(scene) {
     // flames left on the ground for `dur` seconds, dying down
     burn(p, r, dur) {
       return add(new THREE.Object3D(), dur, (k, e, dt) => {
-        const n = 40 * r * dt * (1 - k); for (let i = 0; i < (n | 0) + (Math.random() < n % 1 ? 1 : 0); i++)
-          emit(1, { p: { x: p.x, y: (p.y || 0) + .05, z: p.z }, r, up: 1.6, life: .45, size: .35, grow: .2, c: 'fire', c2: 'ember', k: 1.5, drag: 2 });
+        emit(40 * r * dt * (1 - k) + Math.random() | 0, { p: { x: p.x, y: (p.y || 0) + .05, z: p.z }, r, up: 1.6, life: .45, size: .35, grow: .2, c: 'fire', c2: 'ember', k: 1.5, drag: 2 });
       });
     },
     // a projectile's trail, one frame of it (big: a slow, large one)
@@ -344,7 +343,7 @@ export function createFx(scene) {
         emit(1, { p, v: .2, up: .8, life: .7, size: .3, grow: 2, c: 'smoke', smoke: true, a: .25 });
       } else if (el === 'lightning') {   // little arcs crackling around it
         emit(2, { p, r: .08, v: 2.5, life: .15, size: .1, c: 'lightning', c2: 'white', k: 3, drag: 3 });
-        if (Math.random() < .5) { const a = rnd(TAU), l = rnd(.3, big ? 1 : .7); fx.bolt(new THREE.Vector3(p.x, p.y, p.z), new THREE.Vector3(p.x + Math.cos(a) * l, p.y + rnd(-.4, .2), p.z + Math.sin(a) * l), 'lightning', .08, .018, .25); }
+        if (Math.random() < .5) { const a = rnd(TAU), l = rnd(.3, big ? 1 : .7); fx.bolt(p.clone(), new THREE.Vector3(p.x + Math.cos(a) * l, p.y + rnd(-.4, .2), p.z + Math.sin(a) * l), 'lightning', .08, .018, .25); }
       }
       else if (el === 'cold') emit(2, { p, r: .05, v: .3, life: .45, size: big ? .24 : .16, c: 'ice', c2: 'cold', g: 2, drag: 1 });
       else if (el === 'chaos') { emit(1, { p, v: .3, life: .4, size: .18, c: 'chaos', drag: 1 }); emit(1, { p, v: .2, up: .4, life: .8, size: .35, grow: 2, c: 0x2a1040, smoke: true, a: .4 }); }

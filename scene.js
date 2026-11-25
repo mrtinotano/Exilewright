@@ -3024,7 +3024,7 @@ export function initScene(el, api) {
         }
         return;
       }
-      fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: S.el === 'cold' || S.el === 'lightning' ? .15 : .35 });   // the shards and forks below are the look of those fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);
+      fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: S.el === 'cold' || S.el === 'lightning' ? .15 : .35 }); fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);   // cold and lightning: the shards and forks below are their look
       if (S.el === 'cold') fx.shards(c, R, dur); else if (S.el === 'lightning') fx.forks(c, R);
       fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
       // Enervating Nova: none within its secondary radius; beyond it, more damage with distance up to its most at the edge
