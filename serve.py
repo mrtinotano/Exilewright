@@ -552,6 +552,7 @@ SCOUT_UA = {'User-Agent': f'Exilewright/{VERSION} (+https://github.com/{RELEASES
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
+BACKUP_LOCK = threading.Lock()   # two saves at once (two windows) would write the same temporary file
 SOUND_MAX = 10 << 20   # the biggest sound of the user's own the Filter tab copies into the game's folder: the most a POST may bring
 NOTED = 3      # seconds a notice that compares nothing stays over the game (the server's own, the item was taken as worn...)
 COMPARED = {'up', 'mix', 'same', 'down', 'price'}   # kinds of verdict with a comparison to read: they stay until they are closed
@@ -821,6 +822,32 @@ class Handler(SimpleHTTPRequestHandler):
         self.reply(200, 'ok')
         threading.Timer(.5, os._exit, (0,)).start()   # once the page has its answer: the installer replaces these files
 
+    def do_backup(self, body=None):
+        """the builds in a file of their own too (builds.json in the profile), each save of the page: the window's storage
+        once lost a week of them (WebView2's leveldb kept the tables it wrote out of its index); the page takes the
+        newer of the two at start"""
+        path = os.path.join(profile(), 'builds.json')
+        if body is None:
+            try:
+                with open(path, 'rb') as f:
+                    return self.reply_json(200, f.read())
+            except OSError:
+                return self.reply_json(200, b'null')
+        try:
+            ok = isinstance(json.loads(body).get('builds'), dict)
+        except (ValueError, AttributeError):
+            ok = False
+        if not ok:
+            return self.reply(400, 'not builds')
+        with BACKUP_LOCK:
+            os.makedirs(profile(), exist_ok=True)
+            with open(path + '.tmp', 'wb') as f:
+                f.write(body)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(path + '.tmp', path)
+        self.reply(200, 'ok')
+
     def do_settings(self, body=None):
         global KEYS
         try:
@@ -860,6 +887,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_update()
         if u.path == '/settings':
             return self.do_settings()
+        if u.path == '/backup':
+            return self.do_backup()
         if u.path == '/game':   # the language the game is played in ('en'; '' when its settings file cannot be read)
             return self.reply_json(200, json.dumps({'language': game_setting('language')[:2].lower()}).encode())
         if u.path != '/share/download':
@@ -888,6 +917,8 @@ class Handler(SimpleHTTPRequestHandler):
             return self.do_update(post=True)
         if u.path == '/settings':
             return self.do_settings(body)
+        if u.path == '/backup':
+            return self.do_backup(body)
         if u.path == '/filter':
             return self.do_filter(body)
         if u.path == '/filtersound':

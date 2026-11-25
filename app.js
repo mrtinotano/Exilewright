@@ -32,6 +32,10 @@ NAMES.specific_skill = i => { const g = gems.find(x => x.specific === i); return
 
 // ---------- builds (localStorage; export/import as JSON files)
 const KEY = 'poe2builds';
+// the builds are also kept by the server in a file (serve.py do_backup), stamped with when they were saved: the
+// window's storage once went back a week (WebView2 lost what it wrote), so at start the newer of the two is taken
+const saved = await fetch('backup').then(r => r.ok ? r.json() : null).catch(() => null);
+if (saved?.builds && saved.at > (+localStorage.getItem(KEY + ':at') || 0)) { put(KEY, saved.builds); put(KEY + ':at', String(saved.at)); }
 let builds = stored(KEY);
 if (!Object.keys(builds).length && (localStorage.getItem(KEY) || '{}') !== '{}') put(KEY + ':unread', localStorage.getItem(KEY));   // builds that cannot be read are kept aside, not written over by the first save
 let cur;
@@ -43,9 +47,11 @@ let rev = 0;   // goes up with every change to the builds: what is worked out fr
 const hist = {}, HIST_MAX = 100;
 let shown = '', stepAt = 0;
 let unsaved = false;   // the last save did not get into the storage: said once, until one does
+let backupAt;
 const store = () => {
   rev++;
-  const ok = put(KEY, builds);
+  const at = Date.now(), ok = put(KEY, builds) && put(KEY + ':at', String(at));
+  clearTimeout(backupAt); backupAt = setTimeout(() => fetch('backup', { method: 'POST', body: JSON.stringify({ at, builds }) }).catch(() => {}), 1000);
   if (!ok && !unsaved) ask(t('Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.'), t('Export')).then(i => { if (i === 0) openShare(true); });
   unsaved = !ok;
 };
