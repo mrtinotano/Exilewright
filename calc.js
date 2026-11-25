@@ -353,8 +353,6 @@ export function character(b, sum) {
     mana: manaBase == null ? null : Math.round((manaBase + v(sum, 'base_maximum_mana') + fromAttr('mana')) * pct('maximum_mana_+%', 'maximum_life_mana_and_energy_shield_+%') * pct('oracle_maximum_mana_+%_final')),
     // what gear gives ("+30 to Spirit", a sceptre's own) is its own stat: one passive turns it off
     spirit: sum.spirit_does_not_exist ? 0 : Math.round((first(cb.BaseSpirit, CHAR.base_spirit, 0) + v(sum, 'base_spirit') + (sum.cannot_gain_spirit_from_equipment ? 0 : v(sum, 'base_spirit_from_equipment'))) * pct('spirit_+%')),
-    // spirit reserved by the build's persistent skills
-    reserved: (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, false, 0), 0),   // (Prism Guardian's share once the life is known, below)
     es: Math.round((v(sum, 'base_maximum_energy_shield') + offX('energy_shield') + pieceS + P('body', 'energy_shield') * v(sum, 'maximum_energy_shield_from_body_armour_+%') / 100) * esInc + v(sum, 'total_maximum_energy_shield_+')),
     armour, evasion, armourPct: armourReduction(armour, lvl), evadePct: evadeChance(evasion, lvl),
     evaDouble: !!sum.double_evasion_rating_if_you_havent_been_hit_recently,   // Hyrri's Ire: doubled while not hit recently (the scene checks it)
@@ -599,7 +597,7 @@ export function character(b, sum) {
   if (sum.base_cannot_evade) c.evadePct = c.evadeMax = 0;   // Bramblejack: no chance to evade with whatever evasion (the hits roll against evadeMax; what is worked out from the evasion still counts it)
   if (sum.resolute_technique) c.accuracy *= 2;
   if (sum.keystone_lord_of_the_wilds) c.spirit = Math.round(c.spirit / 2);
-  if (sum['buff_skills_spirit_reservation_efficiency_+%_per_100_maximum_life']) c.reserved = (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, false, c.life || 0), 0);   // Prism Guardian
+  c.reserved = (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, false, c.life || 0), 0);   // spirit reserved by the build's persistent skills (here: Prism Guardian's is by the maximum life)
   if (sum.base_darkness) { c.spirit = 0; c.darkness = Math.round((sum.base_darkness + v(sum, 'darkness_per_level') * lvl) * (pct('maximum_darkness_+%') + v(sum, 'maximum_darkness_+%_per_capped_chaos_damage_resistance') * Math.max(0, c.res.chaos.capped) / 100)); c.darkFor = v(sum, 'base_darkness_refresh_rate_ms') / 1000; }
   return c;
 }
