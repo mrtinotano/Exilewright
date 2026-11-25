@@ -2388,7 +2388,7 @@ export function initScene(el, api) {
     f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
-    const e = { pos: f.group.position, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), skeleton: !!S.g && !!api.info(S.g).gem?.types?.includes('CreatesSkeletonMinion'),
+    const e = { pos: f.group.position, fig: f, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), skeleton: !!S.g && !!api.info(S.g).gem?.types?.includes('CreatesSkeletonMinion'),
       update(dt) {
         e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2;
         if (e.s >= life) { e.dead = true; return; }
@@ -2442,7 +2442,7 @@ export function initScene(el, api) {
     // Spirit Walker's Sacred Unity: the Bear Spirit (Wild Protector) takes its share of your damage before you, as Loyalty, and regenerates its life
     const SU = S.dmg?.sum || {}, FN = S.dmg?.finals || {}, bear = S.name === 'Wild Protector';
     if (L > 0) Object.assign(e, { decoy: true, recoupLoyal: SU['loyalty_%_of_redirected_damage_recouped_as_life_for_owner'] || 0, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0) + (e.companion && SU['companion_takes_%_damage_before_you'] || 0),   /* the tree's Trusted Partner */
-      regen: (bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0) + (S.dmg?.minion?.regen || 0), rc: [], segs: [{ p: e.pos, r: .3, life: L, max: L, es: L * (S.dmg?.minion?.es || 0) / 100, res: S.dmg?.minion?.res, hurt(n) {
+      regen: (bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0) + (S.dmg?.minion?.regen || 0), rc: [], segs: [{ p: e.pos, r: .3, life: L, max: L, es: L * (S.dmg?.minion?.es || 0) / 100, esMax: L * (S.dmg?.minion?.es || 0) / 100, res: S.dmg?.minion?.res, hurt(n) {
       // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
       // explosion's damage is not in its data
@@ -2934,7 +2934,7 @@ export function initScene(el, api) {
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
       me.totemAt = time;
-      const e = { pos: f.group.position, r: .4, dead: false, s: 0, shot: time, totemOf: S.name, embank: EMBANK[S.name] ? S.name : F.P?.spell ? 'Spell Totem' : null,
+      const e = { pos: f.group.position, fig: f, r: .4, dead: false, s: 0, shot: time, totemOf: S.name, embank: EMBANK[S.name] ? S.name : F.P?.spell ? 'Spell Totem' : null,
         update(dt) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
           const sg = e.segs?.[0], rg = sg && (S.dmg.totemRegen || 0) + (GR && gwN() * GR / 60); if (rg) sg.life = Math.min(sg.max, sg.life + sg.max * rg / 100 * dt);   // the tree's totem life regeneration; Greatwood's per other totem in its radius
@@ -5133,13 +5133,13 @@ export function initScene(el, api) {
   bar.addEventListener('mouseover', e => { const b = e.target.closest('[data-i]'); if (b) showTip(+b.dataset.i); });
   bar.addEventListener('mouseleave', () => { tipEl.hidden = true; delete tipEl.dataset.i; });
   // your buffs as the game shows them, top left: its icon (the game's buff art, else the skill's), the count in its
-  // corner, the seconds left under it, its name over it
-  const one = (img, c, title, n, s, bad) => `<span class="s-buff${bad ? ' bad' : ''}" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
+  // corner, the seconds left under it, its name over it; a minion skill's, the life of its minions under it, as the game's
+  const one = (img, c, title, n, s, bad, hp) => `<span class="s-buff${bad ? ' bad' : ''}" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${hp != null ? `<b class="hp" style="--hp:${(hp * 100).toFixed(1)}%"></b>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
   function effects() {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
     for (const e in me.inf) { const q = infNow(e), I = api.infusion?.(e); if (q.length) b.push(one(I?.icon, css(INF_C[e]), I?.name || e, q.length, q[0] - time)); }
-    for (const k in tog) { const T = tog[k]; b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${Math.floor(T.energy)}/${Math.ceil(T.need)}` : k === 'Trinity' ? ELEM.map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic) : k === 'Wind Dancer' ? Math.floor(me.wind) : '')); }   // Trinity: its Affinity, fire / cold / lightning
+    for (const k in tog) { const T = tog[k], Q = (T.objs || []).filter(o => !o.dead && o.segs).map(o => o.segs[0]); b.push(one(icon(k), css(T.el), T.label, T.kind === 'meta' ? `${Math.floor(T.energy)}/${Math.ceil(T.need)}` : k === 'Trinity' ? ELEM.map(e => Math.floor(me.aff[e])).join('/') : k === 'Arctic Armour' ? Math.floor(me.arctic) : k === 'Wind Dancer' ? Math.floor(me.wind) : '', null, false, Q.length ? Q.reduce((t, q) => t + Math.max(0, q.life), 0) / Q.reduce((t, q) => t + q.max, 0) : null)); }   // Trinity: its Affinity, fire / cold / lightning
     const sg = {}; for (const s of surges) if (s.until > time) (sg[s.name + s.el] ??= { s, n: 0 }).n++;
     for (const { s, n } of Object.values(sg)) { const I = api.info({ name: s.name }); b.push(one(I.icon, css(s.el), `${I.label}: ${t(s.el[0].toUpperCase() + s.el.slice(1))}`, n, s.until - time)); }
     if (sheet().owl) { const I = api.info({ name: 'Primal Bounty' }); b.push(one(I.icon, css('gold'), I.label, me.owls || 0)); }   // its Owl Feathers
@@ -6390,6 +6390,7 @@ export function initScene(el, api) {
     for (const c in charges) if (charges[c] && time - (chargeAt[c] ?? time) > CHARGE_TIME * (sheet().chargeTime?.[c] || 1)) { charges[c] = 0; if (c === 'power') me.powerLost = time; }   // with the build's charge duration
     if (sheet().redflare && time - (me.powerLost ?? -99) > RECENT && time - (me.redflareAt ?? -9) >= 1) { me.redflareAt = time; gainCharge('power', 'Redflare Conduit'); }   // a power charge every second if none lost Recently (Redflare Conduit)
     for (const d of dummies) { tickDummy(d, dt); think(d, dt); if (d.agony && time >= d.agony.until) agonyEnds(d); }
+    for (const o of objs) { const q = o.fig?.draw && o.segs?.[0]; if (!q) continue; const sig = Math.ceil(q.life / q.max * 48) + ':' + (q.esMax ? Math.ceil(q.es / q.esMax * 48) : ''); if (sig !== o.sig) { o.sig = sig; o.fig.draw({ life: q.life / q.max, es: q.esMax ? q.es / q.esMax : null }); } }   // your minions' and totems' life over them, as the enemies'
     for (const k in tog) {
       const T = tog[k]; T.decal?.move(pp);
       // Ritual Cadence: an Invocation triggers its spell every 2 seconds (its Energy no longer does). note: its invoked

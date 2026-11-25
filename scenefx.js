@@ -482,12 +482,21 @@ export function makeDummy(fx, o = {}) {
   ice.position.y = 1.05; ice.scale.set(1, 1.95, 1); ice.visible = false; g.add(ice);
   const curse = new THREE.Mesh(G.plane, fx.glowMat('curse', 1.8, .85, fx.T.rune)); curse.position.y = .05 / sc; curse.scale.set(.85, 1, .85); curse.visible = false; g.add(curse);
   const mark = new THREE.Mesh(G.torus, fx.glowMat('mark', 2.6, .95)); mark.position.y = 1.2; mark.visible = false; g.add(mark);
+  const P = lifePlate(g, 2.05 + .5 / sc, 2.5 / sc);
+  return {
+    group: g, upper, sack, ice, curse, mark, plate: P.plate, scale: sc, draw: P.draw,
+    dispose() { g.parent?.remove(g); sack.dispose(); ice.material.dispose(); curse.material.dispose(); mark.material.dispose(); P.dispose(); },
+  };
+}
+
+// The bar over a figure's head, as the game's: its states as coloured pips, a small energy shield bar, its life under it.
+function lifePlate(g, y, w) {
   const W = 256, H = 80, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace;
   const plate = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, transparent: true, depthWrite: false, fog: false }));
-  plate.position.y = 2.05 + .5 / sc; plate.scale.set(2.5 / sc, 2.5 * H / W / sc, 1); plate.renderOrder = 25; g.add(plate);
+  plate.position.y = y; plate.scale.set(w, w * H / W, 1); plate.renderOrder = 25; g.add(plate);
   return {
-    group: g, upper, sack, ice, curse, mark, plate, scale: sc,
+    plate,
     // life / es = fractions left (null hides the bar), pips = css colours of the active states
     draw({ life = null, es = null, pips = [] }) {
       const c = cv.getContext('2d'); c.clearRect(0, 0, W, H);
@@ -501,7 +510,7 @@ export function makeDummy(fx, o = {}) {
       if (life != null) bar(59, 9, life, life > .35 ? '#b8281e' : '#e06a20');
       tx.needsUpdate = true;
     },
-    dispose() { g.parent?.remove(g); sack.dispose(); ice.material.dispose(); curse.material.dispose(); mark.material.dispose(); plate.material.dispose(); tx.dispose(); },
+    dispose() { plate.material.dispose(); tx.dispose(); },
   };
 }
 
@@ -515,7 +524,8 @@ export function makeMinion(fx, c) {
   mesh(new THREE.CylinderGeometry(.02, .02, .9, 5), M.metal, .24, 1.15, .42).rotation.x = -.9;
   shadow(g);
   const eyes = fx.orb(c, .035); eyes.position.set(0, 1.38, .12); g.add(eyes);
-  return { group: g, arm, dispose() { g.parent?.remove(g); eyes.traverse(m => m.material?.dispose()); } };
+  const P = lifePlate(g, 1.75, 1.6);
+  return { group: g, arm, draw: P.draw, dispose() { g.parent?.remove(g); eyes.traverse(m => m.material?.dispose()); P.dispose(); } };
 }
 
 export function makeTotem(fx, c, ballista) {
@@ -530,5 +540,6 @@ export function makeTotem(fx, c, ballista) {
   }
   shadow(g);
   const eye = fx.orb(c, ballista ? .05 : .08); eye.position.set(0, ballista ? 1.15 : 1.3, ballista ? .5 : .32); g.add(eye);
-  return { group: g, dispose() { g.parent?.remove(g); eye.traverse(m => m.material?.dispose()); } };
+  const P = lifePlate(g, ballista ? 1.6 : 2.55, 1.8);
+  return { group: g, draw: P.draw, dispose() { g.parent?.remove(g); eye.traverse(m => m.material?.dispose()); P.dispose(); } };
 }
