@@ -1704,7 +1704,10 @@ export function initScene(el, api) {
   const gainAs = (A, e, pct) => { const H = A.dmg.hits, all = Object.values(H).reduce((a, h) => [a[0] + h[0], a[1] + h[1]], [0, 0]), h = H[e] || [0, 0];
     return { ...withEl(A, e), dmg: { ...A.dmg, hits: { ...H, [e]: [h[0] + all[0] * pct / 100, h[1] + all[1] * pct / 100] } } }; };
   // A wind skill picks up the elemental ground it passes over.
+  // Berek's Pass, The Taming: it counts as boosted by those grounds already. note: a wind skill takes several grounds here
+  // (Eye of Winter's per type), so The Taming's "multiple" changes nothing
   function absorb(S, at, r) {
+    const WE = sheet().windAs?.find(e => !S.els.includes(e)); if (WE) return withEl(S, WE);   // one a time, as a ground (its caller may gain its damage)
     const g = grounds.find(g => !g.dead && !stays(g) && GROUND_EL[g.type] && !S.els.includes(GROUND_EL[g.type]) && dist(g, at) <= r + g.r * .6);
     if (!g) return S;
     const e = GROUND_EL[g.type]; g.dead = true;
