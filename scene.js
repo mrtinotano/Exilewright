@@ -1665,10 +1665,21 @@ export function initScene(el, api) {
   }
   // a chain hits each enemy once, each with the damage of the first (a support's less damage is in calc.js), and
   // reaches as far as calc.js shape says
+  // Arc's look (its tutorial video; arc_purple's textures: lightning_ball 8f66ff, spark3 863bfd, up_c 6f2cff): crackling
+  // violet sparks on you and at your hand as it leaves (suck_in), a jagged violet bolt of a few strands with a white core
+  // to each enemy (line, cyl_mid), sparks bursting off each and small bolts crackling around it for a moment
+  const ARC = { core: 0x8f66ff, spark: 0x863bfd, glow: 0x6f2cff };
+  function arcLook(from, to, first) {
+    if (first) { fx.glow(from, 1.3, ARC.glow, .25, 2.6); fx.emit(12, { p: { x: pp.x, y: 1, z: pp.z }, r: .7, h: 1.4, v: 2, life: .22, size: .12, c: ARC.spark, c2: 'white', k: 3, drag: 2 }); }
+    fx.bolt(from, to, ARC.core, .24, .1, .45); fx.bolt(from, to, ARC.spark, .2, .045, .75); fx.bolt(from, to, 'white', .13, .02, .3);
+    fx.flash(to, ARC.core, 12, .2, 6); fx.glow(to, 1.2, ARC.glow, .3, 2.4);
+    fx.emit(10, { p: to, r: .35, v: 2.6, life: .3, size: .12, c: ARC.spark, c2: 'white', k: 3, drag: 2 });
+    for (let k = 0; k < 3; k++) later(.08 + k * .1, () => { const a = V(to.x + rnd(-.45, .45), to.y + rnd(-.6, .5), to.z + rnd(-.45, .45)), b = V(to.x + rnd(-.45, .45), to.y + rnd(-.6, .5), to.z + rnd(-.45, .45)); fx.bolt(a, b, ARC.spark, .1, .03, .5); });
+  }
   function chain(from, d, S, n, seen = new Set(), mult = 1) {
     const to = chest(d), R = sh(S).chainRange || SIM.chainRange;
     if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
-    fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
+    if (S.name === 'Arc' && S.el === 'lightning') arcLook(from, to, !seen.size); else { fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6); }
     seen.add(d); hit(d, S, { mult: mult * (1 + (S.perChain || 0) * (S.chained || 0) / 100) });   // Crescendo Arrows: per time it has Chained
     const free = d.curse && flagOf(S.name, 'always_chain_from_cursed_enemies');   // Coiling Bolts: through any number of Cursed targets
     if (n <= 0 && !free) return;
