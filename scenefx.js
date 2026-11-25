@@ -229,12 +229,12 @@ export function createFx(scene) {
       return add(m, dur, k => { m.material.opacity = a * (1 - k); if (o.grow) { const s = r * (.5 + .5 * ease(k)); m.scale.set(s, 1, s); } });
     },
     // a blade's crescent at weapon height, sweeping across the swing (the game's slashes: Ice Strike's video)
-    arc(p, dx, dz, r, half, c, dur = .22, o = {}) {
+    arc(p, dx, dz, r, half, c) {
       const key = 'a' + Math.round(half * 40);
       const g = sectors[key] ||= new THREE.RingGeometry(.86, 1, 28, 1, -half, 2 * half).rotateX(-Math.PI / 2);
-      const m = new THREE.Mesh(g, glowMat(c, o.k ?? 2.6, .9)), a0 = Math.atan2(-dz, dx);
-      m.position.set(p.x, o.y ?? 1, p.z); m.renderOrder = 3;
-      return add(m, dur, k => { m.rotation.y = a0 + half * .6 * (1 - ease(k)); const s = r * (.85 + .15 * ease(k)); m.scale.set(s, 1, s); m.material.opacity = .9 * (1 - k * k); });
+      const m = new THREE.Mesh(g, glowMat(c, 2.6, .9)), a0 = Math.atan2(-dz, dx);
+      m.position.set(p.x, 1, p.z); m.renderOrder = 3;
+      return add(m, .22, k => { m.rotation.y = a0 + half * .6 * (1 - ease(k)); const s = r * (.85 + .15 * ease(k)); m.scale.set(s, 1, s); m.material.opacity = .9 * (1 - k * k); });
     },
     // flat rectangle on the ground from a to b
     strip(a, b, w, c, dur = .3, o = {}) {
