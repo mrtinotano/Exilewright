@@ -745,7 +745,7 @@ for r in load('SoulCoreStats'):
 # this type socketed at a time"): of that one, or of its group (SoulCoreLimits with a text: Ancient Augment, Aldur's Legacy)
 _sc_lim = load('SoulCoreLimits')
 socketables = [{'name': _bit[c['BaseItemType']]['Name'], **tr(bases_tr, c['BaseItemType']), 'kind': _sc_types[c['Type']], 'level': c['RequiredLevel'],
-                **({'limit': [_sc_lim[c['Limit']]['Limit'], _sc_lim[c['Limit']]['Id'] if _sc_lim[c['Limit']]['Text'] else None]} if c['Limit'] is not None else {}),
+                **({'limit': [(l := _sc_lim[c['Limit']])['Limit'], l['Id'] if l['Text'] else None]} if c['Limit'] is not None else {}),
                 'by': _sc_stats[i]}
                for i, c in enumerate(load('SoulCores')) if i in _sc_stats and ok(_bit[c['BaseItemType']]['Name'])]
 assert next(x for x in socketables if x['name'] == 'Lesser Desert Rune')['by'][2] == [_armour, [['base_fire_damage_resistance_%', 10]], [['base_maximum_life', 20], ['base_maximum_mana', 20]]], 'socketables'
@@ -767,7 +767,7 @@ save('items.json', {
     'socketables': socketables,
     # their limits' words: "Limited to" (ClientStrings JewelItemLimit), a group's "{0} Ancient Augment" (SoulCoreLimits)
     'socketable_limits': {'': {'name': cs['JewelItemLimit'], **{f'name_{c}': v['JewelItemLimit'] for c, v in cs_langs.items() if c != 'en' and v.get('JewelItemLimit')}},
-                          **{r['Id']: {'name': plain(r['Text']), **tr(load_langs('SoulCoreLimits'), i, 'Text')} for i, r in enumerate(load('SoulCoreLimits')) if r['Text']}},
+                          **{r['Id']: {'name': plain(r['Text']), **tr(load_langs('SoulCoreLimits'), i, 'Text')} for i, r in enumerate(_sc_lim) if r['Text']}},
     'socketable_kinds': {r['Id']: {'name': plain(r['Name']), **tr(load_langs('SoulCoreTypes'), i)} for i, r in enumerate(load('SoulCoreTypes'))},   # their kinds' names (Rune, Idol...)
     # a radius jewel's size by its radius (PassiveJewelRadii: 1000 is "Small"), as the item shows it ("Radius: Small")
     'jewel_radii': {r['Radius']: re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', r['ID']) for r in load('PassiveJewelRadii')},
