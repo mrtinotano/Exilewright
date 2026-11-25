@@ -117,6 +117,9 @@ except Exception as e:
 trade = {c['id']: c['entries'] for c in json.load(open(trade_file, encoding='utf8'))['result']}
 trade_types = {e['type'] for c in trade.values() for e in c}
 trade_gems = {e['type'] for e in trade['gem']}
+# a base's own skill only counts while that base is in the live patch (Abyssal Pact's [DNT] Driftwood Oar, Dark Pact's
+# Dark Staff... are still in the tables)
+granted_by_base = {s for x in load('ItemInherentSkills') if bases[x['BaseItemType']]['Name'] in trade_types for s in x['SkillsGranted']}
 trade_uniques = {e['name']: e['type'] for c in trade.values() for e in reversed(c) if e.get('flags', {}).get('unique')}   # name -> base
 json.dump(dict(sorted(trade_uniques.items())), open(os.path.join(ROOT, 'poe2db_cache', 'trade2_uniques.json'), 'w', encoding='utf8'), ensure_ascii=False, indent=1)
 

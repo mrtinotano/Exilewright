@@ -15465,20 +15465,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Sacrifices {0}% of [Minion|Minion's] life to deal that much [Chaos] damage",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15990,20 +15976,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_no_minions_damage_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "{0}% more damage with [Hit|Hits] if using your life",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "physical_damage_taken_+"
   ],
   "rows": [
@@ -16267,31 +16239,6 @@
     "h": [
      "negate",
      "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
-   "chaos_damage_taken_+%"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "{0}% increased Chaos Damage taken",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "{0}% reduced Chaos Damage taken",
-    "h": [
-     "negate",
-     "1",
-     "canonical_line"
     ]
    }
   ]
@@ -17550,63 +17497,6 @@
      "negate",
      "1"
     ]
-   }
-  ]
- },
- {
-  "stats": [
-   "blood_tendrils_beam_count",
-   "quality_display_exsanguinate_beam_targets_is_gem"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "!0",
-     "table_only"
-    ],
-    "t": "Tendrils fired@{0}",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "!0"
-    ],
-    "t": "Fires tendrils at up to {0} Target",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "!0"
-    ],
-    "t": "Fires tendrils at up to {0} Targets",
-    "h": []
-   },
-   {
-    "c": [
-     "0",
-     "0"
-    ],
-    "t": "Fires tendrils at up to {0:+d} Targets",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "0"
-    ],
-    "t": "Fires tendrils at up to {0:+d} Target",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "0"
-    ],
-    "t": "Fires tendrils at up to {0:+d} Targets",
-    "h": []
    }
   ]
  },
@@ -107592,61 +107482,6 @@
   ],
   "skill": [
    "Untether"
-  ]
- },
- {
-  "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_physical_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "[Minion|Minion] life Sacrificed for [Physical] damage@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Sacrifices {0}% of a damageable [Minion|Minion's] maximum life to deal that much [Physical] damage",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "Damage radius is {0} metre",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Damage radius is {0} metres",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
   ]
  },
  {

@@ -15464,20 +15464,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "[Minion|ミニオン]のライフの{0}%を捧げ、同量の[Chaos|混沌]ダメージを与える",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15989,20 +15975,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_no_minions_damage_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "プレイヤーのライフを使用していれば[Hit|ヒット]ダメージが{0}%上昇する",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "physical_damage_taken_+"
   ],
   "rows": [
@@ -16266,31 +16238,6 @@
     "h": [
      "negate",
      "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
-   "chaos_damage_taken_+%"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "受ける混沌ダメージが{0}%増加する",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "受ける混沌ダメージが{0}%減少する",
-    "h": [
-     "negate",
-     "1",
-     "canonical_line"
     ]
    }
   ]
@@ -17551,63 +17498,6 @@
      "negate",
      "1"
     ]
-   }
-  ]
- },
- {
-  "stats": [
-   "blood_tendrils_beam_count",
-   "quality_display_exsanguinate_beam_targets_is_gem"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "!0",
-     "table_only"
-    ],
-    "t": "放たれるツタ@{0}",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "!0"
-    ],
-    "t": "最大{0}の対象に血のツタを放つ",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "!0"
-    ],
-    "t": "最大{0}の対象に血のツタを放つ",
-    "h": []
-   },
-   {
-    "c": [
-     "0",
-     "0"
-    ],
-    "t": "最大{0:+d}の対象に血のツタを放つ",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "0"
-    ],
-    "t": "最大{0:+d}の対象に血のツタを放つ",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "0"
-    ],
-    "t": "最大{0:+d}の対象に血のツタを放つ",
-    "h": []
    }
   ]
  },
@@ -107593,61 +107483,6 @@
   ],
   "skill": [
    "Untether"
-  ]
- },
- {
-  "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_physical_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "[Physical|物理]ダメージのために捧げられる[Minion|ミニオン]ライフの割合@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "ダメージを受けることができる[Minion|ミニオン]の最大ライフの{0}%を捧げ同量の[Physical|物理]ダメージを与える",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "ダメ―ジ半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "ダメ―ジ半径は{0}m",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
   ]
  },
  {

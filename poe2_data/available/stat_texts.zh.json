@@ -15465,20 +15465,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "犧牲[Minion|召喚物]生命的{0}%來造成等量的[Chaos|混沌]傷害",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15990,20 +15976,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_no_minions_damage_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "若有使用到你的生命，造成{0}%更多[Hit|擊中]傷害",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "physical_damage_taken_+"
   ],
   "rows": [
@@ -16267,31 +16239,6 @@
     "h": [
      "negate",
      "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
-   "chaos_damage_taken_+%"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "增加{0}%承受的混沌傷害",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "減少{0}%承受的混沌傷害",
-    "h": [
-     "negate",
-     "1",
-     "canonical_line"
     ]
    }
   ]
@@ -17550,63 +17497,6 @@
      "negate",
      "1"
     ]
-   }
-  ]
- },
- {
-  "stats": [
-   "blood_tendrils_beam_count",
-   "quality_display_exsanguinate_beam_targets_is_gem"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "!0",
-     "table_only"
-    ],
-    "t": "向最多{0}個目標發射射線",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "!0"
-    ],
-    "t": "向最多{0:+d}個目標發射射線",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "!0"
-    ],
-    "t": "朝最多{0}個目標發射觸手",
-    "h": []
-   },
-   {
-    "c": [
-     "0",
-     "0"
-    ],
-    "t": "朝最多{0:+d}個目標發射觸手",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "0"
-    ],
-    "t": "朝最多{0:+d}個目標發射觸手",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "0"
-    ],
-    "t": "朝最多{0:+d}個目標發射觸手",
-    "h": []
    }
   ]
  },
@@ -107609,61 +107499,6 @@
   ],
   "skill": [
    "Untether"
-  ]
- },
- {
-  "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_physical_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "[Minion|召喚物]生命獻祭換取[Physical|物理]傷害@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "獻祭{0}%可傷害[Minion|召喚物]的最大生命已造成等值[Physical|物理]傷害",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "傷害半徑為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "傷害半徑為{0}公尺",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
   ]
  },
  {

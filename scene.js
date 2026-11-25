@@ -32,7 +32,7 @@ function segDist(p, a, b) {
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
 const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
-const NOHIT = new Set(['meditate', 'march', 'temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'reprieve', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'wither', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
+const NOHIT = new Set(['meditate', 'march', 'temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'reprieve', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood', blind: 'white' };
 // The game's ailment rules (GameConstants in monsters.json), and the few its tables do not hold: the glossary's (keywords.json)
@@ -1428,19 +1428,6 @@ export function initScene(el, api) {
     const n = X.dmg.stats.voltaic_barrier_trigger_maximum_number_of_extra_targets, seen = new Set([d]);
     for (const e of nearest(d.pos, n, e => e !== d && dist(e.pos, d.pos) <= X.A)) chain(chest(d), e, { ...X, src: 'discharge' }, X.dmg.stats.number_of_chains || 0, seen);
   }
-  // Dark Pact, Abyssal Pact: the damageable minion nearest the cursor gives its % of its life (Abyssal: of its maximum)
-  // and the area around it takes the spell's hit plus that much chaos (physical); Dark Pact with no minion takes it from
-  // your life, its more damage. note: the life given is added to the hit as it is, not scaled by the build's modifiers
-  function pact(S) {
-    const st = S.dmg.stats, dark = st['skeletal_chains_aoe_%_health_dealt_as_chaos_damage'], el = dark ? 'chaos' : 'physical', pct = dark || st['skeletal_chains_aoe_%_health_dealt_as_physical_damage'];
-    const m = objs.filter(o => o.minion && !o.dead && o.segs).sort((a, b) => dist(a.pos, S.at) - dist(b.pos, S.at))[0], g = m?.segs[0];
-    if (!m && !dark) return toast(t('{0} needs a minion', S.label));
-    const n = (m ? (dark ? g.life : g.max) : me.life) * pct / 100, c = m ? { x: m.pos.x, z: m.pos.z } : { x: pp.x, z: pp.z };
-    if (m) { g.life -= n; if (g.life <= 0) m.dead = m.slain = true; } else me.life = Math.max(1, me.life - n);
-    const H = { ...S.dmg.hits }, h = H[el] || [0, 0]; H[el] = [h[0] + n, h[1] + n];
-    fx.ring(c, .2, S.A, el, .5); fx.emit(18, { p: { x: c.x, y: .8, z: c.z }, r: .3, v: 2, up: 1, life: .5, size: .16, c: el, c2: 'blood' });
-    boom(c, S.A, { ...S, el, els: [...new Set([...S.els, el])], mult: S.mult * (m ? 1 : 1 + (st['skeletal_chains_no_minions_damage_+%_final'] || 0) / 100), dmg: { ...S.dmg, hits: H } });
-  }
   // Lunar Blessing: it spends all your Rage, its buff longer by its time per Rage spent, gaining its % of all damage as
   // extra cold. While on, a melee hit of yours calls down Moonbeams (its part) after its delay: the first on the enemy
   // hit, its extra ones on enemies within its secondary radius, each its time apart.
@@ -2664,10 +2651,7 @@ export function initScene(el, api) {
     },
     chain(S) {
       const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand(), n = (sh(S).chains || 0) + (S.addChains || 0);   // Arc's chains from a Lightning Infusion
-      // Exsanguinate: its tendrils, each on another of the enemies nearest your aim. note: its cone's angle is not in the data
-      const B = d && S.dmg?.stats?.blood_tendrils_beam_count;
-      if (B) nearest(S.at, B, e => dist(e.pos, S.from) <= SIM.castRange).forEach(e => chain(h, e, S, n));
-      else if (d) { chain(h, d, S, n); shockchain(S, d); }
+      if (d) { chain(h, d, S, n); shockchain(S, d); }
       else { fx.bolt(h, V(S.at.x, .1, S.at.z), S.el, .18); pop(S.at, .6, S.el); touch(S.at, .6, S); }
     },
     rain(S) {
@@ -4193,13 +4177,6 @@ export function initScene(el, api) {
     if (used) spendWard(used / x);
     fx.ring(pp, .3, 2, 'holy', .5); say(t('{0}: {1} Revived', S.label, k), 'holy');
   };
-  // Wither: channelled, its area drifts toward where you aim at its speed; each use Withers the enemies in it
-  K.wither = S => {
-    const st = S.dmg.stats, W = me.wither, c = W && time - W.t < .5 ? W : { x: S.at.x, z: S.at.z }, l = dist(c, S.at), v = Math.min(l, st.wither_channeled_move_targeting_area_X_units_per_second / 10 * (time - (W?.t ?? time)));
-    if (l > .01) { c.x += (S.at.x - c.x) / l * v; c.z += (S.at.z - c.z) / l * v; }
-    c.t = time; me.wither = c; fx.ring(c, .2, S.A, 'chaos', .3, { a: .4 });
-    for (const d of inside(c, S.A)) withers(d, st.active_skill_withered_base_duration_ms / 1000, st['chaos_damage_taken_+%']);
-  };
   // Entangle: a fissure crawling from you toward your aim, its radius long, hitting along it; a plant lasting its duration,
   // up to its most at once. Every its interval a vine (its part) lashes at an enemy within the part's radius of it, up to
   // their most at once, hitting and slowing it per vine for the vine's duration. Overgrown: more vines, and its duration
@@ -4722,7 +4699,7 @@ export function initScene(el, api) {
     const su = S.dmg?.sum, VO = !auto && su?.support_static_charge_maximum_charge;
     S.volt = VO && Math.floor(Math.min(VO, (me.trav - (me.voltAt[S.name] ?? 0)) * su.support_static_charge_charge_gain_per_metre) / 10) * su['support_static_charge_%_damage_gained_as_lightning_per_10_charge'];
     if (VO) me.voltAt[S.name] = me.trav;
-    const run = Object.keys(S.dmg?.stats || {}).some(k => k.startsWith('skeletal_chains_aoe_%_health_dealt_as_')) ? pact : S.dmg?.cmd && (!P.toggle || tog[S.name]) ? djinnCast : K[S.kind] || K.area;
+    const run = S.dmg?.cmd && (!P.toggle || tog[S.name]) ? djinnCast : K[S.kind] || K.area;
     run(S); whirl(S);
     if (!auto) zealotry(S);
     if (!auto) apparition(i, S);

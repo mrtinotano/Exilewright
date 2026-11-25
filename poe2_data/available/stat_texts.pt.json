@@ -15468,20 +15468,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Sacrifica {0}% da vida do [Minion|lacaio] para causar a mesma quantidade de dano de [Chaos|caos]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15993,20 +15979,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_no_minions_damage_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "ㅤ+{0}% de dano com [Hit|ataques] ao usar sua vida",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "physical_damage_taken_+"
   ],
   "rows": [
@@ -16270,31 +16242,6 @@
     "h": [
      "negate",
      "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
-   "chaos_damage_taken_+%"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "Dano de caos sofrido aumentado em {0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "Dano de caos sofrido reduzido em {0}%",
-    "h": [
-     "negate",
-     "1",
-     "canonical_line"
     ]
    }
   ]
@@ -17552,63 +17499,6 @@
      "negate",
      "1"
     ]
-   }
-  ]
- },
- {
-  "stats": [
-   "blood_tendrils_beam_count",
-   "quality_display_exsanguinate_beam_targets_is_gem"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "!0",
-     "table_only"
-    ],
-    "t": "Gavinhas disparadas@{0}",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "!0"
-    ],
-    "t": "Dispara gavinhas em até {0} alvo",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "!0"
-    ],
-    "t": "Dispara gavinhas em até {0} alvos",
-    "h": []
-   },
-   {
-    "c": [
-     "0",
-     "0"
-    ],
-    "t": "Dispara gavinhas em até {0:+d} alvos",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "0"
-    ],
-    "t": "Dispara gavinhas em até {0:+d} alvo",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "0"
-    ],
-    "t": "Dispara gavinhas em até {0:+d} alvos",
-    "h": []
    }
   ]
  },
@@ -107597,61 +107487,6 @@
   ],
   "skill": [
    "Untether"
-  ]
- },
- {
-  "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_physical_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "Vida de [Minion|Lacaio] sacrificada por dano [Physical|físico]@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Sacrifica {0}% da vida máxima de um [Minion|lacaio] que pode sofrer dano para causar a mesma quantidade de dano [Physical|físico]",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "Raio de alcance do dano: {0} metro",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Raio de alcance do dano: {0} metros",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
   ]
  },
  {

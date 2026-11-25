@@ -15467,20 +15467,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_chaos_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Sacrifica el {0}% de la vida del [Minion|esbirro] para infligir esa misma cantidad de daño de [Chaos|caos]",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15992,20 +15978,6 @@
  },
  {
   "stats": [
-   "skeletal_chains_no_minions_damage_+%_final"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#"
-    ],
-    "t": "{0}% más de daño con [Hit|impactos] si utiliza tu vida",
-    "h": []
-   }
-  ]
- },
- {
-  "stats": [
    "physical_damage_taken_+"
   ],
   "rows": [
@@ -16269,31 +16241,6 @@
     "h": [
      "negate",
      "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
-   "chaos_damage_taken_+%"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "Daño de caos recibido aumentado un {0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "Daño de caos recibido reducido un {0}%",
-    "h": [
-     "negate",
-     "1",
-     "canonical_line"
     ]
    }
   ]
@@ -17551,63 +17498,6 @@
      "negate",
      "1"
     ]
-   }
-  ]
- },
- {
-  "stats": [
-   "blood_tendrils_beam_count",
-   "quality_display_exsanguinate_beam_targets_is_gem"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "!0",
-     "table_only"
-    ],
-    "t": "Tentáculos disparados@{0}",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "!0"
-    ],
-    "t": "Dispara tentáculos hasta a {0} objetivo",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "!0"
-    ],
-    "t": "Dispara tentáculos hasta a {0} objetivos",
-    "h": []
-   },
-   {
-    "c": [
-     "0",
-     "0"
-    ],
-    "t": "Dispara tentáculos hasta a {0:+d} objetivos",
-    "h": []
-   },
-   {
-    "c": [
-     "1",
-     "0"
-    ],
-    "t": "Dispara tentáculos hasta a {0:+d} objetivo",
-    "h": []
-   },
-   {
-    "c": [
-     "2|#",
-     "0"
-    ],
-    "t": "Dispara tentáculos hasta a {0:+d} objetivos",
-    "h": []
    }
   ]
  },
@@ -107590,61 +107480,6 @@
   ],
   "skill": [
    "Untether"
-  ]
- },
- {
-  "stats": [
-   "skeletal_chains_aoe_%_health_dealt_as_physical_damage"
-  ],
-  "rows": [
-   {
-    "c": [
-     "#",
-     "table_only"
-    ],
-    "t": "Vida del [Minion|esbirro] sacrificada por daño [Physical|físico]@{0}%",
-    "h": []
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "Sacrifica el {0}% de la vida máxima de un [Minion|esbirro] que puede recibir daño para infligir esa misma cantidad de daño [Physical|físico]",
-    "h": []
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
-  ]
- },
- {
-  "stats": [
-   "active_skill_base_area_of_effect_radius"
-  ],
-  "rows": [
-   {
-    "c": [
-     "10"
-    ],
-    "t": "El radio del daño es de {0} metro",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   },
-   {
-    "c": [
-     "#"
-    ],
-    "t": "El radio del daño es de {0} metros",
-    "h": [
-     "divide_by_ten_1dp_if_required",
-     "1"
-    ]
-   }
-  ],
-  "skill": [
-   "Abyssal Pact"
   ]
  },
  {
