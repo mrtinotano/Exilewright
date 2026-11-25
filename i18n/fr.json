@@ -1010,5 +1010,11 @@
  "Delete {0} builds? This cannot be undone.": "Supprimer {0} builds ? C'est irréversible.",
  "Update from Path of Building": "Mettre à jour depuis Path of Building",
  "Import «{0}» again from Path of Building 2, with the changes made there": "Importer à nouveau « {0} » depuis Path of Building 2, avec les modifications faites là-bas",
- "«{0}» is not among the builds of Path of Building 2 on this computer.": "« {0} » ne fait pas partie des builds de Path of Building 2 sur cet ordinateur."
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "« {0} » ne fait pas partie des builds de Path of Building 2 sur cet ordinateur.",
+ "Level {0} → {1}": "Niveau {0} → {1}",
+ "Passives: +{0} −{1}": "Passifs : +{0} −{1}",
+ "New skills: {0}": "Nouvelles compétences : {0}",
+ "Skills removed: {0}": "Compétences retirées : {0}",
+ "Other supports on: {0}": "Autres soutiens sur : {0}",
+ "Items changed: {0}": "Objets changés : {0}"
 }

@@ -1010,5 +1010,11 @@
  "Delete {0} builds? This cannot be undone.": "빌드 {0}개를 삭제할까요? 되돌릴 수 없습니다.",
  "Update from Path of Building": "Path of Building에서 업데이트",
  "Import «{0}» again from Path of Building 2, with the changes made there": "Path of Building 2에서 «{0}»을(를) 다시 가져와 그곳에서 한 변경 사항을 반영합니다",
- "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}»은(는) 이 컴퓨터의 Path of Building 2 빌드에 없습니다."
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}»은(는) 이 컴퓨터의 Path of Building 2 빌드에 없습니다.",
+ "Level {0} → {1}": "레벨 {0} → {1}",
+ "Passives: +{0} −{1}": "패시브: +{0} −{1}",
+ "New skills: {0}": "새 스킬: {0}",
+ "Skills removed: {0}": "제거한 스킬: {0}",
+ "Other supports on: {0}": "보조 변경: {0}",
+ "Items changed: {0}": "변경된 아이템: {0}"
 }

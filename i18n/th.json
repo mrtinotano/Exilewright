@@ -1010,5 +1010,11 @@
  "Delete {0} builds? This cannot be undone.": "ลบ {0} บิลด์? ไม่สามารถย้อนกลับได้",
  "Update from Path of Building": "อัปเดตจาก Path of Building",
  "Import «{0}» again from Path of Building 2, with the changes made there": "นำเข้า «{0}» จาก Path of Building 2 อีกครั้ง พร้อมการเปลี่ยนแปลงที่ทำไว้ที่นั่น",
- "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}» ไม่อยู่ในบิลด์ของ Path of Building 2 บนคอมพิวเตอร์นี้"
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "«{0}» ไม่อยู่ในบิลด์ของ Path of Building 2 บนคอมพิวเตอร์นี้",
+ "Level {0} → {1}": "เลเวล {0} → {1}",
+ "Passives: +{0} −{1}": "พาสซีฟ: +{0} −{1}",
+ "New skills: {0}": "สกิลใหม่: {0}",
+ "Skills removed: {0}": "สกิลที่เอาออก: {0}",
+ "Other supports on: {0}": "ซัพพอร์ตเปลี่ยนที่: {0}",
+ "Items changed: {0}": "ไอเทมที่เปลี่ยน: {0}"
 }

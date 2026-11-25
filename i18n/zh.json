@@ -1010,5 +1010,11 @@
  "Delete {0} builds? This cannot be undone.": "删除 {0} 个构筑？此操作无法撤销。",
  "Update from Path of Building": "从 Path of Building 更新",
  "Import «{0}» again from Path of Building 2, with the changes made there": "从 Path of Building 2 重新导入「{0}」，带上在那里所做的修改",
- "«{0}» is not among the builds of Path of Building 2 on this computer.": "「{0}」不在本机 Path of Building 2 的构筑中。"
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "「{0}」不在本机 Path of Building 2 的构筑中。",
+ "Level {0} → {1}": "等级 {0} → {1}",
+ "Passives: +{0} −{1}": "天赋：+{0} −{1}",
+ "New skills: {0}": "新技能：{0}",
+ "Skills removed: {0}": "移除的技能：{0}",
+ "Other supports on: {0}": "辅助有变：{0}",
+ "Items changed: {0}": "更换的物品：{0}"
 }

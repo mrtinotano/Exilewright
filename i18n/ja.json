@@ -1010,5 +1010,11 @@
  "Delete {0} builds? This cannot be undone.": "{0}個のビルドを削除しますか？元に戻せません。",
  "Update from Path of Building": "Path of Buildingから更新",
  "Import «{0}» again from Path of Building 2, with the changes made there": "「{0}」をPath of Building 2から再インポートし、そこでの変更を反映します",
- "«{0}» is not among the builds of Path of Building 2 on this computer.": "「{0}」はこのコンピューターのPath of Building 2のビルドにありません。"
+ "«{0}» is not among the builds of Path of Building 2 on this computer.": "「{0}」はこのコンピューターのPath of Building 2のビルドにありません。",
+ "Level {0} → {1}": "レベル{0} → {1}",
+ "Passives: +{0} −{1}": "パッシブ: +{0} −{1}",
+ "New skills: {0}": "新しいスキル: {0}",
+ "Skills removed: {0}": "外したスキル: {0}",
+ "Other supports on: {0}": "サポートを変更: {0}",
+ "Items changed: {0}": "変更したアイテム: {0}"
 }

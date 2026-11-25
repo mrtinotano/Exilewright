@@ -514,6 +514,21 @@ const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, cl
 // instead of adding a copy (clicking Import again, or the same Path of Building file twice, used to pile them up)
 const canon = x => Array.isArray(x) ? '[' + x.map(canon).join() + ']' : x && typeof x === 'object' ? '{' + Object.keys(x).sort().map(k => k + ':' + canon(x[k])).join() + '}' : JSON.stringify(x ?? null);
 const sig = b => canon([b.asc, [...b.nodes].sort(), [...(b.ascNodes || [])].sort(), (b.gems || []).map(g => [g.name, +g.level || 0, (g.supports || []).filter(Boolean)]), b.items || {}, b.attrs || {}]);
+// what an update brought, said in a line: level, passives taken and dropped, skills and supports, items
+function changes(a, b) {
+  const out = [], gl = n => tn(gems.find(g => g.name === n)) || n, minus = (x, y) => x.filter(v => !y.includes(v));
+  if (a.level !== b.level) out.push(t('Level {0} → {1}', a.level, b.level));
+  const pa = [...a.nodes, ...a.ascNodes], pb = [...b.nodes, ...b.ascNodes], up = minus(pb, pa).length, down = minus(pa, pb).length;
+  if (up || down) out.push(t('Passives: +{0} −{1}', up, down));
+  const ga = a.gems.map(g => g.name), gb = b.gems.map(g => g.name);
+  if (minus(gb, ga).length) out.push(t('New skills: {0}', minus(gb, ga).map(gl).join(', ')));
+  if (minus(ga, gb).length) out.push(t('Skills removed: {0}', minus(ga, gb).map(gl).join(', ')));
+  const sup = b.gems.filter(g => { const o = a.gems.find(x => x.name === g.name); return o && canon(o.supports.filter(Boolean).sort()) !== canon(g.supports.filter(Boolean).sort()); });
+  if (sup.length) out.push(t('Other supports on: {0}', sup.map(g => gl(g.name)).join(', ')));
+  const ia = a.items || {}, ib = b.items || {}, items = [...new Set([...Object.keys(ia), ...Object.keys(ib)])].filter(s => canon(ia[s]) !== canon(ib[s])).length;
+  if (items) out.push(t('Items changed: {0}', items));
+  return out.join(' · ');
+}
 const addBuild = b => {
   const same = Object.keys(builds).find(id => sig(builds[id]) === sig(b));
   if (same) { select(same); return builds[same]; }
@@ -559,20 +574,21 @@ const openShare = async (exporting, again) => {
     if (name) build.name = name;
     // one from a Path of Building file replaces the build that came from that file (the newest, if several; before builds
     // kept their file, the one of the same name), so changing it there and importing it again updates it; Undo brings it back
-    let upd = false;
+    let upd = false, what = '';
     const put = (o, key) => {
       if (!name) return addBuild(o);
       o.pob = key;
       const id = Object.keys(builds).filter(k => builds[k].pob === key || !builds[k].pob && builds[k].name === o.name).sort((x, y) => y - x)[0];
       if (!id) return addBuild(o);
       if (sig(builds[id]) === sig(o)) { select(id); return builds[id]; }
+      what = changes(builds[id], clean(structuredClone(o)));
       select(id); builds[id] = o; save(); select(id); upd = true; return null;
     };
     // Path of Building's other trees (levelling stages, other versions): each a build of its own, the open one last (shown)
     specs.forEach((title, i) => { if (i === active) return; const o = fromXML(xml, ctx, blank, i).build; o.name = `${build.name} — ${title || t('Tree') + ' ' + (i + 1)}`; put(o, name + '#' + i); });
     const had = put(build, name); d.querySelector('[data-in]').value = '';
     if (had) return void (inmsg.textContent = t('This build is already here: «{0}». It is open.', had.name));
-    if (upd) return void (inmsg.textContent = t('«{0}» updated from Path of Building. Undo brings back how it was.', build.name));
+    if (upd) return void (inmsg.textContent = t('«{0}» updated from Path of Building. Undo brings back how it was.', build.name) + (what && ' ' + what));
     inmsg.textContent = (warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.')) + (specs.length > 1 ? ' ' + t('Each of its {0} trees is a build of its own.', specs.length) : '');
   };
   if (pob) pob.onchange = async () => {
