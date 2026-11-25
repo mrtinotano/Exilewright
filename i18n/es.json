@@ -980,5 +980,6 @@
  "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Marca lo que se cumple mientras luchas: sus bonificaciones cuentan en el daño de todas las habilidades. El simulador las comprueba por su cuenta.",
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Marca lo que se cumple mientras luchas: sus bonificaciones cuentan en las cifras del personaje. El simulador las comprueba por su cuenta.",
  "Other": "Otros",
- "Where it comes from": "De dónde sale"
+ "Where it comes from": "De dónde sale",
+ "Each of its {0} trees is a build of its own.": "Cada uno de sus {0} árboles es una build aparte."
 }

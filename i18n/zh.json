@@ -980,5 +980,6 @@
  "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "勾选战斗中成立的条件：其加成会计入所有技能的伤害。模拟器会自行判定。",
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "勾选战斗中成立的条件：其加成会计入角色的数值。模拟器会自行判定。",
  "Other": "其他",
- "Where it comes from": "来源"
+ "Where it comes from": "来源",
+ "Each of its {0} trees is a build of its own.": "它的{0}个天赋树各自成为一个单独的构筑。"
 }

@@ -470,7 +470,7 @@ $('sceneSkills').onclick = e => {
 const markCard = i => { document.querySelectorAll('#sceneSkills .sk-card').forEach(c => c.classList.toggle('on', +c.dataset.card === i)); renderEnemy(); };
 // ---------- share: Path of Building 2 code, build sites, JSON file
 const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, clsOf, ascStart, classRoot, roots: ROOTS, maxSockets: SK.max_support_sockets || 5, quests: QUESTS, questPick });
-const addBuild = b => { const id = String(Date.now()); builds[id] = b; save(); select(id); };
+const addBuild = b => { let n = Date.now(); while (builds[n]) n++; const id = String(n); builds[id] = b; save(); select(id); };
 // one panel, with what the header button asked for: taking a build in, or giving this one out
 const openShare = async exporting => {
   const d = document.createElement('div');
@@ -504,10 +504,12 @@ const openShare = async exporting => {
   });
   // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
   const importXML = (xml, name) => {
-    const { build, warn } = fromXML(xml, shareCtx(), blank);
+    const ctx = shareCtx(), { build, warn, specs, active } = fromXML(xml, ctx, blank);
     if (name) build.name = name;
+    // Path of Building's other trees (levelling stages, other versions): each a build of its own, the open one last (shown)
+    specs.forEach((title, i) => { if (i === active) return; const o = fromXML(xml, ctx, blank, i).build; o.name = `${build.name} — ${title || t('Tree') + ' ' + (i + 1)}`; addBuild(o); });
     addBuild(build);
-    inmsg.textContent = warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.');
+    inmsg.textContent = (warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.')) + (specs.length > 1 ? ' ' + t('Each of its {0} trees is a build of its own.', specs.length) : '');
   };
   if (pob) pob.onchange = async () => {
     if (!pob.value) return;

@@ -980,5 +980,6 @@
  "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "ติ๊กสิ่งที่เป็นจริงระหว่างต่อสู้: โบนัสของมันจะนับรวมในความเสียหายของทุกสกิล ตัวจำลองจะตรวจสอบเองต่างหาก",
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "ติ๊กสิ่งที่เป็นจริงระหว่างต่อสู้: โบนัสของมันจะนับรวมในค่าของตัวละคร ตัวจำลองจะตรวจสอบเองต่างหาก",
  "Other": "อื่นๆ",
- "Where it comes from": "ที่มา"
+ "Where it comes from": "ที่มา",
+ "Each of its {0} trees is a build of its own.": "ต้นไม้ทั้ง {0} ต้นแยกเป็นบิลด์ของตัวเอง"
 }

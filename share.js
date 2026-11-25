@@ -76,8 +76,9 @@ ${items.map(([s, txt]) => `<Item id="${iid[s]}">${x(txt)}</Item>`).join('\n')}
 </PathOfBuilding2>`;
 }
 
-// -> { build, warn: [what could not be read] }
-export function fromXML(xml, ctx, blank) {
+// -> { build, warn: [what could not be read], specs: [each tree's title], active: the open one's index }; at: the tree to
+// read (an index of specs), else the one Path of Building had open
+export function fromXML(xml, ctx, blank, at) {
   const doc = new DOMParser().parseFromString(xml, 'application/xml'), root = doc.documentElement;
   if (doc.querySelector('parsererror') || root.nodeName !== 'PathOfBuilding2') throw new Error('not a Path of Building 2 build');
   const kids = (el, name) => el ? [...el.children].filter(c => c.nodeName === name) : [];
@@ -85,7 +86,7 @@ export function fromXML(xml, ctx, blank) {
   const warn = [], b = blank();
   const build = kids(root, 'Build')[0], tree = kids(root, 'Tree')[0];
   b.level = Math.min(100, Math.max(1, +build?.getAttribute('level') || 1));
-  const specs = kids(tree, 'Spec'), spec = specs[(+tree?.getAttribute('activeSpec') || 1) - 1] || specs[0];
+  const specs = kids(tree, 'Spec'), openSpec = Math.max(0, specs.indexOf(specs[(+tree?.getAttribute('activeSpec') || 1) - 1])), spec = specs[at ?? openSpec];
   // ascendancy: PoB's internal id, else the names; a build without one has the base class alone
   const asc = ASC_OF[spec?.getAttribute('ascendancyInternalId')] || build?.getAttribute('ascendClassName');
   const cls = CLASS_OF[spec?.getAttribute('classInternalId')] || build?.getAttribute('className');
@@ -151,7 +152,7 @@ export function fromXML(xml, ctx, blank) {
   b.quests = {};
   for (const q of ctx.quests || []) b.quests[q.key] = q.pick ? q.options.findIndex(o => flat(o.text) === flat(input[q.key]?.getAttribute('string'))) + 1
     : +(input[q.key]?.getAttribute('boolean') !== 'false');
-  return { build: b, warn };
+  return { build: b, warn, specs: specs.map(s => s.getAttribute('title') || ''), active: openSpec };
 }
 
 // ---------- the game's own build planner (0.5): a .build JSON file, read from Documents/My Games/Path of Exile 2/BuildPlanner

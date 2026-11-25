@@ -980,5 +980,6 @@
  "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "전투 중 충족되는 조건을 체크하세요. 해당 보너스가 모든 스킬의 피해에 반영됩니다. 시뮬레이터는 자체적으로 판정합니다.",
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "전투 중 충족되는 조건을 체크하세요. 해당 보너스가 캐릭터 수치에 반영됩니다. 시뮬레이터는 자체적으로 판정합니다.",
  "Other": "기타",
- "Where it comes from": "출처"
+ "Where it comes from": "출처",
+ "Each of its {0} trees is a build of its own.": "{0}개의 트리가 각각 별도의 빌드가 됩니다."
 }

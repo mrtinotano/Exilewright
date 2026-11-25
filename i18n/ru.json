@@ -980,5 +980,6 @@
  "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Отметьте, что выполняется в бою: их бонусы учитываются в уроне всех умений. Симулятор проверяет их сам.",
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Отметьте, что выполняется в бою: их бонусы учитываются в характеристиках персонажа. Симулятор проверяет их сам.",
  "Other": "Прочее",
- "Where it comes from": "Откуда берётся"
+ "Where it comes from": "Откуда берётся",
+ "Each of its {0} trees is a build of its own.": "Каждое из его {0} деревьев — отдельный билд."
 }
