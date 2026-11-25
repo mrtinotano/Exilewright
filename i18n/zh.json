@@ -809,6 +809,7 @@
  "Not enough Volatility for {0}": "易爆不足，無法使用{0}",
  "Not enough life for {0}": "生命不足，無法使用{0}",
  "Shield": "護盾",
+ "Ward": "保護",
  "Empty": "空",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+拖曳：環繞 · 滾輪：縮放 · {0}：翻滾",
  "Ctrl+click: place {0}": "Ctrl+點擊：放置{0}",

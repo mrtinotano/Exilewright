@@ -809,6 +809,7 @@
  "Not enough Volatility for {0}": "{0}のボラティリティが足りない",
  "Not enough life for {0}": "{0}のライフが足りない",
  "Shield": "エナジーシールド",
+ "Ward": "ワード",
  "Empty": "空き",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+ドラッグ: 回転 · ホイール: ズーム · {0}: ロール",
  "Ctrl+click: place {0}": "Ctrl+クリック: {0}を配置",

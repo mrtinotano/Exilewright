@@ -809,6 +809,7 @@
  "Not enough Volatility for {0}": "Pas assez d'Instabilité pour {0}",
  "Not enough life for {0}": "Pas assez de vie pour {0}",
  "Shield": "Bouclier",
+ "Ward": "Sauvegarde",
  "Empty": "Vide",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+glisser : orbiter · Molette : zoom · {0} : rouler",
  "Ctrl+click: place {0}": "Ctrl+clic : placer {0}",

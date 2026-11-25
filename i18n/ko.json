@@ -809,6 +809,7 @@
  "Not enough Volatility for {0}": "{0}에 필요한 일촉즉발이 부족합니다",
  "Not enough life for {0}": "{0}에 필요한 생명력이 부족합니다",
  "Shield": "보호막",
+ "Ward": "수호",
  "Empty": "비어 있음",
  "Alt+drag: orbit · Wheel: zoom · {0}: roll": "Alt+드래그: 회전 · 휠: 확대/축소 · {0}: 구르기",
  "Ctrl+click: place {0}": "Ctrl+클릭: {0} 배치",

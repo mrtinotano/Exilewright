@@ -146,6 +146,9 @@
   .s-orb::after { content:''; position:absolute; inset:8% 22% 52% 18%; border-radius:50%; background:radial-gradient(ellipse at 50% 30%, #ffffff40, #ffffff00 70%); }
   /* energy shield: a ring around the life orb, filled as far as it is */
   .s-orb u { position:absolute; inset:0; border-radius:50%; background:conic-gradient(#7cc0ff var(--p), #7cc0ff26 0); -webkit-mask:radial-gradient(closest-side, #0000 calc(100% - 7px), #000 calc(100% - 6px)); mask:radial-gradient(closest-side, #0000 calc(100% - 7px), #000 calc(100% - 6px)); }
+  /* Runic Ward: the game's rune over the life orb, lit from the bottom as far as it is */
+  .s-orb .s-ward { position:absolute; left:50%; top:50%; height:72%; aspect-ratio:228/308; transform:translate(-50%, -50%); }
+  .s-orb .s-ward img { position:absolute; inset:0; width:100%; height:100%; }
   /* the skill bar in the middle, between the orbs: mouse buttons, then Q W E R T */
   .s-bar { left:50%; transform:translateX(-50%); bottom:12px; width:max-content; max-width:calc(100% - 300px); box-sizing:border-box; display:flex; justify-content:center; gap:5px; padding:6px; background:linear-gradient(#1a150e, #0b0a08); border:1px solid #5a4a30; box-shadow:0 0 0 1px #000, 0 4px 12px #000a; pointer-events:auto; }
   .s-bar:empty, .s-buffs:empty { display:none; }

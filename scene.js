@@ -3401,7 +3401,15 @@ export function initScene(el, api) {
       if (P.corpse && !useCorpse(S)) return;
       // Animus Exchange: it sacrifices up to its life (leaving you 1) for its share as Runic Ward, which can Overflow
       const AX = st['animus_exchange_gain_%_maximum_life_spent_as_ward'];
-      if (AX) { const n = Math.max(0, Math.min(st.animus_exchange_spend_up_to_X_life, me.life - 1)); me.life -= n; me.ward = overflow(me.ward, me.maxW, n * AX / 100); fx.ring(pp, .3, 1.2, 'holy', .4); return say(`${S.label}: +${Math.round(n * AX / 100)} ${t('Runic Ward')}`, 'holy'); }
+      if (AX) { const n = Math.max(0, Math.min(st.animus_exchange_spend_up_to_X_life, me.life - 1)); me.life -= n; me.ward = overflow(me.ward, me.maxW, n * AX / 100);
+        // its look (animusexchange .mat's Runic Ward blue, RGB 0.07 / 0.37 / 1): sparks at your wrist (onact_wrist.pet), a
+        // Kalguuran rune on the ground under you in a wave of blue (surge.pet), runes rising off you and your skin glowing
+        // blue for a moment (animusexchange_runicgain.epk's skin pass)
+        const H = hand(); fx.emit(12, { p: { x: H.x, y: H.y, z: H.z }, r: .15, v: 1, life: .4, size: .1, c: WARD, c2: 'white', k: 2, drag: 2 });
+        const RN = fx.decal(pp, 1.4, 'rune', WARD, { a: .85, spin: .8 }); later(.5, () => RN.remove());
+        fx.ring(pp, .3, 1.6, WARD, .5, { a: .7 }); fx.emit(24, { p: { x: pp.x, y: .3, z: pp.z }, r: .4, h: 1.6, up: 1.6, v: .4, life: .9, size: .16, c: WARD, c2: 'white', k: 2, drag: 1 });
+        fx.num({ x: pp.x - .5, y: 1.4, z: pp.z }, '−' + short(n), css('blood'), .46); fx.num({ x: pp.x + .5, y: 1.7, z: pp.z }, '+' + short(n * AX / 100), '#5a9bff', .52, true);   // what it paid and what it gave
+        me.wardAt = time; return say(`${S.label}: +${Math.round(n * AX / 100)} ${t('Runic Ward')}`, WARD); }
       // Hollow Shell: its pulse spends all your Runic Ward (on top of its cost) for its share of it as Guard, for its duration
       // (the higher Guard stays, up to 200% of your life), on you no more than once every its per-target cooldown
       const HS = st['skill_hollow_shell_spent_ward_%_to_grant_as_guard'];
@@ -4324,13 +4332,16 @@ export function initScene(el, api) {
   // glowing as embers (warcry_ancestral's red-orange) and sparks rising off it, while it lasts
   const KAOM_SKIN = new THREE.Color(0x6e2414), KAOM_GLOW = 0xff5a1e, KG = new THREE.Color(KAOM_GLOW);
   let kaomK = 0;
+  // (and Animus Exchange's: your skin glows Runic Ward blue for 1.5 s after it, w; note: how long is not in the data)
+  const WARD = 0x125eff, WG = new THREE.Color(WARD);
   function kaomLook(dt) {
-    const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2)));
-    if (!k && !player.kaomed) return;
-    player.kaomed = k > 0; player.group.scale.setScalar(1 + .2 * k);
+    const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), w = Math.max(0, 1 - (time - (me.wardAt ?? -9)) / 1.5);
+    if (!k && !w && !player.kaomed) return;
+    player.kaomed = k > 0 || w > 0; player.group.scale.setScalar(1 + .2 * k);
     player.group.traverse(m => { if (!m.isSkinnedMesh || !m.material?.emissive) return; const M = m.material, u = M.userData;
       if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; }
-      M.color.copy(u.c0).lerp(KAOM_SKIN, k); M.emissive.copy(u.e0).lerp(KG, k); M.emissiveIntensity = u.i0 * (1 - k) + k * (.22 + .08 * Math.sin(time * 7)); });
+      M.color.copy(u.c0).lerp(KAOM_SKIN, k).lerp(WG, w * .6); M.emissive.copy(u.e0).lerp(KG, k).lerp(WG, w); M.emissiveIntensity = u.i0 * (1 - Math.max(k, w)) + k * (.22 + .08 * Math.sin(time * 7)) + w * .9; });
+    if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: WARD, k: 1.8, drag: 1 });   // its runes rising off you
     if (k && Math.random() < k * .6) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 2), z: pp.z }, r: .35, up: 1.2, v: .3, life: .6, size: .12, c: 'fire', c2: 'ember', k: 1.6, drag: 1 });
   }
   const demon = () => me.demon ? Math.min(me.demon.max, Math.floor(time - me.demon.at)) : 0;
@@ -5215,7 +5226,8 @@ export function initScene(el, api) {
     // one, with Rage), as the game shows them
     const c = sheet(), rm = rageMax(), pct = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1), row = (k, a, b) => `<div><span>${k}</span><b>${a}/${b}</b></div>`;
     put(lifeEl, `<div class="s-vtxt">${me.known ? row(t('Life'), short(Math.max(0, Math.ceil(me.life))), short(me.maxL)) : `<div><span>${t('Life unknown: the class base life is missing in the data')}</span></div>`}`
-      + `${me.maxE > 0 ? row(t('Shield'), short(Math.max(0, Math.ceil(me.es))), short(me.maxE)) : ''}</div><div class="s-orb"><i style="height:${pct(me.life, me.maxL)}%"></i>${me.maxE > 0 ? `<u style="--p:${pct(me.es, me.maxE)}%"></u>` : ''}</div>`);
+      + `${me.maxE > 0 ? row(t('Shield'), short(Math.max(0, Math.ceil(me.es))), short(me.maxE)) : ''}${me.maxW > 0 ? row(t('Ward'), short(Math.max(0, Math.floor(me.ward))), short(me.maxW)) : ''}</div>`
+      + `<div class="s-orb"><i style="height:${pct(me.life, me.maxL)}%"></i>${me.maxE > 0 ? `<u style="--p:${pct(me.es, me.maxE)}%"></u>` : ''}${me.maxW > 0 ? wardRune(pct(me.ward, me.maxW)) : ''}</div>`);
     put(manaEl, `<div class="s-vtxt">${me.maxM ? row(t('Mana'), short(Math.max(0, Math.floor(me.mana))), short(me.maxM)) : ''}${c.spirit ? row(t('Spirit'), short(Math.max(0, free)), short(c.spirit)) : ''}`
       + `${rm ? row(t('Rage'), short(Math.floor(me.rage)), short(rm)) : ''}</div><div class="s-orb"><i style="height:${pct(me.mana, me.maxM)}%"></i></div>`);
     if (!tipEl.hidden && tipEl.dataset.i != null) showTip(+tipEl.dataset.i);
@@ -5248,7 +5260,10 @@ export function initScene(el, api) {
   bar.addEventListener('mouseleave', () => { tipEl.hidden = true; delete tipEl.dataset.i; });
   // your buffs as the game shows them, top left: its icon (the game's buff art, else the skill's), the count in its
   // corner, the seconds left under it, its name over it; a minion skill's, the life of its minions under it, as the game's
-  const one = (img, c, title, n, s, bad, hp) => `<span class="s-buff${bad ? ' bad' : ''}" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${hp != null ? `<b class="hp" style="--hp:${(hp * 100).toFixed(1)}%"></b>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
+  // your Runic Ward on the life orb, as the game's HUD: its rune (orb_wardbg / orb_wardfill), lit from the bottom as far
+  // as the ward is full. note: how the game lights a part-full rune is not in the data: bottom up as the orb's fill
+  const wardRune = p => `<span class="s-ward"><img src="${esc(api.wardOrb?.('bg') || '')}" alt="" draggable="false" onerror="this.remove()"><img src="${esc(api.wardOrb?.('fill') || '')}" alt="" draggable="false" onerror="this.remove()" style="clip-path:inset(${(100 - p).toFixed(1)}% 0 0 0)"></span>`;
+  const one = (img, c, title, n, s, bad, hp) =>`<span class="s-buff${bad ? ' bad' : ''}" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${hp != null ? `<b class="hp" style="--hp:${(hp * 100).toFixed(1)}%"></b>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
   function effects() {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
