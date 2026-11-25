@@ -139,6 +139,7 @@ export function radiusOf(item) {
 // the implicit that is a radius jewel's radius reads as the game shows it: "Radius: Small" (PassiveJewelRadii)
 const radiusOnly = st => st.length === 1 && st[0][0] === 'local_jewel_effect_base_radius';
 const radiusName = st => (D.jewel_radii || {})[st[0][1]] || String(st[0][1]);
+export const radiusNamed = name => +Object.keys(D.jewel_radii || {}).find(k => D.jewel_radii[k] === name);   // 'Medium' -> 1150
 // "Grants Skill: Level 11 Purity of Fire" in any language (grant_line) -> its level
 const GRANT = Object.values(D.grant_line || {}).map(tpl => new RegExp('^' + tpl.split(/(\{[01]\})/)
   .map(x => x === '{0}' ? '.+?' : x === '{1}' ? '(\\d+)' : x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('') + '$'));
@@ -986,6 +987,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const free = without?.glovesFree && base.class === 'Gloves' || mods.some(m => AFFIX[m.id].stats.some(([id]) => id === 'local_no_attribute_requirements'));
     const short = free ? [] : Object.entries(reqOf(it)).filter(([, x]) => x).map(([k, x]) => [k, needOf(without, k, x, it, rp)]).filter(([k, x]) => haveFor(without, k, it) < x);
     const reqs = short.length ? `<div class="ddn">${esc(short.map(([k, x]) => t('Requires {0} {1} (you have {2})', x, t(ATTR[k]), haveFor(without, k, it))).join(' · '))}</div>` : '';
+    const normal = slot === 'body' && without?.normalBody && rarity !== 'normal' ? `<div class="ddn">${esc(statLines({ cannot_use_non_normal_body_armour: 1 }).join(' '))}</div>` : '';   // Smith's Masterwork
     const impl = base.implicits.map((id, i) => `<div class="mod">${radiusOnly(D.implicits[id]) ? esc(t('Radius: {0}', t(radiusName(D.implicits[id])))) : text(D.implicits[id], fixVals(D.implicits[id], it.implicits?.[i]))} ${range(D.implicits[id], it.implicits?.[i], `${slot}.i.${i}`)}</div>`).join('');
     const expl = mods.map((m, i) => { const a = AFFIX[m.id], forms = uniq ? formsOf(m.id) : [];   // a modifier of several forms: a list to pick its form from
       return `<div class="mod">${forms.length ? `<select data-slot="${slot}" data-i="${i}" data-act="form">${forms.map(f => `<option value="${f.id}"${f.id === m.id ? ' selected' : ''}>${text(f.stats, fixVals(f.stats))}</option>`).join('')}</select>` : radLines(a, [text(a.stats, fixVals(a.stats, m.values))]).join('')} ${range(a.stats, m.values, `${slot}.m.${i}`)}${uniq ? a.historic ? `<button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>` : '' : `<small title="${t(a.affix === 'prefix' ? 'Prefix level {0}' : 'Suffix level {0}', a.level)}">${a.affix === 'prefix' ? 'P' : 'S'}${a.level}</small><button data-slot="${slot}" data-i="${i}" data-act="del">✕</button>`}</div>`; }).join('')
@@ -996,7 +998,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
-        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}${fist}
+        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${normal}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}${fist}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${uniq ? '+ ' + t('Desecrated') : t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           return `<option value="${a.id}" data-add>${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(without, now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>

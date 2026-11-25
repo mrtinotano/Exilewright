@@ -2062,6 +2062,7 @@ export function snapshot(b, sum) {
     lifeRegen: r.lifeRegen, esRecharge: r.esRecharge, move: c.move, accuracy: c.accuracy,
     reqPct: v(sum, 'global_item_attribute_requirements_+%'), glovesFree: !!sum.ignore_attribute_requirements_for_gloves, fists: !!sum.ascendancy_hand_wraps,   // the Equipment card's requirements
     reqFree: !!sum.global_equipment_no_attribute_requirements, noStrMelee: !!sum.ignore_strength_requirements_of_melee_weapons_and_skills, giant: !!sum.keystone_giants_blood,   // Giant's Blood: triple on martial weapons
+    normalBody: !!sum.cannot_use_non_normal_body_armour,   // Smith's Masterwork: only a Normal body armour
     satisfy: [sum.dexterity_can_satisfy_strength_and_intelligence_requirements_of_melee_weapons_and_skills && 'dex', sum.strength_can_satisfy_dexterity_and_intelligence_requirements_of_melee_weapons_and_skills && 'str'].filter(Boolean),   // Jarngreipr: of melee weapons
     dps: (b.gems || []).map(g => [tn(GEM[g.name]) || g.name, skill(g, b, sum).dps]) };
 }
