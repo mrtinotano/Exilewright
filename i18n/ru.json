@@ -977,5 +977,6 @@
  "Decimating Strike": "Истребляющий удар",
  "Rune tattoos": "Руны-татуировки",
  "Conditions": "Условия",
- "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Отметьте, что выполняется в бою: их бонусы учитываются в уроне всех умений. Симулятор проверяет их сам."
+ "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Отметьте, что выполняется в бою: их бонусы учитываются в уроне всех умений. Симулятор проверяет их сам.",
+ "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Отметьте, что выполняется в бою: их бонусы учитываются в характеристиках персонажа. Симулятор проверяет их сам."
 }

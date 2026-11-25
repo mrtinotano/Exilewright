@@ -977,5 +977,6 @@
  "Decimating Strike": "デシメ―ティングストライク",
  "Rune tattoos": "ルーンのタトゥー",
  "Conditions": "条件",
- "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "戦闘中に満たしている条件にチェックを入れてください。そのボーナスがすべてのスキルのダメージに反映されます。シミュレーターは独自に判定します。"
+ "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "戦闘中に満たしている条件にチェックを入れてください。そのボーナスがすべてのスキルのダメージに反映されます。シミュレーターは独自に判定します。",
+ "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "戦闘中に満たしている条件にチェックを入れてください。そのボーナスがキャラクターの数値に反映されます。シミュレーターは独自に判定します。"
 }

@@ -977,5 +977,6 @@
  "Decimating Strike": "대량 학살 타격",
  "Rune tattoos": "룬 문신",
  "Conditions": "조건",
- "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "전투 중 충족되는 조건을 체크하세요. 해당 보너스가 모든 스킬의 피해에 반영됩니다. 시뮬레이터는 자체적으로 판정합니다."
+ "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "전투 중 충족되는 조건을 체크하세요. 해당 보너스가 모든 스킬의 피해에 반영됩니다. 시뮬레이터는 자체적으로 판정합니다.",
+ "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "전투 중 충족되는 조건을 체크하세요. 해당 보너스가 캐릭터 수치에 반영됩니다. 시뮬레이터는 자체적으로 판정합니다."
 }

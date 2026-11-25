@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
+import { withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
 import { initSkills } from './skills.js';
@@ -238,9 +238,9 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   const trib = tributeOf(sum);
   for (const [k, v] of Object.entries(sum)) { const m = k.match(/^(.+)_(per|if_you_have_at_least)_(\d+)_tribute$/);
     if (m) sum[m[1]] = (sum[m[1]] || 0) + v * (m[2] === 'per' ? Math.floor(trib / m[3]) : trib >= m[3] ? 1 : 0); }
-  return sum;
+  return withConds(sum, b.conds);   // the states the player says hold (the conditions panels): not in the simulator, which checks them itself
 }
-const treeSum = () => sumOf(B());
+const treeSum = () => sumOf(B()), rawSum = () => sumOf({ ...B(), conds: null });
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
   const d = SK.skills[g.name] || {}, gm = GEM[g.name], tags = [...gm?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gm?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)
@@ -270,7 +270,7 @@ function geo(g) {
     duration: (d.duration_ms || 0) / 1000,
   };
 }
-const playerSpeed = (more = 0) => SK.player_base_speed * (1 + ((treeSum()['base_movement_velocity_+%'] || 0) + more) / 100) / 10;   // more: a Banner's
+const playerSpeed = (more = 0) => SK.player_base_speed * (1 + ((rawSum()['base_movement_velocity_+%'] || 0) + more) / 100) / 10;   // more: a Banner's
 function renderStats() {
   const b = B();
   const pending = b.nodes.filter(id => N[id].type === 'attribute' && !(b.attrs || {})[id]).length; // game text always says "+5", so count them
@@ -296,10 +296,10 @@ const sceneCfg = (({ enemy = null, level = 0, attack = null, rarity = null, stil
 // the map's modifiers on players, added to the build's stats in the simulator alone (the monsters' are enemies.js's)
 setMap(sceneCfg.map);
 let mapSelf = mapPlayer(sceneCfg.map);
-const simSum = () => { const s = { ...treeSum() }; for (const k in mapSelf) s[k] = (s[k] || 0) + mapSelf[k]; return s; };
+const simSum = () => { const s = rawSum(); for (const k in mapSelf) s[k] = (s[k] || 0) + mapSelf[k]; return s; };
 // damage of each skill of the build (calc.js), shared by the cards, the enemy panel and the scene until the build changes
 const dmgCache = new Map();
-const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, { ...B(), conds: null }, treeSum())); return s; };   // the scene checks the conditions on each hit: not the planner's
+const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, { ...B(), conds: null }, rawSum())); return s; };   // the scene checks the conditions on each hit: not the planner's
 // the scene's: with the map's less Cooldown Recovery Rate of players (a more / less of its own, so the cooldown divided by it)
 const simCd = new WeakMap(), simDmg = g => { const s = skillDmg(g), k = mapSelf['map_player_cooldown_speed_+%_final']; if (!k || !s?.cooldown) return s;
   let o = simCd.get(s); if (o?.k !== k) simCd.set(s, o = { k, s: { ...s, cooldown: s.cooldown / Math.max(.01, 1 + k / 100) } }); return o.s; };
@@ -363,6 +363,7 @@ $('charPanel').onchange = e => {
   const d = e.target.dataset;
   if (d.act === 'name') edit((e, b) => b.name = e.target.value.trim() || t('New build'))(e);
   if (d.act === 'level') edit((e, b) => { const v = Math.round(+e.target.value); if (v >= 1) b.lvl = Math.min(100, v); else delete b.lvl; })(e);
+  if (d.cond) edit((e, b) => { const C = b.conds ||= {}; if (e.target.checked) C[d.cond] = 1; else delete C[d.cond]; })(e);   // a condition of the character's (charpanel.js)
   if (d.quest) edit((e, b) => (b.quests ||= {})[d.quest] = e.target.type === 'checkbox' ? +e.target.checked : +e.target.value)(e);
 };
 $('charPanel').onclick = async e => {

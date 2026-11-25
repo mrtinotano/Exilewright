@@ -1225,6 +1225,22 @@ function gemlingOf(g, sum, b) {
   const costMore = (n.int && n.int >= n.str && n.int >= n.dex ? 1 + cost / 100 : 1) * (lich && !character(b, sum).es ? 1 + lich / 100 : 1);
   return { 'damage_+%': red * n.str, 'skill_speed_+%': green * n.dex, 'critical_strike_chance_+%': blue * n.int, 'gemling_skill_cost_+%_final': (costMore - 1) * 100 };
 }
+// the character's bonuses while in a state (the tables above: the scene checks them itself), as the planner counts them
+// once its panel says the state holds (b.conds, by condKey): [stat, condition key, the stat it adds to, x (per second: x60)]
+const CHAR_TO = { a: 'physical_damage_reduction_rating_+%', e: 'evasion_rating_+%', s: 'maximum_energy_shield_+%', L: 'life_regeneration_rate_per_minute_%', l: 'life_regeneration_rate_+%', m: 'mana_regeneration_rate_+%' };
+export function charConds(sum) {
+  const R = [];
+  for (const [k, to, cv] of DEF_WHILE) if (sum[k]) for (const x of to) R.push([k, cv, CHAR_TO[x]]);
+  for (const [k, to, cv] of SPEED_WHILE) if (sum[k]) for (const x of to) R.push([k, cv, x === 'a' ? 'attack_speed_+%' : 'cast_speed_+%']);
+  for (const [k, cv] of MOVE_WHILE) if (sum[k] && cv && cv !== 'Green10') R.push([k, cv, 'base_movement_velocity_+%']);
+  for (const [k, to, cv, x = 1] of REGEN_WHILE) if (sum[k]) R.push([k, cv, CHAR_TO[to], x]);
+  for (const [k, cv, en] of ACC_WHEN) if (sum[k]) R.push([k, (en ? 'enemy:' : '') + cv, 'accuracy_rating_+%']);
+  for (const [k, cv] of BLOCK_WHILE) if (sum[k]) R.push([k, cv, 'block_chance_+%']);
+  for (const [k, cv, two] of AREA_WHILE) if (sum[k] && !two) R.push([k, cv, 'base_skill_area_of_effect_+%']);
+  return R;
+}
+// sum with what the states b.conds holds add (app.js sumOf: the planner's numbers, not the simulator's)
+export const withConds = (sum, conds) => { if (conds) for (const [k, key, to, x = 1] of charConds(sum)) if (conds[key]) sum[to] = (sum[to] || 0) + sum[k] * x; return sum; };
 // a condition of out.when as the planner's panel keeps it: "enemy:Frozen", "Surrounded", "#PowerCharge" (a count)
 export const condKey = c => (/^Multiplier/.test(c.type) ? '#' : c.actor === 'enemy' ? 'enemy:' : '') + c.var;
 export function skill(g, b, treeGear) {
@@ -2077,6 +2093,9 @@ console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot I
 // self-check: the planner's conditions. 50% increased damage while Surrounded counts once ticked, x1.5 with no other increase
 { const d = conds => skill({ name: 'Fireball', level: 10 }, { gems: [], items: {}, conds }, { 'damage_+%_while_surrounded': 50 }).dps;
   console.assert(d(undefined) === d({}) && Math.abs(d({ Surrounded: 1 }) / d({}) - 1.5) < .01, 'planner conditions', d({}), d({ Surrounded: 1 })); }
+// and the character's: 30% increased evasion while moving, as increased evasion once ticked; per second as per minute
+console.assert(withConds({ 'evasion_rating_+%_while_moving': 30 }, { Moving: 1 })['evasion_rating_+%'] === 30 && !withConds({ 'evasion_rating_+%_while_moving': 30 }, {})['evasion_rating_+%']
+  && withConds({ 'life_regenerate_rate_per_second_%_while_totem_active': 1 }, { TotemActive: 1 })['life_regeneration_rate_per_minute_%'] === 60, 'character conditions');
 
 // Tribute (Undying Hate's conquered passives: base_tribute), with its increase
 export const tributeOf = sum => Math.floor(v(sum, 'base_tribute') * (1 + v(sum, 'tribute_+%') / 100));

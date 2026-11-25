@@ -1,7 +1,15 @@
 // Character sheet laid out like the in-game character panel, and the skill info window (in-game gem tooltip).
 import { t, esc, tn, fmt, lang as LANG, kwHtml } from './i18n.js';
 import { statLines, shownLines } from './stats.js';
-import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick, tributeOf } from './calc.js';
+import { character, sheet, skill, reservation, DMG_NAME, QUESTS, questPick, tributeOf, charConds } from './calc.js';
+
+// the character's bonuses while in a state (calc.js charConds), one tick per state with the lines that need it
+function condList(b, sum) {
+  const by = new Map();
+  for (const [k, key] of charConds(sum)) { if (!by.has(key)) by.set(key, new Set()); shownLines({ [k]: sum[k] }).forEach(l => by.get(key).add(l)); }
+  return [...by].map(([key, L]) => `<label class="cond"><input type="checkbox" data-cond="${esc(key)}"${b.conds?.[key] ? ' checked' : ''}><span>${L.size ? [...L].map(esc).join('<br>')
+    : (key.startsWith('enemy:') ? t('Enemies') + ': ' : '') + esc(key.replace(/^enemy:/, '').replace(/([a-z])([A-Z0-9])/g, '$1 $2'))}</span></label>`).join('');
+}
 
 const n = x => fmt(x == null ? x : Math.round(x));
 const f = (x, d = 2) => fmt(x, d);
@@ -14,7 +22,7 @@ const ico = k => `<img class="cp-ico ${k}" src="poe2_data/available/img/panel/${
 // editable in place: name (input), base class and ascendancy (each row opens its list); level follows the tree
 export function renderChar(el, b, sum, { asc, cls, points, need, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x }) {
   const c = character(b, sum), R = c.res;
-  const questsOpen = el.querySelector('.cp-quests')?.open;   // drawn anew at every change: stays as it was left
+  const questsOpen = el.querySelector('.cp-quests')?.open, condsOpen = el.querySelector('.cp-conds')?.open, conds = condList(b, sum);   // drawn anew at every change: stays as it was left
   const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (ⓘ ${t('Not understood: it is not counted')})`)].map(esc).join(' · ');   // ⓘ: the app's own notice (.disc in index.html), in words alone: an option of a list takes no markup
   const box = (k, label, val, title = '') => `<div class="cp-box ${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}</b></div>`;
   const pctOr = (p, raw, what) => p != null ? Math.round(p) + '%' : n(raw);
@@ -45,6 +53,7 @@ export function renderChar(el, b, sum, { asc, cls, points, need, pending, classe
         ? `<select data-quest="${key}"><option value="0">—</option>${q.options.map((o, i) => `<option value="${i + 1}"${on === i + 1 ? ' selected' : ''}>${reward(o)}</option>`).join('')}</select>`
         : `<input type="checkbox" data-quest="${key}"${on ? ' checked' : ''}> ${reward(q.options[0])}`) + '</label>';
     }).join('')}</details>
+    ${conds ? `<details class="cp-conds"${condsOpen ? ' open' : ''}><summary>${t('Conditions')}</summary><p class="cp-note">${t("Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.")}</p>${conds}</details>` : ''}
     <details><summary>${t('All modifiers')}</summary><div class="cp-all">${statLines(all).sort().map(esc).join('<br>') || '—'}</div></details>
   </div>`;
 }

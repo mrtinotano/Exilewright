@@ -159,8 +159,8 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
   side.addEventListener('click', e => { const x = e.target.closest('[data-unsup]'); if (x) unsup(...x.dataset.unsup.split(':').map(Number)); });
   side.addEventListener('change', e => {   // a condition ticked or counted in the details panel
     const x = e.target.closest('[data-cond]'); if (!x) return;
-    const C = getBuild().conds ||= {}, k = x.dataset.cond, val = x.type === 'checkbox' ? x.checked || null : x.value === '' ? null : Math.max(0, Math.floor(+x.value) || 0);
-    if (val == null) delete C[k]; else C[k] = val === true ? 1 : val;
+    const C = getBuild().conds ||= {}, k = x.dataset.cond, val = x.type === 'checkbox' ? x.checked ? 1 : null : x.value === '' ? null : Math.max(0, Math.floor(+x.value) || 0);
+    if (val == null) delete C[k]; else C[k] = val;
     changed(); render();
   });
   el.addEventListener('contextmenu', e => { const s = e.target.closest('.sock'); if (s && unsup(+s.dataset.gi, +s.dataset.si)) e.preventDefault(); });

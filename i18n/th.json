@@ -977,5 +977,6 @@
  "Decimating Strike": "จู่โจมเปิดฉาก",
  "Rune tattoos": "อักขระที่สัก",
  "Conditions": "เงื่อนไข",
- "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "ติ๊กสิ่งที่เป็นจริงระหว่างต่อสู้: โบนัสของมันจะนับรวมในความเสียหายของทุกสกิล ตัวจำลองจะตรวจสอบเองต่างหาก"
+ "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "ติ๊กสิ่งที่เป็นจริงระหว่างต่อสู้: โบนัสของมันจะนับรวมในความเสียหายของทุกสกิล ตัวจำลองจะตรวจสอบเองต่างหาก",
+ "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "ติ๊กสิ่งที่เป็นจริงระหว่างต่อสู้: โบนัสของมันจะนับรวมในค่าของตัวละคร ตัวจำลองจะตรวจสอบเองต่างหาก"
 }
