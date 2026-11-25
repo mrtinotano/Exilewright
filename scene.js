@@ -1664,7 +1664,7 @@ export function initScene(el, api) {
     const to = chest(d), R = sh(S).chainRange || SIM.chainRange;
     if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
     fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6);
-    seen.add(d); hit(d, S, { mult: mult * (S.perChain ? 1 + S.perChain * (S.chained || 0) / 100 : 1) });   // Crescendo Arrows: per time it has Chained
+    seen.add(d); hit(d, S, { mult: mult * (1 + (S.perChain || 0) * (S.chained || 0) / 100) });   // Crescendo Arrows: per time it has Chained
     const free = d.curse && flagOf(S.name, 'always_chain_from_cursed_enemies');   // Coiling Bolts: through any number of Cursed targets
     if (n <= 0 && !free) return;
     later(.07, () => {
@@ -2260,13 +2260,13 @@ export function initScene(el, api) {
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
     // Ulaman's Vision: each projectile you fire does one of these at random: Fork once more (0), Chain once more (1), Chain
     // from terrain once more (2: the scene has no terrain, so nothing), cannot collide with targets (3: it flies through them)
-    const UL = !S.src && !o.forked && !o.split && !o.back && !o.shard && sheet().ulaman ? Math.floor(Math.random() * 4) : -1;
+    const first = !S.src && !o.forked && !o.split && !o.back && !o.shard, UL = first && sheet().ulaman ? Math.floor(Math.random() * 4) : -1;
     // Cadiro's Gambit: each arrow you fire is one of its six kinds at random (KeywordPopups UniqueArrowModifier*): Crescendo
     // (0) Chains 6 more times, 60% increased damage per time it has Chained; Splintering (1) Splits toward 6 targets;
     // Reversing (2) Pierces all targets and Returns; Diamond (3) always crits, 60% increased critical damage bonus; Covetous
     // (4) more rarity (nothing here); Blunt (5) 600% increased Stun buildup. note: the increases as factors of their own
-    const CG = !S.src && P.attack && !o.back && !o.split && !o.forked && !o.shard && sheet().cadiro ? Math.floor(Math.random() * 6) : -1;   // a split or forked one is the same arrow (cur keeps its kind)
-    if (CG === 0 || CG === 3 || CG === 5) cur = { ...cur, ...[{ perChain: 60, addChains: (cur.addChains || 0) + 6 }, , , { diamond: 60 }, , { stunX: (cur.stunX || 1) * 7 }][CG] };
+    const CG = first && P.attack && sheet().cadiro ? Math.floor(Math.random() * 6) : -1;   // a split or forked one is the same arrow (cur keeps its kind)
+    cur = { ...cur, ...{ 0: { perChain: 60, addChains: (cur.addChains || 0) + 6 }, 3: { diamond: 60 }, 5: { stunX: (cur.stunX || 1) * 7 } }[CG] };
     const D0 = UL === 0 ? { ...sh(S), forks: (sh(S).forks || 0) + 1 } : sh(S), D = CG === 1 ? { ...D0, split: 6 } : CG === 2 ? { ...D0, pierce: Infinity } : D0, seen = new Set(o.seen), forked = o.forked || 0, surged = o.split || forked ? [] : (S.surges || []).filter(s => s.n-- > 0);
     const pierceN = S.P.spell && sheet().spellNoPierce ? 0 : Math.floor(D.pierce || 0) + (Math.random() < (D.pierce || 0) % 1 ? 1 : 0);
     let pierced = o.pierced || 0, brokeP = false;   // brokeP: it has pierced a target whose armour was fully broken (Ironbound)
