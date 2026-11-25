@@ -981,5 +981,10 @@
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "戦闘中に満たしている条件にチェックを入れてください。そのボーナスがキャラクターの数値に反映されます。シミュレーターは独自に判定します。",
  "Other": "その他",
  "Where it comes from": "内訳",
- "Each of its {0} trees is a build of its own.": "{0}個のツリーはそれぞれ別のビルドになります。"
+ "Each of its {0} trees is a build of its own.": "{0}個のツリーはそれぞれ別のビルドになります。",
+ "Levelling": "レベリング",
+ "{0} points": "{0}ポイント",
+ "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "レベリング順: そのレベルまでに取得しているパッシブを、取得する順に番号付きで表示します。後のパッシブをクリックすると、早めに取得します。",
+ "Taken by this level": "このレベルまでに取得済み",
+ "Click: take it at this level": "クリック: このレベルで取得"
 }

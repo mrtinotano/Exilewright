@@ -981,5 +981,10 @@
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "勾选战斗中成立的条件：其加成会计入角色的数值。模拟器会自行判定。",
  "Other": "其他",
  "Where it comes from": "来源",
- "Each of its {0} trees is a build of its own.": "它的{0}个天赋树各自成为一个单独的构筑。"
+ "Each of its {0} trees is a build of its own.": "它的{0}个天赋树各自成为一个单独的构筑。",
+ "Levelling": "升级路线",
+ "{0} points": "{0}点",
+ "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "升级顺序：到某个等级时拥有的天赋，按点取顺序编号。点击较后的天赋可提前点取。",
+ "Taken by this level": "此等级前已点取",
+ "Click: take it at this level": "点击：在此等级点取"
 }

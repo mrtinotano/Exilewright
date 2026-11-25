@@ -981,5 +981,10 @@
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Отметьте, что выполняется в бою: их бонусы учитываются в характеристиках персонажа. Симулятор проверяет их сам.",
  "Other": "Прочее",
  "Where it comes from": "Откуда берётся",
- "Each of its {0} trees is a build of its own.": "Каждое из его {0} деревьев — отдельный билд."
+ "Each of its {0} trees is a build of its own.": "Каждое из его {0} деревьев — отдельный билд.",
+ "Levelling": "Прокачка",
+ "{0} points": "{0} очков",
+ "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "Порядок прокачки: пассивные умения, которые у вас есть к уровню, пронумерованы в порядке взятия. Нажмите на более позднее умение, чтобы взять его раньше.",
+ "Taken by this level": "Уже взято к этому уровню",
+ "Click: take it at this level": "Щелчок: взять на этом уровне"
 }

@@ -634,9 +634,14 @@ function renderPoints(b) {
     + box(t('Ascendancy'), ascPaid(b), TOTAL.asc, null, t('Ascendancy points (4 trials × 2)'))
     + box(t('Set 1'), setOf(b, 1).length, TOTAL.set, 1, t('Click: allocate points to weapon set {0} (the panel stats use this set)', 1))
     + box(t('Set 2'), setOf(b, 2).length, TOTAL.set, 2, t('Click: allocate points to weapon set {0} (the panel stats use this set)', 2))
+    + `<button data-lvl class="${lvlAt != null ? 'on' : ''}" title="${t('Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.')}">${t('Levelling')}<b>${lvlAt != null ? t('Level {0}', lvlAt) : '—'}</b></button>`
+    + (lvlAt != null ? `<label class="lvlbar">${t('{0} points', lvlPoints(lvlAt))}<input type="range" min="1" max="100" value="${lvlAt}" data-lvlat></label>` : '')
     + `<button id="treeReset" title="${t('Remove every allocated passive, ascendancy and weapon set point')}">${t('Reset')}<b>⟲</b></button>`;
 }
+$('treePts').oninput = e => { if (e.target.dataset.lvlat == null) return; lvlAt = +e.target.value; const b = B();   // redrawn without the bar (keeps the drag)
+  $('treePts').querySelector('[data-lvl] b').textContent = t('Level {0}', lvlAt); e.target.parentNode.firstChild.textContent = t('{0} points', lvlPoints(lvlAt)); drawTree(); };
 $('treePts').onclick = async e => {
+  if (e.target.closest('[data-lvl]')) { lvlAt = lvlAt == null ? B().level || 1 : null; renderPoints(B()); drawTree(); return; }
   if (e.target.closest('#treeReset')) {
     const b = B(), n = Math.max(0, b.nodes.length - 1) + ascPaid(b) + setOf(b, 1).length + setOf(b, 2).length;
     if (!n || await ask(t('Reset the whole tree? {0} allocated points will be removed.', n), t('Reset')) !== 0) return;
@@ -770,6 +775,27 @@ function prune(nodes, b) {         // keep only what is still connected to nodes
     alive = new Set(next);
   }
 }
+// levelling order: the tree's passives in the order they were taken (b.nodes keeps the clicks' order), each moved after
+// the first one it hangs from when it came earlier (an imported tree's order is Path of Building's); lvlAt: the level the
+// tree shows the passives of (null: all of them), as many as calc.js requiredLevel gives points by then
+let lvlAt = null;
+function levelOrder(b, nodes = b.nodes) {
+  if (!nodes.length) return nodes;
+  const out = [nodes[0]], got = new Set([nodes[0], ...splitRoots(b)]), free = freeNodes(b), left = nodes.slice(1);
+  while (left.length) {
+    const i = left.findIndex(id => free.has(id) || N[id].links.some(w => got.has(String(w))));
+    const [x] = left.splice(Math.max(0, i), 1); out.push(x); got.add(x);
+  }
+  return out;
+}
+const lvlPoints = L => { let k = 0; while (k < TOTAL.tree && requiredLevel(k + 1) <= L) k++; return k; };
+const lvlNodes = b => levelOrder(b).slice(0, lvlPoints(lvlAt) + 1);
+// in that view a click on a passive taken later takes it (and what it hangs from) at this level, before the last ones
+function takeSooner(b, id) {
+  const now = lvlNodes(b); if (now.includes(id)) return;
+  const all = levelOrder(b), p = pathTo(now, id, w => all.includes(w)), k = Math.max(1, now.length - p.length);
+  setNodes(b, levelOrder(b, [...now.slice(0, k), ...p, ...all.filter(x => !p.includes(x) && !now.slice(0, k).includes(x))]));
+}
 // what clicking `id` would allocate (empty if it is allocated already or unreachable)
 function preview(id, b = B()) {
   if (N[id].ascendancy) {
@@ -822,6 +848,7 @@ function toggle(b, id) {   // what a click on `id` does to build b (false: nothi
   relock(b, had);
 }
 function clickNode(id) {
+  if (lvlAt != null && B().nodes.includes(id)) { takeSooner(B(), id); save(); renderSide(); drawTree(); return; }   // the levelling view
   if (toggle(B(), id) !== false) { save(); renderSide(); drawTree(); }
 }
 // What that click would change in the panel numbers and each skill's DPS. The level stays as it is, so only the
@@ -984,7 +1011,7 @@ function drawTree() {
   const W = cv.clientWidth, H = cv.clientHeight, D = dpr();
   if (cv.width !== W * D || cv.height !== H * D) { cv.width = W * D; cv.height = H * D; }
   view.s ||= Math.min(W, H) / 26000;   // fit whole tree on first draw
-  const s = view.s, b = B(), st = ascStart(b.asc);
+  const s = view.s, b0 = B(), b = lvlAt == null ? b0 : { ...b0, nodes: lvlNodes(b0) }, st = ascStart(b.asc);   // the levelling view: the passives by that level
   const set1 = new Set(setOf(b, 1)), set2 = new Set(setOf(b, 2));
   const on = new Set([...b.nodes, ...b.ascNodes, ...(st ? [st] : []), ...set1, ...set2, ...splitRoots(b), ...granted(b), ...sockOn(b)]), js = jewelsOf(b), cq = conquest(b, js);   // and the starts Split Personality opens, what jewels allocate
   const setTint = id => b.nodes.includes(id) ? null : set1.has(id) && (mode !== 2 || !set2.has(id)) ? SET_COL[1] : set2.has(id) ? SET_COL[2] : null;
@@ -1100,6 +1127,11 @@ function drawTree() {
     const name = label(cq.get(id)?.ks || cq.get(id)?.over || cq.get(id)?.named || n);
     ctx.strokeText(name, x, y + r * 1.25 + 2); ctx.fillText(name, x, y + r * 1.25 + 2);
   }
+  // the levelling view: each passive's place in the order
+  if (lvlAt != null && s > .05) {
+    ctx.textBaseline = 'middle'; ctx.font = 'bold 11px Georgia, serif'; ctx.fillStyle = '#9fe8ff'; ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+    b.nodes.forEach((id, i) => { if (!i || !visSet.has(id)) return; const [wx, wy] = WP[id], x = sx(wx), y = sy(wy); ctx.strokeText(i, x, y); ctx.fillText(i, x, y); });
+  }
 }
 let raf = 0;
 const redraw = () => raf ||= requestAnimationFrame(() => { raf = 0; drawTree(); });
@@ -1156,13 +1188,13 @@ function tipHtml(tip, id, n) {
     cq && !cq.seed ? [t('Conquered by {0}', by)] : []);
   const cost = preview(id).filter(x => !isRoot(x)).length, start = n.ascendancy_start;
   const sets = [1, 2].filter(k => setOf(b, k).includes(id)), forSet = mode && !n.ascendancy;
-  const mine = b.nodes.includes(id) || b.ascNodes.includes(id) || forSet && sets.includes(mode);
+  const mine = b.nodes.includes(id) || b.ascNodes.includes(id) || forSet && sets.includes(mode), lv = lvlAt != null && b.nodes.includes(id);   // lv: the levelling view's, a click moves it
   tip.className = 'tip-' + (isRoot(id) ? 'root' : n.type);
   tip.innerHTML = `<div class="th">${esc(label(cq?.ks || cq?.over || cq?.named || n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
     + (lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : '')
     + (cq?.seed ? `<div class="disc">${esc(t('{0} changes this passive by its seed, which the game data does not show: it counts as it is.', by))}</div>` : '')
-    + (cost || mine ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
-    + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${cq?.tell ? t('Right click: what it is in the game') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
+    + (!lv && (cost || mine) ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
+    + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${cq?.tell ? t('Right click: what it is in the game') + '<br>' : ''}${lv ? t(lvlNodes(b).includes(id) ? 'Taken by this level' : 'Click: take it at this level') : start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
       : mine ? t('Click: remove') : forSet && !setOK(id) ? t('Cannot be allocated to a weapon set') : t('Cannot be allocated from here')}</div>`;
 }
 let drag = null;

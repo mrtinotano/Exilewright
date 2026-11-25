@@ -981,5 +981,10 @@
  "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Marca lo que se cumple mientras luchas: sus bonificaciones cuentan en las cifras del personaje. El simulador las comprueba por su cuenta.",
  "Other": "Otros",
  "Where it comes from": "De dónde sale",
- "Each of its {0} trees is a build of its own.": "Cada uno de sus {0} árboles es una build aparte."
+ "Each of its {0} trees is a build of its own.": "Cada uno de sus {0} árboles es una build aparte.",
+ "Levelling": "Subida de nivel",
+ "{0} points": "{0} puntos",
+ "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "Orden de subida de nivel: las pasivas que tienes a un nivel, numeradas en el orden en que cogerlas. Haz clic en una pasiva posterior para cogerla antes.",
+ "Taken by this level": "Ya cogida a este nivel",
+ "Click: take it at this level": "Clic: cogerla a este nivel"
 }
