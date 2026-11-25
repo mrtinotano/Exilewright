@@ -233,6 +233,10 @@ export function initScene(el, api) {
     const SB = { ...shrineOn() }, SH = sheet(); if (SH.areaKilled && meIs.KilledRecently()) SB['base_skill_area_of_effect_+%'] = (SB['base_skill_area_of_effect_+%'] || 0) + SH.areaKilled;
     if (SH.poisonFrenzy && meIs.ConsumedFrenzyRecently()) SB['base_poison_duration_+%'] = SH.poisonFrenzy;
     const FZ = SH.durFrozen && (me.froze = (me.froze || []).filter(at => time - at <= 8)).length; if (FZ) SB['skill_effect_duration_+%'] = Math.min(40, SH.durFrozen * FZ);   // Blessing of the Moon: skill effect duration per enemy Frozen in the last 8 seconds, up to 40% (its text's)
+    // Hysseg's Claw: increased damage per minion of yours; The Dark Defiler: damage gained as chaos per Undead one
+    const MN = (SH.perMinion || SH.chaosUndead) && objs.filter(o => o.minion && !o.dead);
+    if (MN?.length && SH.perMinion) SB['damage_+%'] = (SB['damage_+%'] || 0) + SH.perMinion * MN.length;
+    if (MN?.length && SH.chaosUndead) SB['non_skill_base_all_damage_%_to_gain_as_chaos'] = (SB['non_skill_base_all_damage_%_to_gain_as_chaos'] || 0) + SH.chaosUndead * MN.filter(o => o.undead).length;
     for (const [k, n] of Object.entries(SB)) add[k] = (add[k] || 0) + n;
     const g2 = BA || ST || Object.keys(SB).length ? { ...g1, add } : g1, G = api.geo(g2), dmg = api.damage?.(g2) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;

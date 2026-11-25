@@ -437,7 +437,7 @@ export function character(b, sum) {
     pinStop: v(sum, 'pin_stops_enemies') > 0,   // Tactician's Right Where We Want Them: Pinned enemies cannot perform actions
     totemWall: v(sum, 'damage_removed_from_your_nearest_totem_before_life_or_es_%'),   // Warbringer's Wooden Wall
     brokenEl: [...sum.fully_broken_armour_and_sundered_armour_you_inflict_also_applies_to_fire_damage ? ['fire'] : [], ...sum.fully_broken_armour_and_sundered_armour_you_inflict_also_applies_to_cold_and_lightning_damage ? ['cold', 'lightning'] : []],   // The Molten One's Gift, Storm's Rebuke
-    implode: !!sum.fully_broken_armour_and_sundered_armour_you_inflict_applies_to_all_damage, overbreak: !!sum.warbringer_overbreak_armour, comboKeep: !!sum.share_combo_across_weapon_sets_and_weapon_types, apex: v(sum, 'ascendancy_chronomancer_apex_of_the_moment_base_slow_aura_value'), embank: !!sum.tactician_grants_aura_to_deployed_totems, defender: !!sum.spawn_defender_with_totem,   // Warbringer's Imploding Impacts (Fully Broken Armour increases all hit damage taken; armour below 0); Martial Master; Apex of the Moment; Strategic Embankments; Answered Call
+    implode: !!sum.fully_broken_armour_and_sundered_armour_you_inflict_applies_to_all_damage, overbreak: !!sum.warbringer_overbreak_armour, comboKeep: !!sum.share_combo_across_weapon_sets_and_weapon_types, apex: v(sum, 'ascendancy_chronomancer_apex_of_the_moment_base_slow_aura_value'), embank: !!sum.tactician_grants_aura_to_deployed_totems, defender: !!sum.spawn_defender_with_totem, perMinion: v(sum, 'damage_+%_per_active_minion'), chaosUndead: v(sum, 'non_skill_base_all_damage_%_to_gain_as_chaos_per_active_undead_minion'),   // Warbringer's Imploding Impacts (Fully Broken Armour increases all hit damage taken; armour below 0); Martial Master; Apex of the Moment; Strategic Embankments; Answered Call; Hysseg's Claw, The Dark Defiler
     cry: { debil: !!sum.warcries_debilitate_enemies_for_1_second, weak: v(sum, 'warcries_inflict_x_critical_weakness_on_enemies'), noIgnite: !!sum.remove_ignite_on_warcry, more: v(sum, 'warcry_empowers_next_x_melee_attacks'), min: sum.warcries_have_minimum_10_power ? 10 : 0 },   // the tree's warcries
     minionRegen: v(sum, 'life_and_mana_regeneration_rate_+%_for_each_minion_in_your_presence_capped'),
     bellow: { free: !!sum.warcries_bypass_cooldown, corpse: v(sum, 'corpses_in_your_area_of_effect_explode_dealing_%_maximum_life_physical_damage_on_warcry') },   // Warbringer's Warcaller's Bellow
@@ -1431,9 +1431,9 @@ export function skill(g, b, treeGear) {
   // supports whose damage the game's window shows otherwise than their stats (and Path of Building 2) say: measured
   const measured = (g.supports || []).reduce((x, n) => x * (MEASURED_MORE[n] || 1), 1);
   // "increased Spell Damage with Spells that cost Life": a spell with a life cost (Lifetap, Blood Magic)
-  // the tree's increased damage per attribute, maximum mana or block chance (the character's own, with this skill's supports)
+  // the tree's increased damage per attribute, maximum mana, Spirit (Threaded Light) or block chance (the character's own, with this skill's supports)
   const PA = [['damage_+%_per_15_strength', c => c.attrs.str / 15], ['damage_+%_per_5_of_your_lowest_attribute', c => Math.min(c.attrs.str || 0, c.attrs.dex || 0, c.attrs.int || 0) / 5],
-    ['damage_+%_per_1%_block_chance', c => c.block], ...spell ? [['spell_damage_+%_per_10_strength', c => c.attrs.str / 10], ['spell_damage_+%_per_100_maximum_mana', c => c.mana / 100]] : []].filter(([k]) => sum[k]);
+    ['damage_+%_per_1%_block_chance', c => c.block], ...spell ? [['spell_damage_+%_per_10_strength', c => c.attrs.str / 10], ['spell_damage_+%_per_100_maximum_mana', c => c.mana / 100], ['spell_damage_+%_per_10_spirit', c => c.spirit / 10]] : []].filter(([k]) => sum[k]);
   const ch = PA.length && character(b, sum), perAttr = PA.reduce((t, [k, f]) => t + Math.floor(f(ch) || 0) * sum[k], 0);
   const trigSpell = spell && (gt.includes('Triggered') || meta && !byTotem) ? v(sum, 'triggered_spell_spell_damage_+%') : 0;   // Invoker: spells a meta skill or another triggers
   // Crown of Eyes: the increases to spell damage count for attacks; Chober Chaber: the minions' increases count for you
@@ -1569,6 +1569,7 @@ export function skill(g, b, treeGear) {
   const AC = v(sum, 'archon_grants_critical_strike_chance_+%'), AB = v(sum, 'archon_grants_base_critical_strike_multiplier_+');
   if (AC) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AC, what: 'crit', w: critW });
   if (AB) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AB, what: 'critBonus', w: cbW });
+  { const PC = v(sum, 'critical_strike_multiplier_+_per_power_charge'); if (PC) out.when.push({ cond: [{ type: 'Multiplier', var: 'PowerCharge' }], val: PC, what: 'critBonus', w: cbW }); }   // Powertread: per Power Charge
   // Excoriate (melee), Elemental Armament III (attacks): more damage per elemental ailment on the enemy hit
   const EA = (tags.includes('melee') ? finals['support_elemental_assault_melee_damage_+%_final_per_elemental_ailment_on_target'] || 0 : 0) + (attack ? finals['support_elemental_armament_attack_damage_+%_final_per_elemental_ailment_on_target'] || 0 : 0);
   if (EA) out.when.push({ cond: [{ type: 'Multiplier', var: 'ElementalAilments' }], val: EA, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });
