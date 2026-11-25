@@ -479,7 +479,15 @@ $('sceneSkills').onclick = e => {
 const markCard = i => { document.querySelectorAll('#sceneSkills .sk-card').forEach(c => c.classList.toggle('on', +c.dataset.card === i)); renderEnemy(); };
 // ---------- share: Path of Building 2 code, build sites, JSON file
 const shareCtx = () => ({ stats: b => character(b, treeSum()), N, gems, ascs, clsOf, ascStart, classRoot, roots: ROOTS, maxSockets: SK.max_support_sockets || 5, quests: QUESTS, questPick });
-const addBuild = b => { let n = Date.now(); while (builds[n]) n++; const id = String(n); builds[id] = b; save(); select(id); };
+// what makes two builds the same one, whatever their name: an import of a build that is already here opens that one
+// instead of adding a copy (clicking Import again, or the same Path of Building file twice, used to pile them up)
+const canon = x => Array.isArray(x) ? '[' + x.map(canon).join() + ']' : x && typeof x === 'object' ? '{' + Object.keys(x).sort().map(k => k + ':' + canon(x[k])).join() + '}' : JSON.stringify(x ?? null);
+const sig = b => canon([b.asc, [...b.nodes].sort(), [...(b.ascNodes || [])].sort(), (b.gems || []).map(g => [g.name, +g.level || 0, (g.supports || []).filter(Boolean)]), b.items || {}, b.attrs || {}]);
+const addBuild = b => {
+  const same = Object.keys(builds).find(id => sig(builds[id]) === sig(b));
+  if (same) { select(same); return builds[same]; }
+  let n = Date.now(); while (builds[n]) n++; const id = String(n); builds[id] = b; save(); select(id); return null;
+};
 // one panel, with what the header button asked for: taking a build in, or giving this one out
 const openShare = async exporting => {
   const d = document.createElement('div');
@@ -517,7 +525,8 @@ const openShare = async exporting => {
     if (name) build.name = name;
     // Path of Building's other trees (levelling stages, other versions): each a build of its own, the open one last (shown)
     specs.forEach((title, i) => { if (i === active) return; const o = fromXML(xml, ctx, blank, i).build; o.name = `${build.name} — ${title || t('Tree') + ' ' + (i + 1)}`; addBuild(o); });
-    addBuild(build);
+    const had = addBuild(build); d.querySelector('[data-in]').value = '';
+    if (had) return void (inmsg.textContent = t('This build is already here: «{0}». It is open.', had.name));
     inmsg.textContent = (warn.length ? t('Imported. Not understood ({0}): {1}', warn.length, warn.join(' · ')) : t('Imported.')) + (specs.length > 1 ? ' ' + t('Each of its {0} trees is a build of its own.', specs.length) : '');
   };
   if (pob) pob.onchange = async () => {
@@ -573,7 +582,7 @@ $('importBtn').onclick = () => openShare(false);
 $('exportBtn').onclick = () => openShare(true);
 $('importFile').onchange = async e => {
   const x = JSON.parse(await e.target.files[0].text());   // one build, or a backup of all of them ({ builds: [...] }): added to the ones there are
-  for (const b of Array.isArray(x?.builds) ? x.builds : [x]) if (b && typeof b === 'object') addBuild({ ...blank(), ...b });
+  for (const b of Array.isArray(x?.builds) ? x.builds : [x]) if (b && typeof b === 'object') addBuild({ ...blank(), ...b });   // one already here is not added again
   e.target.value = ''; document.getElementById('sharePanel')?.remove();
 };
 

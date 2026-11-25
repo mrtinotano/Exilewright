@@ -1001,5 +1001,6 @@
  "No rules found in {0}": "{0}에 규칙이 없습니다",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0}에 규칙이 {1}개 있습니다. 기존 규칙을 바꿀까요, 아니면 뒤에 추가할까요?",
  "{0} rules imported.": "규칙 {0}개를 가져왔습니다.",
- "{0} lines the creator has no field for were left out.": "편집기에 항목이 없는 {0}줄은 제외했습니다."
+ "{0} lines the creator has no field for were left out.": "편집기에 항목이 없는 {0}줄은 제외했습니다.",
+ "This build is already here: \u00ab{0}\u00bb. It is open.": "이 빌드는 이미 있습니다: «{0}». 열려 있습니다."
 }

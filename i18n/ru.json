@@ -1001,5 +1001,6 @@
  "No rules found in {0}": "В {0} нет правил",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "В {0} правил: {1}. Заменить ими ваши или добавить после ваших?",
  "{0} rules imported.": "Импортировано правил: {0}.",
- "{0} lines the creator has no field for were left out.": "Пропущено строк, для которых в редакторе нет поля: {0}."
+ "{0} lines the creator has no field for were left out.": "Пропущено строк, для которых в редакторе нет поля: {0}.",
+ "This build is already here: \u00ab{0}\u00bb. It is open.": "Этот билд уже здесь: «{0}». Он открыт."
 }

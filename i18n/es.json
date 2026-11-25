@@ -1001,5 +1001,6 @@
  "No rules found in {0}": "No hay reglas en {0}",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} tiene {1} reglas. ¿Sustituyes las tuyas por ellas o las añades después de las tuyas?",
  "{0} rules imported.": "{0} reglas importadas.",
- "{0} lines the creator has no field for were left out.": "Se han dejado fuera {0} líneas para las que el creador no tiene campo."
+ "{0} lines the creator has no field for were left out.": "Se han dejado fuera {0} líneas para las que el creador no tiene campo.",
+ "This build is already here: \u00ab{0}\u00bb. It is open.": "Esta build ya está aquí: «{0}». Está abierta."
 }
