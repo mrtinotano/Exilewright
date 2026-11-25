@@ -3426,7 +3426,7 @@ export function initScene(el, api) {
         const RN = fx.decal(pp, 1.4, 'rune', WARD, { a: .85, spin: .8 }); later(.5, () => RN.remove());
         fx.ring(pp, .3, 1.6, WARD, .5, { a: .7 }); fx.emit(24, { p: { x: pp.x, y: .3, z: pp.z }, r: .4, h: 1.6, up: 1.6, v: .4, life: .9, size: .16, c: WARD, c2: 'white', k: 2, drag: 1 });
         fx.num({ x: pp.x - .5, y: 1.4, z: pp.z }, '−' + short(n), css('blood'), .46); fx.num({ x: pp.x + .5, y: 1.7, z: pp.z }, '+' + short(n * AX / 100), '#5a9bff', .52, true);   // what it paid and what it gave
-        me.wardAt = time; return say(`${S.label}: +${Math.round(n * AX / 100)} ${t('Runic Ward')}`, WARD); }
+        me.skin = { at: time, hex: WARD, dur: 1.5 }; return say(`${S.label}: +${Math.round(n * AX / 100)} ${t('Runic Ward')}`, WARD); }
       // Hollow Shell: its pulse spends all your Runic Ward (on top of its cost) for its share of it as Guard, for its duration
       // (the higher Guard stays, up to 200% of your life), on you no more than once every its per-target cooldown
       const HS = st['skill_hollow_shell_spent_ward_%_to_grant_as_guard'];
@@ -3628,16 +3628,40 @@ export function initScene(el, api) {
   };
   // Apocalypse: for its duration, at its interval, one of its Elemental skills around an enemy near you: its Hailstorm
   // (its bolts at random intervals within its least and most, each in its secondary radius), its meteor (its fire part,
-  // after its time to impact) or its static field (its lightning part's pulses, then its final strike)
+  // after its time to impact) or its static field (its lightning part's pulses, then its final strike).
+  // Its look (unleash_the_elements .ao/.pet/.mat): on the cast fire and embers pulled in to you, snow and bolts of
+  // lightning on you, the ground under you cracked and glowing and your skin lit orange (onact_charge_skin: 1 / 0.53 /
+  // 0.2); the world darkened in a warm tint while it lasts (environmentdarkening: 1 / 0.69 / 0.54); hailstones falling
+  // in pale blue trails, bursting in a cyan ring of frost and snow (cold: 0.62 / 0.79 / 1, ring 0.65 / 1 / 1); a burning
+  // meteor out of the sky in a trail of flame, its blast leaving a glowing crater, smoke and debris (fire: 1 / 0.45 /
+  // 0.11); a blue marker pulsing on the ground with sparks, then a bolt out of the sky and a blue shockwave (lightning:
+  // beam 0.15 / 0.24 / 1, shockwave 0.24 / 0.48 / 1)
+  const APO = { skin: 0xff8833, ice: 0x9ec9ff, frost: 0xa6ffff, fire: 0xff731c, bolt: 0x3d6bff, wave: 0x3d7aff, flash: 0xc2c9ff, smoke: 0x3a3028 };
   K.apocalypse = S => {
     const st = S.dmg?.stats || {}, dur = durOf(S), F = partOf(S, 'ApocalypseFirePlayer'), L = partOf(S, 'ApocalypseLightningPlayer'), LF = partOf(S, 'ApocalypseLightningFinalStrikePlayer');
     const r2 = S.G?.radius2 || .8; let tk = 0;
     setBuff({ label: S.label, name: S.name, c: css('lightning'), s: dur });
+    me.apo = { until: time + dur }; me.skin = { at: time, hex: APO.skin, dur: 1 };
+    const G = fx.decal(pp, 2.4, 'cracks', APO.fire, { a: .85 }); later(1.2, () => G.remove());
+    fx.glow({ x: pp.x, y: 1.1, z: pp.z }, 3, APO.fire, .5, 3);
+    for (let k = 0; k < 24; k++) { const a = k / 24 * TAU, q = { x: pp.x + Math.cos(a) * 3, y: rnd(.2, 1.4), z: pp.z + Math.sin(a) * 3 }; fx.emit(1, { p: q, dir: V(-Math.cos(a), .15, -Math.sin(a)), v: 5, life: .55, size: .3, c: 'fire', c2: 'ember', k: 2, drag: .5 }); }
+    fx.emit(16, { p: { x: pp.x, y: 2.4, z: pp.z }, r: .9, v: .3, life: .9, size: .1, c: 0xd8ecff, c2: 'white', g: 2 });
+    for (let k = 0; k < 3; k++) later(k * .12, () => fx.bolt(V(pp.x + rnd(-1.2, 1.2), 7, pp.z + rnd(-1.2, 1.2)), V(pp.x, 1.2, pp.z), APO.bolt, .18, .06, .4));
     const one = [
-      c => { let w = 0; for (let k = 0; k < (st.unleash_blizzard_number_of_bolts || 1); k++) { w += rnd(st.unleash_blizzard_minimum_bolt_frequency_ms, st.unleash_blizzard_maximum_bolt_frequency_ms) / 1000; const q = around(c, 2); later(w, () => { fx.streak(V(q.x + 2, 13, q.z - 1.5), V(q.x, 0, q.z), 'cold', .12, .06, 1.8); later(.16, () => { pop(q, r2, 'cold'); area(q, r2, S); }); }); } },
-      F && (c => { const w = F.dmg.stats.unleash_meteor_time_till_impact_ms / 1000; fx.telegraph(c, F.A, 'fire', w); later(w, () => { pop(c, F.A, 'fire'); boom(c, F.A, F); shake = .3; }); }),
-      L && (c => { const n = L.dmg.stats.unleash_static_field_number_of_pluses || 1, w = L.dmg.stats.unleash_static_field_time_till_final_strike_ms / 1000, dec = fx.decal(c, L.A, 'rune', 'lightning', { a: .5, spin: .5 });
-        for (let k = 0; k < n; k++) later(k * w / n, () => area(c, L.A, L)); later(w, () => { dec.remove(); fx.bolt(V(c.x, 14, c.z), V(c.x, 0, c.z), 'lightning', .3, .12, .5); if (LF) boom(c, L.A, LF); }); }),
+      c => { let w = 0; for (let k = 0; k < (st.unleash_blizzard_number_of_bolts || 1); k++) { w += rnd(st.unleash_blizzard_minimum_bolt_frequency_ms, st.unleash_blizzard_maximum_bolt_frequency_ms) / 1000; const q = around(c, 2);
+        later(w, () => lob(fx.orb('ice', .13), V(q.x + 1.2, 11, q.z - .9), V(q.x, .1, q.z), .3, 0, () => {
+          fx.ring(q, .1, r2 * 1.6, APO.frost, .35, { a: .8 }); const D = fx.decal(q, r2 * 1.3, 'patch', APO.ice, { a: .55 }); later(.8, () => D.remove());
+          fx.emit(10, { p: { x: q.x, y: .2, z: q.z }, r: r2 * .5, v: 2, up: 1.2, life: .45, size: .14, c: 0xe6f6ff, c2: APO.frost, drag: 2, g: 3 }); area(q, r2, S); }, { trail: APO.ice })); } },
+      F && (c => { const w = F.dmg.stats.unleash_meteor_time_till_impact_ms / 1000, fly = Math.min(.45, w); fx.telegraph(c, F.A, 'fire', w);
+        later(w - fly, () => lob(fx.orb('fire', .5), V(c.x + 5, 22, c.z - 4), V(c.x, .3, c.z), fly, 0, () => {
+          pop(c, F.A, 'fire'); boom(c, F.A, F); shake = .4; fx.glow({ x: c.x, y: 1, z: c.z }, F.A * 2.5, APO.fire, .35, 3);
+          const D = fx.decal(c, F.A * .9, 'cracks', APO.fire, { a: .8 }); later(1.4, () => D.remove());
+          fx.emit(18, { p: { x: c.x, y: .3, z: c.z }, r: F.A * .4, v: F.A * 1.6, flat: true, life: .9, size: .5, grow: 2, c: APO.smoke, drag: 2 });
+          fx.emit(14, { p: { x: c.x, y: .3, z: c.z }, r: .5, v: 3, up: 4, life: .8, size: .14, c: 0x5a4030, c2: 'fire', g: 10 }); }, { trail: 'fire', big: true })); }),
+      L && (c => { const n = L.dmg.stats.unleash_static_field_number_of_pluses || 1, w = L.dmg.stats.unleash_static_field_time_till_final_strike_ms / 1000, dec = fx.decal(c, L.A, 'ring', APO.bolt, { a: .6, pulse: 9 });
+        for (let k = 0; k < n; k++) later(k * w / n, () => { fx.ring(c, .2, L.A, APO.bolt, .4, { a: .7 }); fx.emit(6, { p: { x: c.x, y: .2, z: c.z }, r: L.A * .6, v: 1.5, up: 1, life: .3, size: .1, c: APO.flash, c2: 'white', drag: 2 }); area(c, L.A, L); });
+        later(w, () => { dec.remove(); fx.bolt(V(c.x, 16, c.z), V(c.x, 0, c.z), APO.bolt, .3, .2, .5); fx.bolt(V(c.x + .3, 16, c.z - .2), V(c.x, 0, c.z), APO.flash, .25, .07, .7);
+          fx.ring(c, .3, L.A * 1.7, APO.wave, .4, { a: .8 }); fx.glow({ x: c.x, y: 1, z: c.z }, L.A * 1.3, APO.bolt, .3, 2.4); if (LF) area(c, L.A, LF); }); }),
     ].filter(Boolean);
     thing(holder(pp), dur, { name: S.name, tick(dt) {
       if ((tk -= dt) > 0) return; tk = st.unleash_the_elements_base_trigger_frequency_ms / 1000;
@@ -4352,17 +4376,19 @@ export function initScene(el, api) {
   // Ancestral Cry's Kaom (ancestralcrykaom*.ao: Kaom's skin on you): the figure a fifth larger, its skin dark red
   // glowing as embers (warcry_ancestral's red-orange) and sparks rising off it, while it lasts
   const KAOM_SKIN = new THREE.Color(0x6e2414), KAOM_GLOW = 0xff5a1e, KG = new THREE.Color(KAOM_GLOW);
-  let kaomK = 0;
-  // (and Animus Exchange's: your skin glows Runic Ward blue for 1.5 s after it, w; note: how long is not in the data)
-  const WARD = 0x125eff, WG = new THREE.Color(WARD);
+  let kaomK = 0, apoK = 0;
+  // (and a skill's glow on your skin for a moment, w: me.skin = { at, hex, dur }: Animus Exchange's Runic Ward blue for
+  // 1.5 s, Apocalypse's orange for 1 s; note: how long is not in the data)
+  const WARD = 0x125eff, WG = new THREE.Color();
   function kaomLook(dt) {
-    const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), w = Math.max(0, 1 - (time - (me.wardAt ?? -9)) / 1.5);
+    const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
+    if (w) WG.set(sk.hex);
     if (!k && !w && !player.kaomed) return;
     player.kaomed = k > 0 || w > 0; player.group.scale.setScalar(1 + .2 * k);
     player.group.traverse(m => { if (!m.isSkinnedMesh || !m.material?.emissive) return; const M = m.material, u = M.userData;
       if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; }
       M.color.copy(u.c0).lerp(KAOM_SKIN, k).lerp(WG, w * .6); M.emissive.copy(u.e0).lerp(KG, k).lerp(WG, w); M.emissiveIntensity = u.i0 * (1 - Math.max(k, w)) + k * (.22 + .08 * Math.sin(time * 7)) + w * .9; });
-    if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: WARD, k: 1.8, drag: 1 });   // its runes rising off you
+    if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: sk.hex, k: 1.8, drag: 1 });   // its runes, embers rising off you
     if (k && Math.random() < k * .6) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 2), z: pp.z }, r: .35, up: 1.2, v: .3, life: .6, size: .12, c: 'fire', c2: 'ember', k: 1.6, drag: 1 });
   }
   const demon = () => me.demon ? Math.min(me.demon.max, Math.floor(time - me.demon.at)) : 0;
@@ -6502,7 +6528,7 @@ export function initScene(el, api) {
       KA.walked = 0;   // a Volcanic Step: a wave of fire on the ground from your feet, flames rising (hires_shockwave, fire_flare .mat)
       const c = { x: pp.x, z: pp.z }, R = KA.S.A; fx.ring(c, .3, R, 'fire', .4, { a: .7 }); fx.emit(30, { p: { x: c.x, y: .15, z: c.z }, r: .3, v: R * 2.2, flat: true, life: .4, size: .22, c: 'fire', c2: 'ember', drag: 1.5 });
       fx.emit(14, { p: { x: c.x, y: .1, z: c.z }, r: .4, up: 2.4, v: .8, life: .45, size: .3, c: 'fire', c2: 'ember', k: 1.8, drag: 1.5 }); area(c, R, KA.S, { soft: true }); }
-    kaomLook(dt);
+    kaomLook(dt); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
     // camera and cursor

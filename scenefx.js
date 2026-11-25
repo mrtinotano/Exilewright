@@ -465,10 +465,10 @@ export function createFx(scene) {
 export const ROOM = 30;   // m from its centre to the wall
 const std = (color, roughness = .9, metalness = 0, o = {}) => new THREE.MeshStandardMaterial({ color, roughness, metalness, ...o });
 export function buildArena(scene, fx) {
-  const SKY = 0x4d5b6e;
+  const SKY = 0x4d5b6e, WARM = new THREE.Color(1, .69, .54), DUSK = new THREE.Color(0x2a2522); let dimK = 0;
   scene.background = new THREE.Color(SKY);
   scene.fog = new THREE.Fog(SKY, 60, 190);
-  scene.add(new THREE.HemisphereLight(0xcfe0ff, 0x3a3d42, 1.1));
+  const hemi = new THREE.HemisphereLight(0xcfe0ff, 0x3a3d42, 1.1); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff2dc, 2.6);
   sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0005; sun.shadow.normalBias = .03;
   Object.assign(sun.shadow.camera, { left: -24, right: 24, top: 24, bottom: -24, near: 1, far: 90 });
@@ -506,6 +506,9 @@ export function buildArena(scene, fx) {
   return {
     ground,
     update(dt, pp) { sun.position.set(pp.x - 14, 32, pp.z + 10); sun.target.position.set(pp.x, 0, pp.z); },
+    // the world darkened in a warm tint, k 0..1 (Apocalypse's environmentdarkening: 1 / 0.69 / 0.54)
+    dim(k) { if (k === dimK) return; dimK = k; hemi.intensity = 1.1 * (1 - .55 * k); sun.intensity = 2.6 * (1 - .5 * k);
+      sun.color.set(0xfff2dc).lerp(WARM, k * .6); scene.background.set(SKY).lerp(DUSK, k); scene.fog.color.copy(scene.background); },
   };
 }
 
