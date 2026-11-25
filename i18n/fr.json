@@ -978,5 +978,7 @@
  "Rune tattoos": "Runes tatouées",
  "Conditions": "Conditions",
  "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Cochez ce qui est vrai pendant le combat : ses bonus comptent dans les dégâts de toutes les compétences. Le simulateur les vérifie lui-même.",
- "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Cochez ce qui est vrai pendant le combat : ses bonus comptent dans les valeurs du personnage. Le simulateur les vérifie lui-même."
+ "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Cochez ce qui est vrai pendant le combat : ses bonus comptent dans les valeurs du personnage. Le simulateur les vérifie lui-même.",
+ "Other": "Autres",
+ "Where it comes from": "Provenance"
 }

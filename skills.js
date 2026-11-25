@@ -46,7 +46,7 @@ function condRows(s, b, sum) {
 function details(g, b, sum, geo) {
   const G = GEM[g.name] || {}, s = skill(g, b, sum), st = s.stats, geom = geo?.(g) || {};
   const sec = (title, rows) => (rows = rows.filter(Boolean)).length
-    ? `<h4>${t(title)}</h4>${rows.map(([k, v]) => `<div class="kv"><span>${t(k)}</span><b>${v}</b></div>`).join('')}` : '';
+    ? `<h4>${t(title)}</h4>${rows.map(([k, v]) => `<div class="kv"${k === 'Damage per Second' ? ' data-why="dps"' : ''}><span>${t(k)}</span><b>${v}</b></div>`).join('')}` : '';
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
   const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
   const sups = (g.supports || []).filter(n => GEM[n]);

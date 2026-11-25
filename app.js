@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
-import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
+import { SLOTS, initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { toughness } from './optimize.js';
@@ -241,6 +241,33 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   return withConds(sum, b.conds);   // the states the player says hold (the conditions panels): not in the simulator, which checks them itself
 }
 const treeSum = () => sumOf(B()), rawSum = () => sumOf({ ...B(), conds: null });
+// where a build's stats come from, for the panels' breakdowns: the campaign, the skills' buffs, the tree, the ascendancy,
+// each worn item (with its own armour, evasion, energy shield); Other: what sumOf adds on top (effects of other bonuses,
+// radius jewels, small passives' increased effect, the conditions ticked)
+function sourcesOf(b) {
+  const sum = sumOf(b), cq = conquest(b), nodes = ids => ids.reduce((o, id) => plusStats(o, nodeStats(id, b, cq)), {}), worn = wornItems(b, sum) || {};
+  const S = [[t('Campaign rewards'), questStats(b)], [t('Skills'), plusStats({ ...skillStats(b) }, auraStats(b, sum))],
+    [t('Passive tree'), nodes([...new Set([...b.nodes, ...setOf(b, b.wset || 1)])])], [t('Ascendancy'), nodes(b.ascNodes || [])],
+    ...Object.entries(worn).map(([slot, it]) => [t(SLOTS[slot] || 'Jewel') + (it.name ? ` (${it.name})` : ''), gearStats({ [slot]: it }), { base_physical_damage_reduction_rating: pieceDef(worn, slot, 'armour'),
+      base_evasion_rating: pieceDef(worn, slot, 'evasion'), base_maximum_energy_shield: pieceDef(worn, slot, 'energy_shield') }])];   // the piece's own: calc.js reads it apart from the stats
+  const known = S.reduce((o, [, st]) => plusStats(o, st), {}), other = {};
+  for (const x of S) if (x[2]) plusStats(x[1] = { ...x[1] }, x[2]);
+  for (const k in sum) if (Math.abs((sum[k] || 0) - (known[k] || 0)) > .001) other[k] = sum[k] - (known[k] || 0);
+  return [...S, [t('Other'), other]];
+}
+// the stats behind a number of the panels (data-why): the bonuses as they are, not the ones that need a state, nor the
+// minions', the enemies', the requirements
+const NOT_WHY = /minion|companion|totem|all(?:y|ies)|enem|requirement|penetrat|break|taken|_(?:per|on|when|while|if|during|vs|against|for|with)_|recently/;
+const WHY = { life: k => /maximum_life/.test(k), mana: k => /maximum_(?:life_)?mana/.test(k), es: k => /energy_shield/.test(k) && !/recharge|delay|regen|recover|leech|sacrific|bypass/.test(k),
+  spirit: k => /spirit/.test(k), armour: k => /(?<!body_)armour|physical_damage_reduction_rating/.test(k) && !/movement/.test(k), evasion: k => /evasion/.test(k), block: k => /block/.test(k),
+  ...Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [e, k => /resist/.test(k) && (k.includes(e) || e !== 'chaos' && /elemental|all_elements/.test(k))])),
+  ...Object.fromEntries([['str', 'strength'], ['dex', 'dexterity'], ['int', 'intelligence']].map(([a, w]) => [a, k => (k.includes(w) || /all_attributes/.test(k)) && !/level/.test(k)])),
+  dps: k => /damage|attack_speed|cast_speed|skill_speed|critical_strike|critical_hit/.test(k) && !/movement|projectile_speed|reflect|recoup|leech|resist|reduction/.test(k) };
+const whyOf = what => sourcesOf(B()).map(([label, st]) => [label, shownLines(Object.fromEntries(Object.entries(st).filter(([k, v]) => v && !NOT_WHY.test(k) && WHY[what](k))))])
+  .filter(([, L]) => L.length).map(([label, L]) => `${label}:\n  ${L.join('\n  ')}`).join('\n');
+// worked out on hovering (not at every drawing): after the title the number had
+document.addEventListener('mouseover', e => { const x = e.target.closest?.('[data-why]'); if (!x || x.dataset.whyAt) return;
+  const W = WHY[x.dataset.why] && whyOf(x.dataset.why); x.dataset.whyAt = 1; if (W) x.title = (x.title ? x.title + '\n\n' : '') + t('Where it comes from') + ':\n' + W; });
 // Scene geometry in metres (game units / 10). Everything comes from skills.json + the tree, except values the game data lacks.
 function geo(g) {
   const d = SK.skills[g.name] || {}, gm = GEM[g.name], tags = [...gm?.tags || d.tags || [], ...g.name === 'Parry' ? ['parry'] : [], ...gm?.types?.includes('Offering') ? ['offering'] : []], T = { ...treeSum() };   // Parry's hit area (parry_area_of_effect_+%)

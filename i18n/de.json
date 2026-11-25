@@ -978,5 +978,7 @@
  "Rune tattoos": "Tätowierte Runen",
  "Conditions": "Bedingungen",
  "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Markiere, was im Kampf zutrifft: Die Boni zählen für den Schaden aller Fertigkeiten. Der Simulator prüft sie selbst.",
- "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Markiere, was im Kampf zutrifft: Die Boni zählen für die Werte des Charakters. Der Simulator prüft sie selbst."
+ "Tick what holds while you fight: its bonuses count in the character's numbers. The simulator checks them on its own.": "Markiere, was im Kampf zutrifft: Die Boni zählen für die Werte des Charakters. Der Simulator prüft sie selbst.",
+ "Other": "Sonstiges",
+ "Where it comes from": "Herkunft"
 }
