@@ -1107,13 +1107,14 @@ function tipHtml(tip, id, n) {
   const b = B(), jv = n.type === 'jewel' && itemView(b.items?.['jewel:' + id]), cq = conquest(b).get(id);   // a socket: the jewel in it; a timeless jewel's conquest
   const by = cq && itemView(cq.by)?.name;
   const lines = statLines(nodeStats(id)).concat(n.grants_skill ? [t('Grants: {0}', n.grants_skill)] : [], lacks(id, b).length ? [t('Requires {0}', lacks(id, b).map(x => label(N[x])).join(', '))] : [], jv ? [jv.name || jv.base, ...jv.mods] : [],
-    cq?.seed ? [t('{0} changes this passive by its seed, which the game data does not show: it counts as it is.', by)] : cq ? [t('Conquered by {0}', by)] : []);
+    cq && !cq.seed ? [t('Conquered by {0}', by)] : []);
   const cost = preview(id).filter(x => !isRoot(x)).length, start = n.ascendancy_start;
   const sets = [1, 2].filter(k => setOf(b, k).includes(id)), forSet = mode && !n.ascendancy;
   const mine = b.nodes.includes(id) || b.ascNodes.includes(id) || forSet && sets.includes(mode);
   tip.className = 'tip-' + (isRoot(id) ? 'root' : n.type);
   tip.innerHTML = `<div class="th">${esc(label(cq?.ks || cq?.over || cq?.named || n))}<small>${isRoot(id) ? t('Class start') : t(KIND[n.type])}${n.ascendancy ? ' · ' + esc(n.ascendancy) : ''}${sets.map(k => ' · ' + t('Set {0}', k)).join('')}</small></div>`
     + (lines.length ? `<div class="tb">${lines.map(esc).join('<br>')}</div>` : '')
+    + (cq?.seed ? `<div class="disc">${esc(t('{0} changes this passive by its seed, which the game data does not show: it counts as it is.', by))}</div>` : '')
     + (cost || mine ? impactHtml(t(mine ? 'If you remove it' : 'If you allocate it'), nodeImpact(id)) : '')
     + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${cq?.tell ? t('Right click: what it is in the game') + '<br>' : ''}${start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
       : mine ? t('Click: remove') : forSet && !setOK(id) ? t('Cannot be allocated to a weapon set') : t('Cannot be allocated from here')}</div>`;

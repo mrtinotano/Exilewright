@@ -114,7 +114,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
         const item = s => {
           const c = colour(s), what = supportText(s) || gemLines(s.name, 1).join(' · ');
           return `<button class="supopt${s.name === g.supports[open[1]] ? ' on' : ''}" data-sup="${esc(s.name)}" data-find="${esc((tn(s) + ' ' + s.name + ' ' + what).toLowerCase())}">
-            <img src="${img(s.icon)}" alt=""><span><b style="color:${c ? ATTRS[c][2] : '#ccc'}">${esc(tn(s))}</b><small>${esc(what || t('No description in the game data yet'))}</small>${gain(s.name)}</span></button>`;
+            <img src="${img(s.icon)}" alt=""><span><b style="color:${c ? ATTRS[c][2] : '#ccc'}">${esc(tn(s))}</b><small>${what ? esc(what) : `<i class="disc">${t('No description in the game data yet')}</i>`}</small>${gain(s.name)}</span></button>`;
         };
         picker = `<div class="suppick"><div class="suphead"><input class="supfind" type="search" placeholder="${t('Filter supports…')}" autocomplete="off">
           <small class="note">${t('{0} supports compatible with this skill\'s types', opts.length)}</small></div>

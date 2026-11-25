@@ -297,6 +297,11 @@
   #tip.tip-notable .th { color:#e8c872; } #tip.tip-keystone .th { color:#f0a860; } #tip.tip-jewel .th { color:#7fc0e0; } #tip.tip-root .th { color:#f0e0b0; }
   #tip .tb, .gtip .tb { padding:6px 12px; color:#8888ff; font-size:13px; line-height:1.45; }
   #tip .tf, .gtip .tf { padding:4px 12px 6px; color:#7a6e58; font-size:11px; border-top:1px solid #2a2418; }
+  /* what the app says of itself next to the game's words (its data lacks something, a line is not counted): a notice
+     of its own, never one more of the game's lines. A block of a window (div) or a few words in a line (i) */
+  .disc { color:#b59a66; font-size:11px; font-style:italic; line-height:1.4; }
+  .disc::before { content:'ⓘ '; font-style:normal; }
+  #tip .disc, .gtip .disc { padding:5px 12px; border-top:1px dashed #4a3f2a; }
   /* what a change does to the build (impact.js): tree tooltip, item card, list entries */
   .imp { padding:5px 12px 6px; border-top:1px solid #2a2418; font-size:12px; line-height:1.5; font-variant-numeric:lining-nums tabular-nums; }
   .imph { color:#8a7a5c; font-size:11px; text-align:center; }

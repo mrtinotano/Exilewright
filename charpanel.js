@@ -15,7 +15,7 @@ const ico = k => `<img class="cp-ico ${k}" src="poe2_data/available/img/panel/${
 export function renderChar(el, b, sum, { asc, cls, points, need, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x }) {
   const c = character(b, sum), R = c.res;
   const questsOpen = el.querySelector('.cp-quests')?.open;   // drawn anew at every change: stays as it was left
-  const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (${t('Not understood: it is not counted')})`)].map(esc).join(' · ');
+  const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (ⓘ ${t('Not understood: it is not counted')})`)].map(esc).join(' · ');   // ⓘ: the app's own notice (.disc in index.html), in words alone: an option of a list takes no markup
   const box = (k, label, val, title = '') => `<div class="cp-box ${k}"${title ? ` title="${esc(t(title))}"` : ''}>${ico(k)}<small>${t(label)}</small><b>${val}</b></div>`;
   const pctOr = (p, raw, what) => p != null ? Math.round(p) + '%' : n(raw);
   const res = (k, label) => `<div class="cp-res ${k}" title="${t('Maximum {0}%', R[k].max)}">${ico(k)}<span>${t(label)}</span><b>${R[k].capped}% <i>(${R[k].value}%)</i></b></div>`;
