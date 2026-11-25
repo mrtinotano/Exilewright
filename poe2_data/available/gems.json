@@ -49731,54 +49731,6 @@
   "description_zh": "召喚深淵之靈，在一段時間內[Hinder|阻礙]一名[Rarity|稀有][MonsterCategory|不死族]。若在該[MonsterCategory|不死族][Hinder|阻礙]時擊敗它，則可將其捕獲並儲存於靈魂水晶技能寶石中。擁有強大深淵力量的使用者可利用靈魂水晶召喚被束縛的[MonsterCategory|不死族]作為[Reviving|復甦][Companion|盟友]。"
  },
  {
-  "name": "Abyssal Apparition",
-  "name_es": "Aparición abisal",
-  "name_pt": "Aparição Abissal",
-  "name_fr": "Apparition abyssale",
-  "name_de": "Abgründige Erscheinung",
-  "name_ru": "Призрак Бездны",
-  "name_ja": "アビサルアパリション",
-  "name_ko": "심연의 유령",
-  "name_th": "<size:35>{ปีศาจจากเบื้องลึก}",
-  "name_zh": "深淵幻象",
-  "id": "Metadata/Items/Gem/SkillGemTriggeredAbyssalApparition",
-  "kind": "active",
-  "tier": 0,
-  "source": "passive_or_ascendancy",
-  "tags": [
-   "grants_active_skill",
-   "spell",
-   "trigger"
-  ],
-  "attr": {
-   "str": 0,
-   "dex": 0,
-   "int": 0
-  },
-  "skill_gems_index": 1072,
-  "socket_icon": "Art/Textures/Interface/2D/2DArt/UIImages/InGame/SkillPanel/SkillPanelAscendancyIcon.dds",
-  "icon": "Art/2DArt/SkillIcons/AbyssalLichApparitionSkill.dds",
-  "types": [
-   "Spell",
-   "Triggerable",
-   "Triggered",
-   "InbuiltTrigger",
-   "AttackInPlace"
-  ],
-  "cannot_be_supported": true,
-  "buff_icon": null,
-  "description": "Consume a [Charges|Power Charge] when you cast a damaging [Spell] to trigger an Abyssal Apparition who will also cast that same [Spell] for you. Does not work with [Channelling] Spells, Spells with a Cooldown, [Trigger|Triggered] Spells, Spells granted by items, or Spells which already consume a [Charges|Power Charge]. This Skill is not directly Supportable.",
-  "description_es": "Consume una [Charges|carga de poder] cuando lanzas un [Spell|hechizo] dañino para activar una aparición abisal que también lanzará ese mismo [Spell|hechizo] para ti. No funciona con hechizos de [Channelling|canalización], hechizos con enfriamiento, los hechizos [Trigger|activados], los hechizos otorgados por objetos ni los hechizos que ya consumen una [Charges|carga de poder]. Esta habilidad no puede ser asistida directamente.",
-  "description_pt": "Ao conjurar uma [Spell|magia] de dano, você consome uma [Charges|carga de poder] e ativa uma Aparição Abissal, que lança a mesma [Spell|magia] para você. Não funciona com magias de [Channelling|canalização], magias com tempo de recarga, magias [Trigger|ativadas], magias concedidas por itens ou magias que já consomem [Charges|carga de poder]. Esta habilidade não é reforçada diretamente.",
-  "description_fr": "Consomme une [Charges|Charge de pouvoir] lorsque vous lancez un [Spell|Sort] endommageant pour déclencher une Apparition abyssale qui lance également ce même [Spell|Sort] pour vous. Ne fonctionne pas avec les Sorts [Channelling|Canalisés], ayant un Temps de recharge, [Trigger|Déclenchés], octroyés par des objets ou qui consomment déjà une [Charges|Charge de pouvoir]. Cette Aptitude n'est pas directement Modifiable.",
-  "description_de": "Verbraucht eine [Charges|Energie-Ladung], wenn Ihr einen schädigenden [Spell|Zauber] wirkt, um eine Abgründige Erscheinung auszulösen, die denselben [Spell|Zauber] für Euch wirkt. Funktioniert nicht mit [Channelling|Kanalisierungs]fertigkeiten, Zaubern mit einer Abklingzeit, [Trigger|ausgelösten] Zaubern, von Gegenständen gewährten Zaubern oder Zaubern, die bereits eine [Charges|Energie-Ladung] verbrauchen. Diese Fertigkeit kann nicht direkt unterstützt werden.",
-  "description_ru": "Поглощает [Charges|заряд энергии] при сотворении героем наносящих урон [Spell|чар], вызывая срабатывание Призрака Бездны, который так же сотворит те же самые [Spell|чары]. Не работает с [Channelling|поддерживаемыми] чарами, чарами с перезарядкой, [Trigger|срабатывающими] чарами, чарами, дарованными предметами, и чарами, которые уже поглощают [Charges|заряд энергии].",
-  "description_ja": "ダメージを与える[Spell|スペル]をキャストした時に[Charges|パワーチャージ]を消費し、アビサルアパリション(アビスの幻影)をトリガーし、その幻影にプレイヤーの代わりに同じ[Spell|スペル]をキャストさせる。[Channelling|チャネリング]スペル、クールダウンを持つスキル、[Trigger|トリガー]されたスペル、アイテムによって付与されるスペル、すでに[Charges|パワーチャージ]を消費するスペルでは機能しない。このスキルは直接サポートジェムをつけることができない。",
-  "description_ko": "피해를 주는 [Spell|주문]을 시전할 때 [Charges|권능 충전]을 소모하여 심연의 유령을 발동시킵니다. 심연의 유령도 같은 [Spell|주문]을 시전합니다. [Channelling|집중 유지] 주문, 재사용 대기시간이 있는 주문, [Trigger|발동형] 주문, 아이템이 부여하는 주문, 이미 [Charges|권능 충전]을 소모하는 주문에는 적용되지 않습니다. 이 스킬은 직접 보조를 받을 수 없습니다.",
-  "description_th": "กลืนกิน [Charges|Power Charge] 1 ลูกเมื่อคุณร่าย [Spell|เวท] เพื่อทริกเกอร์ ปีศาจจากเบื้องลึก (Abyssal Apparition) ที่จะร่าย [Spell|เวท] เดียวกันนั้นให้คุณ ไม่สามารถใช้กับเวทที่ต้อง[Channelling|แชนเนล], เวทที่มีคูลดาวน์, เวทที่[Trigger|ทริกเกอร์]ออกมา, เวทที่มาจากไอเทม หรือเวทที่กลืนกิน [Charges|Power Charge] อยู่แล้ว ตัวสกิลนี้ไม่สามารถถูกเสริมด้วยหินเสริมโดยตรงได้",
-  "description_zh": "當你施放傷害型[Spell|法術]，會消耗一個[Charges|暴擊球]來觸發深淵幻象，它會和你施放同一個[Spell|法術]。無法使用[Channelling|引導]法術、具有冷卻時間的法術、[Trigger|觸發]法術、物品賦予的法術，或是已消耗[Charges|暴擊球]的法術。此技能無法直接提供輔助。"
- },
- {
   "name": "Creeping Chill",
   "name_es": "Escalofrío",
   "name_pt": "Arrefecimento Insidioso",

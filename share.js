@@ -9,7 +9,7 @@ const POB_CLASS = { Ranger: 2, Huntress: 8, Warrior: 6, Mercenary: 9, Druid: 11,
 const POB_ASC = { Deadeye: 'Ranger1', Pathfinder: 'Ranger3', Amazon: 'Huntress1', 'Spirit Walker': 'Huntress2', Ritualist: 'Huntress3',
   Titan: 'Warrior1', Warbringer: 'Warrior2', 'Smith of Kitava': 'Warrior3', Tactician: 'Mercenary1', Witchhunter: 'Mercenary2',
   'Gemling Legionnaire': 'Mercenary3', Oracle: 'Druid1', Shaman: 'Druid2', Infernalist: 'Witch1', 'Blood Mage': 'Witch2', Lich: 'Witch3',
-  'Abyssal Lich': 'Witch3b', Stormweaver: 'Sorceress1', Chronomancer: 'Sorceress2', 'Disciple of Varashta': 'Sorceress3',
+  Stormweaver: 'Sorceress1', Chronomancer: 'Sorceress2', 'Disciple of Varashta': 'Sorceress3',
   'Martial Artist': 'Monk1', Invoker: 'Monk2', 'Acolyte of Chayula': 'Monk3' };
 const POB_SLOT = { weapon: 'Weapon 1', offhand: 'Weapon 2', helmet: 'Helmet', body: 'Body Armour', gloves: 'Gloves', boots: 'Boots',
   amulet: 'Amulet', ring1: 'Ring 1', ring2: 'Ring 2', ring3: 'Ring 3', belt: 'Belt', flask1: 'Flask 1', flask2: 'Flask 2', charm1: 'Charm 1', charm2: 'Charm 2', charm3: 'Charm 3',

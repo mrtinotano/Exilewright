@@ -18161,30 +18161,6 @@
  },
  {
   "stats": [
-   "damage_+%_final_from_lich_apparition_cloned_skill"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "Les [Spell|Sorts] Lancés par l'Apparition ont {0}% Davantage de Dégâts",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "Les [Spell|Sorts] Lancés par l'Apparition ont {0}% de Perte de Dégâts",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "debuff_time_passed_+%"
   ],
   "rows": [

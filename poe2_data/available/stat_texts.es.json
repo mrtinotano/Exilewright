@@ -18163,30 +18163,6 @@
  },
  {
   "stats": [
-   "damage_+%_final_from_lich_apparition_cloned_skill"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "Los [Spell|hechizos] lanzados por la aparición infligen un {0}% más de daño",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "Los [Spell|hechizos] lanzados por la aparición infligen un {0}% menos de daño",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "debuff_time_passed_+%"
   ],
   "rows": [

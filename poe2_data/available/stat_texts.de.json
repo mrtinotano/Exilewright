@@ -18162,30 +18162,6 @@
  },
  {
   "stats": [
-   "damage_+%_final_from_lich_apparition_cloned_skill"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "[Spell|Zauber], die von der Erscheinung gewirkt werden, verursachen {0}% mehr Schaden",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "[Spell|Zauber], die von der Erscheinung gewirkt werden, verursachen {0}% weniger Schaden",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "debuff_time_passed_+%"
   ],
   "rows": [

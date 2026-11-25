@@ -18167,30 +18167,6 @@
  },
  {
   "stats": [
-   "damage_+%_final_from_lich_apparition_cloned_skill"
-  ],
-  "rows": [
-   {
-    "c": [
-     "1|#"
-    ],
-    "t": "유령이 시전한 [Spell|주문]으로 주는 피해 {0}% 증폭",
-    "h": []
-   },
-   {
-    "c": [
-     "#|-1"
-    ],
-    "t": "유령이 시전한 [Spell|주문]으로 주는 피해 {0}% 감폭",
-    "h": [
-     "negate",
-     "1"
-    ]
-   }
-  ]
- },
- {
-  "stats": [
    "debuff_time_passed_+%"
   ],
   "rows": [

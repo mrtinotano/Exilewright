@@ -2040,37 +2040,6 @@ export function initScene(el, api) {
       if ((wait -= dt) > 0) return; const j = js[k++ % js.length], d = near(p, SIM.projRange); wait = 1 / base(j).dmg.speed; if (!d) return;
       const o = { x: pp.x, z: pp.z }; pp.x = p.x; pp.z = p.z; use(j, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta', more }); pp.x = o.x; pp.z = o.z; } });
   }
-  // Abyssal Apparition (the Lich's): a damaging spell you cast consumes a Power Charge and an Apparition casts that spell
-  // too, with its less damage (skills.json). Not channelled, cooldown, triggered or item-granted spells, nor those that
-  // already consume a Power Charge (its text). Its look is the game's: a dark figure with its yellow-green glow (the
-  // apparition's material, AO_Glow 0.81 1 0.23) that fades out in about a second (apparition_fade's emitter).
-  // note: where it stands and how long it waits to cast are not in the data: beside you, a step back, a quarter second
-  const ABYSS = 0xcfff3b;
-  function apparition(i, S) {
-    const j = byName('Abyssal Apparition'), P = S.P, src = api.info(S.g).gem?.source;
-    if (j < 0 || !P.spell || P.channel || S.dmg?.cooldown || !damaging(S) || P.spend.includes('power') || P.spendOne || !(charges.power > 0) || ['item_base', 'unique_item', 'item_mod'].includes(src)) return;
-    charges.power--; chargesSpent(1, 'power');
-    const D = SK.skills['Abyssal Apparition'], g = api.build().gems[j], more = 1 + ((D.levels[g.level] || D.levels[1])['damage_+%_final_from_lich_apparition_cloned_skill'] || 0) / 100;
-    const p = { x: pp.x - S.dz * 1.4 - S.dx * .7, z: pp.z + S.dx * 1.4 - S.dz * .7 }, at = { ...S.at }, G = makeHumanoid(fx), halo = new THREE.Mesh(new THREE.TorusGeometry(.2, .018, 6, 28), fx.glowMat(ABYSS, 2.4, .9));
-    G.group.position.set(p.x, 0, p.z); G.group.rotation.y = Math.atan2(at.x - p.x, at.z - p.z); halo.position.set(0, 1.78, -.12); G.group.add(halo);
-    let cast = .25;
-    const dye = a => G.group.traverse(o => { if (!o.isMesh || o === halo || !o.material?.color) return;
-      if (!o.userData.dyed) { o.userData.dyed = true; o.material = o.material.clone(); o.material.color.set(0x3a3c42); o.material.emissive?.set(ABYSS); o.material.emissiveIntensity = .09; o.castShadow = false; }
-      o.material.transparent = true; o.material.opacity = a; });
-    fx.emit(24, { p: { x: p.x, y: .2, z: p.z }, r: .5, h: 1.6, v: 1.2, up: 1.5, life: .4, size: .22, c: ABYSS, c2: 0x26272b, k: 1.6, drag: 2 });
-    fx.ring(p, .2, 1.1, ABYSS, .35, { a: .6 });
-    thing(G.group, 1.4, { name: 'Abyssal Apparition',
-      tick(dt, e) {
-        G.update(dt, {}); const a = e.s < .15 ? e.s / .15 : e.s > .9 ? Math.max(0, (1.4 - e.s) / .5) : 1; dye(.92 * a); halo.material.opacity = .9 * a;
-        if (Math.random() < a * .25) fx.emit(1, { p: { x: p.x, y: rnd(.2, 1.7), z: p.z }, r: .45, v: .4, up: .8, life: .35, size: .1, c: ABYSS, k: 1.4, drag: 1 });
-        if (cast > 0 && (cast -= dt) <= 0) {
-          G.act(clipOf(P, S.kind, G.family()), .5);
-          const o = { x: pp.x, z: pp.z }; pp.x = p.x; pp.z = p.z; use(i, { at, src: 'apparition', here: true, more }); pp.x = o.x; pp.z = o.z;   // ponytail: cast from where it stands by moving you there for the use, as mirage()
-        }
-        if (e.s > .9 && Math.random() < .5) fx.emit(2, { p: { x: p.x, y: rnd(.3, 1.6), z: p.z }, r: .35, dir: V(-S.dx, .6, -S.dz), v: 1.5, life: .3, size: .2, c: ABYSS, k: 1.6, drag: 1.5 });   // the fade's ribbons
-      },
-      off() { G.dispose(); halo.geometry.dispose(); } });
-  }
   // Skittering Stone: enough enemies killed within its radius of an earthen object of the supported skill shatter it,
   // releasing its stones (calc.js minionOf: the game's monster), each for its duration, up to its most
   function hatch(p) {
@@ -3004,7 +2973,7 @@ export function initScene(el, api) {
       } else move = { from, to, k: 0, dur: P.jump ? .45 : .22, h: P.jump ? 2.6 : 0, S, land, seen: new Set(), crash, jag: S.dmg?.stats?.skill_jagged_ground_base_duration_ms / 1000, step: 0 };
     },
     nova(S) {
-      const P = S.P; let c = S.src && !S.here ? S.at : S.from;   // here: cast as by hand where it stands (an Abyssal Apparition)
+      const P = S.P; let c = S.src ? S.at : S.from;
       if (P.from) { const q = objs.find(o => o.proj && o.name === P.from && !o.dead); if (q) { c = { x: q.pos.x, z: q.pos.z }; say(t('{0} erupts from {1}', S.label, labelOf(P.from)), S.el); } }
       const R = stageR(S), dur = Math.min(.5, .12 + R * .045);
       // Elemental Sundering: its pulse deals nothing; it Consumes the Freeze, Shock and Ignite of the enemies in it, nearest
@@ -4702,7 +4671,6 @@ export function initScene(el, api) {
     const run = S.dmg?.cmd && (!P.toggle || tog[S.name]) ? djinnCast : K[S.kind] || K.area;
     run(S); whirl(S);
     if (!auto) zealotry(S);
-    if (!auto) apparition(i, S);
     // Olroth's Conviction: the skill uses it Empowers, and that many more. note: not an Echoing Cry's later ones
     if (!auto && P.spell && S.dmg?.castTime) event('cast', pp, S, null, S.dmg.castTime / 100);   // Spellslinger
     if (!auto && P.attack && P.ranged && P.projectile) mirage('Mirage Deadeye');

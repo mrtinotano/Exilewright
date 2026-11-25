@@ -96,7 +96,9 @@ support_ids = {s['SkillGem'] for s in supports}
 lineage_ids = {s['SkillGem'] for s in supports if s['IsLineage']}
 
 # where non-cuttable skills come from; anything left over is most likely unobtainable
-granted_by_passive = {p['GrantedSkill'] for p in load('PassiveSkills') if p['GrantedSkill'] is not None}
+graph, roots, pos, centres, orbit, radii = parse_psg(os.path.join(ROOT, 'files', 'metadata', 'passiveskillgraph.psg'))
+# a passive's skill only while the passive is on the real graph (the Abyssal Lich's are still in the tables)
+granted_by_passive = {p['GrantedSkill'] for p in load('PassiveSkills') if p['GrantedSkill'] is not None and p['PassiveSkillGraphId'] in graph}
 granted_by_mod = {x['Skill'] for x in load('ModGrantedSkills')}
 granted_by_unique = {s for x in load('SkillGemsForUniqueStat') for s in x['SkillGems']}
 weapon_default = {s for x in load('CharacterMeleeSkills') for s in x['SkillGems']}
@@ -216,7 +218,6 @@ save('keywords.json', {k['Id']: {'term': plain(k['Term']), 'def': plain(k['Defin
                        for i, k in enumerate(load('KeywordPopups')) if k['Id'] in used})
 
 # --- passive tree (only nodes on the real graph, not from unused ascendancies)
-graph, roots, pos, centres, orbit, radii = parse_psg(os.path.join(ROOT, 'files', 'metadata', 'passiveskillgraph.psg'))
 asc = load('Ascendancy')
 passives = load('PassiveSkills')
 passives_tr = {c: {p['PassiveSkillGraphId']: p for p in rows} for c, rows in load_langs('PassiveSkills').items()}
@@ -317,6 +318,7 @@ save('passive_tree.json', {'class_roots': roots, 'socketed': socketed, 'socket_a
                            'keystone_list': [str(passives[k['Passive']]['PassiveSkillGraphId']) for k in load('PassiveKeystoneList')]})
 
 # --- ascendancies / classes
+live_asc = {n['ascendancy'] for n in nodes.values() if n['ascendancy']}   # those with passives on the real graph (not the Abyssal Lich)
 chars, chars_tr, asc_tr = load('Characters'), load_langs('Characters'), load_langs('Ascendancy')
 save('ascendancies.json', [{'name': a['Name'], **tr(asc_tr, ai), 'class': chars[a['Character']]['Name'] if a['Character'] is not None else None,
                             # the class name per language, as {name, name_es, ...} (app: tn(class_names))
@@ -327,7 +329,7 @@ save('ascendancies.json', [{'name': a['Name'], **tr(asc_tr, ai), 'class': chars[
                             # every number of the class row (base life/mana... whatever this patch's Characters has)
                             'class_base': {k: v for k, v in chars[a['Character']].items() if type(v) in (int, float)} if a['Character'] is not None else None,
                             'attrs': {'str': chars[a['Character']]['BaseStrength'], 'dex': chars[a['Character']]['BaseDexterity'], 'int': chars[a['Character']]['BaseIntelligence']}
-                            if a['Character'] is not None else None} for ai, a in enumerate(asc) if ok(a['Name'])])
+                            if a['Character'] is not None else None} for ai, a in enumerate(asc) if a['Name'] in live_asc])
 
 # --- uniques: what the Unique Stash Tab knows about; hidden-if-empty ones are flagged
 words, layout = load('Words'), load('UniqueStashLayout')
