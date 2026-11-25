@@ -2074,7 +2074,7 @@ export function initScene(el, api) {
   // glow (its emissive), a (opacity), dark (second spark colour), halo (a mesh over its head), back (where its fade
   // blows), spawn (its own appearing instead of the sparks and ring)
   function visage(p, at, o, cast, P, S) {
-    const G = makeHumanoid(fx), halo = o.halo;
+    const G = makeHumanoid(fx), halo = o.halo; if (o.look) G.setLook(o.look);
     G.group.position.set(p.x, 0, p.z); G.group.rotation.y = Math.atan2(at.x - p.x, at.z - p.z); if (halo) G.group.add(halo);
     let wait = .25;
     const dye = a => G.group.traverse(m => { if (!m.isMesh || m === halo || !m.material?.color) return;
@@ -3013,6 +3013,11 @@ export function initScene(el, api) {
       const GT = su.support_greatwood_number_of_active_totems_in_base_radius_to_track, gwN = () => GT ? Math.min(su.support_greatwood_maximum_number_of_active_totems_in_radius_for_effects, objs.filter(o => o.totemOf && o !== e && !o.dead && dist(o.pos, e.pos) <= GT / 10).length) : 0;
       const GR = su['support_greatwood_life_regeneration_rate_per_minute_%_per_totem_in_radius'] || 0;
       f.group.position.set(c.x, 0, c.z); f.group.rotation.y = facing; scene.add(f.group);
+      // Ancestral Warrior Totem (its tutorial video; ancestor_totem's spectre .mat): the totem glows the spirits' pale blue,
+      // and each use conjures a spirit warrior beside it, towards the enemy, that uses the socketed Mace skill once (as
+      // you would, from where it stands) and fades. note: where the warrior stands is not in the data: up to 1.5 m out
+      const AW = S.name === 'Ancestral Warrior Totem' && real && j >= 0;
+      if (AW) f.group.traverse(m => { if (m.isMesh && m.material?.emissive) { m.material = m.material.clone(); m.material.emissive.set(SPECTRE); m.material.emissiveIntensity = .12; } });
       fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
       let wait = .5;
       me.totemAt = time;
@@ -3020,6 +3025,7 @@ export function initScene(el, api) {
         update(dt) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
           const sg = e.segs?.[0], rg = sg && (S.dmg.totemRegen || 0) + (GR && gwN() * GR / 60); if (rg) sg.life = Math.min(sg.max, sg.life + sg.max * rg / 100 * dt);   // the tree's totem life regeneration; Greatwood's per other totem in its radius
+          if (AW && Math.random() < dt * 12) fx.emit(1, { p: { x: e.pos.x, y: rnd(.4, 2), z: e.pos.z }, r: .35, up: .5, v: .3, life: .6, size: .14, c: SPECTRE, k: 1.4, drag: 1 });   // its ghostly wisps
           if ((wait -= dt) > 0) return;
           if (sheet().totemOnShot && !(me.shotAt > e.shot)) return;   // Cannons, Ready!: it only uses its skill when you fire an Attack Projectile (once for each, no faster than it can)
           const d = near(e.pos, far ? 12 : R0 + 1); if (!d) { wait = .2; return; }
@@ -3029,6 +3035,11 @@ export function initScene(el, api) {
           const TS = gw ? { ...TS0, mult: TS0.mult * (1 + gw * su['damage_+%_final_per_totem_in_radius_from_support_greatwood'] / 100) } : TS0, R = R0 * Math.sqrt(1 + gw * (su['area_of_effect_+%_per_totem_in_radius_from_support_greatwood'] || 0) / 100);
           if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
           else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
+          else if (AW) {
+            const l = Math.max(.6, Math.min(1.5, k - 1)), q = { x: e.pos.x + (d.pos.x - e.pos.x) / k * l, z: e.pos.z + (d.pos.z - e.pos.z) / k * l }, at = { x: d.pos.x, z: d.pos.z };
+            fx.bolt(V(e.pos.x, 1.3, e.pos.z), V(q.x, .9, q.z), SPECTRE, .25, .05, 0);
+            visage(q, at, { name: S.label, c: SPECTRE, body: 0xcfefff, glow: .7, a: .6, back: { x: 0, z: 0 }, look: api.look?.() }, () => use(j, { at, src: 'totemHit', here: true, more: TS.mult / (F.mult || 1) }), F.P, F);
+          }
           else { fx.ring(e.pos, .3, R, S.el, .4); fx.disc(e.pos, R, S.el, .3, { a: .35 }); area(e.pos, R, TS, real ? {} : { mult: .6 }); }
           if (SPL && gen < SPL && ++acts >= su.support_splinter_totem_splinter_after_X_actions) { e.die(); for (let i = 0; i < 2; i++) K.totem({ ...S, at: around(e.pos, 1.2), gen: gen + 1 }); }
         },
