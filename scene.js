@@ -138,7 +138,7 @@ export function initScene(el, api) {
   // ---------- state
   const tpl = { mon: null, level: 1, attack: null, rarity: null, mods: [] };   // the enemy the next click places
   let divine = [];   // Fragments of Divinity lying in your Presence: { p, until, dec }
-  const me = { life: 0, es: 0, maxL: 0, maxE: 0, hurt: -9, safe: 0, recoup: [], known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
+  const me = { life: 0, es: 0, maxL: 0, maxE: 0, widow: 0, hurt: -9, safe: 0, recoup: [], known: false, mana: 0, maxM: 0, rage: 0, raged: -99, heat: 0,
     st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], calm: 0, tick: .5, by: null, fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, ward: 0, jade: 0, maxW: 0, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, arctic: 0, travAt: {}, voltAt: {}, rifts: [], incs: [], bark: [], trav: 0, wind: 0, sealAt: {}, fallen: [], grim: 0 };   // your pools: life and energy shield against their attacks, mana for your skills, Rage; the ailments their hits put on you
   const camS = { yaw: 0, pitch: .93, dist: 16 }, camT = V(), cursor = V(0, 0, 6);
   const keys = {}, mouse = new THREE.Vector2(), ray = new THREE.Raycaster(), plane = new THREE.Plane(V(0, 1, 0), 0);
@@ -2247,7 +2247,7 @@ export function initScene(el, api) {
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
       if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
-      const DR = cur.P.attack && !o.back && cur.dmg?.sum?.attack_projectiles_return_after_piercing_X_times, IB = brokeP && cur.P.attack && !o.back && cur.dmg?.sum?.arrow_projectiles_return_if_they_have_pierced_a_fully_armour_broken_target; if (DR && pierced >= DR || IB) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Ironbound: so if it pierced a target with fully broken armour. Drillneck: it returns to you after piercing that many times
+      const RS = cur.P.attack && !o.back && cur.dmg?.sum, DR = RS?.attack_projectiles_return_after_piercing_X_times, IB = brokeP && RS?.arrow_projectiles_return_if_they_have_pierced_a_fully_armour_broken_target; if (DR && pierced >= DR || IB) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Ironbound: so if it pierced a target with fully broken armour. Drillneck: it returns to you after piercing that many times
       const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur.name, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
       if ((P.chains || S.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
         chain(m.position.clone(), hitD, cur, Math.max(SC, (D.chains || 0) + (S.addChains || 0) + (UL === 1 ? 1 : 0)), seen, mult());
@@ -5280,7 +5280,7 @@ export function initScene(el, api) {
     if (me.life < 1 && me.ward >= 1 - me.life) { spendWard(1 - me.life); me.life = 1; }
     if (me.life < 1 && time < me.sight) me.life = 1;   // Future-Past's Sight Beyond Sight
     if (me.life <= 0 && hit && Math.random() * 100 < (sheet().avoidDeath || 0)) me.life = 1;   // the tree's chance to Avoid Death from Hits
-    if (sheet().widowFor && me.life < life0) { me.widow = (me.widow || 0) + life0 - me.life; me.widowAt = time; }   // Widow's Reign: the life the damage took is reserved (vitals)
+    if (sheet().widowFor && me.life < life0) { me.widow += life0 - me.life; me.widowAt = time; }   // Widow's Reign: the life the damage took is reserved (vitals)
     if (me.life <= 0) died(d?.mon.name || '?');
   }
   // The attack of the enemy d reaches you: evade (its accuracy against your evasion), block, crit, then armour and resistances
@@ -5977,8 +5977,8 @@ export function initScene(el, api) {
     const c = sheet(), L = c.life || 0, E = (c.es || 0) * (1 + banner('energy_shield_+%_final') / 100) * regulate('endurance', 'charge_mastery_armour_evasion_energy_shield_+%_final_with_endurance_charges')
       * (1 + (c.defWhile || []).filter(w => w.to.includes('s') && meIs[w.cv]?.()).reduce((t, w) => t + w.val, 0) / 100 / (c.esInc || 1)); me.known = c.life != null;   // the tree's increased energy shield while in a state (DEF_WHILE)
     if (L !== me.maxL) { me.life = me.maxL ? me.life / me.maxL * L : L; me.maxL = L; }
-    if (c.lifeReserved) me.life = Math.min(me.life, me.maxL * (1 - c.lifeReserved / 100));   // the reserved life cannot be filled
-    if (me.widow) { if (time - me.widowAt >= c.widowFor) me.widow = 0; else me.life = Math.min(me.life, me.maxL * (1 - (c.lifeReserved || 0) / 100) - me.widow); }   // Widow's Reign: nor what damage took, until none takes life for its time
+    if (me.widow && time - me.widowAt >= c.widowFor) me.widow = 0;   // Widow's Reign: what damage took of your life is reserved until none takes life for its time
+    if (c.lifeReserved || me.widow) me.life = Math.min(me.life, me.maxL * (1 - (c.lifeReserved || 0) / 100) - me.widow);   // the reserved life cannot be filled (with none, life may Overflow)
     for (const a in me.st) if (me.st[a] > 0 && immune(a)) { me.st[a] = 0; delete me.burn[a]; }   // a state that makes you immune ends the ailment
     if (me.mounted && (!c.mountOk || !tog['Rhoa Mount'])) me.mounted = false;   // no Bow or Spear, or Rhoa Mount off: on foot
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
