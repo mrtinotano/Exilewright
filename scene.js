@@ -593,6 +593,7 @@ export function initScene(el, api) {
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
       const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of your own Heavy Stun buildup (its description)
       if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((me.bar.stun || 0) / 5) / 100;
+      const CM = S.comp && d.mark && sheet().compMarked; if (CM) for (const e in raw) raw[e] *= 1 + CM / 100;   // Sylvan's Effigy: your Companions' increased damage to your Marked targets. note: as a factor
       const VK = !S.src && d.vile >= 1 && sheet().vile; if (VK) for (const e in raw) raw[e] *= 1 + Math.min(200, VK * Math.floor(d.vile)) / 100;   // The Vile Knight: increased hit damage per second, up to 200% (its text's). note: as a factor
       const AT = d.attr >= 1 && attr();   // Attrition
       if (AT) for (const e in raw) raw[e] *= 1 + AT['skill_attrition_hit_damage_+%_final_vs_rare_or_unique_enemy_per_second_ever_in_presence_up_to_max'] * Math.floor(d.attr) / 100;
@@ -2359,7 +2360,7 @@ export function initScene(el, api) {
     // shield is lost before its life, it regenerates and Recoups (over 8 seconds: keywords.json Recoup) what the tree
     // gives minions, and a Gigantic one is 20% bigger. note: its armour and evasion are not counted, and its energy
     // shield does not recharge (a monster's recharge is not in the data)
-    const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, MS = real ? { ...S, src: 'minionHit' } : { ...S, src: 'minion', mult: .5 * S.mult }, ranged = S.P.ranged;
+    const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, comp = !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), MS = real ? { ...S, src: 'minionHit', comp } : { ...S, src: 'minion', mult: .5 * S.mult, comp }, ranged = S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
     fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el });
     let wait = rnd(.3, 1), sw = 0;
