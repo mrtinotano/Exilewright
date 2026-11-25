@@ -220,12 +220,12 @@ export function createFx(scene) {
       const tr = ['fire', 'cold', 'chaos'].includes(c);
       return add(m, dur, k => { m.position.lerpVectors(a, b, k); if (tr) fx.trail(m.position, c, true); });
     },
-    // an arrow left stuck in the ground at p for `dur` seconds, leaning as it fell from (dx, dz) (Rain of Arrows' video)
-    stuck(p, c, dx = 1.5, dz = -1, dur = 1.2) {
-      const m = fx.arrow(c), l = Math.hypot(dx, dz) || 1;
+    // an arrow left stuck in the ground at p for a moment, leaning as a rain's fall (Rain of Arrows' video)
+    stuck(p, c) {
+      const m = fx.arrow(c), dx = 1.5, dz = -1, l = Math.hypot(dx, dz);
       m.position.set(p.x + dx / l * .25, .3, p.z + dz / l * .25); m.lookAt(p.x - dx / l * .6, -.5, p.z - dz / l * .6); m.children[1].visible = false;   // no glow at a buried tip
       emit(3, { p: { x: p.x, y: .05, z: p.z }, r: .1, v: .4, up: .6, life: .6, size: .35, grow: 1.8, c: 'dust', smoke: true, a: .35 });
-      return add(m, dur, k => { if (k >= 1) drop(m); else m.children.forEach(x => { x.material.transparent = true; x.material.opacity = k < .7 ? 1 : (1 - k) / .3; }); });
+      return add(m, 1.2, k => { if (k >= 1) drop(m); else m.children.forEach(x => { x.material.transparent = true; x.material.opacity = Math.min(1, (1 - k) / .3); }); });
     },
     // circular sector from p towards angle `ang` (radians on the ground plane), half-angle `half`
     sector(p, dx, dz, r, half, c, dur = .3, o = {}) {
