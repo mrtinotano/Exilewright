@@ -118,7 +118,7 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
     for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
   }
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
-  for (const [id, val] of Object.entries(socketStats(item, { ...out }).stats)) out[id] = (out[id] || 0) + val;   // what the editor socketed in it
+  for (const [id, val] of Object.entries(socketStats(item, out).stats)) out[id] = (out[id] || 0) + val;   // what the editor socketed in it
   return legacies(out);
 }
 // What is socketed in an item (it.socketed: names of items.json socketables, '' an empty socket) -> { stats, idols, others }:
@@ -128,7 +128,7 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
 // cls: the class they count for (the Martial Artist's tattoos: their slot's)
 // Runic Meridians: the rune-only sockets tattooed for a slot, as many as the game's line says ("1 Helmet socket")
 export const CHAKRA = { helmet: 'Helmets', body: 'Body Armours', gloves: 'Gloves', boots: 'Boots' };
-const chakraN = () => Object.fromEntries([...statLinesEn({ enable_chakras: 1 }).join('\n').matchAll(/(\d+) (Helmet|Body Armour|Gloves|Boots) socket/g)].map(m => [{ Helmet: 'helmet', 'Body Armour': 'body', Gloves: 'gloves', Boots: 'boots' }[m[2]], +m[1]]));
+const chakraN = () => Object.fromEntries([...statLinesEn({ enable_chakras: 1 }).join('\n').matchAll(/(\d+) (Helmet|Body Armour|Gloves|Boots) socket/g)].map(m => [Object.keys(CHAKRA).find(k => CHAKRA[k].startsWith(m[2])), +m[1]]));
 export const SOCKETABLES = Object.fromEntries((D.socketables || []).map(x => [x.name, x]));
 export function socketStats(it, own = {}, bonded = false, cls = own.local_item_benefit_socketable_as_if_body_armour ? 'Body Armours' : baseOf(it)?.class) {
   const stats = {};
@@ -1196,7 +1196,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     } else if (t.dataset.act === 'sock') {
       items[slot].socketed[+t.dataset.i] = t.value;
     } else if (t.dataset.act === 'tattoo') {
-      const b = getBuild(); ((b.chakra ||= {})[slot] ||= [])[+t.dataset.i] = t.value;
+      ((getBuild().chakra ||= {})[slot] ||= [])[+t.dataset.i] = t.value;
     } else if (t.dataset.path?.split('.')[1] === 'f') {   // a roll of the gloves' Fists of Stone form
       const [s, , id] = t.dataset.path.split('.'), it = items[s], m = fistMods(it).find(x => x.id === id), arr = [...m.values];
       arr[+t.dataset.k] = +t.value; (it.fistVals ||= {})[id] = fixVals(m.stats, arr);
