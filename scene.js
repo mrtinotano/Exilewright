@@ -678,7 +678,7 @@ export function initScene(el, api) {
     if (crit && own && S.name !== 'Midnight Zenith') zenith(d);
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
     if (Math.random() * 100 < D?.stats?.['%_chance_to_apply_hounded_by_wisps_on_hit']) d.ff = [...(d.ff || []).filter(u => u > time).slice(1 - FAERIE.max), time + FAERIE.time];   // Azmerian Swarms: a Swarm's hit inflicts Faerie Fire
-    if (own && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade)
+    if (own && !D?.sum?.cannot_inflict_blind && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade); not with Blindside
     const UH = own && sheet().uHit, r = p => Math.random() * 100 < p;   // uniques' on hit (Intimidate and Withered for their text's 4 s)
     const UE = own && sheet().uEv;   // uniques: Critical Weakness from spell crits, Volatility on crits, thorns on melee hits
     if (!S.src && crit && sheet().tailwind?.crit && time - (me.tailAt ?? -9) >= 1) { me.tailAt = time; me.tail = Math.min(TAILWIND.max, (me.tail || 0) + 1); }   // The Black Insignia: Tailwind on Critical Hit, once a second
@@ -944,7 +944,7 @@ export function initScene(el, api) {
   function inflict(d, a, S, k = 1, raw = null, o = null) {
     if (d.dead || d.imm[a] > 0 || sheet().noEleAil && !S.src && ['ignite', 'chill', 'freeze', 'shock'].includes(a)) return;   // Plaguefinger: no elemental ailments of yours
     if (sheet().noImmob && !/minion|totem/.test(S?.src || '') && ['freeze', 'stun', 'electrocute', 'pin'].includes(a)) return;   // The Prisoner's Manacles: cannot Immobilise
-    if (a === 'poison' && !S.src && sheet().blindPoison) d.st.blind = BLIND.time;   // Murkshaft: Blind when you poison
+    if (a === 'poison' && !S.src && sheet().blindPoison && !S.dmg?.sum?.cannot_inflict_blind) d.st.blind = BLIND.time;   // Murkshaft: Blind when you poison
     if (o) { if (a === 'chill' && d.st.freeze > 0) return; if (a === 'freeze') d.st.chill = 0; }
     else if (a === 'freeze') {   // freeze builds up over several cold hits
       if (d.st.freeze > 0) return;
@@ -1158,7 +1158,8 @@ export function initScene(el, api) {
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
     // in the data (nor in PoB2): none there
     const LK = !S.src && dist(pp, d.pos) <= 2 ? 1 + (S.dmg?.finals?.['support_lockdown_distance_based_pin_damage_+%_final'] || 0) / 100 : 1;
-    if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK * IC, S, A);
+    if (SU.cannot_pin);   // Bone Shrapnel: its skill cannot Pin
+    else if (A.pin) build(d, 'pin', (A.pinPhys ? x('physical') : allD) * GC.PinDamageScale * A.pin * LK * IC, S, A);
     else if (o.crit && S.P.spell && SU.physical_spell_damage_can_pin_on_critical_hit && x('physical')) build(d, 'pin', x('physical') * GC.PinDamageScale * (A.immob || 1) * IC, S, A);   // Bone Chains
     const all = Object.entries(raw).reduce((t, [e, v]) => t + v * (e === 'physical' ? A.stunPhys : 1), 0);
     const STX = (!S.src && meIs.ShapeshiftedRecently() ? A.stunShift || 1 : 1) * (!S.src && dist(pp, d.pos) <= 2 ? A.stunClose || 1 : 1) * (d.life <= d.max * LOW ? A.stunLow || 1 : 1) * (!S.src && meIs.Shapeshifted() ? A.stunShifted || 1 : 1) * (o.crit ? A.stunCrit || 1 : 1) * (S.stunEmp || 1);   // the tree's stun buildup after Shapeshifting, within 2 m, on Low Life ones, while Shapeshifted; an Empowered attack's
@@ -1604,12 +1605,13 @@ export function initScene(el, api) {
     if (!o.noTouch) touch(c, R, S);
     return n;
   }
+  const stays = g => g.S?.dmg?.sum?.ground_effects_cannot_trigger;   // Persistent Ground III: its Ground Surfaces only end when their duration expires
   function touch(c, R, S) {
     for (const o of objs) if (o.touch && !o.dead && o !== S.self && dist(o.pos, c) <= R + (o.r || 0)) o.touch(S);
     const fire = S.els.includes('fire');
     if (!fire && !S.P.detonator) return;
     for (const g of grounds) {
-      if (g.dead || dist(g, c) > R + g.r) continue;
+      if (g.dead || stays(g) || dist(g, c) > R + g.r) continue;
       if (g.type === 'gas') {
         g.dead = true; say(t('{0}: the gas cloud explodes', S.label), 'fire');
         // Decompose's: its explosion part after its delay, and its permillage of the corpse's life as chaos damage
@@ -1676,7 +1678,7 @@ export function initScene(el, api) {
     return { ...withEl(A, e), dmg: { ...A.dmg, hits: { ...H, [e]: [h[0] + all[0] * pct / 100, h[1] + all[1] * pct / 100] } } }; };
   // A wind skill picks up the elemental ground it passes over.
   function absorb(S, at, r) {
-    const g = grounds.find(g => !g.dead && GROUND_EL[g.type] && !S.els.includes(GROUND_EL[g.type]) && dist(g, at) <= r + g.r * .6);
+    const g = grounds.find(g => !g.dead && !stays(g) && GROUND_EL[g.type] && !S.els.includes(GROUND_EL[g.type]) && dist(g, at) <= r + g.r * .6);
     if (!g) return S;
     const e = GROUND_EL[g.type]; g.dead = true;
     say(t('{0} absorbs {1} and gains {2}', S.label, t(GROUND[g.type]), t(cap(e))), e);
@@ -2925,7 +2927,7 @@ export function initScene(el, api) {
         if (P.jump) landed(S, at);
         // Stampede: its leaping slam at the end (its part), setting off the Jagged Ground within it, each exploding
         const SS = partOf(S, 'StampedeSlamPlayer');
-        if (SS) { boom(at, SS.A, { ...SS, mult: S.mult }); slammed(SS, at, SS.A); for (const g of grounds) if (!g.dead && g.type === 'jagged' && dist(g, at) <= SS.A + g.r) { g.dead = true; boom(g, g.r, S, { soft: true }); } }
+        if (SS) { boom(at, SS.A, { ...SS, mult: S.mult }); slammed(SS, at, SS.A); for (const g of grounds) if (!g.dead && !stays(g) && g.type === 'jagged' && dist(g, at) <= SS.A + g.r) { g.dead = true; boom(g, g.r, S, { soft: true }); } }
         // Molten Crash: its Molten Fissures (its part, up to its limit, lasting its duration), one more for the Rage it
         // consumes on landing if you have it, then its second slam setting them off
         // note: one fissure without Rage is the description's plural read at its least; their length is not in the data
@@ -5969,7 +5971,8 @@ export function initScene(el, api) {
     }
     if (d.wait > 0 || dist(d.pos, pp) > R || !api.fight?.()) return;   // they attack only when asked (Enemies attack)
     // with stored uses it strikes at its own speed while one is left; each used one recharges over the cooldown
-    const A = d.atk, used = (d.ready = (d.ready || []).filter(at => at > time)).length; d.ready.push(time + A.cooldown / Math.max(.01, 1 + (dist(d.pos, pp) <= sheet().overgrow.r ? sheet().presCd : 0) / 100));   // the tree's on enemies in your Presence
+    const A = d.atk, used = (d.ready = (d.ready || []).filter(at => at > time)).length; const SG = grounds.find(g => !g.dead && dist(g, d.pos) <= g.r && g.S?.dmg?.finals?.['ground_effects_apply_cooldown_speed_+%_final'])?.S.dmg.finals['ground_effects_apply_cooldown_speed_+%_final'] || 0;   // Persistent Ground III's Suppressive Ground: its less cooldown recovery rate for an enemy on it
+    d.ready.push(time + A.cooldown / Math.max(.01, 1 + (dist(d.pos, pp) <= sheet().overgrow.r ? sheet().presCd : 0) / 100) / Math.max(.01, 1 + SG / 100));   // the tree's on enemies in your Presence
     d.wait = Math.max(.25, A.period, used + 1 < A.uses ? 0 : Math.min(...d.ready) - time); strike(d);
   }
   // your pools follow the build; life regenerates and the energy shield recharges after its delay without damage

@@ -1498,6 +1498,7 @@ export function skill(g, b, treeGear) {
   // supports' recovery rate (Payload -70%); uses: the gem's plus "+N Cooldown Uses" (grenade_skill_cooldown_count_+).
   // Uhtred's Constellation adds its uses to a skill that is not instant
   // The game's window: Cluster Grenade 10 s at -9% (16 + 45 - 70) = 10.99 s, 2 uses
+  if (!st._cooldown_ms && sum.support_hourglass_display_cooldown_time_ms) st._cooldown_ms = sum.support_hourglass_display_cooldown_time_ms;   // Execrate, Excise, Expanse: a skill with no cooldown gains theirs
   if (st._cooldown_ms) {
     out.cdInc = v(st, 'base_cooldown_speed_+%') + inc(sum, 'cooldown_speed_+%', tags) + mod(mods, 'INC', ['CooldownRecovery'], hit) + (GEM[g.name]?.types?.includes('CommandsMinions') ? v(sum, 'minion_command_skill_cooldown_speed_+%') : 0);   // its increased recovery rate (the scene adds Explosive Rhythm's)
     out.cooldown = Math.max(0, st._cooldown_ms + v(sum, 'unique_cooldown_modifier_ms')) / (1 + out.cdInc / 100) / mod(mods, 'MORE', ['CooldownRecovery'], hit);
