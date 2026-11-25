@@ -299,7 +299,7 @@ let mapSelf = mapPlayer(sceneCfg.map);
 const simSum = () => { const s = { ...treeSum() }; for (const k in mapSelf) s[k] = (s[k] || 0) + mapSelf[k]; return s; };
 // damage of each skill of the build (calc.js), shared by the cards, the enemy panel and the scene until the build changes
 const dmgCache = new Map();
-const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, B(), treeSum())); return s; };
+const skillDmg = g => { let s = dmgCache.get(g); if (!s) dmgCache.set(g, s = skill(g, { ...B(), conds: null }, treeSum())); return s; };   // the scene checks the conditions on each hit: not the planner's
 // the scene's: with the map's less Cooldown Recovery Rate of players (a more / less of its own, so the cooldown divided by it)
 const simCd = new WeakMap(), simDmg = g => { const s = skillDmg(g), k = mapSelf['map_player_cooldown_speed_+%_final']; if (!k || !s?.cooldown) return s;
   let o = simCd.get(s); if (o?.k !== k) simCd.set(s, o = { k, s: { ...s, cooldown: s.cooldown / Math.max(.01, 1 + k / 100) } }); return o.s; };

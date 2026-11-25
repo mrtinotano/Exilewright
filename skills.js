@@ -2,7 +2,7 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, esc, tn, fmt, lang, kwPlain, kwHtml } from './i18n.js';
-import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport, GEM } from './calc.js';
+import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport, condKey, GEM } from './calc.js';
 export { canSupport, GEM };
 import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
@@ -26,6 +26,21 @@ const descOf = G => G['description_' + lang] || G.description || '';
 // what a support does in words: the game's description, else Path of Building's reading of its stats (English)
 export const supportText = S => kwPlain(descOf(S)) || SK.supports?.[S.name]?.text || '';
 const DTYPE = { physical: 'Physical Damage', fire: 'Fire Damage', cold: 'Cold Damage', lightning: 'Lightning Damage', chaos: 'Chaos Damage' };
+
+// the conditions of the skill's bonuses (calc.js out.when) the player can say hold, one row each with the lines that need
+// it: a tick, or a count for a "per" one (empty: not counted). b.conds keeps them for every skill of the build
+function condRows(s, b, sum) {
+  const by = new Map();
+  for (const w of s.when || []) {
+    if (!w.cond.every(c => /^(?:Actor)?Condition$|^Multiplier/.test(c.type))) continue;   // a buff's, a distance's: calc.js never counts them
+    let lines = w.gem && GEM[w.gem] ? [`${tn(GEM[w.gem])}: ${supportText(GEM[w.gem])}`] : w.stat ? shownLines({ [w.stat]: w.val }) : [];   // a support's: its description (its stats have no text)
+    if (!lines.length && w.stat) lines = shownLines(Object.fromEntries(Object.entries(sum).filter(([k]) => k.endsWith(w.stat))));   // inc()'s families: the build's own stats of it
+    for (const c of w.cond) { const k = condKey(c); if (!by.has(k)) by.set(k, new Set()); lines.forEach(l => by.get(k).add(l)); }
+  }
+  return [...by].map(([k, L]) => { const x = b.conds?.[k];
+    const box = k[0] === '#' ? `type="number" min="0" step="1" value="${x ?? ''}" placeholder="—"` : `type="checkbox"${x ? ' checked' : ''}`;
+    return `<label class="cond"><input ${box} data-cond="${esc(k)}"><span>${L.size ? [...L].map(esc).join('<br>') : (k.startsWith('enemy:') ? t('Enemies') + ': ' : '') + esc(k.replace(/^enemy:|^#/, '').replace(/([a-z])([A-Z0-9])/g, '$1 $2'))}</span></label>`; }).join('');
+}
 
 // side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill details window
 function details(g, b, sum, geo) {
@@ -61,6 +76,7 @@ function details(g, b, sum, geo) {
       s.ignite && ['Ignite damage per second', `${fmt(s.ignite.perSecond[0], 1)} – ${fmt(s.ignite.perSecond[1], 1)}`],
       s.ignite && ['Ignite duration', fmt(s.ignite.duration, 1) + ' s'],
     ])}
+    ${(c => c ? `<h4>${t('Conditions')}</h4><p class="note">${t('Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.')}</p><div class="conds">${c}</div>` : '')(condRows(s, b, sum))}
     ${sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]])}
     ${sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
@@ -141,6 +157,12 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
   // remove a support: ✕ on the socket or in the details panel, or right click on the socket
   const unsup = (gi, si) => { const b = getBuild(), g = usedBy(b, gi) || b.gems[gi]; if (!g?.supports?.[si]) return false; g.supports[si] = null; open = null; changed(); render(); return true; };
   side.addEventListener('click', e => { const x = e.target.closest('[data-unsup]'); if (x) unsup(...x.dataset.unsup.split(':').map(Number)); });
+  side.addEventListener('change', e => {   // a condition ticked or counted in the details panel
+    const x = e.target.closest('[data-cond]'); if (!x) return;
+    const C = getBuild().conds ||= {}, k = x.dataset.cond, val = x.type === 'checkbox' ? x.checked || null : x.value === '' ? null : Math.max(0, Math.floor(+x.value) || 0);
+    if (val == null) delete C[k]; else C[k] = val === true ? 1 : val;
+    changed(); render();
+  });
   el.addEventListener('contextmenu', e => { const s = e.target.closest('.sock'); if (s && unsup(+s.dataset.gi, +s.dataset.si)) e.preventDefault(); });
   el.addEventListener('click', e => {
     const x = e.target.closest('[data-unsup]');

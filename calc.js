@@ -1225,6 +1225,8 @@ function gemlingOf(g, sum, b) {
   const costMore = (n.int && n.int >= n.str && n.int >= n.dex ? 1 + cost / 100 : 1) * (lich && !character(b, sum).es ? 1 + lich / 100 : 1);
   return { 'damage_+%': red * n.str, 'skill_speed_+%': green * n.dex, 'critical_strike_chance_+%': blue * n.int, 'gemling_skill_cost_+%_final': (costMore - 1) * 100 };
 }
+// a condition of out.when as the planner's panel keeps it: "enemy:Frozen", "Surrounded", "#PowerCharge" (a count)
+export const condKey = c => (/^Multiplier/.test(c.type) ? '#' : c.actor === 'enemy' ? 'enemy:' : '') + c.var;
 export function skill(g, b, treeGear) {
   // a buff the scene has on (g.add: Nature's Archon's stats), added to what the tree and gear give
   // and Gemling Legionnaire: per red / green / blue (strength / dexterity / intelligence) support socketed in the skill,
@@ -1534,74 +1536,74 @@ export function skill(g, b, treeGear) {
   out.critW = critW;   // (the scene's Finality)
   out.arrowCrit = attack && tags.includes('bow') ? v(sum, 'arrow_critical_strike_chance_+%_max_as_distance_travelled_increases') : 0;   // Sniper: an arrow's increased crit chance by how far it has flown (the scene)
   out.staffPower = attack && tags.includes('quarterstaff') ? v(sum, 'quarterstaff_skills_that_consume_power_charges_count_as_consuming_x_additional_power_charges') : 0;   // One with the Storm
-  out.when = (g.supports || []).flatMap(n => (SK.supports?.[n]?.mods || []).map(m => [m, SK.skills[n]?.constant || {}]))
+  out.when = (g.supports || []).flatMap(n => (SK.supports?.[n]?.mods || []).map(m => [m, SK.skills[n]?.constant || {}, n]))
     .filter(([[name, kind, , fl, cond, stat]]) => Array.isArray(cond) && /^(?:(?:Physical|Elemental)?Damage|CritChance|CritMultiplier)$/.test(name) && /^(?:MORE|INC)$/.test(kind)
       && fl.every(hit) && !/consume_enemy_|damage_\+%_final_(?:vs|against)_\w+_enemies$/.test(stat))
-    .map(([[name, kind, val, , cond0, stat], c]) => {
+    .map(([[name, kind, val, , cond0, stat], c, gem]) => {
       const secs = +stat.match(/past_(\d+)_seconds/)?.[1] || undefined, cond = cond0.map(x => ({ ...x, secs }));   // Pursuit III: "in the past 2 seconds"
       const types = name === 'PhysicalDamage' ? ['physical'] : name === 'ElementalDamage' ? ['fire', 'cold', 'lightning'] : DMG;
       // PoB2's limit: on the total % ("limitTotal": Dauntless 45, Burgeon 40, Arakaali's 40; Inexorable Critical II's own per stat) or on the stacks (Culmination's 10)
       const lim = c[stat.replace(/_per_\w+$/, '_cap')] ?? Object.entries(c).find(([k]) => /_cap$|max(?:imum)?_(?:number_of_)?(?:\w+_)?stacks$/.test(k))?.[1], total = cond.some(x => x.limitTotal || x.limitNegTotal);
-      return { cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
+      return { stat, gem, cond, val, cap: total ? lim : undefined, stacks: total ? undefined : lim, what: /Damage$/.test(name) ? 'damage' : name === 'CritChance' ? 'crit' : 'critBonus',
         w: /Damage$/.test(name) ? Object.fromEntries(types.map(t => [t, kind === 'MORE' ? 1 : out.incW[t]])) : kind === 'MORE' ? 1 : name === 'CritChance' ? critW : cbW };
     });
   // the tree's damage of one type gained as extra damage of another against an enemy in a state (the scene's, on each hit)
   for (const [k, from, to, cv] of [['physical_damage_%_to_gain_as_lightning_vs_electrocuted', 'physical', 'lightning', 'Electrocuted'],
     ['physical_damage_%_to_gain_as_fire_vs_heavy_stunned', 'physical', 'fire', 'HeavyStunned'], ['non_skill_cold_damage_%_to_gain_as_fire_vs_frozen_enemies', 'cold', 'fire', 'Frozen']])
-    if (sum[k]) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val: sum[k], what: 'gain', from, to });
+    if (sum[k]) out.when.push({ stat: k, cond: [{ type: 'ActorCondition', actor: 'enemy', var: cv }], val: sum[k], what: 'gain', from, to });
   // the tree's, Shackles of the Wretched's and Soul Mantle's Vaal modifiers: increased (totem) damage per curse on you (the scene's count)
-  { const pc = v(sum, 'damage_+%_per_active_curse_on_self') + (tags.includes('totem') ? v(sum, 'totem_damage_+%_per_active_curse_on_self') : 0); if (pc) out.when.push({ cond: [{ type: 'Multiplier', var: 'CursesOnSelf' }], val: pc, what: 'damage', w: out.incW }); }
+  { const pc = v(sum, 'damage_+%_per_active_curse_on_self') + (tags.includes('totem') ? v(sum, 'totem_damage_+%_per_active_curse_on_self') : 0); if (pc) out.when.push({ stat: 'damage_+%_per_active_curse_on_self', cond: [{ type: 'Multiplier', var: 'CursesOnSelf' }], val: pc, what: 'damage', w: out.incW }); }
   const per5 = v(sum, 'critical_strike_chance_+%_per_5_rage');   // Prototype Seventeen: increased crit per 5 Rage
-  if (per5) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: critW });
+  if (per5) out.when.push({ stat: 'critical_strike_chance_+%_per_5_rage', cond: [{ type: 'Multiplier', var: 'Rage', div: 5 }], val: per5, what: 'crit', w: critW });
   // the tree's "Every (10) Rage also grants increased Fire / Physical / Spell Damage"
   for (const [k, div, ty, ok] of [['fire_damage_+%_per_rage', 1, 'fire', true], ['physical_damage_+%_per_10_rage', 10, 'physical', true], ['spell_damage_+%_per_rage', 1, null, tags.includes('spell')]])
-    if (ok && sum[k]) out.when.push({ cond: [{ type: 'Multiplier', var: 'Rage', div }], val: sum[k], what: 'damage', w: ty ? Object.fromEntries(SRC[ty].map(t => [t, out.incW[t]])) : out.incW });
+    if (ok && sum[k]) out.when.push({ stat: k, cond: [{ type: 'Multiplier', var: 'Rage', div }], val: sum[k], what: 'damage', w: ty ? Object.fromEntries(SRC[ty].map(t => [t, out.incW[t]])) : out.incW });
   // the tree's and gear's increased damage against an enemy in a state ("attack_damage_+%_vs_maimed_enemies",
   // "hit_damage_+%_vs_chilled_enemies"...), for the skills its prefix fits; the scene checks the state on each hit
   for (const [s, cv] of Object.entries(VS_STATE)) for (const sep of ['vs', 'against', 'to']) {
     const val = inc(sum, `damage_+%_${sep}_${s}`, [...dmgTags, 'hit']), cond = [{ type: 'ActorCondition', actor: 'enemy', var: cv }];
-    if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });
+    if (val) out.when.push({ stat: `damage_+%_${sep}_${s}`, cond, val, what: 'damage', w: out.incW });
     // and its critical hit chance / damage bonus ("critical_strike_chance_+%_vs_shocked_enemies")
     const cc = inc(sum, `critical_strike_chance_+%_${sep}_${s}`, tags), cb = inc(sum, `critical_strike_multiplier_+_${sep}_${s}`, tags);
-    if (cc) out.when.push({ cond, val: cc, what: 'crit', w: critW });
-    if (cb) out.when.push({ cond, val: cb, what: 'critBonus', w: cbW });
+    if (cc) out.when.push({ stat: `critical_strike_chance_+%_${sep}_${s}`, cond, val: cc, what: 'crit', w: critW });
+    if (cb) out.when.push({ stat: `critical_strike_multiplier_+_${sep}_${s}`, cond, val: cb, what: 'critBonus', w: cbW });
   }
   // and while you are in a state ("attack_damage_+%_while_surrounded", "melee_damage_+%_when_on_full_life")
   // what Archon buffs also grant (the tree): increased critical hit chance and damage bonus while you have one
   const AC = v(sum, 'archon_grants_critical_strike_chance_+%'), AB = v(sum, 'archon_grants_base_critical_strike_multiplier_+');
-  if (AC) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AC, what: 'crit', w: critW });
-  if (AB) out.when.push({ cond: [{ type: 'Condition', var: 'Archon' }], val: AB, what: 'critBonus', w: cbW });
-  { const PC = v(sum, 'critical_strike_multiplier_+_per_power_charge'); if (PC) out.when.push({ cond: [{ type: 'Multiplier', var: 'PowerCharge' }], val: PC, what: 'critBonus', w: cbW }); }   // Powertread: per Power Charge
+  if (AC) out.when.push({ stat: 'archon_grants_critical_strike_chance_+%', cond: [{ type: 'Condition', var: 'Archon' }], val: AC, what: 'crit', w: critW });
+  if (AB) out.when.push({ stat: 'archon_grants_base_critical_strike_multiplier_+', cond: [{ type: 'Condition', var: 'Archon' }], val: AB, what: 'critBonus', w: cbW });
+  { const PC = v(sum, 'critical_strike_multiplier_+_per_power_charge'); if (PC) out.when.push({ stat: 'critical_strike_multiplier_+_per_power_charge', cond: [{ type: 'Multiplier', var: 'PowerCharge' }], val: PC, what: 'critBonus', w: cbW }); }   // Powertread: per Power Charge
   // Excoriate (melee), Elemental Armament III (attacks): more damage per elemental ailment on the enemy hit
   const EA = (tags.includes('melee') ? finals['support_elemental_assault_melee_damage_+%_final_per_elemental_ailment_on_target'] || 0 : 0) + (attack ? finals['support_elemental_armament_attack_damage_+%_final_per_elemental_ailment_on_target'] || 0 : 0);
-  if (EA) out.when.push({ cond: [{ type: 'Multiplier', var: 'ElementalAilments' }], val: EA, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });
-  const XP = v(sum, 'critical_hit_damage_+%_against_enemies_exited_your_presence_recently'); if (XP) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'ExitedPresenceRecently' }], val: XP, what: 'critBonus', w: cbW });
+  if (EA) out.when.push({ stat: 'support_elemental_assault_melee_damage_+%_final_per_elemental_ailment_on_target', cond: [{ type: 'Multiplier', var: 'ElementalAilments' }], val: EA, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });
+  const XP = v(sum, 'critical_hit_damage_+%_against_enemies_exited_your_presence_recently'); if (XP) out.when.push({ stat: 'critical_hit_damage_+%_against_enemies_exited_your_presence_recently', cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'ExitedPresenceRecently' }], val: XP, what: 'critBonus', w: cbW });
   // the tree's per recent use: elemental penetration per Glory skill used in the last 6 s; increased damage per Glory consumed
   // in the last 6 s (attacks, up to 100%), per Combo the skill consumes (up to 40%), per Hazard triggered recently (up to 50%)
-  const by = (k, cv, cap, ok = true) => { const x = ok && v(sum, k); if (x) out.when.push({ cond: [{ type: 'Multiplier', var: cv }], val: x, cap, what: 'damage', w: out.incW }); };
+  const by = (k, cv, cap, ok = true) => { const x = ok && v(sum, k); if (x) out.when.push({ stat: k, cond: [{ type: 'Multiplier', var: cv }], val: x, cap, what: 'damage', w: out.incW }); };
   by('%_attack_damage_per_glory_consumed_for_6_seconds_up_to_100', 'GloryConsumedPast6', 100, attack); by('combo_finisher_damage_+%_up_to_40%', 'ComboConsumed', 40);
   by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50); by('damage_+%_per_warcry_used_recently', 'WarcriesRecently'); by('damage_+%_per_different_warcry_used_recently', 'DifferentWarcriesRecently'); by('gain_attack_damage_+%_for_each_your_minion_in_presence_capped', 'MinionPresenceCount', 80, attack);   // its text: up to 80%
   const GP = v(sum, 'damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds');
-  if (GP) for (const el of ['fire', 'cold', 'lightning']) out.when.push({ cond: [{ type: 'Multiplier', var: 'GlorySkillsUsedPast6' }], val: GP, what: 'pen', el });
+  if (GP) for (const el of ['fire', 'cold', 'lightning']) out.when.push({ stat: 'damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds', cond: [{ type: 'Multiplier', var: 'GlorySkillsUsedPast6' }], val: GP, what: 'pen', el });
   for (const [s, cv] of Object.entries(WHILE)) {
     const val = inc(sum, `damage_+%_${s}`, [...dmgTags, 'hit']), cond = [{ type: 'Condition', var: cv }];
-    if (val) out.when.push({ cond, val, what: 'damage', w: out.incW });
+    if (val) out.when.push({ stat: `damage_+%_${s}`, cond, val, what: 'damage', w: out.incW });
     // of a type ("fire_damage_+%_while_ignited", "elemental_damage_+%_if_enemy_chilled_recently"): that type's damage only
     for (const ty of [...DMG, 'elemental']) {
       const x = v(sum, `${ty}_damage_+%_${s}`);
-      if (x) out.when.push({ cond, val: x, what: 'damage', w: Object.fromEntries(SRC[ty].map(t => [t, out.incW[t]])) });
+      if (x) out.when.push({ stat: `${ty}_damage_+%_${s}`, cond, val: x, what: 'damage', w: Object.fromEntries(SRC[ty].map(t => [t, out.incW[t]])) });
     }
   }
-  if (sum['titan_damage_+%_final_against_heavy_stunned_enemies']) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: sum['titan_damage_+%_final_against_heavy_stunned_enemies'], what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });   // Titan's Crushing Impacts: more
-  { const MV = sum['passive_tree_mace_damage_+%_final_vs_heavy_stunned_enemies'], MW = MV && attack && weaponStats(b.items); if (MW && weaponTags(MW).includes('mace')) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: MV, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) }); }   // the tree's more mace damage against Heavy Stunned enemies
-  if (sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently']) out.when.push({ cond: [{ type: 'Multiplier', var: 'EnduranceConsumedRecently' }], val: sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently'], what: 'damage', w: Object.fromEntries(SRC.fire.map(t => [t, out.incW[t]])) });   // increased fire damage per Endurance Charge consumed Recently
-  const CR = inc(sum, 'damage_+%_at_close_range', [...dmgTags, 'hit']); if (CR) out.when.push({ cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'Within2m' }], val: CR, what: 'damage', w: out.incW });   // the tree's at Close Range (2 m, as the stun buildup's)
+  if (sum['titan_damage_+%_final_against_heavy_stunned_enemies']) out.when.push({ stat: 'titan_damage_+%_final_against_heavy_stunned_enemies', cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: sum['titan_damage_+%_final_against_heavy_stunned_enemies'], what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) });   // Titan's Crushing Impacts: more
+  { const MV = sum['passive_tree_mace_damage_+%_final_vs_heavy_stunned_enemies'], MW = MV && attack && weaponStats(b.items); if (MW && weaponTags(MW).includes('mace')) out.when.push({ stat: 'passive_tree_mace_damage_+%_final_vs_heavy_stunned_enemies', cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'HeavyStunned' }], val: MV, what: 'damage', w: Object.fromEntries(DMG.map(t => [t, 1])) }); }   // the tree's more mace damage against Heavy Stunned enemies
+  if (sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently']) out.when.push({ stat: 'gain_fire_damage_+%_per_endurance_charge_consumed_recently', cond: [{ type: 'Multiplier', var: 'EnduranceConsumedRecently' }], val: sum['gain_fire_damage_+%_per_endurance_charge_consumed_recently'], what: 'damage', w: Object.fromEntries(SRC.fire.map(t => [t, out.incW[t]])) });   // increased fire damage per Endurance Charge consumed Recently
+  const CR = inc(sum, 'damage_+%_at_close_range', [...dmgTags, 'hit']); if (CR) out.when.push({ stat: 'damage_+%_at_close_range', cond: [{ type: 'ActorCondition', actor: 'enemy', var: 'Within2m' }], val: CR, what: 'damage', w: out.incW });   // the tree's at Close Range (2 m, as the stun buildup's)
   // the tree's crit chance against an enemy with no elemental ailment
-  const NE = v(sum, 'critical_strike_chance_+%_vs_enemies_without_elemental_status_ailments'); if (NE) out.when.push({ cond: [{ type: 'Multiplier', var: 'ElementalAilments', neg: true }], val: NE, what: 'crit', w: critW });
-  if (attack && sum['elemental_damage_with_attack_skills_+%_while_using_flask']) out.when.push({ cond: [{ type: 'Condition', var: 'FlaskEffect' }], val: sum['elemental_damage_with_attack_skills_+%_while_using_flask'], what: 'damage', w: Object.fromEntries(SRC.elemental.map(t => [t, out.incW[t]])) });   // Crystal Elixir
+  const NE = v(sum, 'critical_strike_chance_+%_vs_enemies_without_elemental_status_ailments'); if (NE) out.when.push({ stat: 'critical_strike_chance_+%_vs_enemies_without_elemental_status_ailments', cond: [{ type: 'Multiplier', var: 'ElementalAilments', neg: true }], val: NE, what: 'crit', w: critW });
+  if (attack && sum['elemental_damage_with_attack_skills_+%_while_using_flask']) out.when.push({ stat: 'elemental_damage_with_attack_skills_+%_while_using_flask', cond: [{ type: 'Condition', var: 'FlaskEffect' }], val: sum['elemental_damage_with_attack_skills_+%_while_using_flask'], what: 'damage', w: Object.fromEntries(SRC.elemental.map(t => [t, out.incW[t]])) });   // Crystal Elixir
   out.areaWhile = AREA_WHILE.filter(([k, , two]) => sum[k] && (!two || w && weaponTags(w).includes('twohand') && !w.tags.includes('ranged'))).map(([k, cv]) => ({ cv, val: sum[k] }));
   out.areaIgnited = attack ? v(sum, 'attack_area_of_effect_+%_per_enemy_ignited_last_8_seconds') : 0;   // its text: up to 40%
-  for (const [k, what, cv, en, need] of CRIT_WHILE) if (sum[k] && (!need || tags.includes(need))) out.when.push({ cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
+  for (const [k, what, cv, en, need] of CRIT_WHILE) if (sum[k] && (!need || tags.includes(need))) out.when.push({ stat: k, cond: [en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }], val: sum[k], what,
     w: what === 'crit' ? critW : cbW });
   // the build's penetration of the enemy's elemental resistances, by its hits (the supports', the tree's); the attacks' own.
   // and the weapon's own ("Attacks with this Weapon Penetrate X% Fire Resistance"). note: not counted "while Shapeshifted"
@@ -1611,12 +1613,12 @@ export function skill(g, b, treeGear) {
   if (attack && b.items?.weapon && sum['reduce_enemy_chaos_resistance_with_weapons_%']) out.pen.chaos = sum['reduce_enemy_chaos_resistance_with_weapons_%'];   // "Damage with Weapons Penetrates Chaos Resistance" (a Fists of Stone modifier)
   if (d.totem && d.cast_time_ms) out.placeTime = d.cast_time_ms / 1000 / (1 + v(sum, 'summon_totem_cast_speed_+%') / 100);   // placing the totem: the gem's cast time, faster with totem placement speed
   out.projSpeed = (1 + projInc / 100) * (1 + v(finals, 'support_faster_projectiles_projectile_speed_+%_final') / 100) * (1 + v(finals, 'support_slower_projectiles_projectile_speed_+%_final') / 100);   // Projectile Acceleration, Deceleration: more, less
-  for (const el of ['fire', 'cold', 'lightning']) if (sum['penetrate_elemental_resistance_%_while_shapeshifted']) out.when.push({ cond: [{ type: 'Condition', var: 'Shapeshifted' }], val: sum['penetrate_elemental_resistance_%_while_shapeshifted'], what: 'pen', el });
-  if (sum['damage_+%_vs_immobilised_enemies_while_shapeshifted']) out.when.push({ cond: [{ type: 'Condition', var: 'Shapeshifted' }, { type: 'ActorCondition', actor: 'enemy', var: 'Immobilised' }], val: sum['damage_+%_vs_immobilised_enemies_while_shapeshifted'], what: 'damage', w: out.incW });
-  if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
+  for (const el of ['fire', 'cold', 'lightning']) if (sum['penetrate_elemental_resistance_%_while_shapeshifted']) out.when.push({ stat: 'penetrate_elemental_resistance_%_while_shapeshifted', cond: [{ type: 'Condition', var: 'Shapeshifted' }], val: sum['penetrate_elemental_resistance_%_while_shapeshifted'], what: 'pen', el });
+  if (sum['damage_+%_vs_immobilised_enemies_while_shapeshifted']) out.when.push({ stat: 'damage_+%_vs_immobilised_enemies_while_shapeshifted', cond: [{ type: 'Condition', var: 'Shapeshifted' }, { type: 'ActorCondition', actor: 'enemy', var: 'Immobilised' }], val: sum['damage_+%_vs_immobilised_enemies_while_shapeshifted'], what: 'damage', w: out.incW });
+  if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ stat: 'lightning_penetration_%_while_on_low_mana', cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
   // "increased Spell Damage if you've consumed an Elemental Infusion Recently"
   const infSpell = spell ? v(sum, 'spell_damage_+%_if_have_consumed_infusion_recently') : 0;
-  if (infSpell) out.when.push({ cond: [{ type: 'Condition', var: 'ConsumedInfusionRecently' }], val: infSpell, what: 'damage', w: out.incW });
+  if (infSpell) out.when.push({ stat: 'spell_damage_+%_if_have_consumed_infusion_recently', cond: [{ type: 'Condition', var: 'ConsumedInfusionRecently' }], val: infSpell, what: 'damage', w: out.incW });
   // the rules of the skill's other parts (its second hit, the explosion...) and the on / off rules of the gem and its
   // supports (never_freeze, always_ignite, base_consume_enemy_shock_on_hit: available.py)
   const flags = new Set([...(d.flags || []), ...(g.supports || []).flatMap(n => SK.skills[n]?.flags || [])]);
@@ -1771,6 +1773,26 @@ export function skill(g, b, treeGear) {
   if (mn) {
     const ty = Object.values(mn.hits);
     Object.assign(out, { hits: mn.hits, speed: mn.speed, crit: mn.crit, critBonus: mn.critBonus + (DJ ? v(mst, 'base_critical_strike_multiplier_+') : 0) /* a djinn's gem's own (Kelari) */, reason: null, avg: ty.length ? ty.reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0) : null });
+  }
+  // the planner's conditions (b.conds: the states the player says hold, a count for a "per" one): the bonuses of out.when
+  // they meet count in the numbers, as the scene's when() does on each hit. One not set counts as not met
+  if (b?.conds && out.when.length && out.avg != null) {
+    const met = c => { const x = b.conds[condKey(c)]; if (x == null) return 0;
+      const n = c.type === 'Multiplier' ? Math.floor(+x / (c.div || 1)) : c.type === 'MultiplierThreshold' ? +(+x >= (c.threshold || 0)) : /Condition$/.test(c.type) ? +!!x : 0;
+      return c.neg ? +!n : n; };
+    const H = out.hits = Object.fromEntries(Object.entries(out.hits).map(([t, h]) => [t, [...h]])), ex = [];
+    for (const w of out.when) {
+      const n = w.cond.reduce((t, c) => t * met(c), 1); if (!n) continue;
+      const p = w.val * Math.min(n, w.stacks || Infinity), pct = w.cap == null ? p : p < 0 ? Math.max(w.cap, p) : Math.min(w.cap, p);
+      if (w.what === 'damage') { for (const t in w.w) if (H[t]) H[t] = H[t].map(x => x * (1 + pct / 100 * w.w[t])); }
+      else if (w.what === 'pen') out.pen[w.el] = (out.pen[w.el] || 0) + pct;
+      else if (w.what === 'gain') ex.push([w.from, w.to, pct]);
+      else if (out[w.what] != null) out[w.what] *= 1 + pct / 100 * w.w;
+    }
+    for (const [from, to, p] of ex) if (H[from]) H[to] = H[from].map((x, i) => (H[to]?.[i] || 0) + x * p / 100);   // gained as extra: of the damage after the rest, as the scene's
+    for (const t in H) H[t] = H[t].map(Math.round);
+    if (out.crit != null) out.crit = Math.min(100, out.crit);
+    out.avg = Object.values(H).reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   }
   if (flags.has('global_cannot_crit')) out.crit = 0;
   if (out.avg != null && out.speed) {
@@ -2052,6 +2074,9 @@ console.assert(skill({ name: 'Mortar Cannon', level: 18, supports: ['Multishot I
     && skill({ name: 'Runic Tempering', level: 20 }, b, {}).costPerSecond === true
     && skill({ name: 'Orb of Storms', level: 20, supports: ['Efficiency I'] }, b, {}).cost === 91 && skill({ name: 'Orb of Storms', level: 20, supports: ['Lifetap'] }, b, {}).lifeCost === 129
     && (s => s.cost === 129 && s.lifeCost === 129)(skill({ name: 'Orb of Storms', level: 20 }, b, { skill_cost_base_life_equal_to_base_mana: 1 })), 'mana cost'); }   // Sanguimancy: that much life too
+// self-check: the planner's conditions. 50% increased damage while Surrounded counts once ticked, x1.5 with no other increase
+{ const d = conds => skill({ name: 'Fireball', level: 10 }, { gems: [], items: {}, conds }, { 'damage_+%_while_surrounded': 50 }).dps;
+  console.assert(d(undefined) === d({}) && Math.abs(d({ Surrounded: 1 }) / d({}) - 1.5) < .01, 'planner conditions', d({}), d({ Surrounded: 1 })); }
 
 // Tribute (Undying Hate's conquered passives: base_tribute), with its increase
 export const tributeOf = sum => Math.floor(v(sum, 'base_tribute') * (1 + v(sum, 'tribute_+%') / 100));

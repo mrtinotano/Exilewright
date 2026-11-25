@@ -975,5 +975,7 @@
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Les modificateurs de la carte s'appliquent à tous les ennemis et à votre personnage dans le simulateur. Chaque type de sol qu'elle a est une zone dans la salle ; ses récompenses ne sont pas simulées.",
  "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright ne peut pas démarrer : le port {0} de cet ordinateur n'est pas libre (un autre programme l'utilise ou Windows le réserve).",
  "Decimating Strike": "Frappe de décimation",
- "Rune tattoos": "Runes tatouées"
+ "Rune tattoos": "Runes tatouées",
+ "Conditions": "Conditions",
+ "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Cochez ce qui est vrai pendant le combat : ses bonus comptent dans les dégâts de toutes les compétences. Le simulateur les vérifie lui-même."
 }

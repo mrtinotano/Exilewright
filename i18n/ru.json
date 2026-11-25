@@ -975,5 +975,7 @@
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "Свойства карты действуют в симуляторе на всех врагов и на вашего персонажа. Каждый вид земли на карте — один участок в комнате; её награды не симулируются.",
  "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright не может запуститься: порт {0} этого компьютера занят (его использует другая программа или он зарезервирован Windows).",
  "Decimating Strike": "Истребляющий удар",
- "Rune tattoos": "Руны-татуировки"
+ "Rune tattoos": "Руны-татуировки",
+ "Conditions": "Условия",
+ "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "Отметьте, что выполняется в бою: их бонусы учитываются в уроне всех умений. Симулятор проверяет их сам."
 }

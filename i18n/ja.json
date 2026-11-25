@@ -975,5 +975,7 @@
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "マップのモッドは、シミュレーター内のすべての敵とあなたのキャラクターに適用されます。マップにある地面の種類ごとに、部屋にパッチが1つ置かれます。報酬はシミュレートされません。",
  "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewrightを起動できません：このコンピューターのポート{0}が空いていません（別のプログラムが使用中か、Windowsが予約しています）。",
  "Decimating Strike": "デシメ―ティングストライク",
- "Rune tattoos": "ルーンのタトゥー"
+ "Rune tattoos": "ルーンのタトゥー",
+ "Conditions": "条件",
+ "Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.": "戦闘中に満たしている条件にチェックを入れてください。そのボーナスがすべてのスキルのダメージに反映されます。シミュレーターは独自に判定します。"
 }
