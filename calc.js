@@ -645,6 +645,7 @@ export function recovery(c, sum) {
     manaRegenOnly: !!sum.cannot_recover_mana_except_regeneration,   // Indigon
     // Guiding Palms: their Guided Shrine's Daemon; Palm of the Dreamer: Dreaming Gloom Shrine (enemies you kill explode)
     daemons: ['fire', 'cold', 'lightning'].filter(e => sum[`has_unique_${e}_shrine_effect`]), gloom: !!sum.has_unique_chaos_shrine_effect,
+    durFrozen: v(sum, 'skill_effect_duration_+%_per_enemy_frozen_last_8_seconds'),   // Blessing of the Moon
     areaKilled: v(sum, 'skill_area_of_effect_+%_if_enemy_killed_recently'), poisonFrenzy: v(sum, 'poison_duration_+%_if_consumed_frenzy_charge_recently'),   // Quecholli; Snakebite
     noManaLeech: !!sum.base_cannot_leech_mana,   // Lochtonial Caress
     shrineEvery: sum.local_gain_shrine_buff_every_10_seconds ? 10 : 0,   // The Hammer of Faith: a random lesser Shrine buff every 10 s (its stat's name)

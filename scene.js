@@ -226,6 +226,7 @@ export function initScene(el, api) {
     // and the Shrine buff's; Quecholli's area if you killed recently; Snakebite's poison duration after consuming a frenzy charge
     const SB = { ...shrineOn() }, SH = sheet(); if (SH.areaKilled && meIs.KilledRecently()) SB['base_skill_area_of_effect_+%'] = (SB['base_skill_area_of_effect_+%'] || 0) + SH.areaKilled;
     if (SH.poisonFrenzy && meIs.ConsumedFrenzyRecently()) SB['base_poison_duration_+%'] = SH.poisonFrenzy;
+    const FZ = SH.durFrozen && (me.froze = (me.froze || []).filter(at => time - at <= 8)).length; if (FZ) SB['skill_effect_duration_+%'] = Math.min(40, SH.durFrozen * FZ);   // Blessing of the Moon: skill effect duration per enemy Frozen in the last 8 seconds, up to 40% (its text's)
     for (const [k, n] of Object.entries(SB)) add[k] = (add[k] || 0) + n;
     const g2 = BA || ST || Object.keys(SB).length ? { ...g1, add } : g1, G = api.geo(g2), dmg = api.damage?.(g2) || null, P0 = prof(g, inf), dur = dmg?.shape?.duration, P = dur ? { ...P0, dur } : P0;   // the level's skill effect duration with the build's modifiers
     const R = P.radiusBonus ? SIM.orbBlast + G.radius : G.radius;
@@ -1027,6 +1028,7 @@ export function initScene(el, api) {
     if (a === 'ignite') { d.ignBy = S; if (!S?.src) gainRage(S?.dmg?.sum?.gain_X_rage_on_ignite_hit || 0); }   // Fiery Death: the enemies the supported skill ignites
     const p = chest(d);
     if (a === 'pin' && !S?.src) me.pinAt = time;   // "if you've Pinned an enemy Recently"
+    if (a === 'freeze' && !S?.src && sheet().durFrozen) (me.froze ||= []).push(time);   // Blessing of the Moon: the enemies you have Frozen in the last 8 seconds
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; if (!S.src) remnantOn('stun', d); }
     else if (a === 'armour') { fx.text(over(d), t(STATE[a]), css('dust'), .34); fx.emit(16, { p, v: 3, up: 2, life: .6, size: .1, c: 0xb0a898, g: 12, k: 1.2 }); }
