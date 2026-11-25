@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
-import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf } from './items.js';
+import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { toughness } from './optimize.js';
@@ -183,7 +183,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   for (const id of all) { const k = ['small', 'attribute'].includes(N[id]?.type) && !N[id].ascendancy ? small : 1; for (const [s, v] of Object.entries(nodeStats(id, b, cq))) sum[s] = (sum[s] || 0) + v * k; }
   // Necromantic Talisman: the amulet's bonuses are the minions' ("minion:<stat>", calc.js minionStats), not yours
   const NT = sum.minions_get_amulet_stats_instead_of_you && b.items?.amulet;
-  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(wornItems(b, sum) || {}).filter(([slot]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6))) && slotOpen(slot, sum) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
+  for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(wornItems(b, sum) || {}).filter(([slot, it]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6)) && !(isPhyl(slot.slice(6)) && it.unique)) && slotOpen(slot, sum) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
   if (NT) for (const [k, v] of Object.entries(gearStats({ amulet: b.items.amulet }))) sum['minion:' + k] = (sum['minion:' + k] || 0) + v;
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
@@ -192,6 +192,8 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   for (const s of ['ring1', 'ring2']) { const RE = sum[`equipped_${s}_effect_of_bonuses_+%`]; if (RE && b.items?.[s]) for (const [x, v] of Object.entries(gearStats({ [s]: b.items[s] }))) sum[x] = (sum[x] || 0) + v * RE / 100; }
   // The Adorned: increased effect of the allocated jewel sockets holding a corrupted magic / rare jewel (note: the whole of what the jewel grants)
   for (const [slot, it] of Object.entries(b.items || {})) { const AD = it?.corrupted && slot.startsWith('jewel:') && sockOn(b).has(slot.slice(6)) && sum[`local_unique_jewel_passive_jewel_socket_mod_effect_+%_with_corrupted_${it.rarity}_jewel_socketed`]; if (AD) for (const [k, v] of Object.entries(gearStats({ [slot]: it }))) sum[k] = (sum[k] || 0) + v * AD / 100; }
+  // Crystalline Phylactery: increased effect of the non-unique jewel in it
+  for (const id of (b.ascNodes || []).filter(isPhyl)) { const it = b.items?.['jewel:' + id]; if (it && !it.unique) for (const [k, v] of Object.entries(gearStats({ ['jewel:' + id]: it }))) sum[k] = (sum[k] || 0) + v * isPhyl(id) / 100; }
   // increased bonuses gained from the equipped Quiver (the whole of what it grants), Instruments of Power's less of a Focus's
   const Q = b.items?.offhand, QE = isQuiver(Q) ? sum['quiver_mod_effect_+%'] : isFocus(Q) ? sum['focus_mod_effect_+%'] : 0;
   if (QE) for (const [k, v] of Object.entries(gearStats({ offhand: Q }))) sum[k] = (sum[k] || 0) + v * QE / 100;
@@ -674,9 +676,10 @@ const granted = (b, has) => jewelsOf(b, has).flatMap(j => Object.entries(statsOf
 // Voices' Sinister jewel sockets (sockets with no links, voices_jewel_slot1..5, allocated in that order): the allocated
 // passives with those Voices in the tree's own sockets allocate
 const VOICES = Object.keys(N).filter(id => /^voices_jewel_slot/.test(N[id].id)).sort((a, b) => N[a].id.localeCompare(N[b].id));
+const isPhyl = id => N[id]?.stats?.['phylactery_jewel_socket_effect_+%'], isSock = id => N[id].type === 'jewel' || isPhyl(id);   // Crystalline Phylactery: a jewel socket
 function sockOn(b) {
   const n = Object.entries(b.items || {}).reduce((t, [s, it]) => t + (s.startsWith('jewel:') && b.nodes.includes(s.slice(6)) ? statsOf(it).unique_jewel_grants_x_voices_jewel_sockets || 0 : 0), 0);
-  return new Set([...b.nodes, ...VOICES.slice(0, n)]);
+  return new Set([...b.nodes, ...VOICES.slice(0, n), ...(b.ascNodes || []).filter(isPhyl)]);   // and the Lich's Phylactery
 }
 // timeless jewels (Heroic Tragedy, Undying Hate) in allocated sockets (js: those jewels): each keystone in their radius
 // becomes their conqueror's (passive_tree.json timeless: AlternatePassiveSkills, by local_unique_jewel_alternate_tree_keystone);
@@ -711,7 +714,10 @@ console.assert((b => conquest(b).get('43939')?.over?.name === 'Domineering Comma
   items: { 'jewel:26196': { base: 'Timeless Jewel', implicits: [], mods: [{ id: 'UniqueJewelAlternateTreeInRadiusAbyssal', values: [7, 6858, 1, 1500, 1, 1, 0] }], unique: 'Undying Hate' } } }),
   'a conquered notable is what the player said the game shows, and only marked until then');
 // the passives that can be allocated without being connected (Controlled Metamorphosis' radius, From Nothing's keystone's)
-const freeNodes = (b, has) => new Set(jewelsOf(b, has).filter(j => j.R?.free).flatMap(j => main.filter(id => j.in(id) && mayTake(id, b))));
+// Entwined Realities: non-keystone passives in a Medium radius of an allocated keystone, unconnected
+const ENTWINE = radiusNamed('Medium'), entwined = (b, has) => (b.ascNodes || []).some(id => N[id]?.stats?.ascendancy_disconnected_passives_can_be_allocated_around_allocated_keystones)
+  ? [...has || b.nodes].filter(k => N[k]?.type === 'keystone').flatMap(k => main.filter(id => N[id].type !== 'keystone' && !ROOTS.has(id) && Math.hypot(N[id].x - N[k].x, N[id].y - N[k].y) <= ENTWINE && mayTake(id, b))) : [];
+const freeNodes = (b, has) => new Set([...jewelsOf(b, has).filter(j => j.R?.free).flatMap(j => main.filter(id => j.in(id) && mayTake(id, b))), ...entwined(b, has)]);
 function prune(nodes, b) {         // keep only what is still connected to nodes[0], or to a start Split Personality opens
   // (its socket may hang from that start itself, as in the game: the tree can then leave the class start); sockets that
   // end up loose close their start, until nothing more goes
@@ -1385,13 +1391,13 @@ const optJewels = b => jewelsOf(b, new Set(Object.keys(b.items || {}).map(s => s
     const was = nodeStats(id, b, new Map()), now = nodeStats(id, b, new Map([[id, c]])), d = {};
     for (const k of new Set([...Object.keys(was), ...Object.keys(now)])) if ((now[k] || 0) !== (was[k] || 0)) d[k] = (now[k] || 0) - (was[k] || 0);
     return [id, d]; })) }));
-const sockets = () => [...sockOn(B())].filter(id => N[id].type === 'jewel').map((id, i) => ({ id, label: t('socket {0}', i + 1) }));   // the allocated jewel sockets, Voices' too
+const sockets = () => [...sockOn(B())].filter(isSock).map((id, i) => ({ id, label: t('socket {0}', i + 1) }));   // the allocated jewel sockets, Voices' too
 const renderItems = initItems($('items'), B, () => { keepSplit(); save(); renderSide(); },
   sockets,
   items => snap({ ...B(), items }), treeSum,
   { can: slot => SEARCH_SLOTS.includes(slot) || slot.startsWith('jewel:'), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), tough: items => { const b = { ...B(), items }; return toughness(character(b, sumOf(b))); }, find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
 const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
-const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, jewels: optJewels, total: TOTAL.tree, sockets: b => [...sockOn(b)].filter(id => N[id].type === 'jewel'), setNodes, showOnTree,
+const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, jewels: optJewels, total: TOTAL.tree, sockets: b => [...sockOn(b)].filter(isSock), setNodes, showOnTree,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings
 const renderLoot = initLoot(lootEl, { build: B, id: () => cur, sumOf, snap,
