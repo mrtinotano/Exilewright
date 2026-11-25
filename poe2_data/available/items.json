@@ -7424,6 +7424,10 @@
    "name_zh": "威索瑪靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -7535,6 +7539,10 @@
    "name_zh": "歐派理堤靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -7587,6 +7595,10 @@
    "name_zh": "吉卡尼靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -7639,6 +7651,10 @@
    "name_zh": "札爾特靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -7749,6 +7765,10 @@
    "name_zh": "普希瓦爾靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -7801,6 +7821,10 @@
    "name_zh": "薩摩特靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -7853,6 +7877,10 @@
    "name_zh": "柔派克靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -7957,6 +7985,10 @@
    "name_zh": "塔普塔特靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -8061,6 +8093,10 @@
    "name_zh": "堤卡巴靈魂核心",
    "kind": "SoulCore",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10476,6 +10512,10 @@
    "name_zh": "雄鹿魔偶",
    "kind": "Idol",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10685,6 +10725,10 @@
    "name_zh": "狡兔魔偶",
    "kind": "Idol",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10735,6 +10779,10 @@
    "name_zh": "狐狸魔偶",
    "kind": "Idol",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10789,6 +10837,10 @@
    "name_zh": "流浪女巫艾珊德菈的智慧符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10823,6 +10875,10 @@
    "name_zh": "斯卡沃的天空符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10886,6 +10942,10 @@
    "name_zh": "菲恩絲的苦痛符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10949,6 +11009,10 @@
    "name_zh": "費爾羅的優雅符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -10982,6 +11046,10 @@
    "name_zh": "費爾羅的追擊符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11015,6 +11083,10 @@
    "name_zh": "奎爾珊的守護符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11048,6 +11120,10 @@
    "name_zh": "斯卡沃的記憶符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11081,6 +11157,10 @@
    "name_zh": "斯卡沃的侵蝕符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11114,6 +11194,10 @@
    "name_zh": "費爾羅的狩獵符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11159,6 +11243,10 @@
    "name_zh": "奎爾珊的恢復符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11196,6 +11284,10 @@
    "name_zh": "花魁蔓南的殘酷符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11229,6 +11321,10 @@
    "name_zh": "爵士格蘭內爾的專精符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11262,6 +11358,10 @@
    "name_zh": "菲恩絲的轉動符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11295,6 +11395,10 @@
    "name_zh": "伯爵夫人瑟絲可的箭術符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11328,6 +11432,10 @@
    "name_zh": "爵士格特的野性符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11362,6 +11470,10 @@
    "name_zh": "菲恩絲的流失符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11395,6 +11507,10 @@
    "name_zh": "爵士邁爾克的盛夏符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11444,6 +11560,10 @@
    "name_zh": "赫絲緹菈女士的寒冬符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11493,6 +11613,10 @@
    "name_zh": "爵士勒爾德的暖春符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11542,6 +11666,10 @@
    "name_zh": "巨狼之爪符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11579,6 +11707,10 @@
    "name_zh": "巨狼意志符文",
    "kind": "Rune",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11612,6 +11744,10 @@
    "name_zh": "席里斯魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11662,6 +11798,10 @@
    "name_zh": "特盧達納魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11732,6 +11872,10 @@
    "name_zh": "格羅德魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11782,6 +11926,10 @@
    "name_zh": "義許塔魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11832,6 +11980,10 @@
    "name_zh": "埃格林魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11882,6 +12034,10 @@
    "name_zh": "瑪薩里歐斯魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11932,6 +12088,10 @@
    "name_zh": "芮勒蓋許魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -11982,6 +12142,10 @@
    "name_zh": "古斯特魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12049,6 +12213,10 @@
    "name_zh": "伊娜魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12099,6 +12267,10 @@
    "name_zh": "艾米爾魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12149,6 +12321,10 @@
    "name_zh": "歐克魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12199,6 +12375,10 @@
    "name_zh": "阿莉亞魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12249,6 +12429,10 @@
    "name_zh": "克雷頓魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12299,6 +12483,10 @@
    "name_zh": "斯克魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12366,6 +12554,10 @@
    "name_zh": "奉承魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12446,6 +12638,10 @@
    "name_zh": "烈士魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12526,6 +12722,10 @@
    "name_zh": "偽善魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12606,6 +12806,10 @@
    "name_zh": "花豹魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12656,6 +12860,10 @@
    "name_zh": "翔鷹魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12706,6 +12914,10 @@
    "name_zh": "白鼬魔偶",
    "kind": "Idol",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12756,6 +12968,10 @@
    "name_zh": "荷霖蔡的隔熱靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12784,6 +13000,10 @@
    "name_zh": "札爾特的絕緣靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12812,6 +13032,10 @@
    "name_zh": "托波譚提的阻挫靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12840,6 +13064,10 @@
    "name_zh": "艾特瑪哈的撤退靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12880,6 +13108,10 @@
    "name_zh": "克特帕托的流動靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12912,6 +13144,10 @@
    "name_zh": "薩摩特的狂暴靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12940,6 +13176,10 @@
    "name_zh": "烏爾摩堤的消減靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -12972,6 +13212,10 @@
    "name_zh": "歐派理堤的攻擊靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13025,6 +13269,10 @@
    "name_zh": "瓜特利斯的的耐久靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13078,6 +13326,10 @@
    "name_zh": "柔派克的力量靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13131,6 +13383,10 @@
    "name_zh": "艾斯祖太的康復靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13171,6 +13427,10 @@
    "name_zh": "特卡蒂的苦痛靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13199,6 +13459,10 @@
    "name_zh": "斯拉托的戰爭靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13227,6 +13491,10 @@
    "name_zh": "希特克拉多的腐壞靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13271,6 +13539,10 @@
    "name_zh": "賽匹卡托的支配靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13312,6 +13584,10 @@
    "name_zh": "吉卡尼的自動化靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13355,6 +13631,10 @@
    "name_zh": "吉卡尼的惡語靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13398,6 +13678,10 @@
    "name_zh": "吉卡尼的索敵靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13441,6 +13725,10 @@
    "name_zh": "吉卡尼的號召靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13484,6 +13772,10 @@
    "name_zh": "吉卡尼的輝耀靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13527,6 +13819,10 @@
    "name_zh": "吉卡尼的斷切靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13570,6 +13866,10 @@
    "name_zh": "吉卡尼的漣漪靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13613,6 +13913,10 @@
    "name_zh": "吉卡尼的震顫靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13656,6 +13960,10 @@
    "name_zh": "吉卡尼的彈藥靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13699,6 +14007,10 @@
    "name_zh": "吉卡尼的陷阱靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13742,6 +14054,10 @@
    "name_zh": "吉卡尼的豐饒靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13785,6 +14101,10 @@
    "name_zh": "吉卡尼的狂風靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13828,6 +14148,10 @@
    "name_zh": "吉卡尼的雷鳴靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13871,6 +14195,10 @@
    "name_zh": "阿茲里的奉獻靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13903,6 +14231,10 @@
    "name_zh": "阿茲里的活力靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13935,6 +14267,10 @@
    "name_zh": "阿茲里的敏捷靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13967,6 +14303,10 @@
    "name_zh": "阿茲里的免疫靈魂核心",
    "kind": "SoulCore",
    "level": 50,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -13999,6 +14339,10 @@
    "name_zh": "阿姆那姆的邪眼",
    "kind": "AbyssalEye",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14051,6 +14395,10 @@
    "name_zh": "特克羅德的邪眼",
    "kind": "AbyssalEye",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14103,6 +14451,10 @@
    "name_zh": "柯戈的邪眼",
    "kind": "AbyssalEye",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14155,6 +14507,10 @@
    "name_zh": "烏拉曼的邪眼",
    "kind": "AbyssalEye",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14207,6 +14563,10 @@
    "name_zh": "瓜特利斯的假說",
    "kind": "SoulCore",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14263,6 +14623,10 @@
    "name_zh": "希特克拉多的假說",
    "kind": "SoulCore",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14315,6 +14679,10 @@
    "name_zh": "吉卡尼的假說",
    "kind": "SoulCore",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14367,6 +14735,10 @@
    "name_zh": "克特帕托的假說",
    "kind": "SoulCore",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14419,6 +14791,10 @@
    "name_zh": "活力湧現",
    "kind": "Rune",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14486,6 +14862,10 @@
    "name_zh": "潛能湧現",
    "kind": "Rune",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14553,6 +14933,10 @@
    "name_zh": "護佑湧現",
    "kind": "Rune",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14620,6 +15004,10 @@
    "name_zh": "直覺湧現",
    "kind": "Rune",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14687,6 +15075,10 @@
    "name_zh": "雕紋狡詰",
    "kind": "Idol",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14754,6 +15146,10 @@
    "name_zh": "雕紋威嚴",
    "kind": "Idol",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14821,6 +15217,10 @@
    "name_zh": "雕紋惡戲",
    "kind": "Idol",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14888,6 +15288,10 @@
    "name_zh": "雕紋堅韌",
    "kind": "Idol",
    "level": 60,
+   "limit": [
+    1,
+    "AncientAugment"
+   ],
    "by": [
     [
      [
@@ -14955,6 +15359,10 @@
    "name_zh": "渡鴉碎片",
    "kind": "CongealedMist",
    "level": 60,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15384,6 +15792,10 @@
    "name_zh": "護佑保護符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15502,6 +15914,10 @@
    "name_zh": "共生保護符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15635,6 +16051,10 @@
    "name_zh": "心源保護符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15668,6 +16088,10 @@
    "name_zh": "滋養保護符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15707,6 +16131,10 @@
    "name_zh": "殲滅保護符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15752,6 +16180,10 @@
    "name_zh": "鎧甲保護符文",
    "kind": "Rune",
    "level": 45,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15797,6 +16229,10 @@
    "name_zh": "執念保護符文",
    "kind": "Rune",
    "level": 45,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15834,6 +16270,10 @@
    "name_zh": "均衡保護符文",
    "kind": "Rune",
    "level": 45,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15873,6 +16313,10 @@
    "name_zh": "救援保護符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15906,6 +16350,10 @@
    "name_zh": "護衛保護符文",
    "kind": "Rune",
    "level": 45,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -15939,6 +16387,10 @@
    "name_zh": "空蝕保護符文",
    "kind": "Rune",
    "level": 45,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16170,6 +16622,10 @@
    "name_zh": "遠古分裂符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16203,6 +16659,10 @@
    "name_zh": "遠古決鬥符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16236,6 +16696,10 @@
    "name_zh": "遠古泰坦符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16269,6 +16733,10 @@
    "name_zh": "遠古粉碎符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16302,6 +16770,10 @@
    "name_zh": "遠古卓越符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16335,6 +16807,10 @@
    "name_zh": "遠古控制符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16368,6 +16844,10 @@
    "name_zh": "遠古探索符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16401,6 +16881,10 @@
    "name_zh": "遠古腐朽符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16434,6 +16918,10 @@
    "name_zh": "遠古巫術符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16467,6 +16955,10 @@
    "name_zh": "遠古部族符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16500,6 +16992,10 @@
    "name_zh": "遠古敵意符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16533,6 +17029,10 @@
    "name_zh": "遠古引爆符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16566,6 +17066,10 @@
    "name_zh": "遠古復仇符文",
    "kind": "Rune",
    "level": 30,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16599,6 +17103,10 @@
    "name_zh": "崇敬活力符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16665,6 +17173,10 @@
    "name_zh": "崇敬狩獵符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16715,6 +17227,10 @@
    "name_zh": "崇敬巧技符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16780,6 +17296,10 @@
    "name_zh": "崇敬終點符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16831,6 +17351,10 @@
    "name_zh": "崇敬聲望符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16883,6 +17407,10 @@
    "name_zh": "崇敬積累符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16943,6 +17471,10 @@
    "name_zh": "崇敬基準符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -16988,6 +17520,10 @@
    "name_zh": "崇敬稜鏡符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17025,6 +17561,10 @@
    "name_zh": "崇敬精通符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17062,6 +17602,10 @@
    "name_zh": "崇敬連貫符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17118,6 +17662,10 @@
    "name_zh": "崇敬觸及符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17173,6 +17721,10 @@
    "name_zh": "崇敬生命火焰符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17216,6 +17768,10 @@
    "name_zh": "崇敬對峙符文",
    "kind": "Rune",
    "level": 15,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17254,6 +17810,10 @@
    "name_zh": "瑟雷的凱旋",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17308,6 +17868,10 @@
    "name_zh": "卡迪根的頓悟",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17336,6 +17900,10 @@
    "name_zh": "阿斯垂德的創造",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17386,6 +17954,10 @@
    "name_zh": "烏特雷的星空",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17419,6 +17991,10 @@
    "name_zh": "克洛爾的狩獵",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17452,6 +18028,10 @@
    "name_zh": "沃拉娜的殘殺",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17485,6 +18065,10 @@
    "name_zh": "索魯德的強權",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17533,6 +18117,10 @@
    "name_zh": "梅德偉的照料",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17570,6 +18158,10 @@
    "name_zh": "卡特拉的愁悵",
    "kind": "Rune",
    "level": 0,
+   "limit": [
+    1,
+    null
+   ],
    "by": [
     [
      [
@@ -17653,6 +18245,10 @@
    "name_zh": "傳承．刺棘寶甲",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17686,6 +18282,10 @@
    "name_zh": "傳承．黑辮",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17719,6 +18319,10 @@
    "name_zh": "傳承．埃狄恩的曲牙",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17756,6 +18360,10 @@
    "name_zh": "傳承．皇家衛甲",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17789,6 +18397,10 @@
    "name_zh": "傳承．鬃豬",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17826,6 +18438,10 @@
    "name_zh": "傳承．狐毛鎧",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17863,6 +18479,10 @@
    "name_zh": "傳承．拂燼",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17900,6 +18520,10 @@
    "name_zh": "傳承．荒途",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17933,6 +18557,10 @@
    "name_zh": "傳承．束縛",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -17966,6 +18594,10 @@
    "name_zh": "傳承．賓登之角",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18003,6 +18635,10 @@
    "name_zh": "傳承．凱林之翼",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18040,6 +18676,10 @@
    "name_zh": "傳承．艾茲麥的榮光",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18077,6 +18717,10 @@
    "name_zh": "傳承．喪鐘",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18110,6 +18754,10 @@
    "name_zh": "傳承．愛勒弗",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18147,6 +18795,10 @@
    "name_zh": "傳承．斯塔空加之首",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18184,6 +18836,10 @@
    "name_zh": "傳承．刺棘之冠",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18221,6 +18877,10 @@
    "name_zh": "傳承．灰製",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18254,6 +18914,10 @@
    "name_zh": "傳承．埃里安的鵝卵石",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18323,6 +18987,10 @@
    "name_zh": "傳承．微笑騎士",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18356,6 +19024,10 @@
    "name_zh": "傳承．惡劣騎士",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18389,6 +19061,10 @@
    "name_zh": "傳承．北方之爪",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18422,6 +19098,10 @@
    "name_zh": "傳承．製燭者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18459,6 +19139,10 @@
    "name_zh": "傳承．致命一擊",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18492,6 +19176,10 @@
    "name_zh": "傳承．帝國之靴",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18525,6 +19213,10 @@
    "name_zh": "傳承．踐踏之鞋",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18558,6 +19250,10 @@
    "name_zh": "傳承．薔薇眼罩",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18591,6 +19287,10 @@
    "name_zh": "傳承．突襲",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18624,6 +19324,10 @@
    "name_zh": "傳承．苦行之履",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18657,6 +19361,10 @@
    "name_zh": "傳承．漂泊騎士",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18690,6 +19398,10 @@
    "name_zh": "傳承．歐伯恩的壁壘",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18727,6 +19439,10 @@
    "name_zh": "傳承．捍衛者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18760,6 +19476,10 @@
    "name_zh": "傳承．狼之禍",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18793,6 +19513,10 @@
    "name_zh": "傳承．五芒屏障",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18826,6 +19550,10 @@
    "name_zh": "傳承．神諭",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18859,6 +19587,10 @@
    "name_zh": "傳承．橡誓者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18892,6 +19624,10 @@
    "name_zh": "傳承．唐克哈特",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18925,6 +19661,10 @@
    "name_zh": "傳承．隆德爾．德．艾佐",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18958,6 +19698,10 @@
    "name_zh": "傳承．布林漢的印記",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -18995,6 +19739,10 @@
    "name_zh": "傳承．壕溝之音",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19028,6 +19776,10 @@
    "name_zh": "傳承．沉默之雷",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19065,6 +19817,10 @@
    "name_zh": "傳承．畸變星穹",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19102,6 +19858,10 @@
    "name_zh": "傳承．獵豬",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19139,6 +19899,10 @@
    "name_zh": "傳承．雷姆諾的奪命樂具",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19172,6 +19936,10 @@
    "name_zh": "傳承．腦亂者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19205,6 +19973,10 @@
    "name_zh": "傳承．生機之記",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19238,6 +20010,10 @@
    "name_zh": "傳承．二元性",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19271,6 +20047,10 @@
    "name_zh": "傳承．暴政之握",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19304,6 +20084,10 @@
    "name_zh": "傳承．哨兵",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19345,6 +20129,10 @@
    "name_zh": "傳承．艾多尼亞的自負",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19378,6 +20166,10 @@
    "name_zh": "傳承．咒刻者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19411,6 +20203,10 @@
    "name_zh": "傳承．暗暮守夜",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19444,6 +20240,10 @@
    "name_zh": "傳承．血棘",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19485,6 +20285,10 @@
    "name_zh": "傳承．驟雨之弦",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19522,6 +20326,10 @@
    "name_zh": "傳承．鐵縛者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19559,6 +20367,10 @@
    "name_zh": "傳承．阿莫爾．曼德拉戈拉",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19592,6 +20404,10 @@
    "name_zh": "傳承．怨毒花蕊",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19625,6 +20441,10 @@
    "name_zh": "傳承．史瓦林",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19662,6 +20482,10 @@
    "name_zh": "傳承．弧之守護者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19695,6 +20519,10 @@
    "name_zh": "傳承．歐洛瓦沙拉",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19728,6 +20556,10 @@
    "name_zh": "傳承．崇敬之敵",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19761,6 +20593,10 @@
    "name_zh": "傳承．瑟雷之握",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19794,6 +20630,10 @@
    "name_zh": "傳承．符文探求者之喚",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19827,6 +20667,10 @@
    "name_zh": "傳承．毀面者",
    "kind": "Rune",
    "level": 65,
+   "limit": [
+    1,
+    "AldursLegacyLimit1"
+   ],
    "by": [
     [
      [
@@ -19848,6 +20692,44 @@
    ]
   }
  ],
+ "socketable_limits": {
+  "": {
+   "name": "Limited to",
+   "name_es": "Limitado a",
+   "name_pt": "Limitado a",
+   "name_fr": "Maximum de",
+   "name_de": "Begrenzt auf",
+   "name_ru": "Максимум",
+   "name_ja": "個数制限",
+   "name_ko": "중복 사용 제한",
+   "name_th": "จำนวนจำกัด",
+   "name_zh": "僅限"
+  },
+  "AncientAugment": {
+   "name": "{0} Ancient Augment",
+   "name_es": "{0} mejora antigua",
+   "name_pt": "{0} Aprimoramento Antigo",
+   "name_fr": "{0} Augmentation antique",
+   "name_de": "{0} Uralte Augmentation",
+   "name_ru": "{0} Древний усилитель",
+   "name_ja": "古代のオーグメント {0}個",
+   "name_ko": "고대 증강물 {0}개",
+   "name_th": "{0} วัตถุฝังโบราณ",
+   "name_zh": "{0} 遠古增幅"
+  },
+  "AldursLegacyLimit1": {
+   "name": "{0} Aldur's Legacy",
+   "name_es": "{0} Legado de Aldur",
+   "name_pt": "{0} Legado de Aldur",
+   "name_fr": "{0} Héritage d'Aldur",
+   "name_de": "{0} Aldurs Vermächtnis",
+   "name_ru": "{0} Наследие Альдура",
+   "name_ja": "アルダーの遺産 {0}個",
+   "name_ko": "{0} 알두르의 유산",
+   "name_th": "{0} มรดกของอัลเดอร์",
+   "name_zh": "{0} 阿德爾的傳承"
+  }
+ },
  "socketable_kinds": {
   "Rune": {
    "name": "Rune",

@@ -73,7 +73,12 @@ const boost = (item, tags, vals) => !item.catalyst || !tags?.includes(item.catal
   : vals.map(v => Math.trunc(v * (1 + (item.quality || 0) / 100)));
 const modVals = (item, m, vals = m.values) => boost(item, AFFIX[m.id]?.tags, vals);
 // the attributes the base needs, with the item's own "+100 Strength Requirement" (Mjölner, Shyaba)
-const reqOf = item => { const s = rolled(item), b = baseOf(item)?.req || {}; return Object.fromEntries(['str', 'dex', 'int'].map(k => [k, (b[k] || 0) + (s[`local_${{ str: 'strength', dex: 'dexterity', int: 'intelligence' }[k]}_requirement_+`] || 0)])); };
+const ATTR_ID = { str: 'strength', dex: 'dexterity', int: 'intelligence' };
+// an item's attribute requirements: its base's, its own "+N Strength Requirement", and the share of the others a socketed
+// soul core converts to one attribute ("Convert 40% of Requirements to Strength")
+const reqOf = item => { const s = rolled(item), b = baseOf(item)?.req || {}, r = Object.fromEntries(Object.keys(ATTR_ID).map(k => [k, (b[k] || 0) + (s[`local_${ATTR_ID[k]}_requirement_+`] || 0)]));
+  for (const [to, a] of Object.entries(ATTR_ID)) { const pct = s[`local_requirements_%_to_convert_to_${a}`]; if (pct) for (const k in r) if (k !== to) { const m = Math.floor(r[k] * pct / 100); r[k] -= m; r[to] += m; } }
+  return r; };
 // Way of the Stonefist (Martial Artist: sum.ascendancy_hand_wraps): the gloves worn become Fists of Stone (items.json fists:
 // its implicits give it evasion and energy shield per character level) and their explicit modifiers "more powerful related"
 // ones: a unique's as poe2db lists that form of it (unique_items.json stonefist), any other's the game's own HandWraps<id>
@@ -332,7 +337,7 @@ export function itemText(it) {
   const p = itemParts(it);
   if (!p) return '';
   return ['Rarity: ' + RARITY[p.r], ...p.name ? [p.name] : [], p.base.name,
-    'Item Level: ' + p.ilvl, ...it.quality ? ['Quality: ' + it.quality] : [], ...p.radius ? ['Radius: ' + p.radius] : [], 'Implicits: ' + (p.rune.length + p.impl.length), ...p.rune.map(l => '{enchant}{rune}' + l), ...p.impl, ...p.expl].join('\n');   // Path of Building lists runes among its implicits
+    'Item Level: ' + p.ilvl, ...it.quality ? ['Quality: ' + it.quality] : [], ...it.socketed?.length ? ['Sockets: ' + it.socketed.map(() => 'S').join(' '), ...it.socketed.map(x => 'Rune: ' + (x || 'None'))] : [], ...p.radius ? ['Radius: ' + p.radius] : [], 'Implicits: ' + (p.rune.length + p.impl.length), ...p.rune.map(l => '{enchant}{rune}' + l), ...p.impl, ...p.expl].join('\n');   // Path of Building lists runes among its implicits
 }
 // the note the in-game build planner shows on a slot, in the game's Custom Text markup (<b>{…}, <rgb(r, g, b)>{…});
 // colours are Path of Building's rarity / magic-mod colours, the markup has no other way to name them
@@ -605,7 +610,31 @@ export function parseItem(text) {
     name: head[0] && !NAMED.has(strip(head[0])) ? head[0] : '', unidentified: raw.some(l => UNID.test(l)),
     rarity: rarityWord(raw[ri].split(/[:：]/)[1]), ilvl: itemLevel(text), corrupted: raw.some(corruptLine),
     mirrored: raw.includes('Mirrored'), sanctified: raw.includes('Sanctified'),   // note: English text only (META)
-    sockets: raw.map(l => l.match(/^[^:：]+[:：]\s*(S(?:\s+S)*)\s*$/)?.[1].split(/\s+/).length).find(Boolean) || 0 };
+    sockets: socketsOf(item, raw.map(l => l.match(/^Rune:\s*(.+)$/)?.[1]).filter(Boolean), raw.map(l => l.match(/^[^:：]+[:：]\s*(S(?:\s+S)*)\s*$/)?.[1].split(/\s+/).length).find(Boolean) || 0) };
+}
+// What an imported item has socketed (-> n, its sockets), out of its rune lines (item.extra): by name when Path of Building
+// names them ("Rune: Greater Iron Rune", "None" an empty socket), else the runes, soul cores, idols... whose stats add up
+// to them, as many as its sockets (the most of them: the game's text sums the same ones in one line; then the fewest
+// different ones, then the first). They go in item.socketed and their stats leave item.extra (its enchantments stay); nothing
+// changes when they do not add up to what its lines say
+function socketsOf(item, names, n) {
+  const E = item.extra || {}, own = rolled({ ...item, extra: undefined }), give = ns => socketStats({ ...item, socketed: ns }, own).stats;
+  const fits = (st, eq) => Object.entries(st).every(([k, v]) => E[k] && Math.sign(E[k]) === Math.sign(v) && (eq ? v === E[k] : Math.abs(v) <= Math.abs(E[k])));
+  let got = names.length ? names.reduce((a, x) => [...a, SOCKETABLES[x] && fits(give([...a, x])) ? x : ''], []) : null;   // (one its lines do not have: an empty socket)
+  if (!got && n) {
+    const cands = Object.keys(SOCKETABLES).filter(x => { const st = give([x]); return Object.keys(st).length && fits(st); });
+    const go = (from, picked) => {
+      const L = got?.length || 0;   // the most sockets filled, then the fewest different ones
+      if ((picked.length > L || picked.length === L && L && new Set(picked).size < new Set(got).size) && fits(give(picked), true)) got = picked;
+      if (picked.length < n) for (let i = from; i < cands.length; i++) { const next = [...picked, cands[i]]; if (fits(give(next))) go(i, next); }
+    };
+    go(0, []);
+  }
+  if (!got?.some(Boolean) || !fits(give(got))) return n;
+  for (const [k, v] of Object.entries(give(got))) { E[k] -= v; if (!E[k]) delete E[k]; }
+  if (!Object.keys(E).length) delete item.extra;
+  item.socketed = [...got, ...Array(Math.max(0, n - got.length)).fill('')];
+  return n;
 }
 
 // ---------- what a slot can have and what the trade site lists (gear search, trade.js)
@@ -987,9 +1016,15 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     for (const x of Object.values(SOCKETABLES)) if ((!runes || x.kind === 'Rune') && x.by.some(r => r[0].includes(cls))) (by[x.kind] ||= []).push(x);
     return `<select data-slot="${slot}" data-act="${act}" data-i="${i}"><option value="">${t('Empty (Socket {0})', i + 1)}</option>${Object.entries(by).map(([k, xs]) => `<optgroup label="${esc(tn(D.socketable_kinds[k]) || k)}">${xs.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name))
       .map(x => `<option value="${esc(x.name)}"${x.name === name ? ' selected' : ''}>${esc(tn(x) || x.name)}</option>`).join('')}</optgroup>`).join('')}</select>`; };
+  // a socketable over its limit (items.json socketables limit: [n, group]) among all that is socketed in the equipment and
+  // tattooed: the game's "Limited to: 1 Ancient Augment"
+  const overLimit = name => { const x = SOCKETABLES[name], [n, g] = x?.limit || [], L = D.socketable_limits || {}, b = getBuild();
+    if (!n) return '';
+    const used = [...Object.entries(b.items || {}).filter(([s]) => !s.startsWith('jewel:')).flatMap(([, i]) => i.socketed || []), ...Object.values(b.chakra || {}).flat()];
+    return used.filter(m => g ? SOCKETABLES[m]?.limit?.[1] === g : m === name).length > n ? `<div class="ddn">${esc(`${tn(L['']) || 'Limited to'}: ${g ? (tn(L[g]) || g).replace('{0}', n) : n}`)}</div>` : ''; };
   function sockRows(slot, it, base) {
     const own = statsOf(it), cls = own.local_item_benefit_socketable_as_if_body_armour ? 'Body Armours' : base.class, S = it.socketed || [];
-    const row = (act, i, name, c, o, runes) => `<div class="mod">${sockSelect(slot, act, i, name, c, runes)} ${name ? esc(statLines(socketStats({ socketed: [name] }, o, false, c).stats).filter(l => !/^[a-z0-9_%+\-]+: /.test(l)).join(' / ')) : ''}${runes ? '' : ` <button data-slot="${slot}" data-act="sock-" data-i="${i}">✕</button>`}</div>`;
+    const row = (act, i, name, c, o, runes) => `<div class="mod">${sockSelect(slot, act, i, name, c, runes)} ${name ? esc(statLines(socketStats({ socketed: [name] }, o, false, c).stats).filter(l => !/^[a-z0-9_%+\-]+: /.test(l)).join(' / ')) : ''}${runes ? '' : ` <button data-slot="${slot}" data-act="sock-" data-i="${i}">✕</button>`}${overLimit(name)}</div>`;
     const C = tree().enable_chakras && CHAKRA[slot] && chakraN()[slot], T = getBuild().chakra?.[slot] || [];
     return (SOCK_CLASSES.has(cls) ? `<hr><div class="prop">${t('Sockets')}</div>${S.map((n, i) => row('sock', i, n, cls, own)).join('')}<button data-slot="${slot}" data-act="sock+">+ ${t('Socket {0}', S.length + 1)}</button>` : '')
       + (C ? `<hr><div class="prop">${t('Rune tattoos')}</div>${Array.from({ length: C }, (_, i) => row('tattoo', i, T[i] || '', CHAKRA[slot], {}, true)).join('')}` : '');
@@ -1245,7 +1280,10 @@ console.assert(parseItem('Rarity: Magic\nVitiating Ultimate Life Flask of the Pe
   ?.missed.length === 0, 'parseItem: a flask');
 // ...and gloves as Path of Building writes them: the rune counts (among its "Implicits"), its Bonded lines do not
 console.assert(parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nQuality: 0\nSockets: S\nRune: Greater Desert Rune\nLevelReq: 59\nImplicits: 3\n{enchant}{rune}Bonded: +20 to maximum Life\n{enchant}{rune}Bonded: +20 to maximum Mana\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield')
-  ?.item.extra?.['base_fire_damage_resistance_%'] === 18, 'parseItem: a rune in Path of Building text');
+  ?.item.socketed + '' === 'Greater Desert Rune', 'parseItem: a rune in Path of Building text');
+// ...and the game's own text: a line two of the same rune add up to, found among its sockets
+{ const r = parseItem('Item Class: Gloves\nRarity: Rare\nBrood Vise\nGold Gloves\n--------\nSockets: S S \n--------\nItem Level: 80\n--------\n+36% to Fire Resistance (rune)\n--------\n+40 to maximum Energy Shield');
+  console.assert(!SOCKETABLES['Greater Desert Rune'] || r?.item.socketed + '' === 'Greater Desert Rune,Greater Desert Rune' && !r.item.extra && statsOf(r.item)['base_fire_damage_resistance_%'] === 36 && /^Rune: Greater Desert Rune$/m.test(itemText(r.item)), 'parseItem: the runes of the game\'s text', r); }
 // ...and written back the same way (a build exported to Path of Building keeps its runes)
 { const g = parseItem('Rarity: RARE\nBrood Vise\nGold Gloves\nImplicits: 1\n{enchant}{rune}+18% to Fire Resistance\n+40 to maximum Energy Shield').item;
   console.assert(parseItem(itemText(g))?.item.extra?.['base_fire_damage_resistance_%'] === 18 && /^\{enchant\}\{rune\}\+18% to Fire Resistance$/m.test(itemText(g)), 'itemText: runes', itemText(g)); }
@@ -1291,6 +1329,8 @@ console.assert(parseItem('Rarity: Rare\nWoe Mantle\nGold Gloves\n--------\nItem 
 // ...and a desecrated line of a trade listing, read by its wording; the gear search offers the base's desecrated ones too
 console.assert(tradeItem({ base: 'Jungle Tiara', lines: [{ text: '+15% to Lightning and Chaos Resistances', kind: 'desecrated', mods: [] }] })?.item.mods[0]?.values[0] === 15
   && affixLines('Helmets').some(o => o.desecrated && o.en), 'desecrated: trade listing and gear search');
+{ const r = reqOf({ base: 'Seastorm Mantle', socketed: ['Soul Core of Atmohua'] });   // a soul core's converted requirements: 40% of 67 Intelligence
+  console.assert(!SOCKETABLES['Soul Core of Atmohua'] || r.str === 67 + 26 && r.int === 67 - 26, 'reqOf: converted requirements', r); }
 // self-check: Path of Building's unrolled lines, at their range, and an anointed passive
 { const r = parseItem('Rarity: RARE\nNew Item\nFeathered Raiment\nImplicits: 2\n{enchant}Allocates Cooked\n{tags:resource}{range:0.5}(5-10)% of Damage is taken from Mana before Life\n{range:0.2}+(10-20) to maximum Life');
   console.assert(r?.item.implicits[0]?.[0] === 8 && r.item.mods[0]?.values[0] === 12 && r.item.anoint === 'Cooked' && !r.missed.length, 'parseItem: {range:} lines, an anointment', r); }
