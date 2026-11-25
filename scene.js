@@ -349,7 +349,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = d.spectral = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = d.spectral = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.vile = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -593,6 +593,7 @@ export function initScene(el, api) {
       if (S.P.spell && !S.src && demon()) for (const e in raw) raw[e] *= 1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100;   // Demon Form
       const KB = S.dmg?.stats?.['damage_+%_final_per_5%_heavy_stun_threshold_buildup'];   // Kinetic Bash: per 5% of your own Heavy Stun buildup (its description)
       if (KB) for (const e in raw) raw[e] *= 1 + KB * Math.floor((me.bar.stun || 0) / 5) / 100;
+      const VK = !S.src && d.vile >= 1 && sheet().vile; if (VK) for (const e in raw) raw[e] *= 1 + Math.min(200, VK * Math.floor(d.vile)) / 100;   // The Vile Knight: increased hit damage per second, up to 200% (its text's). note: as a factor
       const AT = d.attr >= 1 && attr();   // Attrition
       if (AT) for (const e in raw) raw[e] *= 1 + AT['skill_attrition_hit_damage_+%_final_vs_rare_or_unique_enemy_per_second_ever_in_presence_up_to_max'] * Math.floor(d.attr) / 100;
       // Vorana's Siege: more against an Isolated enemy, none of its allies within 6 m (keywords.json Isolated)
@@ -3662,7 +3663,10 @@ export function initScene(el, api) {
   // most; your hits deal its more damage per stack to it, and from its stacks on they have Culling Strike against it
   const attr = () => onS('Attrition')?.dmg.stats;
   function attrition(dt) {
-    const st = attr(); if (st) for (const d of inside(pp, sheet().overgrow.r)) if (['rare', 'unique'].includes(d.stat.rarity)) d.attr = Math.min(st.skill_attrition_presence_max_seconds, (d.attr || 0) + dt);
+    const st = attr(), VK = sheet().vile; if (st || VK) for (const d of inside(pp, sheet().overgrow.r)) if (['rare', 'unique'].includes(d.stat.rarity)) {
+      if (st) d.attr = Math.min(st.skill_attrition_presence_max_seconds, (d.attr || 0) + dt);
+      if (VK) d.vile = (d.vile || 0) + dt;   // The Vile Knight: every second ever in your Presence
+    }
   }
   // Critical Weakness: each stack adds critical hit chance to hits against the enemy. Malice: while on, a stack every its
   // interval on the enemies in your Presence, for its duration
