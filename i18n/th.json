@@ -986,5 +986,7 @@
  "{0} points": "{0} แต้ม",
  "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "ลำดับการเลเวล: พาสซีฟที่มีถึงเลเวลหนึ่ง เรียงเลขตามลำดับที่ควรเอา คลิกพาสซีฟที่มาทีหลังเพื่อเอามันเร็วขึ้น",
  "Taken by this level": "เอาแล้วภายในเลเวลนี้",
- "Click: take it at this level": "คลิก: เอาที่เลเวลนี้"
+ "Click: take it at this level": "คลิก: เอาที่เลเวลนี้",
+ "All builds (backup)": "บิลด์ทั้งหมด (สำรอง)",
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "บิลด์ทั้งหมดในไฟล์ JSON เดียว: ไฟล์ JSON ในนำเข้าจะนำกลับมาทั้งหมด อยู่ข้างบิลด์ที่มีอยู่"
 }

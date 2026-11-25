@@ -986,5 +986,7 @@
  "{0} points": "{0} pontos",
  "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "Ordem de subida de nível: as passivas que você tem em um nível, numeradas na ordem em que pegá-las. Clique em uma passiva posterior para pegá-la antes.",
  "Taken by this level": "Já pega neste nível",
- "Click: take it at this level": "Clique: pegá-la neste nível"
+ "Click: take it at this level": "Clique: pegá-la neste nível",
+ "All builds (backup)": "Todas as builds (cópia)",
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Todas as builds em um arquivo JSON: Arquivo JSON em Importar recupera todas, junto às que você já tem."
 }

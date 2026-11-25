@@ -986,5 +986,7 @@
  "{0} points": "{0}포인트",
  "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "레벨링 순서: 해당 레벨까지 가진 패시브를 찍는 순서대로 번호를 매겨 표시합니다. 나중 패시브를 클릭하면 더 일찍 찍습니다.",
  "Taken by this level": "이 레벨까지 찍음",
- "Click: take it at this level": "클릭: 이 레벨에서 찍기"
+ "Click: take it at this level": "클릭: 이 레벨에서 찍기",
+ "All builds (backup)": "모든 빌드 (백업)",
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "모든 빌드를 하나의 JSON 파일로 저장합니다. 가져오기의 JSON 파일로 기존 빌드 옆에 모두 복원됩니다."
 }

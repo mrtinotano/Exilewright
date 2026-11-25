@@ -986,5 +986,7 @@
  "{0} points": "{0}ポイント",
  "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "レベリング順: そのレベルまでに取得しているパッシブを、取得する順に番号付きで表示します。後のパッシブをクリックすると、早めに取得します。",
  "Taken by this level": "このレベルまでに取得済み",
- "Click: take it at this level": "クリック: このレベルで取得"
+ "Click: take it at this level": "クリック: このレベルで取得",
+ "All builds (backup)": "全ビルド（バックアップ）",
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "すべてのビルドを1つのJSONファイルに保存します。インポートのJSONファイルで、今あるビルドに加えてすべて復元できます。"
 }

@@ -481,7 +481,7 @@ const openShare = async exporting => {
     <p class="note">${t('Path of Building 2 code: paste it in Path of Building (Import/Export Build) or on any of these sites.')}</p>
     <textarea rows="3" readonly data-code>${code}</textarea>
     <div class="row"><button data-a="copy">${t('Copy code')}</button>${SITES.map(s => `<button data-up="${s.id}">${t('Link on {0}', s.name)}</button>`).join('')}
-      <button data-a="json">${t('JSON file')}</button></div>
+      <button data-a="json">${t('JSON file')}</button><button data-a="all" title="${t('Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.')}">${t('All builds (backup)')}</button></div>
     <div class="msg" data-out></div>
     <h3>${t('The game')}</h3>
     <p class="note">${t('Since 0.5 the in-game build planner loads .build files: save it in Documents/My Games/Path of Exile 2/BuildPlanner. It carries the tree, the ascendancy and the gems with their supports; gem levels and gear go in as notes.')}</p>
@@ -531,6 +531,7 @@ const openShare = async exporting => {
       l.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
       l.download = name; l.click();
     };
+    if (a === 'all') await save(JSON.stringify({ builds: Object.values(builds) }), 'Exilewright-builds-' + new Date().toISOString().slice(0, 10) + '.json', 'json');
     if (a === 'json') await save(JSON.stringify(B(), null, 1), B().name.replace(/[^\w-]+/g, '_') + '.json', 'json');
     // in the game's language: the page's when they are the same, else English (the only other one the planner has)
     if (a === 'game') { const g = (await fetch('game').then(r => r.json()).catch(() => null))?.language;
@@ -562,7 +563,8 @@ const openShare = async exporting => {
 $('importBtn').onclick = () => openShare(false);
 $('exportBtn').onclick = () => openShare(true);
 $('importFile').onchange = async e => {
-  addBuild({ ...blank(), ...JSON.parse(await e.target.files[0].text()) });
+  const x = JSON.parse(await e.target.files[0].text());   // one build, or a backup of all of them ({ builds: [...] }): added to the ones there are
+  for (const b of Array.isArray(x?.builds) ? x.builds : [x]) if (b && typeof b === 'object') addBuild({ ...blank(), ...b });
   e.target.value = ''; document.getElementById('sharePanel')?.remove();
 };
 

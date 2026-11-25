@@ -986,5 +986,7 @@
  "{0} points": "{0} очков",
  "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "Порядок прокачки: пассивные умения, которые у вас есть к уровню, пронумерованы в порядке взятия. Нажмите на более позднее умение, чтобы взять его раньше.",
  "Taken by this level": "Уже взято к этому уровню",
- "Click: take it at this level": "Щелчок: взять на этом уровне"
+ "Click: take it at this level": "Щелчок: взять на этом уровне",
+ "All builds (backup)": "Все билды (резервная копия)",
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Все билды в одном файле JSON: «Файл JSON» в Импорте вернёт их все, рядом с уже имеющимися."
 }

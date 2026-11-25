@@ -986,5 +986,7 @@
  "{0} points": "{0}点",
  "Levelling order: the passives you have by a level, numbered in the order to take them. Click a later passive to take it sooner.": "升级顺序：到某个等级时拥有的天赋，按点取顺序编号。点击较后的天赋可提前点取。",
  "Taken by this level": "此等级前已点取",
- "Click: take it at this level": "点击：在此等级点取"
+ "Click: take it at this level": "点击：在此等级点取",
+ "All builds (backup)": "全部构筑（备份）",
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "将所有构筑存为一个 JSON 文件：在导入中选择 JSON 文件即可全部恢复，与现有构筑并存。"
 }
