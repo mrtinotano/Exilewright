@@ -188,12 +188,6 @@ a column it needs. `pob2.py` needs no install: it reads from Path of Building 2 
 what each support's stats do to the calculation (`pob2.json`) and the trade-site number of every item modifier
 (`trade_mods.json`, what the gear search matches by).
 
-## Code signing policy
-Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
-
-The releases are built from this repository's source by GitHub Actions (`.github/workflows/release.yml`) and only those
-builds are signed. Committer, reviewer and approver of every signing request: [mrtinotano](https://github.com/mrtinotano).
-
 ## Privacy
 Exilewright has no accounts, telemetry or analytics, and keeps your builds and settings on your computer
 (`%LOCALAPPDATA%\Exilewright`, or next to the program in the portable version; `log.txt` there holds what went wrong
