@@ -388,6 +388,26 @@ export function createFx(scene) {
       s.scale.setScalar(.75); g.add(s); g.scale.setScalar(1.5);
       return g;
     },
+    // Alchemist's Boon sharing a flask (reservation_alchemistboon lifeflask_spread / manaflask_spread .epk): up to 6 liquid
+    // ribbons, red for life and blue for mana (their .mat's subsurface colour), winding from a to the ally where to() is,
+    // then its body shining with that liquid for 2-3 s (lifeRecovery_Skin.mat)
+    boon(a, to, k) {
+      const L = k === 'mana' ? 0x1f57d8 : 0xc0140e;
+      for (let i = 0; i < 6; i++) {
+        const s = rnd(-1, 1) * .9, h = rnd(.4, 1.3), m = new THREE.Mesh(BALL, glowMat(L, 2.4, .95)); m.scale.setScalar(.075);
+        add(m, rnd(.55, .9), q => {
+          const b = to(), dx = b.x - a.x, dz = b.z - a.z, l = Math.hypot(dx, dz) || 1, e = ease(q), arc = Math.sin(Math.PI * q);
+          m.position.set(a.x + dx * e - dz / l * s * arc, 1.2 + h * arc, a.z + dz * e + dx / l * s * arc);
+          emit(3, { p: m.position, r: .04, v: .12, life: .5, size: .16, grow: .5, c: L, k: 1.5, g: 1.5, drag: 1 });
+        });
+      }
+      const g = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.glow, color: color(L, 1.6), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false }));
+      return add(g, 3.2, (q, e, dt) => {
+        const b = to(), on = Math.max(0, (q * 3.2 - .7) / 2.5); g.position.set(b.x, .9, b.z); g.scale.set(1.3, 2, 1);
+        g.material.opacity = on > 0 ? .75 * Math.min(1, on * 6) * (1 - on) : 0;
+        if (on > 0 && on < .9 && Math.random() < dt * 30) emit(1, { p: { x: b.x, y: .2, z: b.z }, r: .35, h: 1.3, up: .6, life: .6, size: .11, c: L, k: 1.8, drag: 1 });
+      });
+    },
     // Acidic Concoction's flask bursting (flask_throw_poison explosion_01.ao: flask_core_blast, flask_glass_shards): a
     // flash, a crown of acid splashing up, acid sparks thrown high that rain down for a while, a green ring out to its
     // radius, a puff, the glass flying apart and acid splats left on the ground for 5 s
