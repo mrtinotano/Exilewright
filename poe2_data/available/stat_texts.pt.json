@@ -18164,6 +18164,30 @@
  },
  {
   "stats": [
+   "damage_+%_final_from_lich_apparition_cloned_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Spell|Magias] conjuradas pela Aparição causam +{0}% de dano",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Spell|Magias] conjuradas pela Aparição causam -{0}% de dano",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "debuff_time_passed_+%"
   ],
   "rows": [

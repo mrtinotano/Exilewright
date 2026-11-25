@@ -441,6 +441,8 @@ export function makeHumanoid(fx) {
     group: root,
     setLook,
     family: () => fam,
+    // a second figure (Abyssal Apparition) takes its weapon trail out of the scene with it
+    dispose() { root.parent?.remove(root); trail.parent?.remove(trail); trail.geometry.dispose(); trail.material.dispose(); },
     hand(v) { return tip.getWorldPosition(v); },
     setColor(c) { trail.material.color.copy(fx.color(c, .5)).lerp(WHITE, .3); if (!glow) return; glow.userData.core.material.color.copy(fx.color(c, 3.2)); glow.userData.glow.material.color.copy(fx.color(c, 1.6)); },
     // a use of a skill: its clip from its moment on, lasting the time to the next use

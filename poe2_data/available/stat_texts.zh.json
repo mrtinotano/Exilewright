@@ -18162,6 +18162,30 @@
  },
  {
   "stats": [
+   "damage_+%_final_from_lich_apparition_cloned_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "幻象所施放的[Spell|法術]造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "幻象所施放的[Spell|法術]造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "debuff_time_passed_+%"
   ],
   "rows": [

@@ -676,7 +676,7 @@ const WP = Object.fromEntries(Object.entries(N).map(([id, n]) => [id, world(n.x,
 const main = Object.keys(N).filter(id => !N[id].ascendancy);
 const ascStart = a => (ASC[a] || []).find(i => N[i].ascendancy_start);
 const ownRoot = a => N[ascStart(a)]?.links.map(String).find(l => ROOTS.has(l));
-// every ascendancy of a class shares its start (in case one does not link to it in the data)
+// every ascendancy of a class shares its start (some, e.g. Abyssal Lich, don't link to it in the data)
 const classRoot = a => ownRoot(a) || ascs.filter(x => x.class === clsOf(a)).map(x => ownRoot(x.name)).find(Boolean);
 const MASTERY = Object.keys(N).filter(id => N[id].mastery_art);   // the passives with their mastery's art behind them
 // what of the tree is a build's to see: not the passives the game shows to one ascendancy alone (only_for: the Oracle's
