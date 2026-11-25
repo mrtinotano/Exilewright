@@ -1121,8 +1121,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   function paste(text) {
     const r = parseItem(text);
     if (!r) { msg = t('That is not item text, or the planner does not have its base.'); render(); msg = ''; return; }
-    const items = getBuild().items ||= {}, rs = slotsOf(baseOf(r.item)), fits = s => rs.includes(slotType(s));
-    const slot = fits(sel) ? sel : rs.includes('jewel') ? null : rs.find(s => !items[s] && open(s)) || rs[0];
+    const slot = whereTo(r.item);
     if (!slot) { msg = t('Select an allocated jewel socket first.'); render(); msg = ''; return; }
     put(slot, r.name ? { ...r.item, name: r.name } : r.item); sel = slot;
     msg = r.missed.length ? t('Not understood ({0}): {1}', r.missed.length, esc(r.missed.join(' · '))) : t('Item added.');
