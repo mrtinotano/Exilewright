@@ -3097,6 +3097,30 @@
  },
  {
   "stats": [
+   "base_curse_delay_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Curse|저주] 지대가 폭발하기 전의 지연시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Curse|저주] 지대가 폭발하기 전의 지연시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_curse_duration_+%"
   ],
   "rows": [
@@ -3789,6 +3813,20 @@
      "#"
     ],
     "t": "보조 대상 스킬로 [Impale|꿰뚫기] 추출 불가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cannot_miss_against_full_life_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "최대 생명력 상태인 적이 플레이어의 [Hit|명중]을 [Evasion|회피]할 수 없음",
     "h": []
    }
   ]
@@ -6160,6 +6198,20 @@
      "#"
     ],
     "t": "근접 [Hit|명중] 시 [Rage|격노] {0} 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "global_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Hit|명중] 시 [Knockback|적을 밀어냄]",
     "h": []
    }
   ]
@@ -19320,6 +19372,22 @@
  },
  {
   "stats": [
+   "minimum_added_cold_damage_vs_chilled_enemies",
+   "maximum_added_cold_damage_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "냉각된 적에게 냉기 피해 {0}~{1} 추가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -22070,6 +22138,27 @@
  },
  {
   "stats": [
+   "+_deflection_rating_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ward|룬 수호] 최대치 10당 [Deflect|튕겨내기 평점] +{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Ward|룬 수호] 최대치 10당 [Deflect|튕겨내기 평점] -{0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "+_deflection_rating_per_50_missing_maximum_energy_shield"
   ],
   "rows": [
@@ -22609,6 +22698,27 @@
      "#"
     ],
     "t": "제작 속성 부여 최대 3개 보유 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_can_have_additional_crafted_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "제작 속성 부여 추가 {0}개 보유 가능",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "제작 속성 부여 추가 {0}개 보유 가능",
     "h": []
    }
   ]
@@ -30246,6 +30356,20 @@
  },
  {
   "stats": [
+   "totem_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 토템 스킬 젬 레벨 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "trap_skill_gem_level_+"
   ],
   "rows": [
@@ -34751,6 +34875,20 @@
  },
  {
   "stats": [
+   "base_maximum_life_%_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "생명력 최대치의 {0}%를 추가 [Ward|룬 수호] 최대치로 [StatGain|획득]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_%_to_gain_as_energy_shield"
   ],
   "rows": [
@@ -38641,6 +38779,34 @@
  },
  {
   "stats": [
+   "frenzy_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어가 [Charges|격분 충전]을 획득할 상황에서, 플레이어에게 [Presence|접근]해 있는 [Allies|동료들]이 그 [Charges|충전]을 대신 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "power_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어가 [Charges|권능 충전]을 획득할 상황에서, 플레이어에게 [Presence|접근]해 있는 [Allies|동료들]이 그 [Charges|충전]을 대신 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_chance_to_blind_on_hit_%"
   ],
   "rows": [
@@ -41325,6 +41491,20 @@
      "#"
     ],
     "t": "[Cold|냉기 피해]의 {0}%를 [Fire|화염 피해]로 받음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chaos_damage_from_hits_%_taken_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|명중]당했을 때 받는 [Chaos|카오스] 피해의 {0}%를 무작위 [ElementalDamage|원소] 피해로 받음",
     "h": []
    }
   ]
@@ -53442,6 +53622,20 @@
  },
  {
   "stats": [
+   "accuracy_rating_+_per_evasion_rating_on_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "장착한 투구의 [ItemEvasion|아이템 회피] 1당 [Accuracy|정확도] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "accuracy_rating_is_doubled"
   ],
   "rows": [
@@ -53836,6 +54030,20 @@
  },
  {
   "stats": [
+   "additional_maximum_all_elemental_resistances_%_while_on_full_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "최대 [Ward|룬 수호] 상태일 때 모든 [MaximumResistances|원소 저항 최대치] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -53858,6 +54066,20 @@
      "#"
     ],
     "t": "인내 충전이 없는 동안 모든 저항 최대치 {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_block_%_if_blocked_with_active_block_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Recently|최근 4초 이내] [Shield|방패]를 올려 [Block|막아낸] 경우 [Block|막기] 확률 최대치 {0:+d}%",
     "h": []
    }
   ]
@@ -53889,6 +54111,20 @@
      "1|#"
     ],
     "t": "소환수 피해의 증가 및 감소 수치의 150%가 자신에게도 적용",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additive_modifiers_to_life_regeneration_also_apply_to_mana_regeneration_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "생명력 재생 속도 증가 및 감소 수치가 마나 재생 속도에도 적용",
     "h": []
    }
   ]
@@ -54638,6 +54874,20 @@
  },
  {
   "stats": [
+   "allies_in_presence_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Presence|접근]해 있는 [Allies|동료들]의 이동 속도 {0}% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "allies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos"
   ],
   "rows": [
@@ -54664,6 +54914,20 @@
      "per_minute_to_per_second",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "allies_in_your_presence_share_charges_with_you"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어에게 [Presence|접근]해 있는 [Allies|동료들]이 플레이어와 [Charges|충전] 공유",
+    "h": []
    }
   ]
  },
@@ -55261,6 +55525,20 @@
  },
  {
   "stats": [
+   "armour_%_also_applies_to_chaos_damage_while_at_full_es"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[EnergyShield|에너지 보호막]이 최대일 때 [Armour|방어도]의 {0:+d}%가 [Chaos|카오스 피해]에도 적용",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -55338,6 +55616,30 @@
      "#|-1"
     ],
     "t": "[Recently|최근 4초 이내] [Melee|근접 공격]으로 적을 [Hit|명중]한 경우 [Armour|방어도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] 회피 구르기를 사용하지 않은 경우 [Armour|방어도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|최근 4초 이내] 회피 구르기를 사용하지 않은 경우 [Armour|방어도] {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -55461,6 +55763,20 @@
  },
  {
   "stats": [
+   "armour_+_per_1_spirit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Spirit|정신력] 1당 [Armour|방어도] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_and_evasion_rating_+%_per_active_totem_in_presence"
   ],
   "rows": [
@@ -55477,6 +55793,30 @@
     ],
     "t": "[Presence|접근]해 있는 소환된 [Totem|토템] 하나당 [Armour|방어도] 및 [Evasion|회피] {0}% 감소",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_and_evasion_rating_+%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LowWard|낮은 룬 수호] 상태일 때 [Armour|방어도] 및 [Evasion|회피] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LowWard|낮은 룬 수호] 상태일 때 [Armour|방어도] 및 [Evasion|회피] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -56623,6 +56963,30 @@
  },
  {
   "stats": [
+   "attack_damage_+%_while_shapeshifted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Shapeshift|형태 변환] 상태일 때 [Attack|공격] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Shapeshift|형태 변환] 상태일 때 [Attack|공격] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_while_surrounded"
   ],
   "rows": [
@@ -57141,6 +57505,30 @@
  },
  {
   "stats": [
+   "attack_speed_+%_if_have_blocked_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] 막아낸 경우 [Attack|공격] 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|최근 4초 이내] 막아낸 경우 [Attack|공격] 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_speed_+%_if_have_crit_recently"
   ],
   "rows": [
@@ -57270,6 +57658,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_spend_x%_maximum_ward_for_added_physical_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|공격]이 가능한 경우 [Ward|룬 수호] 최대치의 {0}%를 사용하여 그와 동일한 수치의 추가 [Physical|물리] 피해 획득",
+    "h": []
    }
   ]
  },
@@ -57829,6 +58231,23 @@
  },
  {
   "stats": [
+   "base_banner_life_regeneration_rate_per_minute_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Banner|깃발]의 영향을 받는 대상이 1초마다 생명력의 {0}% 재생",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_banner_resist_all_elements_%_to_apply"
   ],
   "rows": [
@@ -57971,6 +58390,20 @@
  },
  {
   "stats": [
+   "base_chaos_damage_resistance_%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|장착]한 타락한 아이템 하나당 [Resistances|카오스 저항] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_damage_%_deflected"
   ],
   "rows": [
@@ -57986,6 +58419,27 @@
      "#|-1"
     ],
     "t": "[Deflect|튕겨내기]로 방지하는 [Hit|피해량] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damage_%_deflected_if_you_have_not_deflected_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] [Hit|명중]을 [Deflect|튕겨내지] 않은 경우\\n[Deflect|튕겨낸] [Hit|명중]의 피해 중 방지하는 피해 {0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|최근 4초 이내] [Hit|명중]을 [Deflect|튕겨내지] 않은 경우 [Deflect|튕겨내기]로 방지하는 [Hit|피해량] {0:+d}%",
     "h": []
    }
   ]
@@ -58669,6 +59123,20 @@
  },
  {
   "stats": [
+   "base_spirit_per_socketed_idol"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipment|장비]에 장착한 [Idol|우상] 하나당 [Spirit|정신력] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_spirit_reservation_efficiency_+%_per_20_tribute"
   ],
   "rows": [
@@ -58765,6 +59233,47 @@
     "t": "플레이어가 부여하는 [UnholyMight|불경한 힘] 버프의 [BuffMagnitude|강도] {0}% 감소",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_cost_efficiency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ward|룬 수호] 소모 [Efficiency|효율] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Ward|룬 수호] 소모 [Efficiency|효율] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "1초마다 [Ward|룬 수호] {0} 재생",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
      "1"
     ]
    }
@@ -59090,6 +59599,32 @@
     ],
     "t": "공물 점수가 100 이상인 경우 [Block|막기] 확률 {0}% 감소",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|반려수]가 [Presence|접근]해 있는 동안 [Block|막기] 확률 {0}% 증가",
+    "h": [
+     "canonical_line"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Companion|반려수]가 [Presence|접근]해 있는 동안 [Block|막기] 확률 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -59459,6 +59994,20 @@
      "#"
     ],
     "t": "적 [Pinned|고정] 시 방어구의 {0}% [ArmourBreak|파괴]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "break_armour_on_attack_hit_%_of_max_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|공격]이 [Ward|룬 수호] 최대치의 {0}%와 동일한 [ArmourBreak|방어구 파괴]",
     "h": []
    }
   ]
@@ -60137,6 +60686,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_for_plants_to_overgrow_when_entering_your_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|식물]이 처음으로 플레이어의 [Presence|접근]거리에 들어오면 {0}% 확률로 즉시 [Plant|과성장]",
+    "h": []
    }
   ]
  },
@@ -61934,6 +62497,20 @@
  },
  {
   "stats": [
+   "companion_damage_+%_final_from_idol_per_different_dead_companion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "죽은 보유 반려수의 각기 다른 유형 하나당 [Companion|반려수]가 주는 피해 {0}% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companion_damage_+%_vs_immobilised_enemies"
   ],
   "rows": [
@@ -62114,6 +62691,33 @@
  },
  {
   "stats": [
+   "companions_gain_onslaught_on_hitting_enemies_marked_by_you_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Companion|반려수]가 플레이어의 [Mark|징표]가 찍힌 대상을 [Hit|명중]시키면 {0}초 동안 [Onslaught|맹공] 획득",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|반려수]가 플레이어의 [Mark|징표]가 찍힌 대상을 [Hit|명중]시키면 {0}초 동안 [Onslaught|맹공] 획득",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_gain_your_strength"
   ],
   "rows": [
@@ -62128,6 +62732,48 @@
  },
  {
   "stats": [
+   "companions_in_presence_base_chaos_damage_resistance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어에게 [Presence|접근]해 있는 [Companion|반려수들]의 [Resistances|카오스 저항] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_base_resist_all_elements_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어에게 [Presence|접근]해 있는 [Companion|반려수들]의 모든 [ElementalDamage|원소] [Resistances|저항] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_gain_x_rage_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "플레이어에게 [Presence|접근]해 있는 [Companion|반려수]가 명중 시 [Rage|격노] {0} 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_in_presence_have_onslaught_while_you_are_shapeshifted"
   ],
   "rows": [
@@ -62136,6 +62782,20 @@
      "#"
     ],
     "t": "[Shapeshift|형태 변환] 상태일 때 [Presence|접근]해 있는 [Companion|반려수]가 [Onslaught|맹공] 보유",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_non_skill_base_all_damage_%_to_gain_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "플레이어에게 [Presence|접근]해 있는 [Companion|반려수들]이 피해의 {0}%를 무작위 [ElementalDamage|원소] 추가 피해로 [Gain|획득]",
     "h": []
    }
   ]
@@ -62370,6 +63030,27 @@
  },
  {
   "stats": [
+   "critical_chance_luck_against_parry_debuffed_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[ParriedDebuff|흘려보낸] 적에 대한 [Critical|치명타 명중] 확률에 [Lucky|행운] 적용",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[ParriedDebuff|흘려보낸] 적에 대한 [Critical|치명타 명중] 확률에 [Unlucky|불운] 적용",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "critical_damage_+%_per_50_current_life"
   ],
   "rows": [
@@ -62561,6 +63242,30 @@
     ],
     "t": "[Critical|치명타 명중] 시 [Impale|꿰뚫기] 유발",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "critical_hits_apply_life_regeneration_rate_+%_for_4_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "플레이어가 [Critical|치명타]로 [Hit|명중]시키는 적이 4초 동안 생명력 재생 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "플레이어가 [Critical|치명타]로 [Hit|명중]시키는 적이 4초 동안 생명력 재생 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -63503,6 +64208,30 @@
  },
  {
   "stats": [
+   "damage_+%_per_different_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Presence|접근]해 있는 각기 다른 [Companion|반려수] 하나당 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Presence|접근]해 있는 각기 다른 [Companion|반려수] 하나당 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_+%_per_enemy_elemental_ailment"
   ],
   "rows": [
@@ -63710,6 +64439,20 @@
      "#|99"
     ],
     "t": "[Block|막아낸] 피해의 {0}%가 마나로 [Recoup|회생]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_cannot_be_taken_from_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 피해가 [Ward|룬 수호]에 막히지 않음",
     "h": []
    }
   ]
@@ -64152,6 +64895,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_from_hits_is_unlucky_if_ward_damaged_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Recently|최근 4초 이내] [Ward|룬 수호]가 피해를 받은 경우\\n적에게 [Hit|명중]되어 받는 피해에 [Unlucky|불운] 적용",
+    "h": []
    }
   ]
  },
@@ -65650,6 +66407,104 @@
  },
  {
   "stats": [
+   "dummy_display_stat_rune_chaos_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "아이템의 모든 [Fire|화염], [Cold|냉기], [Lightning|번개] 속성을 그에 상당하는 [Chaos|카오스] 속성으로 변화",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_cold_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "장착 시 모든 [Fire|화염] 및 [Lightning|번개] 속성을 그에 상응하는 [Cold|냉기] 속성으로 변화",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_create_jewel_socket"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "아이템의 [Augment|증강물] 홈을 모두 파괴하여 [Jewel|주얼] 슬롯 1개 생성",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_fire_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "아이템의 모든 [Cold|냉기] 및 [Lightning|번개] 속성을 그에 상당하는 [Fire|화염] 속성으로 변화",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_lightning_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "아이템의 모든 [Fire|화염] 및 [Cold|냉기] 속성을 그에 상당하는 [Lightning|번개] 속성으로 변화",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_olroths_legacy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Rarity|고유] 칼구르 또는 에조미어 아이템에 장착 시 아이템을 파괴하여 해당 아이템의 힘이 주입된 [Rune|룬] 생성",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_upgrade"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "장착된 [Rune|룬] 업그레이드",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dummy_stat_zarokhs_gift_jewel_slot"
   ],
   "rows": [
@@ -66730,6 +67585,20 @@
  },
  {
   "stats": [
+   "enemies_you_blind_have_no_crit_bonus_for_x_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "적이 플레이어에게 실명된 후 {0}초 동안 [CriticalDamageBonus|치명타 피해 보너스] 없음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "enemies_you_curse_are_intimidated"
   ],
   "rows": [
@@ -67339,6 +68208,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_X_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ward|룬 수호] 최대치 {0}당 [ESRechargeRate|에너지 보호막 재충전 속도] 1% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_while_shapeshifted"
   ],
   "rows": [
@@ -67387,6 +68270,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_start_when_minions_reform"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|소환수] [Reform|재구성] 시 [ESRecharge|에너지 보호막 재충전] 시작",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_start_when_stunned"
   ],
   "rows": [
@@ -67395,6 +68292,20 @@
      "#"
     ],
     "t": "기절 시 [ESRecharge|에너지 보호막 재충전] 시작",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "energy_shield_recharge_starts_after_spending_2000_mana_every_2_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ESRecharge|에너지 보호막 재충전]이 마나 총 2000 소모 후 시작\\n2초에 한 번씩만 발동",
     "h": []
    }
   ]
@@ -68753,6 +69664,20 @@
  },
  {
   "stats": [
+   "gain_X_druidic_prowess_on_heavy_stunning_rare_or_unique_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Rarity|희귀 또는 고유] 적 [HeavyStun|강력 기절] 시 [DruidicProwess|드루이드의 기량] {0} 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_X_instilling_fire_when_charge_is_consumed"
   ],
   "rows": [
@@ -68881,6 +69806,34 @@
      "#"
     ],
     "t": "재장전할 때, 쌍둥이자리 쇄도를 발동시켜 번갈아 가며\\n[Surge|냉기 쇄도] {0} 또는 [Surge|화염 쇄도] {1} 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_life_per_8_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|장착]한 투구의 [Armour|방어도] 8당 생명력 최대치 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_mana_per_3_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|장착한] 투구의 [ItemArmour|아이템 방어도] 3당 마나 최대치 {0:+d}",
     "h": []
    }
   ]
@@ -69208,6 +70161,20 @@
  },
  {
   "stats": [
+   "gain_armour_from_%_life_loss_from_hits_lasting_8_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "지난 8초 이내 [Hit|명중]으로 상실한 생명력의 {0}%와 동일한 [Armour|방어도] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_attack_damage_+%_for_each_your_minion_in_presence_capped"
   ],
   "rows": [
@@ -69258,6 +70225,20 @@
      "#"
     ],
     "t": "희귀 또는 고유 적 [HeavyStun|강력 기절] 시 [Charges|인내 충전] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_endurance_charge_on_reaching_low_life_once_per_2s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[LowLife|낮은 생명력] 상태에 도달 시 [Charges|인내 충전] 1개 획득, 2초에 한 번씩만 획득",
     "h": []
    }
   ]
@@ -69361,6 +70342,48 @@
  },
  {
   "stats": [
+   "gain_guard_%_of_max_ward_for_2s_every_4s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "4초마다 2초 동안 [Ward|룬 수호] 최대치의 {0}%와 동일한 [Guard|가호] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_%_of_maximum_life_for_4_seconds_on_taking_savage_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[SavageHit|야만적인 타격]을 받을 시 4초 동안 생명력 최대치의 {0}%와 동일한 [Guard|가호] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_after_sprinting_equal_to_x%_of_maximum_life_per_second_sprinted_up_to_20%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "달리기를 중단하면 달린 시간 1초당 생명력 최대치의 {0}%와 동일한 [Guard|가호]를 4초 동안 획득, 최대 20%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll"
   ],
   "rows": [
@@ -69383,6 +70406,20 @@
      "#"
     ],
     "t": "[Hit|명중]으로 [Rage|격노] 획득 시 {0}%의 확률로 격노 최대치 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_maximum_energy_shield_equal_to_%_total_strength_requirement_of_equipped_armour_items"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[EquipArmour|장착한 방어구 아이템]의 [Strength|힘] 요구사항의 총합의 {0}%와 동일한 [EnergyShield|에너지 보호막 최대치] 획득",
     "h": []
    }
   ]
@@ -69478,6 +70515,20 @@
      "#"
     ],
     "t": "[Minion|소환수]가 사망하면 4초 동안 [Onslaught|맹공] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_onslaught_for_x_seconds_when_your_marks_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Mark|징표]가 [MarkActivate|활성화]되면 {0}초 동안 [Onslaught|맹공] 획득",
     "h": []
    }
   ]
@@ -70017,6 +71068,22 @@
  },
  {
   "stats": [
+   "global_minimum_added_lightning_damage_vs_shocked_enemies",
+   "global_maximum_added_lightning_damage_vs_shocked_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "감전된 적에게 번개 피해 {0}~{1} 추가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "glory_generation_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -70359,6 +71426,20 @@
  },
  {
   "stats": [
+   "grenade_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Grenade|유탄] 스킬 젬 레벨 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "grenade_skill_number_of_additional_projectiles"
   ],
   "rows": [
@@ -70413,6 +71494,30 @@
     ],
     "t": "피격 시 {0}%의 확률로 타르 확산",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "guard_gained_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Guard|가호] 획득 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Guard|가호] 획득 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -70652,6 +71757,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hazard_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Hazard|위해 요소] 스킬 젬 레벨 {0:+d}",
+    "h": []
    }
   ]
  },
@@ -73275,6 +74394,20 @@
  },
  {
   "stats": [
+   "herald_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Herald|전령] 스킬 젬 레벨 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_chance_%_on_spreading_poioson"
   ],
   "rows": [
@@ -73781,6 +74914,20 @@
      "#"
     ],
     "t": "지옥불 화염이 최대치에 도달하면 최대 생명력 및 에너지 보호막의 {0}%를 [Fire|화염] 피해로 받음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hits_cannot_be_evaded_vs_blinded_maimed_bleeding_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Blind|실명], [Maim|힘줄 절단], [Bleeding|출혈] 상태의 적들이 플레이어의 [Hit|명중]을 [Evasion|회피]할 수 없음",
     "h": []
    }
   ]
@@ -74511,6 +75658,20 @@
      "1|#"
     ],
     "t": "플레이어가 [Incision|절개]를 적용하는 적이 [Incision|절개] 하나당 받는 [Physical|물리] 피해 {0}% 증가",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "increases_and_reductions_to_move_speed_apply_to_es_recharge_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "이동 속도 증가 및 감소 수치를\\n[ESRechargeRate|에너지 보호막 재충전 속도]에도 적용",
     "h": []
    }
   ]
@@ -75667,6 +76828,23 @@
  },
  {
   "stats": [
+   "life_loss_%_per_minute_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "달리는 동안 1초마다 생명력 최대치의 {0}% 상실",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_mana_flasks_restore_mana_life"
   ],
   "rows": [
@@ -75854,6 +77032,23 @@
     "t": "[Companion|반려수]가 [Presence|접근]해 있는 동안 생명력 회복 속도 {0}% 감소",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_regeneration_per_minute_%_if_used_a_command_skill_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] [Command|명령] 스킬을 사용한 경우 1초마다 생명력 최대치의 {0}% 재생",
+    "h": [
+     "per_minute_to_per_second",
      "1"
     ]
    }
@@ -77951,6 +79146,41 @@
  },
  {
   "stats": [
+   "local_idols_gain_additional_socketable_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "이 아이템에 장착한 [Idol|우상]이 [ShamanOnlyMods|결속]된 속성의 효과를 받음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "이 무기로 [Attack|공격] 시 {0}%의 확률로 [Exposure|노출] 유발",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "이 무기로 [Attack|공격] 시 [Exposure|노출] 유발",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_inflict_malignant_madness_on_critical_strike_%_if_eater_of_worlds_dominant"
   ],
   "rows": [
@@ -78401,6 +79631,20 @@
  },
  {
   "stats": [
+   "local_maximum_added_cold_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "적 [Hit|명중] 시 20초 동안 적의 [Power|위세]와 동일한 추가 [Cold|냉기] 피해 최대치 획득, 최대 총 {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_maximum_added_lightning_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
   ],
   "rows": [
@@ -78511,6 +79755,20 @@
  },
  {
   "stats": [
+   "local_physical_damage_roll_always_min_or_max"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Physical|물리] 피해가 [BooleanDamageRoll|최솟값과 최댓값 둘 중의 하나로만 판정]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_poison_on_critical_strike_chance_%"
   ],
   "rows": [
@@ -78568,6 +79826,48 @@
      "#|-1"
     ],
     "t": "이 무기의 [Projectile|투사체] 속도 {0}% 감소",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_dexterity"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "요구사항의 {0}%를 [Dexterity|민첩]으로 [StatConversion|전환]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "요구사항의 {0}%를 [Intelligence|지능]으로 [StatConversion|전환]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_strength"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "요구사항의 {0}%를 [Strength|힘]으로 [StatConversion|전환]",
     "h": []
    }
   ]
@@ -78682,6 +79982,20 @@
      "#"
     ],
     "t": "방패를 올린 동안 [StunThreshold|기절 한계치] 2배",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_socketable_%_maximum_weapon_damage_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "이 무기의 최대 피해의 {0}%와 동일한 [Ward|룬 수호] 획득",
     "h": []
    }
   ]
@@ -79485,6 +80799,30 @@
  },
  {
   "stats": [
+   "mana_cost_efficiency_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] 회피 구르기를 사용하지 않은 경우 마나 소모 [Efficiency|효율] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|최근 4초 이내] 회피 구르기를 사용하지 않은 경우 마나 소모 [Efficiency|효율] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_cost_+%_per_10_devotion"
   ],
   "rows": [
@@ -79740,6 +81078,55 @@
     "h": [
      "negate",
      "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|반려수]가 [Presence|접근]해 있는 동안 마나 회복 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Companion|반려수]가 [Presence|접근]해 있는 동안 마나 회복 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_regeneration_rate_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "마나 재생 속도 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "마나 재생 속도 {0}% 감폭",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
     ]
    }
   ]
@@ -89630,6 +91017,20 @@
  },
  {
   "stats": [
+   "mark_grants_%_max_glory_to_random_skill_on_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어의 [Mark|징표] [MarkActivate|활성화] 시 영광이 필요한 스킬이 스킬의 최대 영광의 {0}% 생성",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mark_skill_duration_+%"
   ],
   "rows": [
@@ -90225,6 +91626,30 @@
      "#"
     ],
     "t": "공물 점수 20당 최대 생명력의 {0}%를 [EnergyShield|에너지 보호막]으로 [StatConversion|전환]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "생명력 최대치 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "생명력 최대치 {0}% 증폭",
     "h": []
    }
   ]
@@ -91477,6 +92902,34 @@
  },
  {
   "stats": [
+   "minion_physical_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|소환수]가 자신의 [Physical|물리] 피해의 {0}%를 추가 [Lightning|번개] 피해로 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_physical_hit_and_dot_damage_%_taken_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "소환수가 [Physical|물리] 피해의 {0}%를 [Lightning|번개] 피해로 받음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "reservation_efficiency_+%_of_minion_skills"
   ],
   "rows": [
@@ -91690,6 +93143,20 @@
      "#"
     ],
     "t": "소환수가 적중 시 점화된 적만 처치 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_in_presence_have_onslaught_while_you_are_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[LowWard|낮은 룬 수호] 상태일 때 [Presence|접근]해 있는 [Minion|소환수]가 [Onslaught|맹공] 보유",
     "h": []
    }
   ]
@@ -91951,6 +93418,27 @@
  },
  {
   "stats": [
+   "movement_speed_+%_per_5_rage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rage|격노] 5당 이동 속도도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rage|격노] 5당 이동 속도도 {0}% 감소",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "movement_speed_+%_while_affected_by_ailment"
   ],
   "rows": [
@@ -92004,6 +93492,20 @@
      "1|#"
     ],
     "t": "이동 속도 25% 증가 및 추가로 [Evasion|회피] {0}당 이동 속도 1% 증가, [MaximumTotal|최대 75]%\\n달리기 속성을 제외한 이동 속도 속성이 적용되지 않음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "abyss_socketable_movement_speed_is_only_base_+%_per_15_spirit_up_to_+40%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Spirit|정신력] 15당 이동 속도 {0}% 증가, 최대 40% 증가\\n달리기 속성을 제외한 이동 속도 속성이 적용되지 않음",
     "h": []
    }
   ]
@@ -92554,6 +94056,20 @@
  },
  {
   "stats": [
+   "non_skill_all_damage_%_to_gain_as_fire_+_per_2%_attack_block_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "막기 확률 2%당 피해의 {0}%를 [Fire|화염]으로 [Gain|획득]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_chaos_per_active_undead_minion"
   ],
   "rows": [
@@ -92778,6 +94294,23 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_physical_per_10%_missing_mana_permyriad"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "잃은 마나 10%당 피해의 {0}%를 추가 [Physical|물리] 피해로 [Gain|획득]",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element"
   ],
   "rows": [
@@ -92792,6 +94325,20 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_random_element_per_socketed_rune"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|장착]한 아이템에 장착된 [Rune|룬] 하나당 피해의 {0}%를\\n무작위 [ElementalDamage|원소] [Gain|추가] 피해로 [Gain|획득]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element_while_shapeshifted"
   ],
   "rows": [
@@ -92800,6 +94347,20 @@
      "1|#"
     ],
     "t": "[Shapeshift|형태 변환] 상태일 때 피해의 {0}%를 무작위 [ElementalDamage|원소] 추가 피해로 [Gain|획득]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_cold_fire_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "피해의 {0}%를 모든 [ElementalDamage|원소]의 추가 피해로 획득",
     "h": []
    }
   ]
@@ -93214,6 +94775,20 @@
      "1",
      "canonical_line"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "nova_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Nova|폭발] 스킬 젬 레벨 {0:+d}",
+    "h": []
    }
   ]
  },
@@ -94681,6 +96256,44 @@
  },
  {
   "stats": [
+   "plant_skill_effect_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|식물] 스킬의 스킬 효과 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Plant|식물] 스킬의 스킬 효과 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "plant_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Plant|식물] 스킬 젬 레벨 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "poison_as_though_dealing_X_damage_on_block"
   ],
   "rows": [
@@ -95767,6 +97380,20 @@
  },
  {
   "stats": [
+   "recoup_life_equal_to_%_of_hit_damage_dealt_to_your_offerings"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "플레이어의 [Offering|공물]이 받은 피해의 {0}%를 생명력으로 [Recoup|회생]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recoup_speed_+%"
   ],
   "rows": [
@@ -96103,6 +97730,20 @@
  },
  {
   "stats": [
+   "recover_ward_as_well_as_mana_from_mana_regeneration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "재생으로 인한 마나 회복이 [Ward|룬 수호]에도 적용됨",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_x%_of_maximum_mana_when_you_consume_a_power_charge"
   ],
   "rows": [
@@ -96111,6 +97752,20 @@
      "1|#"
     ],
     "t": "[Charges|권능 충전] 소모 시 마나 최대치의 {0}% 회복",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_x%_of_maximum_ward_on_persistent_minion_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "플레이어의 [Reviving|부활] [Minion|소환수]가 [MinionDeath|사망]하면 플레이어가 [Ward|룬 수호] 최대치의 {0}% 회복",
     "h": []
    }
   ]
@@ -96313,6 +97968,20 @@
      "#"
     ],
     "t": "마나 [Flask|플라스크] 사용 시 [Curse|저주] 1개 제거",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remove_damaging_ailment_on_using_command_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Command|명령] 스킬 사용 시 [DamagingAilments|피해를 주는 상태 이상] 제거",
     "h": []
    }
   ]
@@ -96567,6 +98236,34 @@
  },
  {
   "stats": [
+   "revive_random_persistent_minion_on_offering_expiration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Offering|공물]이 만료되면 [Persistent|유지형] [Minion|소환수] 중 하나 부활",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_%_life_to_gain_as_guard_on_dodge_roll"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "회피 구르기 시 생명력 최대치의 {0}%를 [Sacrifice|희생]하여 같은 값의 [Guard|가호] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack"
   ],
   "rows": [
@@ -96668,6 +98365,20 @@
      "#"
     ],
     "t": "[Attack|공격] 시 해당 [Attack|공격]을 [Empowered|강화]하는 [Warcry|함성] 하나당\\n생명력의 {0}%를 [Physical|물리] 피해로 받음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "self_take_no_extra_damage_from_critical_strikes_while_on_consecrated_ground"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ConsecratedGround|신성화 지대]에 있는 동안 플레이어에 대한 [Hit|명중]에 [CriticalDamageBonus|치명타 피해 보너스] 없음",
     "h": []
    }
   ]
@@ -97202,6 +98913,54 @@
  },
  {
   "stats": [
+   "skill_speed_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Equipped|장착]한 타락한 아이템 하나당 [SkillSpeed|스킬 속도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Equipped|장착]한 타락한 아이템 하나당 [SkillSpeed|스킬 속도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_speed_+%_while_on_low_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LowMana|낮은 마나] 상태일 때 [SkillSpeed|스킬 속도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LowMana|낮은 마나] 상태일 때 [SkillSpeed|스킬 속도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_speed_+%_while_shapeshifted"
   ],
   "rows": [
@@ -97336,6 +99095,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "slam_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Slam|강타] 스킬 젬 레벨 {0:+d}",
+    "h": []
    }
   ]
  },
@@ -97849,6 +99622,30 @@
  },
  {
   "stats": [
+   "spell_damage_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|반려수]가 [Presence|접근]해 있는 동안 [Spell|주문] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Companion|반려수]가 [Presence|접근]해 있는 동안 [Spell|주문] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_damage_+%_while_wielding_melee_weapon"
   ],
   "rows": [
@@ -98274,6 +100071,20 @@
  },
  {
   "stats": [
+   "spells_penetrates_elemental_resist_%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[LowWard|낮은 룬 수호] 상태일 때 주문 피해가 적 [ElementalDamage|원소] [Resistances|저항]의 {0}%를 [Penetration|관통]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -98289,6 +100100,30 @@
      "#|-1"
     ],
     "t": "공물 점수가 100 이상인 경우 [Spirit|정신력] 최대치 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Equipped|장착]한 타락한 아이템 하나당 [Spirit|정신력] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Equipped|장착]한 타락한 아이템 하나당 [Spirit|정신력] {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -98334,6 +100169,20 @@
      "#"
     ],
     "t": "[Strength|힘]이 200 이상인 상태에서 [Spirit|정신력] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+_per_2_levels"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "레벨 2당 [Spirit|정신력] {0:+d}",
     "h": []
    }
   ]
@@ -98406,6 +100255,30 @@
  },
  {
   "stats": [
+   "sprint_movement_speed_+%_per_active_persistent_minion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "달리는 동안 [Persistent|유지형] [Minion|소환수] 하나당 이동 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "달리는 동안 [Persistent|유지형] [Minion|소환수] 하나당 이동 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "start_at_zero_energy_shield"
   ],
   "rows": [
@@ -98428,6 +100301,34 @@
      "1|#"
     ],
     "t": "마나 [Flask|플라스크] 사용 시 [ESRecharge|에너지 보호막 재충전] 시작",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Storm|폭풍] 스킬 젬 레벨 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_limit_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "스킬의 [Limit|제한] +{0}",
     "h": []
    }
   ]
@@ -98490,6 +100391,20 @@
      "#"
     ],
     "t": "[Strength|힘]이 [Melee|근접] 무기와 [Melee|근접] 스킬의 다른 [Attributes|능력치] 요구사항을 충족할 수 있음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "strike_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Strike|타격] 스킬 젬 레벨 {0:+d}",
     "h": []
    }
   ]
@@ -98648,6 +100563,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_if_stunned_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] [Stun|기절]하지 않은 경우 [StunThreshold|기절 한계치] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|최근 4초 이내] [Stun|기절]하지 않은 경우 [StunThreshold|기절 한계치] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour"
   ],
   "rows": [
@@ -98656,6 +100595,27 @@
      "#"
     ],
     "t": "투구의 [Evasion|회피]와 [Armour|방어도] 중 낮은 수치와 동일한 [StunThreshold|기절 한계치] 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "stun_threshold_+_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ward|룬 수호] 최대치 10당 [StunThreshold|기절 한계치] +{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Ward|룬 수호] 최대치 10당 [StunThreshold|기절 한계치] -{0}",
     "h": []
    }
   ]
@@ -99483,6 +101443,20 @@
  },
  {
   "stats": [
+   "thorns_damage_is_lucky_against_enemies_with_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ArmourBreak|방어구가 완전히 파괴된] 대상에 대한 [Thorns|가시] 피해에 [Lucky|행운] 적용",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "thorns_damage_+%"
   ],
   "rows": [
@@ -99573,6 +101547,22 @@
      "#"
     ],
     "t": "{0}~{1} [Fire|화염] [Thorns|가시] 피해",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_minimum_base_lightning_damage",
+   "thorns_maximum_base_lightning_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}~{1} [Lightning|번개] [Thorns|가시] 피해",
     "h": []
    }
   ]
@@ -101724,6 +103714,20 @@
  },
  {
   "stats": [
+   "warcry_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Warcry|함성] 스킬 젬 레벨 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_speed_+%_per_25_tribute"
   ],
   "rows": [
@@ -101834,6 +103838,166 @@
  },
  {
   "stats": [
+   "ward_regeneration_rate_+%_if_have_crit_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] [Critical|치명타 명중] 시 [Ward|룬 수호] 재생 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|최근 4초 이내] [Critical|치명타 명중] 시 [Ward|룬 수호] 재생 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+%_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "달리는 동안 [Ward|룬 수호] 재생 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "달리는 동안 [Ward|룬 수호] 재생 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+1%_final_per_x%_ward_lost_from_hits_up_to_100%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|최근 4초 이내] [Hit|명중]으로 잃은 [Ward|룬 수호] 최대치 {0}%당 [Ward|룬 수호] 재생 속도 1%씩, 최대 100% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_is_doubled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ward|룬 수호] 재생 속도 2배",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_1"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "시간술 속성 부여 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_2"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "영혼 속성 부여 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_3"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "광폭화 속성 부여 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_4"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "지정사수 속성 부여 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_5"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "부패 속성 부여 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_6"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "파괴 속성 부여 가능",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "weapon_damage_+%_per_10_str"
   ],
   "rows": [
@@ -101901,6 +104065,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "모든 [Wind|바람] 스킬 젬 레벨 {0:+d}",
+    "h": []
    }
   ]
  },
@@ -102655,6 +104833,20 @@
      "#"
     ],
     "t": "태고의",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "soul_core_cannot_roll_no_outcome_with_corruption"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Corrupted|타락]시킬 시 항상 변화 발생",
     "h": []
    }
   ]

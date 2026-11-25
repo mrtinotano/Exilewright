@@ -974,5 +974,6 @@
  "That is not a waystone.": "경로석이 아닙니다.",
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "지도 속성은 시뮬레이터의 모든 적과 내 캐릭터에 적용됩니다. 지도에 있는 지면 종류마다 방에 구역이 하나씩 놓입니다. 보상은 시뮬레이션되지 않습니다.",
  "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewright를 시작할 수 없습니다: 이 컴퓨터의 포트 {0}을(를) 사용할 수 없습니다(다른 프로그램이 사용 중이거나 Windows가 예약함).",
- "Decimating Strike": "대량 학살 타격"
+ "Decimating Strike": "대량 학살 타격",
+ "Rune tattoos": "룬 문신"
 }

@@ -118,7 +118,28 @@ function rolled(item) {   // [{stat: value}] of every mod on the item, with the 
     for (const m of item.mods || []) if (AFFIX[m.id] && !AFFIX[m.id].radius) add(AFFIX[m.id].stats, modVals(item, m));
   }
   for (const [id, val] of Object.entries(item.extra || {})) out[id] = (out[id] || 0) + val;   // runes, enchantments (parseItem)
+  for (const [id, val] of Object.entries(socketStats(item, { ...out }).stats)) out[id] = (out[id] || 0) + val;   // what the editor socketed in it
   return legacies(out);
+}
+// What is socketed in an item (it.socketed: names of items.json socketables, '' an empty socket) -> { stats, idols, others }:
+// each one's stats for the item's class (own: the item's stats; Darkness Enthroned's "as though it was a Body Armour"),
+// times its increased effect of socketed items (of runes); with the Bonded ones of its idols when it says so. bonded:
+// only the Bonded ones of its runes and idols instead (the Shaman's Wisdom of the Maji), those its idols have already not again.
+// cls: the class they count for (the Martial Artist's tattoos: their slot's)
+// Runic Meridians: the rune-only sockets tattooed for a slot, as many as the game's line says ("1 Helmet socket")
+export const CHAKRA = { helmet: 'Helmets', body: 'Body Armours', gloves: 'Gloves', boots: 'Boots' };
+const chakraN = () => Object.fromEntries([...statLinesEn({ enable_chakras: 1 }).join('\n').matchAll(/(\d+) (Helmet|Body Armour|Gloves|Boots) socket/g)].map(m => [{ Helmet: 'helmet', 'Body Armour': 'body', Gloves: 'gloves', Boots: 'boots' }[m[2]], +m[1]]));
+export const SOCKETABLES = Object.fromEntries((D.socketables || []).map(x => [x.name, x]));
+export function socketStats(it, own = {}, bonded = false, cls = own.local_item_benefit_socketable_as_if_body_armour ? 'Body Armours' : baseOf(it)?.class) {
+  const stats = {};
+  let idols = 0, others = 0;
+  for (const x of (it?.socketed || []).map(n => SOCKETABLES[n]).filter(Boolean)) {
+    if (x.kind === 'Idol') idols++; else others++;
+    const k = 1 + ((own['local_socketed_items_effect_+%'] || 0) + (x.kind === 'Rune' ? own['local_rune_effect_+%'] || 0 : 0)) / 100;
+    const idolB = x.kind === 'Idol' && !!own.local_idols_gain_additional_socketable_mods, part = ([, st, bd]) => !bonded ? [...st, ...idolB ? bd : []] : ['Rune', 'Idol'].includes(x.kind) && !idolB ? bd : [];
+    for (const row of x.by) if (row[0].includes(cls)) for (const [id, v] of part(row)) stats[id] = (stats[id] || 0) + Math.trunc(v * k);
+  }
+  return { stats, idols, others };
 }
 // A radius jewel (Time-Lost ...): its radius (local_jewel_effect_base_radius: PassiveJewelRadii "Small" is 1000; on the
 // tree, that times GameConstants PassiveTreeJewelDistanceMultiplier) and what each small / notable passive allocated in
@@ -303,7 +324,7 @@ export function itemParts(it, en = true) {
   const radius = base.implicits.map(id => D.implicits[id]).find(radiusOnly);
   const expl = mods.flatMap(m => radLines(AFFIX[m.id], lines(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values))), en ? 'en' : lang).map(l => en && m.kind ? `{${m.kind}}${l}` : l));
   const ilvl = Math.max(base.level, ...mods.map(m => +AFFIX[m.id].level || 0));
-  const rune = [...[it.anoint || []].flat().map(n => say({ mod_granted_passive_hash: 1 })[0].replace(/1|—/, n)), ...it.extra ? say(it.extra).flatMap(l => l.split('\n')) : []];   // its anointment, runes and enchantments (parseItem)
+  const rune = [...[it.anoint || []].flat().map(n => say({ mod_granted_passive_hash: 1 })[0].replace(/1|—/, n)), ...it.extra ? say(it.extra).flatMap(l => l.split('\n')) : [], ...say(socketStats(it, rolled(it)).stats).flatMap(l => l.split('\n'))];   // its anointment, runes and enchantments (parseItem)
   const name = r === 'unique' ? (en ? it.unique : tn(UNIQ[it.unique]) || it.unique) : r === 'rare' ? it.name || (en ? 'Planned Item' : t('Planned Item')) : '';
   return { r, base: en ? base : { ...base, name: tn(base) || base.name }, impl, expl, rune, radius: radius && radiusName(radius), ilvl, name };
 }
@@ -873,7 +894,7 @@ export function itemView(it) {
     props: [['Physical Damage', l.physical], ['Fire Damage', l.fire], ['Cold Damage', l.cold], ['Lightning Damage', l.lightning],
       ['Critical Hit Chance', l.crit, 2, '%'], ['Attacks per Second', l.attacks_per_second, 2],
       ['Chaos Damage', l.chaos], ['Armour', l.armour], ['Evasion Rating', l.evasion], ['Energy Shield', l.energy_shield], ['Runic Ward', l.ward], ['Spirit', l.spirit]].filter(p => Array.isArray(p[1]) ? p[1][1] : p[1]),
-    mods: [...statLines(it.extra || {}), ...base.implicits.flatMap((id, i) => radiusOnly(D.implicits[id]) ? [t('Radius: {0}', t(radiusName(D.implicits[id])))] : say(D.implicits[id], boost(it, D.implicit_tags?.[id], fixVals(D.implicits[id], it.implicits?.[i])))),
+    mods: [...statLines(it.extra || {}), ...statLines(socketStats(it, rolled(it)).stats), ...base.implicits.flatMap((id, i) => radiusOnly(D.implicits[id]) ? [t('Radius: {0}', t(radiusName(D.implicits[id])))] : say(D.implicits[id], boost(it, D.implicit_tags?.[id], fixVals(D.implicits[id], it.implicits?.[i])))),
       ...(it.mods || []).filter(m => AFFIX[m.id]).flatMap(m => radLines(AFFIX[m.id], say(AFFIX[m.id].stats, modVals(it, m, filled(AFFIX[m.id].stats, m.values)))))] };
 }
 export const propText = ([, v, dec = 0, unit = '']) => Array.isArray(v) ? `${fmt(v[0])}–${fmt(v[1])}` : fmt(v, dec) + unit;
@@ -959,6 +980,20 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     setTimeout(next);
   }
 
+  // the sockets of an item (it.socketed): a list of what goes in its class (runes, soul cores, idols... by kind) for each,
+  // with what it gives there; and with Runic Meridians the rune tattoos for its slot (b.chakra)
+  const SOCK_CLASSES = new Set(Object.values(SOCKETABLES).flatMap(x => x.by.flatMap(r => r[0])));
+  const sockSelect = (slot, act, i, name, cls, runes) => { const by = {};
+    for (const x of Object.values(SOCKETABLES)) if ((!runes || x.kind === 'Rune') && x.by.some(r => r[0].includes(cls))) (by[x.kind] ||= []).push(x);
+    return `<select data-slot="${slot}" data-act="${act}" data-i="${i}"><option value="">${t('Empty (Socket {0})', i + 1)}</option>${Object.entries(by).map(([k, xs]) => `<optgroup label="${esc(tn(D.socketable_kinds[k]) || k)}">${xs.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name))
+      .map(x => `<option value="${esc(x.name)}"${x.name === name ? ' selected' : ''}>${esc(tn(x) || x.name)}</option>`).join('')}</optgroup>`).join('')}</select>`; };
+  function sockRows(slot, it, base) {
+    const own = statsOf(it), cls = own.local_item_benefit_socketable_as_if_body_armour ? 'Body Armours' : base.class, S = it.socketed || [];
+    const row = (act, i, name, c, o, runes) => `<div class="mod">${sockSelect(slot, act, i, name, c, runes)} ${name ? esc(statLines(socketStats({ socketed: [name] }, o, false, c).stats).filter(l => !/^[a-z0-9_%+\-]+: /.test(l)).join(' / ')) : ''}${runes ? '' : ` <button data-slot="${slot}" data-act="sock-" data-i="${i}">✕</button>`}</div>`;
+    const C = tree().enable_chakras && CHAKRA[slot] && chakraN()[slot], T = getBuild().chakra?.[slot] || [];
+    return (SOCK_CLASSES.has(cls) ? `<hr><div class="prop">${t('Sockets')}</div>${S.map((n, i) => row('sock', i, n, cls, own)).join('')}<button data-slot="${slot}" data-act="sock+">+ ${t('Socket {0}', S.length + 1)}</button>` : '')
+      + (C ? `<hr><div class="prop">${t('Rune tattoos')}</div>${Array.from({ length: C }, (_, i) => row('tattoo', i, T[i] || '', CHAKRA[slot], {}, true)).join('')}` : '');
+  }
   function card(slot, title, it) {
     const base = it && baseOf(it);
     if (!base) return `<section class="item"><h3>${title}</h3><input data-slot="${slot}" data-act="filter" placeholder="${t('Search base or unique…')}" autocomplete="off"><ul class="picklist" data-slot="${slot}">${pickList(slot)}</ul></section>`;
@@ -972,6 +1007,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     const said = (stats, vals) => modLines(Object.fromEntries(stats.map(([id], k) => [id, vals[k]]))).filter(x => !/^[a-z0-9_%+\-]+: /.test(x)).map(esc).join('<br>');
     const fist = worn.fists ? `<hr><div class="mod"><b>${esc(tn(fistOf(worn)))}</b></div>` + [...Object.values(fistOf(worn).fist).map(st => [said(st, st.map(x => x[1])), '']),
       ...fistMods(worn).map(m => [said(m.stats, m.values), range(m.stats, m.values, `${slot}.f.${m.id}`)])].filter(([x]) => x).map(([x, r]) => `<div class="mod">${x} ${r}</div>`).join('') : '';
+    const socks = sockRows(slot, it, base);
     const families = new Set(mods.map(m => AFFIX[m.id].family)), desecrated = mods.some(m => AFFIX[m.id].desecrated);
     // one desecrated modifier per item (the game: "This item already has a Desecrated Modifier.")
     const options = uniq ? historicFor(uniq) ? D.affixes.filter(a => a.historic && !families.has(a.family)) : [] : D.affixes.filter(a => canRoll(a, base, true) && !families.has(a.family) && count(a.affix) < MAX_AFFIX && !(a.desecrated && desecrated))
@@ -1002,7 +1038,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       + (uniq ? uniq.unmatched.filter(Boolean).map(x => `<div class="mod off" title="${t('poe2db lists it but it does not exactly match any game mod: not added')}">${esc(x)} ${t('(unmatched)')}</div>`).join('') : '');
     return `<section class="item"><h3>${title} <button data-slot="${slot}" data-act="copy" title="${t('Copy the item as text (Path of Building, trade sites)')}">⧉</button> <button data-slot="${slot}" data-act="clear">✕</button></h3>
       <div class="tip ${rarity}"><div class="head">${uniq ? `${esc(tn(uniq))}<br>${esc(tn(base))}` : esc(tn(base))}</div>
-        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${normal}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}${fist}
+        <div class="body"><div class="prop">${esc(base.class)} · ${t('level {0}', base.level)}</div>${reqs}${normal}${props}${impl ? '<hr>' + impl : ''}${expl ? '<hr>' + expl : ''}${fist}${socks}
         ${options.length ? `<hr><select data-slot="${slot}" data-act="add"><option value="">${uniq ? '+ ' + t('Desecrated') : t('+ Affix ({0}/{1} P, {2}/{1} S)', count('prefix'), MAX_AFFIX, count('suffix'))}</option>${options.map(a => {
           return `<option value="${a.id}" data-add>${a.affix === 'prefix' ? 'P' : 'S'} ${t('lv {0}', a.level)}${a.desecrated ? ' · ' + t('Desecrated') : ''} · ${esc(radLines(a, statLines(Object.fromEntries(a.stats.map(([id, lo, hi]) => [id, hi])))).join(' / '))}</option>`; }).join('')}</select>` : ''}
       </div></div>${impactHtml(t('What this item adds'), diff(without, now))}${trade?.can(slot) ? `<div class="imp likebuy"><div class="imph">${t('Gear on the trade site')}</div>
@@ -1022,7 +1058,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   // a listed item as the build counts it and as Equip puts it on: with what the worn one has socketed (runes, soul
   // cores, idols, enchantments) in place of its own, to be socketed in it again: most are sold with their sockets
   // empty, and the one worn would win by its runes alone
-  const asWorn = (it, worn) => Object.keys(worn?.extra || {}).length ? { ...it, extra: worn.extra } : it;
+  const asWorn = (it, worn) => Object.keys(worn?.extra || {}).length || worn?.socketed?.length ? { ...it, extra: worn.extra, socketed: worn.socketed } : it;
   function betterHtml(slot) {
     const { text, res } = better;
     if (!res) return `<p class="note" data-busy>${esc(text)}</p>`;
@@ -1157,6 +1193,10 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
       items[slot].mods[+t.dataset.i] = { id: t.value, values: fixVals(AFFIX[t.value].stats) };
     } else if (t.dataset.act === 'add' && t.value) {
       items[slot].mods.push({ id: t.value, values: fixVals(AFFIX[t.value].stats) });
+    } else if (t.dataset.act === 'sock') {
+      items[slot].socketed[+t.dataset.i] = t.value;
+    } else if (t.dataset.act === 'tattoo') {
+      const b = getBuild(); ((b.chakra ||= {})[slot] ||= [])[+t.dataset.i] = t.value;
     } else if (t.dataset.path?.split('.')[1] === 'f') {   // a roll of the gloves' Fists of Stone form
       const [s, , id] = t.dataset.path.split('.'), it = items[s], m = fistMods(it).find(x => x.id === id), arr = [...m.values];
       arr[+t.dataset.k] = +t.value; (it.fistVals ||= {})[id] = fixVals(m.stats, arr);
@@ -1189,6 +1229,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     else if (t.dataset.act === 'drop') getBuild().stash.splice(+t.dataset.i, 1);
     else if (t.dataset.act === 'wset') swapSet(getBuild(), +t.dataset.n);
     else if (t.dataset.act === 'del') items[t.dataset.slot].mods.splice(+t.dataset.i, 1);
+    else if (t.dataset.act === 'sock+') (items[t.dataset.slot].socketed ||= []).push('');
+    else if (t.dataset.act === 'sock-') { const it = items[t.dataset.slot]; it.socketed.splice(+t.dataset.i, 1); if (!it.socketed.length) delete it.socketed; }
     else return;
     changed(); render();
   });

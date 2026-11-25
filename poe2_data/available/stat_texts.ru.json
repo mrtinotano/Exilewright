@@ -3098,6 +3098,30 @@
  },
  {
   "stats": [
+   "base_curse_delay_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Область [Curse|проклятия] проявляется после увеличенной на {0}% задержки",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Область [Curse|проклятия] проявляется после уменьшенной на {0}% задержки",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_curse_duration_+%"
   ],
   "rows": [
@@ -3790,6 +3814,20 @@
      "#"
     ],
     "t": "Усиленные умения не могут поглощать [Impale|проколы]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cannot_miss_against_full_life_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Враги с полным здоровьем не могут [Evasion|уклоняться] от ваших [Hit|ударов]",
     "h": []
    }
   ]
@@ -6161,6 +6199,20 @@
      "#"
     ],
     "t": "Дарует {0} [Rage|свирепости] при нанесении [Hit|удара] в [Melee|ближнем бою]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "global_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Отбрасывает врагов при нанесении [Hit|удара]",
     "h": []
    }
   ]
@@ -19313,6 +19365,22 @@
  },
  {
   "stats": [
+   "minimum_added_cold_damage_vs_chilled_enemies",
+   "maximum_added_cold_damage_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Добавляет {0} до {1} урона от холода по охлаждённым врагам",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -22067,6 +22135,27 @@
  },
  {
   "stats": [
+   "+_deflection_rating_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "+{0} к [Deflect|отклонению] за каждые 10 максимума [Ward|рунического барьера]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "-{0} к [Deflect|отклонению] за каждые 10 максимума [Ward|рунического барьера]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "+_deflection_rating_per_50_missing_maximum_energy_shield"
   ],
   "rows": [
@@ -22606,6 +22695,27 @@
      "#"
     ],
     "t": "Может иметь до 3 ремесленных свойств",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_can_have_additional_crafted_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Может иметь дополнительных ремесленных свойств: {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Может иметь дополнительных ремесленных свойств: {0}",
     "h": []
    }
   ]
@@ -30243,6 +30353,20 @@
  },
  {
   "stats": [
+   "totem_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений тотемов",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "trap_skill_gem_level_+"
   ],
   "rows": [
@@ -34748,6 +34872,20 @@
  },
  {
   "stats": [
+   "base_maximum_life_%_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatGain|Дарует] {0}% от максимума здоровья в виде дополнительного максимума [Ward|рунического барьера]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_%_to_gain_as_energy_shield"
   ],
   "rows": [
@@ -38638,6 +38776,34 @@
  },
  {
   "stats": [
+   "frenzy_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Если вы должны получит [Charges|заряд ярости], вместо этого [Allies|союзники] в вашем [Presence|присутствии] получают этот [Charges|заряд]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "power_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Если вы должны получит [Charges|заряд энергии], вместо этого [Allies|союзники] в вашем [Presence|присутствии] получают этот [Charges|заряд]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_chance_to_blind_on_hit_%"
   ],
   "rows": [
@@ -41322,6 +41488,20 @@
      "#"
     ],
     "t": "{0}% получаемого урона от [Cold|холода] становится уроном от [Fire|огня]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chaos_damage_from_hits_%_taken_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% получаемого урона [Chaos|хаосом] от [Hit|ударов] становится уроном от случайной [ElementalDamage|стихии]",
     "h": []
    }
   ]
@@ -53439,6 +53619,20 @@
  },
  {
   "stats": [
+   "accuracy_rating_+_per_evasion_rating_on_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к [Accuracy|меткости] за каждые 1 [ItemEvasion|уклонения] на надетом шлеме",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "accuracy_rating_is_doubled"
   ],
   "rows": [
@@ -53833,6 +54027,20 @@
  },
  {
   "stats": [
+   "additional_maximum_all_elemental_resistances_%_while_on_full_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% к [MaximumResistances|максимуму сопротивлений всем стихиям] при полном [Ward|руническом барьере]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -53855,6 +54063,20 @@
      "#"
     ],
     "t": "{0:+d}% к максимуму всех сопротивлений при отсутствии зарядов выносливости",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_block_%_if_blocked_with_active_block_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% к максимуму шанса [Block|блока], если [Recently|недавно] вы [Block|блркировали] удар с поднятым [Shield|щитом]",
     "h": []
    }
   ]
@@ -53886,6 +54108,20 @@
      "1|#"
     ],
     "t": "Увеличения и уменьшения урона приспешников также распространяются и на вас в размере 150% от их значения",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additive_modifiers_to_life_regeneration_also_apply_to_mana_regeneration_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Повышения и снижения скорости регенерации здоровья также применяются к скорости регенерации маны",
     "h": []
    }
   ]
@@ -54635,6 +54871,20 @@
  },
  {
   "stats": [
+   "allies_in_presence_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Allies|Союзники] в вашем [Presence|присутствии] имеют {0}% повышение скорости передвижения",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "allies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos"
   ],
   "rows": [
@@ -54661,6 +54911,20 @@
      "per_minute_to_per_second",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "allies_in_your_presence_share_charges_with_you"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Allies|Союзники] в вашем [Presence|присутствии] разделяют [Charges|снаряды] вместе с вами",
+    "h": []
    }
   ]
  },
@@ -55258,6 +55522,20 @@
  },
  {
   "stats": [
+   "armour_%_also_applies_to_chaos_damage_while_at_full_es"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% [Armour|брони] также применяется к получаемому [Chaos|урону хаосом] при полном [EnergyShield|энергетическом щите]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -55335,6 +55613,30 @@
      "#|-1"
     ],
     "t": "{0}% уменьшение [Armour|брони], если [Recently|недавно] вы наносили [Hit|удар] по врагу [Melee|атакой в ближнем бою]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение [Armour|брони], если [Recently|недавно] вы не совершали кувырок",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение [Armour|брони], если [Recently|недавно] вы не совершали кувырок",
     "h": [
      "negate",
      "1"
@@ -55458,6 +55760,20 @@
  },
  {
   "stats": [
+   "armour_+_per_1_spirit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к [Armour|броне] за 1 [Spirit|духа]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_and_evasion_rating_+%_per_active_totem_in_presence"
   ],
   "rows": [
@@ -55474,6 +55790,30 @@
     ],
     "t": "{0}% уменьшение [Armour|брони] и [Evasion|уклонения] за каждые призванный [Totem|тотем] в вашем [Presence|присутствии]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_and_evasion_rating_+%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение [Armour|брони] и [Evasion|уклонения] при [LowWard|малом количестве рунического барьера]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение [Armour|брони] и [Evasion|уклонения] при [LowWard|малом количестве рунического барьера]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -56620,6 +56960,30 @@
  },
  {
   "stats": [
+   "attack_damage_+%_while_shapeshifted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение урона от [Attack|атак] будучи [Shapeshift|превращенным]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение урона от [Attack|атак] будучи [Shapeshift|превращенным]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_while_surrounded"
   ],
   "rows": [
@@ -57138,6 +57502,30 @@
  },
  {
   "stats": [
+   "attack_speed_+%_if_have_blocked_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение скорости [Attack|атаки], если вы [Recently|недавно] блокировали удар",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% снижение скорости [Attack|атаки], если вы [Recently|недавно] блокировали удар",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_speed_+%_if_have_crit_recently"
   ],
   "rows": [
@@ -57267,6 +57655,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_spend_x%_maximum_ward_for_added_physical_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|Атаки] расходуют {0}% от вашего максимума [Ward|рунического барьера], если возможно, и наносят дополнительный [Physical|физический] урон",
+    "h": []
    }
   ]
  },
@@ -57826,6 +58228,23 @@
  },
  {
   "stats": [
+   "base_banner_life_regeneration_rate_per_minute_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Banner|Знамена] также даруют затронутым целям {0}% регенерации здоровья в секунду",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_banner_resist_all_elements_%_to_apply"
   ],
   "rows": [
@@ -57968,6 +58387,20 @@
  },
  {
   "stats": [
+   "base_chaos_damage_resistance_%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% к [Resistances|сопротивлению хаосу] за каждый [Equipped|надетый] оскверненный предмет",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_damage_%_deflected"
   ],
   "rows": [
@@ -57983,6 +58416,27 @@
      "#|-1"
     ],
     "t": "{0:+d}% к предотвращаемому урону от [Deflect|отклоненных] [Hit|ударов]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damage_%_deflected_if_you_have_not_deflected_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Предотвращает получение {0:+d}% урона от [Deflect|отклоненных] [Hit|ударов], если вы\\n[Recently|недавно] не [Deflect|отклоняли] [Hit|удары]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0:+d}% к количеству [Hit|урона], предотвращенного [Deflect|отклонением], если вы [Recently|недавно] не [Deflect|отклоняли] [Hit|удар]",
     "h": []
    }
   ]
@@ -58666,6 +59120,20 @@
  },
  {
   "stats": [
+   "base_spirit_per_socketed_idol"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к [Spirit|духу] за каждый размещенный в вашем [Equipment|снаряжении] [Idol|идол]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_spirit_reservation_efficiency_+%_per_20_tribute"
   ],
   "rows": [
@@ -58762,6 +59230,47 @@
     "t": "{0}% уменьшение [BuffMagnitude|силы] даруемого вами [UnholyMight|Нечестивого могущества]",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_cost_efficiency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение [Efficiency|эффективности] расхода [Ward|рунического барьера]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение [Efficiency|эффективности] расхода [Ward|рунического барьера]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Регенерирует {0} [Ward|рунического барьера] в секунду",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
      "1"
     ]
    }
@@ -59087,6 +59596,32 @@
     ],
     "t": "{0}% уменьшение шанса [Block|блока], если у вас есть как минимум 100 даров",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение шанса [Block|блока], пока ваш [Companion|компаньон] находится в вашем [Presence|присутствии]",
+    "h": [
+     "canonical_line"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение шанса [Block|блока], пока ваш [Companion|компаньон] находится в вашем [Presence|присутствии]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -59456,6 +59991,20 @@
      "#"
     ],
     "t": "[ArmourBreak|Разрушает] {0}% [Armour|брони] при [Pinned|пригвождении] врага",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "break_armour_on_attack_hit_%_of_max_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|Атаки] [ArmourBreak|Разрушает броню] в размере {0}% от максимума [Ward|рунического барьера]",
     "h": []
    }
   ]
@@ -60134,6 +60683,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_for_plants_to_overgrow_when_entering_your_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|Растения] с {0}% шансом могут мгновенно [Plant|разрастись] при первом попадании в вашу область [Presence|присутствия]",
+    "h": []
    }
   ]
  },
@@ -61931,6 +62494,20 @@
  },
  {
   "stats": [
+   "companion_damage_+%_final_from_idol_per_different_dead_companion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|Компаньоны] наносят на {0}% больше урона за каждый отдельный тип мертвого компаньона у вас",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companion_damage_+%_vs_immobilised_enemies"
   ],
   "rows": [
@@ -62111,6 +62688,33 @@
  },
  {
   "stats": [
+   "companions_gain_onslaught_on_hitting_enemies_marked_by_you_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Companion|Компаньоны] получают [Onslaught|Боевой раж] на {0} секунду при нанесении [Hit|удара] по [Mark|помеченной] вами цели",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|Компаньоны] получают [Onslaught|Боевой раж] на {0} секунд(-ы) при нанесении [Hit|удара] по [Mark|помеченной] вами цели",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_gain_your_strength"
   ],
   "rows": [
@@ -62125,6 +62729,48 @@
  },
  {
   "stats": [
+   "companions_in_presence_base_chaos_damage_resistance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|Компаньоны] в вашем [Presence|присутствии] имеют {0:+d}% к [Resistances|сопротивлению хаосу]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_base_resist_all_elements_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|Компаньоны] в вашем [Presence|присутствии]  имеют {0:+d}% к [ElementalDamage|стихийным] [Resistances|сопротивлениям]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_gain_x_rage_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|Компаньоны] в вашем [Presence|присутствии] получают {0} [Rage|свирепости] при нанесении удара",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_in_presence_have_onslaught_while_you_are_shapeshifted"
   ],
   "rows": [
@@ -62133,6 +62779,20 @@
      "#"
     ],
     "t": "На [Companion|компаньонов] в вашем [Presence|присутствии] действует [Onslaught|Боевой раж] пока вы [Shapeshift|превращены]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_non_skill_base_all_damage_%_to_gain_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|Компаньоны] в вашем [Presence|присутствии] [Gain|наносят] {0}% от урона в виде дополнительного урона от случайной [ElementalDamage|стихии]",
     "h": []
    }
   ]
@@ -62367,6 +63027,27 @@
  },
  {
   "stats": [
+   "critical_chance_luck_against_parry_debuffed_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Шанс [Critical|критического удара] по [ParriedDebuff|парированным] врагам [Lucky|удачлив]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Шанс [Critical|критического удара] по [ParriedDebuff|парированным] врагам [Unlucky|неудачлив]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "critical_damage_+%_per_50_current_life"
   ],
   "rows": [
@@ -62558,6 +63239,30 @@
     ],
     "t": "[Critical|Критические удары] накладывают [Impale|Прокол]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "critical_hits_apply_life_regeneration_rate_+%_for_4_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Враги, по которым вы нанесли [Critical|критический] [Hit|удар], получают {0}% повышение скорости регенерации здоровья на 4 секунды",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Враги, по которым вы нанесли [Critical|критический] [Hit|удар], получают {0}% снижение скорости регенерации здоровья на 4 секунды",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -63500,6 +64205,30 @@
  },
  {
   "stats": [
+   "damage_+%_per_different_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение урона за каждого отдельного [Companion|компаньона] в вашем [Presence|присутствии]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение урона за каждого отдельного [Companion|компаньона] в вашем [Presence|присутствии]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_+%_per_enemy_elemental_ailment"
   ],
   "rows": [
@@ -63707,6 +64436,20 @@
      "#|99"
     ],
     "t": "{0}% заблокированного урона [Recoup|восполняется] в виде маны",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_cannot_be_taken_from_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Весь получаемый урон обходит [Ward|рунический барьер]",
     "h": []
    }
   ]
@@ -64149,6 +64892,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_from_hits_is_unlucky_if_ward_damaged_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Урон наносящих по вам [Hit|удары] врагов [Unlucky|неудачлив], если ваш [Ward|рунический барьер] [Recently|недавно] был поврежден",
+    "h": []
    }
   ]
  },
@@ -65647,6 +66404,104 @@
  },
  {
   "stats": [
+   "dummy_display_stat_rune_chaos_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Преобразует все свойства [Lightning|молнии], [Cold|холода] и [Fire|огня] на предмете в такие же свойства [Chaos|хаоса]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_cold_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "При размещении, преобразует все свойства [Fire|огня] и [Lightning|молнии] в такие же свойства [Cold|холода]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_create_jewel_socket"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Разрушает все гнезда под [Augment|усилители] на предмете и создает гнездо под [Jewel|самоцвет]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_fire_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Преобразует все свойства [Cold|холода] и [Lightning|молнии] на предмете в такие же свойства [Fire|огня]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_lightning_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Преобразует все свойства [Cold|холода] и [Fire|огня] на предмете в такие же свойства [Lightning|молнии]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_olroths_legacy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "При размещении в [Rarity|уникальном] калгууранском или эзомитском предмете, разрушает предмет и создает [Rune|руну], наделенную силой этого предмета",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_upgrade"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Улучшает размещенную [Rune|руну]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dummy_stat_zarokhs_gift_jewel_slot"
   ],
   "rows": [
@@ -66727,6 +67582,20 @@
  },
  {
   "stats": [
+   "enemies_you_blind_have_no_crit_bonus_for_x_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "У врагов нет [CriticalDamageBonus|бонуса к критическому урону] в течение {0} секунд после того, как вы ослепили их",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "enemies_you_curse_are_intimidated"
   ],
   "rows": [
@@ -67336,6 +68205,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_X_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "1% повышение [ESRechargeRate|скорости перезарядки энергетического щита] за каждые {0} максимума [Ward|рунического барьера]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_while_shapeshifted"
   ],
   "rows": [
@@ -67384,6 +68267,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_start_when_minions_reform"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ваша [ESRecharge|перезарядка энергетического щита] начинается, когда [Reform|преобразуются] ваши [Minion|приспешники]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_start_when_stunned"
   ],
   "rows": [
@@ -67392,6 +68289,20 @@
      "#"
     ],
     "t": "[EnergyShield|Энергетический щит] начинает перезаряжаться, когда вы оглушены",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "energy_shield_recharge_starts_after_spending_2000_mana_every_2_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ESRecharge|Перезарядка энергетического щита] начинается после расхода 2000 маны, но не чаще одного раза каждые 2 секунды",
     "h": []
    }
   ]
@@ -68750,6 +69661,20 @@
  },
  {
   "stats": [
+   "gain_X_druidic_prowess_on_heavy_stunning_rare_or_unique_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует {0} заряда [DruidicProwess|Друидизма] когда вы накладываете [HeavyStun|сильное оглушение] на [Rarity|редкого или уникального] врага",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_X_instilling_fire_when_charge_is_consumed"
   ],
   "rows": [
@@ -68878,6 +69803,34 @@
      "#"
     ],
     "t": "Когда вы перезаряжаетесь, вызывает срабатывание Всплеска Близнецов\\nчтобы получить либо {0} [Surge|Всплеска холода] либо {1} [Surge|Всплеска огня]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_life_per_8_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к максимуму здоровья за каждые 8 [ItemArmour|брони] на [Equipped|надетом] шлеме",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_mana_per_3_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к максимуму маны за каждые 3 [ItemArmour|брони] на [Equipped|надетом] шлеме",
     "h": []
    }
   ]
@@ -69205,6 +70158,20 @@
  },
  {
   "stats": [
+   "gain_armour_from_%_life_loss_from_hits_lasting_8_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Дарует [Armour|броню] в размере {0}% от здоровья, утраченного от полученных за последние 8 секунд [Hit|ударов]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_attack_damage_+%_for_each_your_minion_in_presence_capped"
   ],
   "rows": [
@@ -69255,6 +70222,20 @@
      "#"
     ],
     "t": "Дарует [Charges|заряд выносливости] когда вы накладываете [HeavyStun|сильное оглушение] на редкого или уникального врага",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_endurance_charge_on_reaching_low_life_once_per_2s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует 1 [Charges|заряд выносливости] при достижении [LowLife|малого количество здоровье], но не чаще одного раза каждые 2 секунды",
     "h": []
    }
   ]
@@ -69358,6 +70339,48 @@
  },
  {
   "stats": [
+   "gain_guard_%_of_max_ward_for_2s_every_4s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Каждые 4 секунды дарует на 2 секунды [Guard|оборону] в размере {0}% от максимума [Ward|рунического барьера]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_%_of_maximum_life_for_4_seconds_on_taking_savage_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует [Guard|оборону] в размере {0}% от максимума здоровья на 4 секунды при получении [SavageHit|жестокого удара]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_after_sprinting_equal_to_x%_of_maximum_life_per_second_sprinted_up_to_20%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Когда вы перестаете бежать, вы получаете [Guard|оборону] в размере {0}% от максимума здоровья за каждую секунду бега на 4 секунды, вплоть до 20%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll"
   ],
   "rows": [
@@ -69380,6 +70403,20 @@
      "#"
     ],
     "t": "При получении вами [Rage|свирепости] при нанесении [Hit|удара], вы с {0}% шансом можете получить вплоть до максимума вашей свирепости",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_maximum_energy_shield_equal_to_%_total_strength_requirement_of_equipped_armour_items"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует [EnergyShield|максимум энергетического щита] в размере {0}% от суммы требуемой [Strength|силы] на надетых [EquipArmour|доспехах]",
     "h": []
    }
   ]
@@ -69475,6 +70512,20 @@
      "#"
     ],
     "t": "Дарует [Onslaught|Боевой раж] на 4 секунды при смерти [Minion|приспешника]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_onslaught_for_x_seconds_when_your_marks_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует [Onslaught|Боевой раж] на {0} секунд(-ы) при [MarkActivate|активации] ваших [Mark|меток]",
     "h": []
    }
   ]
@@ -70024,6 +71075,22 @@
  },
  {
   "stats": [
+   "global_minimum_added_lightning_damage_vs_shocked_enemies",
+   "global_maximum_added_lightning_damage_vs_shocked_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Добавляет от {0} до {1} урона от молнии по поражённым шоком врагам",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "glory_generation_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -70366,6 +71433,20 @@
  },
  {
   "stats": [
+   "grenade_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Grenade|гранат]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "grenade_skill_number_of_additional_projectiles"
   ],
   "rows": [
@@ -70420,6 +71501,30 @@
     ],
     "t": "{0}% шанс разлить смолу при получении удара",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "guard_gained_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение получаемой [Guard|обороны]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение получаемой [Guard|обороны]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -70666,6 +71771,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hazard_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Hazard|помех]",
+    "h": []
    }
   ]
  },
@@ -73286,6 +74405,20 @@
  },
  {
   "stats": [
+   "herald_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Herald|Вестника]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_chance_%_on_spreading_poioson"
   ],
   "rows": [
@@ -73792,6 +74925,20 @@
      "#"
     ],
     "t": "Получает урон от [Fire|огня] в размере {0}% здоровья и энергетического щита, когда Адское пламя достигает своего максимума",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hits_cannot_be_evaded_vs_blinded_maimed_bleeding_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Bleeding|Истекающие кровью], [Blind|ослепленные] и [Maim|изувеченные] враги не могут [Evasion|уклоняться] от ваших [Hit|ударов]",
     "h": []
    }
   ]
@@ -74522,6 +75669,20 @@
      "1|#"
     ],
     "t": "Враги, на которых вы накладываете [Incision|разрез], получают увеличенный на {0}% [Physical|физический] урон за каждый [Incision|разрез]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "increases_and_reductions_to_move_speed_apply_to_es_recharge_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Повышения и снижения скорости передвижения также применяются к [ESRechargeRate|скорости перезарядки энергетического щита]",
     "h": []
    }
   ]
@@ -75678,6 +76839,23 @@
  },
  {
   "stats": [
+   "life_loss_%_per_minute_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Теряет {0}% от максимума здоровья в секунду во время бега",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_mana_flasks_restore_mana_life"
   ],
   "rows": [
@@ -75865,6 +77043,23 @@
     "t": "{0}% снижение скорости восстановления здоровья, пока в вашем [Presence|присутствии] находится [Companion|компаньон]",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_regeneration_per_minute_%_if_used_a_command_skill_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Регенерирует {0}% от максимума здоровбя в секунду, если [Recently|недавно] вы использовали умение-[Command|приказ]",
+    "h": [
+     "per_minute_to_per_second",
      "1"
     ]
    }
@@ -77962,6 +79157,41 @@
  },
  {
   "stats": [
+   "local_idols_gain_additional_socketable_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Размещенные в этом предмете [Idol|идолы] получают преимущества от своих [ShamanOnlyMods|связанных] свойств",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "[Attack|Атаки] этим оружием с {0}% шансом могут наложить [Exposure|восприимчивость]",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[Attack|Атаки] этим оружием накладывают [Exposure|восприимчивость]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_inflict_malignant_madness_on_critical_strike_%_if_eater_of_worlds_dominant"
   ],
   "rows": [
@@ -78412,6 +79642,20 @@
  },
  {
   "stats": [
+   "local_maximum_added_cold_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "При нанесении [Hit|удара] по врагу, добавляет максимум урона от [Cold|холода] в размере значения [Power|уровня угрозы] врага на 20 секунд, вплоть до {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_maximum_added_lightning_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
   ],
   "rows": [
@@ -78522,6 +79766,20 @@
  },
  {
   "stats": [
+   "local_physical_damage_roll_always_min_or_max"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "При нанесении [Physical|физического] урона [BooleanDamageRoll|выбираются только минимальные или максимальные значения]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_poison_on_critical_strike_chance_%"
   ],
   "rows": [
@@ -78579,6 +79837,48 @@
      "#|-1"
     ],
     "t": "{0}% снижение скорости [Projectile|снарядов] от этого оружия",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_dexterity"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|Преобразует] {0}% требований в [Dexterity|ловкость]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|Преобразует] {0}% требований в [Intelligence|интеллект]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_strength"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|Преобразует] {0}% требований в [Strength|силу]",
     "h": []
    }
   ]
@@ -78693,6 +79993,20 @@
      "#"
     ],
     "t": "Удвоение [StunThreshold|порога оглушения] при поднятом щите",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_socketable_%_maximum_weapon_damage_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Дарует максимум [Ward|рунического щита] в размере {0}% максимального урона этого оружия",
     "h": []
    }
   ]
@@ -79496,6 +80810,30 @@
  },
  {
   "stats": [
+   "mana_cost_efficiency_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение [Efficiency|эффективности] расхода маны, если [Recently|недавно] вы не совершали кувырок",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение [Efficiency|эффективности] расхода маны, если [Recently|недавно] вы не совершали кувырок",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_cost_+%_per_10_devotion"
   ],
   "rows": [
@@ -79751,6 +81089,55 @@
     "h": [
      "negate",
      "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение скорости восстановления маны, пока ваш [Companion|компаньон] находится в вашем [Presence|присутствии]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% снижение скорости восстановления маны, пока ваш [Companion|компаньон] находится в вашем [Presence|присутствии]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_regeneration_rate_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "На {0}% больше скорости регенерации маны",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "На {0}% меньше скорости регенерации маны",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
     ]
    }
   ]
@@ -89641,6 +91028,20 @@
  },
  {
   "stats": [
+   "mark_grants_%_max_glory_to_random_skill_on_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Случайное требующее Славу умение генерирует {0}% от его максимума Славы, когда [MarkActivate|срабатывает] ваша [Mark|метка]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mark_skill_duration_+%"
   ],
   "rows": [
@@ -90236,6 +91637,30 @@
      "#"
     ],
     "t": "{0}% от максимума здоровья [StatConversion|становится] [EnergyShield|энергетическим щитом] за каждые 20 даров",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "На {0}% меньше максимума здоровья",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "На {0}% больше максимума здоровья",
     "h": []
    }
   ]
@@ -91488,6 +92913,34 @@
  },
  {
   "stats": [
+   "minion_physical_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Приспешники] наносят {0}% от ох [Physical|физического] урона в виде дополнительного урона от [Lightning|молнии]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_physical_hit_and_dot_damage_%_taken_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% получаемого приспешниками [Physical|физического] урона становится уроном от [Lightning|молнии]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "reservation_efficiency_+%_of_minion_skills"
   ],
   "rows": [
@@ -91701,6 +93154,20 @@
      "#"
     ],
     "t": "Удары приспешников могут убивать только подожжённых врагов",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_in_presence_have_onslaught_while_you_are_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|Приспешники] в вашем [Presence|присутствии] получают [Onslaught|Боевой раж] пока у вас [LowWard|малое количество рунического барьера]",
     "h": []
    }
   ]
@@ -91962,6 +93429,27 @@
  },
  {
   "stats": [
+   "movement_speed_+%_per_5_rage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Каждые 5 [Rage|свирепости] также даруют вам {0}% повышение скорости передвижения",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Каждые 5 [Rage|свирепости] также даруют вам {0}% снижение скорости передвижения",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "movement_speed_+%_while_affected_by_ailment"
   ],
   "rows": [
@@ -92015,6 +93503,20 @@
      "1|#"
     ],
     "t": "Повышает скорость передвижения на 25% плюс 1% за каждые {0} [Evasion|уклонения], вплоть до [MaximumTotal|максимума в 75]%\\nДругие свойства скорости передвижения, кроме бега, не применяются",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "abyss_socketable_movement_speed_is_only_base_+%_per_15_spirit_up_to_+40%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение скорости передвижения за каждые 15 [Spirit|духа], вплоть до максимума в 40%\\nДругие модификаторы скорости передвижения, кроме бега, не применяются",
     "h": []
    }
   ]
@@ -92565,6 +94067,20 @@
  },
  {
   "stats": [
+   "non_skill_all_damage_%_to_gain_as_fire_+_per_2%_attack_block_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Gain|Наносит] {0}% от урона в виде урона от [Fire|огня] за 2% шанса блока",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_chaos_per_active_undead_minion"
   ],
   "rows": [
@@ -92789,6 +94305,23 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_physical_per_10%_missing_mana_permyriad"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Наносит] {0}% от урона в виде дополнительного [Physical|физического] урона за каждые десять процентов недостающей маны",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element"
   ],
   "rows": [
@@ -92803,6 +94336,20 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_random_element_per_socketed_rune"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Gain|Наносит] {0}% урона в виде [Gain|дополнительного] урона от случайной [ElementalDamage|стихии] за\\nкаждую размещенную [Rune|руну] в [Equipped|надетом] снаряжении",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element_while_shapeshifted"
   ],
   "rows": [
@@ -92811,6 +94358,20 @@
      "1|#"
     ],
     "t": "[Gain|Наносит] {0}% от урона в виде доролнительного урона от случайной [ElementalDamage|стихии] будучи [Shapeshift|превращенным]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_cold_fire_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Наносит] {0}% от урона в виде дополнительного урона от каждой [ElementalDamage|стихии]",
     "h": []
    }
   ]
@@ -93225,6 +94786,20 @@
      "1",
      "canonical_line"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "nova_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Nova|колец]",
+    "h": []
    }
   ]
  },
@@ -94692,6 +96267,44 @@
  },
  {
   "stats": [
+   "plant_skill_effect_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение длительности эффекта умений [Plant|растений]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение длительности эффекта умений [Plant|растений]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "plant_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Plant|растений]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "poison_as_though_dealing_X_damage_on_block"
   ],
   "rows": [
@@ -95778,6 +97391,20 @@
  },
  {
   "stats": [
+   "recoup_life_equal_to_%_of_hit_damage_dealt_to_your_offerings"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Вы [Recoup|восполняете] {0}% от получаемого вашими [Offering|подношениями] урона в виде здоровья",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recoup_speed_+%"
   ],
   "rows": [
@@ -96114,6 +97741,20 @@
  },
  {
   "stats": [
+   "recover_ward_as_well_as_mana_from_mana_regeneration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Восстановление маны от регенерации также применяется к [Ward|руническому барьеру]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_x%_of_maximum_mana_when_you_consume_a_power_charge"
   ],
   "rows": [
@@ -96122,6 +97763,20 @@
      "1|#"
     ],
     "t": "Восстанавливает {0}% от максимума маны когда вы поглощаете [Charges|заряд энергии]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_x%_of_maximum_ward_on_persistent_minion_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Восстанавливает {0}% от максимума [Ward|рунического барьера], когда одного из ваших [Reviving|возрождающихся] [Minion|приспешников] [MinionDeath|убивают]",
     "h": []
    }
   ]
@@ -96324,6 +97979,20 @@
      "#"
     ],
     "t": "Снимает [Curse|проклятие], когда вы используете [Flask|флакон] маны",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remove_damaging_ailment_on_using_command_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Удаляет [DamagingAilments|наносящее урон состояние], когда вы используете умение-[Command|приказ]",
     "h": []
    }
   ]
@@ -96578,6 +98247,34 @@
  },
  {
   "stats": [
+   "revive_random_persistent_minion_on_offering_expiration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Один из ваших [Persistent|постоянных] [Minion|приспешников] возрождается по истечению [Offering|подношения]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_%_life_to_gain_as_guard_on_dodge_roll"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Sacrifice|Жертвует] {0}% от максимума здоровья для получения такого же количества [Guard|обороны] при кувырке",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack"
   ],
   "rows": [
@@ -96679,6 +98376,20 @@
      "#"
     ],
     "t": "Когда вы [Attack|атакуете], вы получаете {0}% от здоровья в виде [Physical|физического] урона за\\nкаждый  [Warcry|боевой клич], [Empowered|улучшающий] [Attack|атаку]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "self_take_no_extra_damage_from_critical_strikes_while_on_consecrated_ground"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|Удары] по вам на [ConsecratedGround|освященной земле] не имеют [CriticalDamageBonus|бонуса к критическому урону]",
     "h": []
    }
   ]
@@ -97213,6 +98924,54 @@
  },
  {
   "stats": [
+   "skill_speed_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение [SkillSpeed|скорости умений] за каждый надетый [Equipped|оскверненный] предмет",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% снижение [SkillSpeed|скорости умений] за каждый надетый [Equipped|оскверненный] предмет",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_speed_+%_while_on_low_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение [SkillSpeed|скорости умений] при [LowMana|малом количестве маны]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% снижение [SkillSpeed|скорости умений] при [LowMana|малом количестве маны]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_speed_+%_while_shapeshifted"
   ],
   "rows": [
@@ -97347,6 +99106,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "slam_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Slam|мощных ударов]",
+    "h": []
    }
   ]
  },
@@ -97860,6 +99633,30 @@
  },
  {
   "stats": [
+   "spell_damage_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение урона от [Spell|чар], пока ваш [Companion|компаньон] находится в вашем [Presence|присутствии]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение урона от [Spell|чар], пока ваш [Companion|компаньон] находится в вашем [Presence|присутствии]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_damage_+%_while_wielding_melee_weapon"
   ],
   "rows": [
@@ -98285,6 +100082,20 @@
  },
  {
   "stats": [
+   "spells_penetrates_elemental_resist_%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Урон от чар [Penetration|пробивает] {0}% [Resistances|сопротивления] [ElementalDamage|стихиям] врага при [LowWard|малом количестве рунического барьера]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -98300,6 +100111,30 @@
      "#|-1"
     ],
     "t": "{0}% уменьшение [Spirit|духа], если у вас есть как минимум 100 даров",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение [Spirit|духа] за каждый надетый [Equipped|оскверненный] предмет",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение [Spirit|духа] за каждый надетый [Equipped|оскверненный] предмет",
     "h": [
      "negate",
      "1"
@@ -98345,6 +100180,20 @@
      "#"
     ],
     "t": "{0:+d} к [Spirit|духу], пока у вас есть как минимум 200 [Strength|силы]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+_per_2_levels"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к [Spirit|духу] за каждые 2 уровня",
     "h": []
    }
   ]
@@ -98417,6 +100266,30 @@
  },
  {
   "stats": [
+   "sprint_movement_speed_+%_per_active_persistent_minion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение скорости передвижения во время бега за каждого [Persistent|постоянного] [Minion|приспешника]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% снижение скорости передвижения во время бега за каждого [Persistent|постоянного] [Minion|приспешника]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "start_at_zero_energy_shield"
   ],
   "rows": [
@@ -98439,6 +100312,34 @@
      "1|#"
     ],
     "t": "[ESRecharge|Перезарядка энергетического щита] начинается, когда вы используете флакон [Flask|маны]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Storm|бури]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_limit_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "+{0} к  [Limit|лимиту] зарядов умения",
     "h": []
    }
   ]
@@ -98501,6 +100402,20 @@
      "#"
     ],
     "t": "[Strength|Сила] может закрыть другие требования к [Attributes|характеристикам] для оружия и умений [Melee|ближнего боя]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "strike_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Strike|ударов]",
     "h": []
    }
   ]
@@ -98659,6 +100574,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_if_stunned_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% увеличение [StunThreshold|порога оглушения], если вас [Recently|недавно] [Stun|оглушали]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% уменьшение [StunThreshold|порога оглушения], если вас [Recently|недавно] [Stun|оглушали]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour"
   ],
   "rows": [
@@ -98667,6 +100606,27 @@
      "#"
     ],
     "t": "Дарует [StunThreshold|порог оглушения] равный низшему показателю [Evasion|уклонения] или [Armour|брони] на вашем шлеме",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "stun_threshold_+_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "+{0} к [StunThreshold|порогу оглушения] за каждые 10 максимума [Ward|рунического барьера]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "-{0}} к [StunThreshold|порогу оглушения] за каждые 10 максимума [Ward|рунического барьера]",
     "h": []
    }
   ]
@@ -99494,6 +101454,20 @@
  },
  {
   "stats": [
+   "thorns_damage_is_lucky_against_enemies_with_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Урон [Thorns|шипами] [Lucky|удачлив] по целям с [ArmourBreak|полностью разрушенной броней]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "thorns_damage_+%"
   ],
   "rows": [
@@ -99584,6 +101558,22 @@
      "#"
     ],
     "t": "От {0} до {1} урона от [Fire|огня] [Thorns|шипами]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_minimum_base_lightning_damage",
+   "thorns_maximum_base_lightning_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "От {0} до {1} урона от [Lightning|молнии] [Thorns|шипами]",
     "h": []
    }
   ]
@@ -101731,6 +103721,20 @@
  },
  {
   "stats": [
+   "warcry_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Warcry|боевых кличей]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_speed_+%_per_25_tribute"
   ],
   "rows": [
@@ -101841,6 +103845,166 @@
  },
  {
   "stats": [
+   "ward_regeneration_rate_+%_if_have_crit_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение скорости регенерации [Ward|рунического барьера], если [Recently|недавно] вы наносили [Critical|критический удар]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% снижение скорости регенерации [Ward|рунического барьера], если [Recently|недавно] вы наносили [Critical|критический удар]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+%_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% повышение скорости регенерации [Ward|рунического барьера] при беге",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% снижение скорости регенерации [Ward|рунического барьера] при беге",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+1%_final_per_x%_ward_lost_from_hits_up_to_100%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "На 1% больше скорости регенерации [Ward|рунического барьера] за каждые {0}% от максимума [Ward|рунического барьера], утраченные [Recently|недавно] из-за [Hit|ударов], вплоть до на 100% больше",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_is_doubled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Регенерация [Ward|рунического барьера] удваивается",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_1"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Позволяет получить свойства Хрономантии",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_2"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Позволяет получить свойства Души",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_3"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Позволяет получить свойства Неистовства",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_4"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Позволяет получить свойства Меткого стрелка",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_5"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Позволяет получить свойства Разложения",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_6"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Позволяет получать свойства Разрушения",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "weapon_damage_+%_per_10_str"
   ],
   "rows": [
@@ -101908,6 +104072,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} к уровню всех камней умений [Wind|ветра]",
+    "h": []
    }
   ]
  },
@@ -102662,6 +104840,20 @@
      "#"
     ],
     "t": "Первородный",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "soul_core_cannot_roll_no_outcome_with_corruption"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Corrupted|Оскверонение] всегда будет приводить к изменениям",
     "h": []
    }
   ]

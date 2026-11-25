@@ -3097,6 +3097,30 @@
  },
  {
   "stats": [
+   "base_curse_delay_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เขต[Curse|คำสาป] ปะทุ หลังจากมีระยะเวลารอ เพิ่มขึ้น {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "เขต[Curse|คำสาป] ปะทุ หลังจากมีระยะเวลารอ ลดลง {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_curse_duration_+%"
   ],
   "rows": [
@@ -3787,6 +3811,20 @@
      "#"
     ],
     "t": "สกิลที่เสริม ไม่สามารถถอนสถานะ [Impale|ทิ่มแทง] ออกมาได้",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cannot_miss_against_full_life_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ศัตรูที่มี พลังชีวิตเต็ม ไม่สามารถ[Evasion|หลบหลีก]การ[Hit|ปะทะ]ของคุณได้",
     "h": []
    }
   ]
@@ -6158,6 +6196,20 @@
      "#"
     ],
     "t": "ได้รับสถานะ [Rage|คลั่ง] {0} ระดับ เมื่อ[Hit|ปะทะ] [Melee|ประชิด]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "global_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Knockback|ผลัก]ศัตรูออกไป เมื่อ[Hit|ปะทะ]",
     "h": []
    }
   ]
@@ -19310,6 +19362,22 @@
  },
  {
   "stats": [
+   "minimum_added_cold_damage_vs_chilled_enemies",
+   "maximum_added_cold_damage_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "เสริมความเสียหาย น้ำแข็ง {0} ถึง {1} ต่อศัตรูที่ติดสถานะ หนาวเย็น",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -22064,6 +22132,27 @@
  },
  {
   "stats": [
+   "+_deflection_rating_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Deflect|อัตราการปัดป้อง] +{0} ต่อ [Ward|วอร์ดอักขระ]สูงสุด 10 หน่วย",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Deflect|อัตราการปัดป้อง] -{0} ต่อ [Ward|วอร์ดอักขระ]สูงสุด 10 หน่วย",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "+_deflection_rating_per_50_missing_maximum_energy_shield"
   ],
   "rows": [
@@ -22603,6 +22692,27 @@
      "#"
     ],
     "t": "สามารถมี ม็อดคราฟท์ ได้สูงสุด 3 อย่าง",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_can_have_additional_crafted_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สามารถมี ม็อดคราฟท์ ได้ เพิ่มเติม {0} อย่าง",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "สามารถมี ม็อดคราฟท์ ได้ เพิ่มเติม {0} อย่าง",
     "h": []
    }
   ]
@@ -30240,6 +30350,20 @@
  },
  {
   "stats": [
+   "totem_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Totem|โทเทม] ทุกเม็ด {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "trap_skill_gem_level_+"
   ],
   "rows": [
@@ -34745,6 +34869,20 @@
  },
  {
   "stats": [
+   "base_maximum_life_%_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "นำ พลังชีวิตสูงสุด {0}% ไป[StatGain|เสริม]เป็น [Ward|วอร์ดอักขระ]สูงสุด",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_%_to_gain_as_energy_shield"
   ],
   "rows": [
@@ -38635,6 +38773,34 @@
  },
  {
   "stats": [
+   "frenzy_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อคุณได้รับ [Charges|Frenzy Charge] [Allies|เพื่อน]ใน[Presence|ระยะปรากฏกาย]ของคุณจะได้รับ [Charges|Charge] นั้นแทน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "power_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อคุณได้รับ [Charges|Power Charge] [Allies|เพื่อน]ใน[Presence|ระยะปรากฏกาย]ของคุณจะได้รับ [Charges|Charge] นั้นแทน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_chance_to_blind_on_hit_%"
   ],
   "rows": [
@@ -41319,6 +41485,20 @@
      "#"
     ],
     "t": "เปลี่ยน[Cold|ความเสียหาย น้ำแข็ง] ที่ได้รับ {0}% เป็น [Fire|ไฟ]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chaos_damage_from_hits_%_taken_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เปลี่ยนความเสียหาย [Hit|ปะทะ] [Chaos|เคออส] ที่ได้รับ {0}% เป็น ความเสียหาย [ElementalDamage|ElementalDamage]แบบสุ่ม",
     "h": []
    }
   ]
@@ -53436,6 +53616,20 @@
  },
  {
   "stats": [
+   "accuracy_rating_+_per_evasion_rating_on_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "อัตรา[Accuracy|ความแม่นยำ] {0:+d} ต่อ [ItemEvasion|อัตราการหลบหลีกของไอเทม] 1 บน หมวกที่สวมใส่",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "accuracy_rating_is_doubled"
   ],
   "rows": [
@@ -53830,6 +54024,20 @@
  },
  {
   "stats": [
+   "additional_maximum_all_elemental_resistances_%_while_on_full_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[MaximumResistances|ค่าต้านทาน ทุกธาตุ สูงสุด] {0:+d}% ขณะ [Ward|วอร์ดอักขระ]เต็ม",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -53852,6 +54060,20 @@
      "#"
     ],
     "t": "ค่าต้านทาน ทุกชนิด สูงสุด {0:+d}% ขณะที่คุณไม่มี Endurance Charge",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_block_%_if_blocked_with_active_block_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "โอกาส[Block|บล็อค]สูงสุด {0:+d}% หากคุณ[Block|บล็อค]ด้วยการยก[Shield|โล่]มา[Recently|เร็วๆ นี้]",
     "h": []
    }
   ]
@@ -53883,6 +54105,20 @@
      "1|#"
     ],
     "t": "การเพิ่มและลด ความเสียหายของ มิเนียน ส่งผลต่อคุณเช่นกันในสัดส่วน 150% ของค่าดังกล่าว",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additive_modifiers_to_life_regeneration_also_apply_to_mana_regeneration_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การเพิ่มและลด ความเร็วในการฟื้นฟูพลังชีวิต ส่งผลต่อ ความเร็วในการฟื้นฟูมานา เช่นกัน",
     "h": []
    }
   ]
@@ -54632,6 +54868,20 @@
  },
  {
   "stats": [
+   "allies_in_presence_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Allies|เพื่อน]ใน[Presence|ระยะปรากฏกาย]ของคุณ มีความเร็วในการเคลื่อนที่ เพิ่มขึ้น {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "allies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos"
   ],
   "rows": [
@@ -54658,6 +54908,20 @@
      "per_minute_to_per_second",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "allies_in_your_presence_share_charges_with_you"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Allies|เพื่อน]ใน[Presence|ระยะปรากฏกาย]ของคุณ แบ่งปัน [Charges|Charge] กับคุณ",
+    "h": []
    }
   ]
  },
@@ -55255,6 +55519,20 @@
  },
  {
   "stats": [
+   "armour_%_also_applies_to_chaos_damage_while_at_full_es"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Armour|ค่าเกราะ] {0:+d}% ส่งผลต่อ[Chaos|ความเสียหาย เคออส] ที่ได้รับเช่นกัน ขณะ [EnergyShield|โล่พลังงานเต็ม]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -55332,6 +55610,30 @@
      "#|-1"
     ],
     "t": "ลด[Armour|ค่าเกราะ] {0}% หากคุณ[Hit|ปะทะ]ศัตรูด้วยการ[Melee|ประชิด]มา[Recently|เร็วๆ นี้]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[Armour|ค่าเกราะ] {0}% หากคุณไม่ได้กลิ้งหลบมา[Recently|เร็วๆ นี้]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[Armour|ค่าเกราะ] {0}% หากคุณไม่ได้กลิ้งหลบมา[Recently|เร็วๆ นี้]",
     "h": [
      "negate",
      "1"
@@ -55455,6 +55757,20 @@
  },
  {
   "stats": [
+   "armour_+_per_1_spirit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Armour|ค่าเกราะ] {0:+d} ต่อ 1 [Spirit|พลังวิญญาณ]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_and_evasion_rating_+%_per_active_totem_in_presence"
   ],
   "rows": [
@@ -55471,6 +55787,30 @@
     ],
     "t": "ลด[Armour|ค่าเกราะ]และอัตรา[Evasion|การหลบหลีก] {0}% ต่อจำนวนของ [Totem|โทเทม]อัญเชิญ ใน[Presence|ระยะปรากฏกาย]ของคุณ",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_and_evasion_rating_+%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[Armour|ค่าเกราะ]และอัตรา[Evasion|การหลบหลีก] {0}% ขณะที่มี [LowWard|วอร์ดอักขระเหลือน้อย]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[Armour|ค่าเกราะ]และอัตรา[Evasion|การหลบหลีก] {0}% ขณะที่มี [LowWard|วอร์ดอักขระเหลือน้อย]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -56617,6 +56957,30 @@
  },
  {
   "stats": [
+   "attack_damage_+%_while_shapeshifted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเสียหาย [Attack|โจมตี] {0}% ขณะ[Shapeshift|กลายร่าง]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเสียหาย [Attack|โจมตี] {0}% ขณะ[Shapeshift|กลายร่าง]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_while_surrounded"
   ],
   "rows": [
@@ -57135,6 +57499,30 @@
  },
  {
   "stats": [
+   "attack_speed_+%_if_have_blocked_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการ[Attack|โจมตี] {0}% หากคุณบล็อคมา[Recently|เร็วๆ นี้]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเร็วในการ[Attack|โจมตี] {0}% หากคุณบล็อคมา[Recently|เร็วๆ นี้]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_speed_+%_if_have_crit_recently"
   ],
   "rows": [
@@ -57264,6 +57652,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_spend_x%_maximum_ward_for_added_physical_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การ[Attack|โจมตี] จ่าย[Ward|วอร์ดอักขระ] {0}% เพื่อเสริมความเสียหาย [Physical|กายภาพ] จำนวนเท่ากัน",
+    "h": []
    }
   ]
  },
@@ -57823,6 +58225,23 @@
  },
  {
   "stats": [
+   "base_banner_life_regeneration_rate_per_minute_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Banner|ธง]มอบม็อด: ฟื้นฟูพลังชีวิต {0}% ต่อวินาที ต่อเป้าหมายที่ได้รับผล เช่นกัน",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_banner_resist_all_elements_%_to_apply"
   ],
   "rows": [
@@ -57965,6 +58384,20 @@
  },
  {
   "stats": [
+   "base_chaos_damage_resistance_%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Resistances|ค่าต้านทาน เคออส] {0:+d}% ต่อจำนวน ไอเทมที่มีมลทิน ที่[Equipped|สวมใส่]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_damage_%_deflected"
   ],
   "rows": [
@@ -57980,6 +58413,27 @@
      "#|-1"
     ],
     "t": "จำนวนความเสียหาย [Hit|ปะทะ] ที่ถูกยกเว้นจากการ[Deflect|ปัดป้อง] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damage_%_deflected_if_you_have_not_deflected_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ยกเว้นความเสียหาย {0:+d}% จากการ[Hit|ปะทะ]ที่[Deflect|ปัดป้อง]\\nหากคุณไม่ได้[Deflect|ปัดป้อง]การ[Hit|ปะทะ]มา[Recently|เร็วๆ นี้]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ความเสียหาย [Hit|ปะทะ] ที่ยกเว้นจากการ[Deflect|ปัดป้อง] {0:+d}% หากคุณไม่ได้[Deflect|ปัดป้อง]การ[Hit|ปะทะ]มา[Recently|เร็วๆ นี้]",
     "h": []
    }
   ]
@@ -58663,6 +59117,20 @@
  },
  {
   "stats": [
+   "base_spirit_per_socketed_idol"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Spirit|พลังวิญญาณ] {0:+d} ต่อจำนวน[Idol|เทวรูป]ที่ใส่ใน[Equipment|ไอเทมสวมใส่]ของคุณ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_spirit_reservation_efficiency_+%_per_20_tribute"
   ],
   "rows": [
@@ -58759,6 +59227,47 @@
     "t": "ลด[BuffMagnitude|จำนวนค่า]ของสถานะ [UnholyMight|อำนาจอธรรม] ที่เกิดจากคุณ {0}%",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_cost_efficiency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[Efficiency|ประสิทธิภาพ]การใช้งาน[Ward|วอร์ดอักขระ] {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[Efficiency|ประสิทธิภาพ]การใช้งาน[Ward|วอร์ดอักขระ] {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ฟื้นฟู[Ward|วอร์ดอักขระ] {0} ต่อวินาที",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
      "1"
     ]
    }
@@ -59084,6 +59593,32 @@
     ],
     "t": "ลดโอกาส[Block|บล็อค] {0}% หากคุณมีอย่างน้อย 100 บรรณาการ",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มโอกาส[Block|บล็อค] {0}% ขณะที่[Companion|สหาย]ของคุณอยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": [
+     "canonical_line"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดโอกาส[Block|บล็อค] {0}% ขณะที่[Companion|สหาย]ของคุณอยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -59453,6 +59988,20 @@
      "#"
     ],
     "t": "[ArmourBreak|หัก][Armour|เกราะ] {0}% เมื่อสร้างสถานะ [Pinned|ตรึง] ต่อศัตรู",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "break_armour_on_attack_hit_%_of_max_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การ[Attack|โจมตี] [ArmourBreak|หักเกราะ] เท่ากับ {0}% ของ [Ward|วอร์ดอักขระ]สูงสุด",
     "h": []
    }
   ]
@@ -60131,6 +60680,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_for_plants_to_overgrow_when_entering_your_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|ต้นไม้] มีโอกาส[Plant|งอกเงย]ทันที {0}% เมื่อมันเข้ามาใน[Presence|ระยะปรากฏกาย]ของคุณเป็นครั้งแรก",
+    "h": []
    }
   ]
  },
@@ -61928,6 +62491,20 @@
  },
  {
   "stats": [
+   "companion_damage_+%_final_from_idol_per_different_dead_companion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|สหาย] สร้างความเสียหาย อีก {0}% ต่อจำนวนชนิดของสหายที่ตายที่คุณมี",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companion_damage_+%_vs_immobilised_enemies"
   ],
   "rows": [
@@ -62108,6 +62685,33 @@
  },
  {
   "stats": [
+   "companions_gain_onslaught_on_hitting_enemies_marked_by_you_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Companion|สหาย] ได้รับสถานะ [Onslaught|เร่งราวี] {0} วินาที เมื่อ[Hit|ปะทะ]ศัตรูที่คุณ[Mark|แช่ง]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|สหาย] ได้รับสถานะ [Onslaught|เร่งราวี] {0} วินาที เมื่อ[Hit|ปะทะ]ศัตรูที่คุณ[Mark|แช่ง]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_gain_your_strength"
   ],
   "rows": [
@@ -62122,6 +62726,48 @@
  },
  {
   "stats": [
+   "companions_in_presence_base_chaos_damage_resistance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|สหาย]ใน[Presence|ระยะปรากฏกาย]ของคุณ มี[Resistances|ค่าต้านทาน เคออส] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_base_resist_all_elements_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|สหาย]ใน[Presence|ระยะปรากฏกาย]ของคุณ มี[Resistances|ค่าต้านทาน] ทุก[ElementalDamage|ธาตุ] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_gain_x_rage_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|สหาย]ใน[Presence|ระยะปรากฏกาย]ของคุณ ได้รับสถานะ [Rage|คลั่ง] {0} ระดับ เมื่อปะทะ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_in_presence_have_onslaught_while_you_are_shapeshifted"
   ],
   "rows": [
@@ -62130,6 +62776,20 @@
      "#"
     ],
     "t": "[Companion|สหาย]ใน[Presence|ระยะปรากฏกาย]ของคุณ มีสถานะ [Onslaught|เร่งราวี] ขณะที่คุณ[Shapeshift|กลายร่าง]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_non_skill_base_all_damage_%_to_gain_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|สหาย]ใน[Presence|ระยะปรากฏกาย]ของคุณ นำควาสมเสียหาย {0}% ไป[Gain|เสริม]เป็น [ElementalDamage|ธาตุ]แบบสุ่ม",
     "h": []
    }
   ]
@@ -62364,6 +63024,27 @@
  },
  {
   "stats": [
+   "critical_chance_luck_against_parry_debuffed_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "คุณ [Lucky|โชคดี] ในการคำนวณ โอกาส[Critical|ปะทะคริติคอล] ต่อศัตรูที่ติดดีบัฟ [ParriedDebuff|ถูกแพรี่]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "คุณ [Unlucky|โชคร้าย] ในการคำนวณ โอกาส[Critical|ปะทะคริติคอล] ต่อศัตรูที่ติดดีบัฟ [ParriedDebuff|ถูกแพรี่]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "critical_damage_+%_per_50_current_life"
   ],
   "rows": [
@@ -62555,6 +63236,30 @@
     ],
     "t": "การ[Critical|ปะทะคริติคอล] สร้างสถานะ [Impale|ทิ่มแทง]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "critical_hits_apply_life_regeneration_rate_+%_for_4_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ศัตรูที่คุณ[Hit|ปะทะ][Critical|ปะทะคริติคอล] มีความเร็วในการ ฟื้นฟูพลังชีวิต เพิ่มขึ้น {0}% 4 วินาที",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ศัตรูที่คุณ[Hit|ปะทะ][Critical|ปะทะคริติคอล] มีความเร็วในการ ฟื้นฟูพลังชีวิต ลดลง {0}% 4 วินาที",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -63497,6 +64202,30 @@
  },
  {
   "stats": [
+   "damage_+%_per_different_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเสียหาย {0}% ต่อจำนวน[Companion|สหาย]ที่แตกต่างกันที่อยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเสียหาย {0}% ต่อจำนวน[Companion|สหาย]ที่แตกต่างกันที่อยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_+%_per_enemy_elemental_ailment"
   ],
   "rows": [
@@ -63704,6 +64433,20 @@
      "#|99"
     ],
     "t": "ความเสียหายที่[Block|บล็อค] {0}% ถูก[Recoup|เยียวยา]เป็น มานา",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_cannot_be_taken_from_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ความเสียหาย ทุกชนิด ที่ได้รับ ทะลุ [Ward|วอร์ดอักขระ]",
     "h": []
    }
   ]
@@ -64146,6 +64889,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_from_hits_is_unlucky_if_ward_damaged_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ศัตรู [Unlucky|โชคร้าย] ในการคำนวณ ความเสียหายที่[Hit|ปะทะ]คุณ ถ้า\\n[Ward|วอร์ดอักขระ]ของคุณได้รับความเสียหายมา[Recently|เร็วๆ นี้]",
+    "h": []
    }
   ]
  },
@@ -65644,6 +66401,104 @@
  },
  {
   "stats": [
+   "dummy_display_stat_rune_chaos_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อใส่จะแปรสภาพ ม็อด[Fire|ไฟ], [Cold|น้ำแข็ง], [Lightning|สายฟ้า] ของไอเทมให้เป็น ม็อด[Chaos|เคออส] ที่ทัดเทียมกัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_cold_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อใส่จะแปรสภาพ ม็อด[Fire|ไฟ]และ[Lightning|สายฟ้า] ทั้งหมดให้เป็น ม็อด[Cold|น้ำแข็ง] ที่ทัดเทียมกัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_create_jewel_socket"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ทำลาย รู[Augment|วัตถุฝัง] ทั้งหมดบนไอเทมเพื่อสร้าง รู[Jewel|จิวเวล] 1 รู",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_fire_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อใส่จะแปรสภาพ ม็อด[Cold|น้ำแข็ง]และ[Lightning|สายฟ้า] ของไอเทมให้เป็น ม็อด[Fire|ไฟ] ที่ทัดเทียมกัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_lightning_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อใส่จะแปรสภาพ ม็อด[Fire|ไฟ]และ[Cold|น้ำแข็ง] ของไอเทมให้เป็น ม็อด[Lightning|สายฟ้า] ที่ทัดเทียมกัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_olroths_legacy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อใส่ลงไปใน ไอเทม[Rarity|ยูนิค]คาลเกอร์หรือเอโซไมต์ จะทำลายไอเทมเพื่อสร้าง [Rune|อักขระ] ที่ได้รับพลังจากไอเทมนั้น",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_upgrade"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "อัพเกรด [Rune|อักขระ]ที่ใส่",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dummy_stat_zarokhs_gift_jewel_slot"
   ],
   "rows": [
@@ -66724,6 +67579,20 @@
  },
  {
   "stats": [
+   "enemies_you_blind_have_no_crit_bonus_for_x_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ศัตรู ไม่มี[CriticalDamageBonus|โบนัสความเสียหายคริติคอล] {0} วินาที หลังจากที่คุณสร้างสถานะ ตาบอด ต่อพวกมัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "enemies_you_curse_are_intimidated"
   ],
   "rows": [
@@ -67333,6 +68202,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_X_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[ESRechargeRate|ความเร็วในการ รีชาร์จโล่พลังงาน] 1% ต่อ[Ward|วอร์ดอักขระ]สูงสุด {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_while_shapeshifted"
   ],
   "rows": [
@@ -67381,6 +68264,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_start_when_minions_reform"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "คุณเริ่ม [ESRecharge|รีชาร์จโล่พลังงาน] เมื่อ[Minion|มิเนียน]ของคุณ[Reform|คืนร่าง]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_start_when_stunned"
   ],
   "rows": [
@@ -67389,6 +68286,20 @@
      "#"
     ],
     "t": "เริ่ม [ESRecharge|รีชาร์จโล่พลังงาน] เมื่อคุณติดสถานะ สตัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "energy_shield_recharge_starts_after_spending_2000_mana_every_2_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เริ่ม [ESRecharge|รีชาร์จโล่พลังงาน] หลังจาก จ่ายมานา ครบ 2000 สูงสุด 1 ครั้ง ทุก 2 วินาที",
     "h": []
    }
   ]
@@ -68747,6 +69658,20 @@
  },
  {
   "stats": [
+   "gain_X_druidic_prowess_on_heavy_stunning_rare_or_unique_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับสถานะ [DruidicProwess|ดรูอิดองอาจ] {0} ระดับ เมื่อคุณสร้างสถานะ [HeavyStun|สตันหนัก] ต่อ ศัตรู[Rarity|แรร์หรือยูนิค]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_X_instilling_fire_when_charge_is_consumed"
   ],
   "rows": [
@@ -68875,6 +69800,34 @@
      "#"
     ],
     "t": "คุณจะทริกเกอร์ กระแสคู่ (Gemini Surge) เมื่อคุณรีโหลด\\nเพื่อสลับกันรับ[Surge|กระแสน้ำแข็ง] {0} ระดับหรือ[Surge|กระแสไฟ] {1} ระดับ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_life_per_8_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "พลังชีวิตสูงสุด {0:+d} ต่อ [ItemArmour|ค่าเกราะ] 8 บน หมวกที่[Equipped|สวมใส่]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_mana_per_3_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "มานาสูงสุด {0:+d} ต่อ[ItemArmour|ค่าเกราะของไอเทม] 3 บน หมวกที่[Equipped|สวมใส่]",
     "h": []
    }
   ]
@@ -69202,6 +70155,20 @@
  },
  {
   "stats": [
+   "gain_armour_from_%_life_loss_from_hits_lasting_8_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ได้รับ[Armour|ค่าเกราะ] เท่ากับ {0}% ของ พลังชีวิตที่สูญเสียจากการ[Hit|ปะทะ] ใน 8 วินาทีที่ผ่านมา",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_attack_damage_+%_for_each_your_minion_in_presence_capped"
   ],
   "rows": [
@@ -69252,6 +70219,20 @@
      "#"
     ],
     "t": "ได้รับ [Charges|Endurance Charge] 1 ลูก เมื่อคุณสร้างสถานะ [HeavyStun|สตันหนัก] ต่อศัตรู[Rarity|แรร์หรือยูนิค]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_endurance_charge_on_reaching_low_life_once_per_2s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ [Charges|Endurance Charge] 1 ลูก เมื่อ [LowLife|พลังชีวิตเหลือน้อย] สูงสุด 1 ครั้ง ทุก 2 วินาที",
     "h": []
    }
   ]
@@ -69355,6 +70336,48 @@
  },
  {
   "stats": [
+   "gain_guard_%_of_max_ward_for_2s_every_4s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ทุก 4 วินาที ได้รับ[Guard|พลังคุ้มกัน]เท่ากับ {0}% ของ [Ward|วอร์ดอักขระ]สูงสุด เป็นเวลา 2 วินาที",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_%_of_maximum_life_for_4_seconds_on_taking_savage_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[Guard|พลังคุ้มกัน] เท่ากับ {0}% ของ พลังชีวิตสูงสุด 4 วินาที เมื่อได้รับ[SavageHit|การปะทะที่ร้ายแรง]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_after_sprinting_equal_to_x%_of_maximum_life_per_second_sprinted_up_to_20%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อคุณหยุดวิ่ง คุณจะได้รับ[Guard|พลังคุ้มกัน] เท่ากับ {0}% ของ พลังชีวิตสูงสุด ต่อจำนวนวินาทีที่คุณวิ่ง สูงสุด 20% เป็นเวลา 4 วินาที",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll"
   ],
   "rows": [
@@ -69377,6 +70400,20 @@
      "#"
     ],
     "t": "หากคุณได้รับสถานะ [Rage|คลั่ง] เมื่อ[Hit|ปะทะ] คุณมีโอกาสได้รับจำนวนเต็มทันที {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_maximum_energy_shield_equal_to_%_total_strength_requirement_of_equipped_armour_items"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ[EnergyShield|โล่พลังงานสูงสุด] เท่ากับ {0}% ของเงื่อนไข [Strength] สุทธิของ [EquipArmour|ไอเทมเกราะที่สวมใส่]",
     "h": []
    }
   ]
@@ -69472,6 +70509,20 @@
      "#"
     ],
     "t": "ได้รับสถานะ [Onslaught|เร่งราวี] 4 วินาที เมื่อ[Minion|มิเนียน]ตาย",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_onslaught_for_x_seconds_when_your_marks_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับสถานะ [Onslaught|เร่งราวี] {0} วินาที เมื่อ[Mark|คำแช่ง]ของคุณ[MarkActivate|ออกฤทธิ์]",
     "h": []
    }
   ]
@@ -70021,6 +71072,22 @@
  },
  {
   "stats": [
+   "global_minimum_added_lightning_damage_vs_shocked_enemies",
+   "global_maximum_added_lightning_damage_vs_shocked_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "เสริมความเสียหาย สายฟ้า {0} ถึง {1} ต่อศัตรูที่ติดสถานะ ช็อค",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "glory_generation_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -70363,6 +71430,20 @@
  },
  {
   "stats": [
+   "grenade_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Grenade|ลูกระเบิด] ทุกเม็ด {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "grenade_skill_number_of_additional_projectiles"
   ],
   "rows": [
@@ -70417,6 +71498,30 @@
     ],
     "t": "มีโอกาสกระจาย น้ำมันดิน {0}% เมื่อถูกปะทะ",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "guard_gained_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มการ[Guard|พลังคุ้มกัน]ที่ได้รับ {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดการ[Guard|พลังคุ้มกัน]ที่ได้รับ {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -70663,6 +71768,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hazard_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Hazard|พื้นที่อันตราย] ทุกเม็ด {0:+d}",
+    "h": []
    }
   ]
  },
@@ -73286,6 +74405,20 @@
  },
  {
   "stats": [
+   "herald_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Herald|สาสน์] ทุกเม็ด {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_chance_%_on_spreading_poioson"
   ],
   "rows": [
@@ -73792,6 +74925,20 @@
      "#"
     ],
     "t": "ได้รับความเสียหาย [Fire|ไฟ] เท่ากับ {0}% ของ พลังชีวิตและโล่พลังงานสูงสุด เมื่อเพลิงโลกันตร์เต็ม",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hits_cannot_be_evaded_vs_blinded_maimed_bleeding_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เป้าหมายที่ติดสถานะ [Blind|ตาบอด], [Maim|ขาหัก] และ [Bleeding|เลือดไหล] ไม่สามารถ[Evasion|หลบหลีก]การ[Hit|ปะทะ]ของคุณได้",
     "h": []
    }
   ]
@@ -74522,6 +75669,20 @@
      "1|#"
     ],
     "t": "ศัตรูที่คุณสร้างสถานะ [Incision|กรีด] ได้รับความเสียหาย [Physical|กายภาพ] เพิ่มขึ้น {0}% ต่อจำนวนสถานะ [Incision|กรีด]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "increases_and_reductions_to_move_speed_apply_to_es_recharge_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การเพิ่มและลด ความเร็วในการเคลื่อนที่ ส่งผลต่อ [ESRechargeRate|ความเร็วในการรีชาร์จโล่พลังงาน] เช่นกัน",
     "h": []
    }
   ]
@@ -75678,6 +76839,23 @@
  },
  {
   "stats": [
+   "life_loss_%_per_minute_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "สูญเสียพลังชีวิต {0}% ต่อวินาที ขณะที่วิ่ง",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_mana_flasks_restore_mana_life"
   ],
   "rows": [
@@ -75865,6 +77043,23 @@
     "t": "ลดความเร็วในการ เติมพลังชีวิต {0}% ขณะที่มี[Companion|สหาย]อยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_regeneration_per_minute_%_if_used_a_command_skill_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ฟื้นฟูพลังชีวิต {0}% ต่อวินาที หากคุณใช้ สกิล[Command|สั่งการ] มา[Recently|เร็วๆ นี้]",
+    "h": [
+     "per_minute_to_per_second",
      "1"
     ]
    }
@@ -77962,6 +79157,41 @@
  },
  {
   "stats": [
+   "local_idols_gain_additional_socketable_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Idol|เทวรูป] ที่ใส่ในไอเทมนี้ ได้รับผลจาก ม็อด[ShamanOnlyMods|สายสัมพันธ์] ด้วย",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "การ[Attack|โจมตี]ด้วยอาวุธนี้ มีโอกาสสร้างสถานะ [Exposure|พ่ายแก่ธาตุ] {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "การ[Attack|โจมตี]ด้วยอาวุธนี้ สร้างสถานะ [Exposure|พ่ายแก่ธาตุ]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_inflict_malignant_madness_on_critical_strike_%_if_eater_of_worlds_dominant"
   ],
   "rows": [
@@ -78412,6 +79642,20 @@
  },
  {
   "stats": [
+   "local_maximum_added_cold_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เมื่อ[Hit|ปะทะ]ศัตรู จะได้รับการเสริมความเสียหาย [Cold|น้ำแข็ง]สูงสุด เท่ากับ จำนวน[Power|พลัง]ของศัตรู 20 วินาที สูงสุด {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_maximum_added_lightning_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
   ],
   "rows": [
@@ -78522,6 +79766,20 @@
  },
  {
   "stats": [
+   "local_physical_damage_roll_always_min_or_max"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ความเสียหาย [Physical|กายภาพ] [BooleanDamageRoll|สุ่มค่าตัวเลขความเสียหายต่ำสุดหรือสูงสุดเท่านั้น]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_poison_on_critical_strike_chance_%"
   ],
   "rows": [
@@ -78579,6 +79837,48 @@
      "#|-1"
     ],
     "t": "ลดความเร็วของ[Projectile|โพรเจกไทล์]ด้วย อาวุธนี้ {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_dexterity"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|แปลง] เงื่อนไขค่าคุณสมบัติที่ต้องการ {0}% เป็น [Dexterity|Dexterity]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|แปลง] เงื่อนไขค่าคุณสมบัติที่ต้องการ {0}% เป็น [Intelligence|Intelligence]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_strength"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|แปลง] เงื่อนไขค่าคุณสมบัติที่ต้องการ {0}% เป็น [Strength|Strength]",
     "h": []
    }
   ]
@@ -78693,6 +79993,20 @@
      "#"
     ],
     "t": "เพิ่ม[StunThreshold|ความยากในการติดสถานะ สตัน] เป็นสองเท่า ขณะยกโล่",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_socketable_%_maximum_weapon_damage_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ได้รับ [Ward|วอร์ดอักขระ]สูงสุด เท่ากับ {0}% ของ ความเสียหายสูงสุดของอาวุธนี้",
     "h": []
    }
   ]
@@ -79496,6 +80810,30 @@
  },
  {
   "stats": [
+   "mana_cost_efficiency_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[Efficiency|ประสิทธิภาพ]การใช้งานมานา {0}% หากคุณไม่ได้กลิ้งหลบมา[Recently|เร็วๆ นี้]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[Efficiency|ประสิทธิภาพ]การใช้งานมานา {0}% หากคุณไม่ได้กลิ้งหลบมา[Recently|เร็วๆ นี้]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_cost_+%_per_10_devotion"
   ],
   "rows": [
@@ -79751,6 +81089,55 @@
     "h": [
      "negate",
      "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการ เติมมานา {0}% ขณะที่[Companion|สหาย]ของคุณอยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเร็วในการ เติมมานา {0}% ขณะที่[Companion|สหาย]ของคุณอยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_regeneration_rate_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการ ฟื้นฟูมานา อีก {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเร็วในการ ฟื้นฟูมานา อีก {0}%",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
     ]
    }
   ]
@@ -89641,6 +91028,20 @@
  },
  {
   "stats": [
+   "mark_grants_%_max_glory_to_random_skill_on_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "สกิลที่ต้องการบารมีแบบสุ่มสกิลหนึ่ง สั่งสมบารมี {0}% เมื่อ[Mark|คำแช่ง]ของคุณ[MarkActivate|ออกฤทธิ์]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mark_skill_duration_+%"
   ],
   "rows": [
@@ -90236,6 +91637,30 @@
      "#"
     ],
     "t": "[StatConversion|แปลง] พลังชีวิตสูงสุด {0}% เป็น [EnergyShield|โล่พลังงาน]สูงสุด ต่อ 20 บรรณาการ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดพลังชีวิตสูงสุด อีก {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มพลังชีวิตสูงสุด อีก {0}%",
     "h": []
    }
   ]
@@ -91488,6 +92913,34 @@
  },
  {
   "stats": [
+   "minion_physical_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|มิเนียน] นำความเสียหาย [Physical|กายภาพ] {0}% ไปเสริมเป็น [Lightning|สายฟ้า]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_physical_hit_and_dot_damage_%_taken_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "มิเนียน เปลี่ยนความเสียหาย [Physical|กายภาพ] ที่ได้รับ {0}% เป็น [Lightning|สายฟ้า]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "reservation_efficiency_+%_of_minion_skills"
   ],
   "rows": [
@@ -91701,6 +93154,20 @@
      "#"
     ],
     "t": "การปะทะของมิเนียน สามารถสังหารศัตรูที่ติดสถานะ ลุกไหม้ ได้เท่านั้น",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_in_presence_have_onslaught_while_you_are_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|มิเนียน]ใน[Presence|ระยะปรากฏกาย]ของคุณ มีสถานะ [Onslaught|เร่งราวี] ขณะที่คุณมี [LowWard|วอร์ดอักขระเหลือน้อย]",
     "h": []
    }
   ]
@@ -91962,6 +93429,27 @@
  },
  {
   "stats": [
+   "movement_speed_+%_per_5_rage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "สถานะ [Rage|คลั่ง] ทุก 5 ระดับ มอบม็อด: เพิ่มความเร็วในการเคลื่อนที่ {0}% เช่นกัน",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "สถานะ [Rage|คลั่ง] ทุก 5 ระดับ มอบม็อด: ลดความเร็วในการเคลื่อนที่ {0}% เช่นกัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "movement_speed_+%_while_affected_by_ailment"
   ],
   "rows": [
@@ -92015,6 +93503,20 @@
      "1|#"
     ],
     "t": "เพิ่มความเร็วในการเคลื่อนที่ 25% และเพิ่มความเร็วในการเคลื่อนที่ 1% ต่ออัตรา[Evasion|การหลบหลีก] {0} [MaximumTotal|สูงสุด 75%]\\nม็อดความเร็วในการเคลื่อนที่อื่นที่ไม่ใช่การ วิ่ง ไม่มีผล",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "abyss_socketable_movement_speed_is_only_base_+%_per_15_spirit_up_to_+40%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการเคลื่อนที่ {0}% ต่อ[Spirit|พลังวิญญาณ] 15 สูงสุด 40%\\nม็อดความเร็วในการเคลื่อนที่อื่นที่ไม่ใช่การ วิ่ง ไม่มีผล",
     "h": []
    }
   ]
@@ -92565,6 +94067,20 @@
  },
  {
   "stats": [
+   "non_skill_all_damage_%_to_gain_as_fire_+_per_2%_attack_block_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "นำความเสียหาย {0}% ไป[Gain|เสริม]เป็น [Fire|ไฟ] ต่อโอกาสบล็อค 2%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_chaos_per_active_undead_minion"
   ],
   "rows": [
@@ -92789,6 +94305,23 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_physical_per_10%_missing_mana_permyriad"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "นำความเสียหาย {0}% ไป[Gain|เสริม]เป็น [Physical|กายภาพ] ต่อทุก 10% ของมานาที่หายไป",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element"
   ],
   "rows": [
@@ -92803,6 +94336,20 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_random_element_per_socketed_rune"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Gain|นำ]ความเสียหาย {0}% ไป[Gain|เสริม]เป็น [ElementalDamage|ธาตุ]แบบสุ่ม\\nต่อจำนวนของ[Rune|อักขระ]ที่ใส่ในไอเทม[Equipped|สวมใส่]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element_while_shapeshifted"
   ],
   "rows": [
@@ -92811,6 +94358,20 @@
      "1|#"
     ],
     "t": "นำความเสียหาย {0}% ไป[Gain|เสริม]เป็น [ElementalDamage|ธาตุ]แบบสุ่ม ขณะ[Shapeshift|กลายร่าง]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_cold_fire_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "นำความเสียหาย {0}% ไป[Gain|เสริม]เป็น ทุก[ElementalDamage|ธาตุ]",
     "h": []
    }
   ]
@@ -93225,6 +94786,20 @@
      "1",
      "canonical_line"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "nova_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ สกิล[Nova|กระจาย] ทุกสกิล {0:+d}",
+    "h": []
    }
   ]
  },
@@ -94692,6 +96267,44 @@
  },
  {
   "stats": [
+   "plant_skill_effect_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มระยะเวลาส่งผลของ สกิล[Plant|ต้นไม้] {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดระยะเวลาส่งผลของ สกิล[Plant|ต้นไม้] {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "plant_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Plant|ต้นไม้] ทุกเม็ด {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "poison_as_though_dealing_X_damage_on_block"
   ],
   "rows": [
@@ -95778,6 +97391,20 @@
  },
  {
   "stats": [
+   "recoup_life_equal_to_%_of_hit_damage_dealt_to_your_offerings"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "คุณ [Recoup|เยียวยา]พลังชีวิต เท่ากับ {0}% ของ ความเสียหายที่ [Offering|การเซ่นไหว้]ของคุณ ได้รับ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recoup_speed_+%"
   ],
   "rows": [
@@ -96114,6 +97741,20 @@
  },
  {
   "stats": [
+   "recover_ward_as_well_as_mana_from_mana_regeneration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การเติมมานา จากการฟื้นฟู ส่งผลต่อ [Ward|วอร์ดอักขระ] เช่นกัน",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_x%_of_maximum_mana_when_you_consume_a_power_charge"
   ],
   "rows": [
@@ -96122,6 +97763,20 @@
      "1|#"
     ],
     "t": "เติมมานา {0}% เมื่อคุณกลืนกิน [Charges|Power Charge]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_x%_of_maximum_ward_on_persistent_minion_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เติม[Ward|วอร์ดอักขระ] {0}% เมื่อ [Minion|มิเนียน]ที่[Reviving|คืนชีพ]ได้ของคุณ [MinionDeath|ถูกสังหาร]",
     "h": []
    }
   ]
@@ -96324,6 +97979,20 @@
      "#"
     ],
     "t": "กำจัด[Curse|คำสาป] 1 สาป เมื่อคุณใช้ [Flask|ขวดยา]มานา",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remove_damaging_ailment_on_using_command_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "กำจัด [DamagingAilments|สถานะเจ็บป่วยมีความเสียหาย] 1 อย่าง เมื่อคุณใช้ สกิล[Command|สั่งการ]",
     "h": []
    }
   ]
@@ -96578,6 +98247,34 @@
  },
  {
   "stats": [
+   "revive_random_persistent_minion_on_offering_expiration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|มิเนียน][Persistent|ยั่งยืน]ของคุณ 1 ตัว คืนชีพ เมื่อหมดระยะเวลาของการ[Offering|เซ่นไหว้]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_%_life_to_gain_as_guard_on_dodge_roll"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Sacrifice|สละ]พลังชีวิต {0}% เพื่อรับ[Guard|พลังคุ้มกัน] ตามจำนวนที่สละไป เมื่อคุณกลิ้งหลบ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack"
   ],
   "rows": [
@@ -96679,6 +98376,20 @@
      "#"
     ],
     "t": "เมื่อคุณ[Attack|โจมตี] ได้รับความเสียหาย [Physical|กายภาพ] เท่ากับ พลังชีวิต {0}%\\nต่อจำนวนการ[Warcry|คำราม]ที่[Empowered|เสริมฤทธิ์]ให้กับการ[Attack|โจมตี]นั้น",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "self_take_no_extra_damage_from_critical_strikes_while_on_consecrated_ground"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การ[Hit|ปะทะ]ที่คุณได้รับ ไม่มี[CriticalDamageBonus|โบนัสความเสียหายคริติคอล] ขณะที่อยู่บน [ConsecratedGround|พื้นศักดิ์สิทธิ์]",
     "h": []
    }
   ]
@@ -97213,6 +98924,54 @@
  },
  {
   "stats": [
+   "skill_speed_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[SkillSpeed|ความเร็วในการใช้สกิล] {0}% ต่อจำนวน ไอเทมที่มีมลทิน ที่[Equipped|สวมใส่]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[SkillSpeed|ความเร็วในการใช้สกิล] {0}% ต่อจำนวน ไอเทมที่มีมลทิน ที่[Equipped|สวมใส่]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_speed_+%_while_on_low_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[SkillSpeed|ความเร็วในการใช้สกิล] {0}% ขณะที่มี [LowMana|มานาเหลือน้อย]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[SkillSpeed|ความเร็วในการใช้สกิล] {0}% ขณะที่มี [LowMana|มานาเหลือน้อย]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_speed_+%_while_shapeshifted"
   ],
   "rows": [
@@ -97347,6 +99106,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "slam_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Slam|ทุบ] ทุกเม็ด {0:+d}",
+    "h": []
    }
   ]
  },
@@ -97860,6 +99633,30 @@
  },
  {
   "stats": [
+   "spell_damage_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเสียหาย [Spell|เวท] {0}% ขณะที่[Companion|สหาย]อยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "เพิ่มความเสียหาย [Spell|เวท] {0}% ขณะที่[Companion|สหาย]อยู่ใน[Presence|ระยะปรากฏกาย]ของคุณ",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_damage_+%_while_wielding_melee_weapon"
   ],
   "rows": [
@@ -98285,6 +100082,20 @@
  },
  {
   "stats": [
+   "spells_penetrates_elemental_resist_%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ความเสียหาย เวท [Penetration|เจาะ][Resistances|ต้านทาน] [ElementalDamage|ธาตุ] ของศัตรู {0}% ขณะที่มี [LowWard|วอร์ดอักขระเหลือน้อย]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -98300,6 +100111,30 @@
      "#|-1"
     ],
     "t": "ลด[Spirit|พลังวิญญาณ] {0}% หากคุณมีอย่างน้อย 100 บรรณาการ",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[Spirit|พลังวิญญาณ] {0}% ต่อจำนวน ไอเทมที่มีมลทิน ที่[Equipped|สวมใส่]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[Spirit|พลังวิญญาณ] {0}% ต่อจำนวน ไอเทมที่มีมลทิน ที่[Equipped|สวมใส่]",
     "h": [
      "negate",
      "1"
@@ -98345,6 +100180,20 @@
      "#"
     ],
     "t": "[Spirit|พลังวิญญาณ] {0:+d} ขณะที่คุณมี [Strength] อย่างน้อย 200 หน่วย",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+_per_2_levels"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Spirit|พลังวิญญาณ] {0:+d} ทุก 2 เลเวล",
     "h": []
    }
   ]
@@ -98417,6 +100266,30 @@
  },
  {
   "stats": [
+   "sprint_movement_speed_+%_per_active_persistent_minion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการเคลื่อนที่ {0}% ขณะที่วิ่ง ต่อจำนวน[Minion|มิเนียน][Persistent|ยั่งยืน]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเร็วในการเคลื่อนที่ {0}% ขณะที่วิ่ง ต่อจำนวน[Minion|มิเนียน][Persistent|ยั่งยืน]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "start_at_zero_energy_shield"
   ],
   "rows": [
@@ -98439,6 +100312,34 @@
      "1|#"
     ],
     "t": "เริ่ม [ESRecharge|รีชาร์จโล่พลังงาน] เมื่อคุณใช้ [Flask|ขวดยา]มานา",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Storm|พายุ] ทุกเม็ด {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_limit_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "สกิล มี[Limit|จำนวนจำกัด] +{0}",
     "h": []
    }
   ]
@@ -98501,6 +100402,20 @@
      "#"
     ],
     "t": "[Strength|Strength] สามารถสนองเงื่อนไข[Attributes|ค่าคุณสมบัติ]อื่นๆ ของ อาวุธ[Melee|ประชิด]และสกิล[Melee|ประชิด]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "strike_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Strike|ฟาด] ทุกเม็ด {0:+d}",
     "h": []
    }
   ]
@@ -98659,6 +100574,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_if_stunned_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่ม[StunThreshold|ความยากในการติดสถานะ สตัน] {0}% หากคุณติดสถานะ [Stun|สตัน] มา[Recently|เร็วๆ นี้]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลด[StunThreshold|ความยากในการติดสถานะ สตัน] {0}% หากคุณติดสถานะ [Stun|สตัน] มา[Recently|เร็วๆ นี้]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour"
   ],
   "rows": [
@@ -98667,6 +100606,27 @@
      "#"
     ],
     "t": "ได้รับ [StunThreshold|ความยากในการติดสถานะ สตัน] เท่ากับค่าที่ต่ำที่สุดระหว่าง [Evasion|การหลบหลีก]และ[Armour|ค่าเกราะ] บน หมวกของคุณ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "stun_threshold_+_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[StunThreshold|ความยากในการติดสถานะสตัน] +{0} ต่อ [Ward|วอร์ดอักขระ]สูงสุด 10 หน่วย",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[StunThreshold|ความยากในการติดสถานะสตัน] -{0} ต่อ [Ward|วอร์ดอักขระ]สูงสุด 10 หน่วย",
     "h": []
    }
   ]
@@ -99494,6 +101454,20 @@
  },
  {
   "stats": [
+   "thorns_damage_is_lucky_against_enemies_with_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "คุณ [Lucky|โชคดี] ในการคำนวณความเสียหาย [Thorns|ผิวหนาม] ต่อเป้าหมายที่ [ArmourBreak|เกราะหักโดยสมบูรณ์]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "thorns_damage_+%"
   ],
   "rows": [
@@ -99584,6 +101558,22 @@
      "#"
     ],
     "t": "ความเสียหาย [Thorns|ผิวหนาม] [Fire|ไฟ] {0} ถึง {1}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_minimum_base_lightning_damage",
+   "thorns_maximum_base_lightning_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "ความเสียหาย [Thorns|ผิวหนาม] [Lightning|สายฟ้า] {0} ถึง {1}",
     "h": []
    }
   ]
@@ -101731,6 +103721,20 @@
  },
  {
   "stats": [
+   "warcry_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Warcry|คำราม] ทุกเม็ด {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_speed_+%_per_25_tribute"
   ],
   "rows": [
@@ -101841,6 +103845,166 @@
  },
  {
   "stats": [
+   "ward_regeneration_rate_+%_if_have_crit_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการ ฟื้นฟู[Ward|วอร์ดอักขระ] {0}% หากคุณ[Critical|ปะทะคริติคอล]มา[Recently|เร็วๆ นี้]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเร็วในการ ฟื้นฟู[Ward|วอร์ดอักขระ] {0}% หากคุณ[Critical|ปะทะคริติคอล]มา[Recently|เร็วๆ นี้]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+%_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการ ฟื้นฟู[Ward|วอร์ดอักขระ] {0}% ขณะที่วิ่ง",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเร็วในการ ฟื้นฟู[Ward|วอร์ดอักขระ] {0}% ขณะที่วิ่ง",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+1%_final_per_x%_ward_lost_from_hits_up_to_100%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเร็วในการ ฟื้นฟู[Ward|วอร์ดอักขระ] อีก 1% ต่อทุกๆ {0}% ของ[Ward|วอร์ดอักขระ]สูงสุดที่สูญเสียจากการ[Hit|ปะทะ]มา[Recently|เร็วๆ นี้] สูงสุด 100%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_is_doubled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ความเร็วในการ ฟื้นฟู[Ward|วอร์ดอักขระ] เพิ่มเป็นสองเท่า",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_1"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สุ่มม็อด Chronomancy ได้",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_2"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สุ่มม็อด Soul ได้",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_3"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สุ่มม็อด Berserking ได้",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_4"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สุ่มม็อด Marksman ได้",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_5"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สุ่มม็อด Decay ได้",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_6"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "สุ่มม็อด Destruction ได้",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "weapon_damage_+%_per_10_str"
   ],
   "rows": [
@@ -101908,6 +104072,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เลเวลของ หินสกิล[Wind|สายลม] ทุกเม็ด {0:+d}",
+    "h": []
    }
   ]
  },
@@ -102662,6 +104840,20 @@
      "#"
     ],
     "t": "ไพรมอร์เดียล",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "soul_core_cannot_roll_no_outcome_with_corruption"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "การ[Corrupted|ใส่มลทิน] จะก่อให้เกิดการเปลี่ยนแปลงเสมอ",
     "h": []
    }
   ]

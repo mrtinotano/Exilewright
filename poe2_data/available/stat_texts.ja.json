@@ -3097,6 +3097,30 @@
  },
  {
   "stats": [
+   "base_curse_delay_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Curse|呪い]領域が噴出するまでの遅延が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Curse|呪い]領域が噴出するまでの遅延が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_curse_duration_+%"
   ],
   "rows": [
@@ -3787,6 +3811,20 @@
      "#"
     ],
     "t": "サポートされたスキルは[Impale|串刺し]を取り出すことができない",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cannot_miss_against_full_life_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "フルライフ状態の敵はプレイヤーの[Hit|ヒット]を[Evasion|回避]できない",
     "h": []
    }
   ]
@@ -6158,6 +6196,20 @@
      "#"
     ],
     "t": "[Melee|近接][Hit|ヒット]時に[Rage|憤怒]を{0}獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "global_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Hit|ヒット]時に敵を[Knockback|ノックバック]する",
     "h": []
    }
   ]
@@ -19312,6 +19364,22 @@
  },
  {
   "stats": [
+   "minimum_added_cold_damage_vs_chilled_enemies",
+   "maximum_added_cold_damage_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "冷却状態の敵に対して{0}から{1}の冷気ダメージを追加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -22066,6 +22134,27 @@
  },
  {
   "stats": [
+   "+_deflection_rating_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最大[Ward|ルーンワード]10ごとに[Deflect|受け流し力] +{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "最大[Ward|ルーンワード]10ごとに[Deflect|受け流し力] -{0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "+_deflection_rating_per_50_missing_maximum_energy_shield"
   ],
   "rows": [
@@ -22605,6 +22694,27 @@
      "#"
     ],
     "t": "クラフトモッドを最大3個まで持つことができる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_can_have_additional_crafted_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "クラフトモッドを追加で{0}個持つことができる",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "クラフトモッドを追加で{0}個持つことができる",
     "h": []
    }
   ]
@@ -30242,6 +30352,20 @@
  },
  {
   "stats": [
+   "totem_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Totem|トーテム]スキルジェムのレベル {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "trap_skill_gem_level_+"
   ],
   "rows": [
@@ -34747,6 +34871,20 @@
  },
  {
   "stats": [
+   "base_maximum_life_%_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最大ライフの{0}%を追加最大[Ward|ルーンワード]として[StatGain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_%_to_gain_as_energy_shield"
   ],
   "rows": [
@@ -38637,6 +38775,34 @@
  },
  {
   "stats": [
+   "frenzy_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが[Charges|フレンジーチャージ]を1個獲得するはずの時に[Presence|存在下]の[Allies|味方]が代わりにその[Charges|チャージ]を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "power_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが[Charges|パワーチャージ]を1個獲得するはずの時に[Presence|存在下]の[Allies|味方]が代わりにその[Charges|チャージ]を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_chance_to_blind_on_hit_%"
   ],
   "rows": [
@@ -41321,6 +41487,20 @@
      "#"
     ],
     "t": "[Cold|冷気]ダメージの{0}%を[Fire|火]ダメージとして受ける",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chaos_damage_from_hits_%_taken_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|ヒット]から受ける[Chaos|混沌]ダメージの{0}%をランダムな[ElementalDamage|元素属性]のダメージとして受ける",
     "h": []
    }
   ]
@@ -53438,6 +53618,20 @@
  },
  {
   "stats": [
+   "accuracy_rating_+_per_evasion_rating_on_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "装備中のヘルメットの[ItemEvasion|アイテム回避力]1ごとに[Accuracy|命中力] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "accuracy_rating_is_doubled"
   ],
   "rows": [
@@ -53832,6 +54026,20 @@
  },
  {
   "stats": [
+   "additional_maximum_all_elemental_resistances_%_while_on_full_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ward|ルーンワード]がフルの間全ての[MaximumResistances|元素耐性の最大値] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -53854,6 +54062,20 @@
      "#"
     ],
     "t": "エンデュランスチャージがない時に全ての耐性の最大値 {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_block_%_if_blocked_with_active_block_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Recently|直近][Shield|盾]を構えて[Block|ブロック]してれば[Block|ブロック]率の最大値 {0:+d}%",
     "h": []
    }
   ]
@@ -53885,6 +54107,20 @@
      "1|#"
     ],
     "t": "ミニオンダメージの増減のモッドはその数値の150%がプレイヤーにも影響する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additive_modifiers_to_life_regeneration_also_apply_to_mana_regeneration_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ライフ自動回復レートの増減のモッドはマナ自動回復レートにも適用される",
     "h": []
    }
   ]
@@ -54634,6 +54870,20 @@
  },
  {
   "stats": [
+   "allies_in_presence_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーの[Presence|存在下]にいる[Allies|味方]は移動スピードが{0}%増加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "allies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos"
   ],
   "rows": [
@@ -54660,6 +54910,20 @@
      "per_minute_to_per_second",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "allies_in_your_presence_share_charges_with_you"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーの[Presence|存在下]の[Allies|味方]はプレイヤーと[Charges|チャージ]を共有する",
+    "h": []
    }
   ]
  },
@@ -55257,6 +55521,20 @@
  },
  {
   "stats": [
+   "armour_%_also_applies_to_chaos_damage_while_at_full_es"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[EnergyShield|エナジシールド]がフルの間[Armour|アーマー]の{0:+d}%が[Chaos|混沌]ダメージにも適用される",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -55334,6 +55612,30 @@
      "#|-1"
     ],
     "t": "[Recently|直近]プレイヤーが敵に[Melee|近接アタック]で[Hit|ヒット]を与えていれば[Armour|アーマー]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近]ドッジロールをしていなければ[Armour|アーマー]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|直近]ドッジロールをしていなければ[Armour|アーマー]が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -55457,6 +55759,20 @@
  },
  {
   "stats": [
+   "armour_+_per_1_spirit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Spirit|スピリット]1ごとに[Armour|アーマー] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_and_evasion_rating_+%_per_active_totem_in_presence"
   ],
   "rows": [
@@ -55473,6 +55789,30 @@
     ],
     "t": "プレイヤーの[Presence|存在下]にいる召喚した[Totem|トーテム]ごとに[Armour|アーマー]と[Evasion|回避力]が{0}%減少する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_and_evasion_rating_+%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LowWard|低ルーンワード]状態の間[Armour|アーマー]と[Evasion|回避力]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LowWard|低ルーンワード]状態の間[Armour|アーマー]と[Evasion|回避力]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -56619,6 +56959,30 @@
  },
  {
   "stats": [
+   "attack_damage_+%_while_shapeshifted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Shapeshift|シェープシフト]状態の間[Attack|アタック]ダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Shapeshift|シェープシフト]状態の間[Attack|アタック]ダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_while_surrounded"
   ],
   "rows": [
@@ -57137,6 +57501,30 @@
  },
  {
   "stats": [
+   "attack_speed_+%_if_have_blocked_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近]ブロックをしていれば[Attack|アタック]スピードが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|直近]ブロックをしていれば[Attack|アタック]スピードが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_speed_+%_if_have_crit_recently"
   ],
   "rows": [
@@ -57266,6 +57654,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_spend_x%_maximum_ward_for_added_physical_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|アタック]はもし可能なら最大[Ward|ルーンワード]の{0}%を使用し同量の追加[Physical|物理]ダメージを獲得する",
+    "h": []
    }
   ]
  },
@@ -57825,6 +58227,23 @@
  },
  {
   "stats": [
+   "base_banner_life_regeneration_rate_per_minute_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Banner|バナー]は影響を受けた対象に毎秒ライフの{0}%自動回復も付与する",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_banner_resist_all_elements_%_to_apply"
   ],
   "rows": [
@@ -57967,6 +58386,20 @@
  },
  {
   "stats": [
+   "base_chaos_damage_resistance_%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|装備中]のコラプト状態のアイテムの数ごとに[Resistances|混沌耐性] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_damage_%_deflected"
   ],
   "rows": [
@@ -57982,6 +58415,27 @@
      "#|-1"
     ],
     "t": "[Deflect|受け流し]により防ぐ[Hit|ダメージ]量 {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damage_%_deflected_if_you_have_not_deflected_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近][Hit|ヒット]を[Deflect|受け流し]していなければ[Deflect|受け流し]た[Hit|ヒット]から受けるダメージを防ぐ割合 {0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|直近][Hit|ヒット]を[Deflect|受け流し]していなければ[Deflect|受け流し]た[Hit|ヒット]から受けるダメージを防ぐ割合 {0:+d}%",
     "h": []
    }
   ]
@@ -58665,6 +59119,20 @@
  },
  {
   "stats": [
+   "base_spirit_per_socketed_idol"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipment|装備品]にソケットされた[Idol|アイドル]ごとに[Spirit] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_spirit_reservation_efficiency_+%_per_20_tribute"
   ],
   "rows": [
@@ -58761,6 +59229,47 @@
     "t": "プレイヤーが付与した[UnholyMight|アンホーリーマイト]の[BuffMagnitude|強度]が{0}%減少する",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_cost_efficiency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ward|ルーンワード]コスト[Efficiency|効率]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Ward|ルーンワード]コスト[Efficiency|効率]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "毎秒{0}の[Ward|ルーンワード]を自動回復する",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
      "1"
     ]
    }
@@ -59086,6 +59595,32 @@
     ],
     "t": "トリビュートが最低100ある場合[Block|ブロック]率が{0}%減少する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "プレイヤーの[Presence|存在下]に[Companion|コンパニオン]がいる間[Block|ブロック]率が{0}%増加する",
+    "h": [
+     "canonical_line"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "プレイヤーの[Presence|存在下]に[Companion|コンパニオン]がいる間[Block|ブロック]率が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -59455,6 +59990,20 @@
      "#"
     ],
     "t": "敵を[Pinned|足止め]した時にその[Armour|アーマー]の{0}%を[ArmourBreak|破壊]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "break_armour_on_attack_hit_%_of_max_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|アタック]は最大[Ward|ルーンワード]の{0}%と同量の[ArmourBreak|アーマーを破壊]する",
     "h": []
    }
   ]
@@ -60133,6 +60682,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_for_plants_to_overgrow_when_entering_your_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|プラント]は初めてプレイヤーの[Presence|存在下]に入った時に{0}%の確率で即座に[Plant|生い茂る]",
+    "h": []
    }
   ]
  },
@@ -61930,6 +62493,20 @@
  },
  {
   "stats": [
+   "companion_damage_+%_final_from_idol_per_different_dead_companion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|コンパニオン]はプレイヤーが使役している種類の異なる死亡中のコンパニオンの数ごとにダメージが{0}%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companion_damage_+%_vs_immobilised_enemies"
   ],
   "rows": [
@@ -62110,6 +62687,33 @@
  },
  {
   "stats": [
+   "companions_gain_onslaught_on_hitting_enemies_marked_by_you_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Companion|コンパニオン]はプレイヤーが[Mark|呪印]を付与した対象に[Hit|ヒット]を与えた時に[Onslaught|猛攻]を{0}秒間獲得する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|コンパニオン]はプレイヤーが[Mark|呪印]を付与した対象に[Hit|ヒット]を与えた時に[Onslaught|猛攻]を{0}秒間獲得する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_gain_your_strength"
   ],
   "rows": [
@@ -62124,6 +62728,48 @@
  },
  {
   "stats": [
+   "companions_in_presence_base_chaos_damage_resistance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Presence|存在下]の[Companion|コンパニオン]の[Resistances|混沌耐性] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_base_resist_all_elements_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Presence|存在下]の[Companion|コンパニオン]の[ElementalDamage|元素][Resistances|耐性] {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_gain_x_rage_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "プレイヤーの[Presence|存在下]の[Companion|コンパニオン]はヒット時に[Rage|憤怒]を{0}スタック獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_in_presence_have_onslaught_while_you_are_shapeshifted"
   ],
   "rows": [
@@ -62132,6 +62778,20 @@
      "#"
     ],
     "t": "[Shapeshift|シェープシフト]状態の間プレイヤーの[Presence|存在下]にいる[Companion|コンパニオン]は[Onslaught|猛攻]状態になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_non_skill_base_all_damage_%_to_gain_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Presence|存在下]の[Companion|コンパニオン]はダメージの{0}%をランダムな[ElementalDamage|元素]属性の追加ダメージとして[Gain|獲得]する",
     "h": []
    }
   ]
@@ -62366,6 +63026,27 @@
  },
  {
   "stats": [
+   "critical_chance_luck_against_parry_debuffed_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[ParriedDebuff|パリィのデバフ]を受けている敵に対する[Critical|クリティカルヒット]率が[Lucky|幸運]になる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[ParriedDebuff|パリィのデバフ]を受けている敵に対する[Critical|クリティカルヒット]率が[Unlucky|不幸]になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "critical_damage_+%_per_50_current_life"
   ],
   "rows": [
@@ -62557,6 +63238,30 @@
     ],
     "t": "[Critical|クリティカルヒット]は[Impale|串刺し]を付与する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "critical_hits_apply_life_regeneration_rate_+%_for_4_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "プレイヤーから[Critical|クリティカル][Hit|ヒット]を受けた敵はライフ自動回復レートが4秒間{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "プレイヤーから[Critical|クリティカル][Hit|ヒット]を受けた敵はライフ自動回復レートが4秒間{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -63499,6 +64204,30 @@
  },
  {
   "stats": [
+   "damage_+%_per_different_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "プレイヤーの[Presence|存在下]にいる種類の異なる[Companion|コンパニオン]ごとにダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "プレイヤーの[Presence|存在下]にいる種類の異なる[Companion|コンパニオン]ごとにダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_+%_per_enemy_elemental_ailment"
   ],
   "rows": [
@@ -63706,6 +64435,20 @@
      "#|99"
     ],
     "t": "[Block|ブロック]したダメージの{0}%はマナとして[Recoup|回収]される",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_cannot_be_taken_from_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "受ける全てのダメージは[Ward|ルーンワード]をバイパスする",
     "h": []
    }
   ]
@@ -64148,6 +64891,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_from_hits_is_unlucky_if_ward_damaged_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Recently|直近][Ward|ルーンワード]がダメージを受けていれば\\nプレイヤーに[Hit|ヒット]を与えるダメージは[Unlucky|不幸]になる",
+    "h": []
    }
   ]
  },
@@ -65646,6 +66403,104 @@
  },
  {
   "stats": [
+   "dummy_display_stat_rune_chaos_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "アイテム上の全ての[Fire|火]、[Cold|冷気]および[Lightning|雷]モッドを同等の[Chaos|混沌]モッドに変化させる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_cold_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ソケットした時に全ての[Fire|火]および[Lightning|雷]モッドを同等の[Cold|冷気]モッドに変化させる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_create_jewel_socket"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "アイテムの全ての[Augment|オーグメント]ソケットを破壊し[Jewel|ジュエル]ソケットを作成する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_fire_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "アイテム上の全ての[Cold|冷気]および[Lightning|雷]モッドを同等の[Fire|火]モッドに変化させる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_lightning_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "アイテム上の全ての[Fire|火]および[Cold|冷気]モッドを同等の[Lightning|雷]モッドに変化させる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_olroths_legacy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Rarity|ユニーク]のカルグールまたはエゾマイトアイテムにソケットされた時にアイテムを破壊しそのアイテムの能力が注入された[Rune|ルーン]を生成する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_upgrade"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ソケットされた[Rune|ルーン]をアップグレードする",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dummy_stat_zarokhs_gift_jewel_slot"
   ],
   "rows": [
@@ -66726,6 +67581,20 @@
  },
  {
   "stats": [
+   "enemies_you_blind_have_no_crit_bonus_for_x_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "敵はプレイヤーに盲目を付与された後{0}秒間[CriticalDamageBonus|クリティカルダメージボーナス]が0になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "enemies_you_curse_are_intimidated"
   ],
   "rows": [
@@ -67335,6 +68204,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_X_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最大[Ward|ルーンワード]{0}ごとに[ESRechargeRate|エナジーシールドリチャージレート]が1%増加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_while_shapeshifted"
   ],
   "rows": [
@@ -67383,6 +68266,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_start_when_minions_reform"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|ミニオン]が[Reform|再構成]された時に[ESRecharge|エナジーシールドリチャージ]を開始する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_start_when_stunned"
   ],
   "rows": [
@@ -67391,6 +68288,20 @@
      "#"
     ],
     "t": "プレイヤーがスタンを受けた時に[ESRecharge|エナジーシールドのリチャージ]が始まる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "energy_shield_recharge_starts_after_spending_2000_mana_every_2_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ESRecharge|エナジーシールドリチャージ]はマナを合計2000使用した後に開始する。2秒に1度だけ起きる",
     "h": []
    }
   ]
@@ -68749,6 +69660,20 @@
  },
  {
   "stats": [
+   "gain_X_druidic_prowess_on_heavy_stunning_rare_or_unique_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Rarity|レアまたはユニーク]の敵を[HeavyStun|ヘビースタン]させた時に[DruidicProwess|ドルイドの熟練]を{0}スタック獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_X_instilling_fire_when_charge_is_consumed"
   ],
   "rows": [
@@ -68877,6 +69802,34 @@
      "#"
     ],
     "t": "リロードした時にジェム二サージをトリガーし\\n[Surge|コールドサージ]{0}スタックまたは[Surge|ファイヤーサージ]{1}スタックを交互に獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_life_per_8_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|装備中]のヘルメットの[ItemArmour|アーマー]8ごとに最大ライフ {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_mana_per_3_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|装備中]のヘルメットの[ItemArmour|アイテムアーマー]3ごとに最大マナ {0:+d}",
     "h": []
    }
   ]
@@ -69204,6 +70157,20 @@
  },
  {
   "stats": [
+   "gain_armour_from_%_life_loss_from_hits_lasting_8_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "過去8秒間に[Hit|ヒット]により失ったライフの{0}%と同量の[Armour|アーマー]を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_attack_damage_+%_for_each_your_minion_in_presence_capped"
   ],
   "rows": [
@@ -69254,6 +70221,20 @@
      "#"
     ],
     "t": "プレイヤーが[Rarity|レアまたはユニーク]の敵に[HeavyStun|ヘビースタン]を与えた時に[Charges|エンデュランスチャージ]を1個獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_endurance_charge_on_reaching_low_life_once_per_2s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[LowLife|低ライフ]状態になった時に[Charges|エンデュランスチャージ]を1獲得する、2秒に1回だけ起きる",
     "h": []
    }
   ]
@@ -69357,6 +70338,48 @@
  },
  {
   "stats": [
+   "gain_guard_%_of_max_ward_for_2s_every_4s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "4秒ごとに最大[Ward|ルーンワード]の{0}%と同量の[Guard|ガード]を2秒間獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_%_of_maximum_life_for_4_seconds_on_taking_savage_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[SavageHit|サベージヒット]を受けた時に最大ライフの{0}%と同量の[Guard|ガード]を4秒間獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_after_sprinting_equal_to_x%_of_maximum_life_per_second_sprinted_up_to_20%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スプリントを止めた時にスプリントした秒数ごとに最大ライフの{0}%と同量の[Guard|ガード]を4秒間獲得する、最大20%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll"
   ],
   "rows": [
@@ -69379,6 +70402,20 @@
      "#"
     ],
     "t": "[Hit|ヒット]時にプレイヤーが[Rage|憤怒]を獲得するはずの場合に{0}%の確率で代わりに最大数の憤怒を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_maximum_energy_shield_equal_to_%_total_strength_requirement_of_equipped_armour_items"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[EquipArmour|装備中の防具アイテム]の合計[Strength|筋力]装備要求の{0}%と同量の[EnergyShield|最大エナジーシールド]を獲得する",
     "h": []
    }
   ]
@@ -69474,6 +70511,20 @@
      "#"
     ],
     "t": "[Minion|ミニオン]が死亡した時に[Onslaught|猛攻]を4秒間獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_onslaught_for_x_seconds_when_your_marks_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Mark|呪印]を[MarkActivate|アクティベート]した時に[Onslaught|猛攻]を{0}秒間獲得する",
     "h": []
    }
   ]
@@ -70023,6 +71074,22 @@
  },
  {
   "stats": [
+   "global_minimum_added_lightning_damage_vs_shocked_enemies",
+   "global_maximum_added_lightning_damage_vs_shocked_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の雷ダメージを感電状態の敵に対して追加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "glory_generation_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -70365,6 +71432,20 @@
  },
  {
   "stats": [
+   "grenade_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Grenade|グレネード]スキルジェムのレベル {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "grenade_skill_number_of_additional_projectiles"
   ],
   "rows": [
@@ -70419,6 +71500,30 @@
     ],
     "t": "ヒットを受けた時に{0}%の確率でタールを撒く",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "guard_gained_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "獲得[Guard|ガード]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "獲得[Guard|ガード]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -70665,6 +71770,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hazard_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Hazard|ハザード]スキルジェムのレベル {0:+d}",
+    "h": []
    }
   ]
  },
@@ -73288,6 +74407,20 @@
  },
  {
   "stats": [
+   "herald_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Herald|ヘラルド]スキルジェムのレベル {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_chance_%_on_spreading_poioson"
   ],
   "rows": [
@@ -73794,6 +74927,20 @@
      "#"
     ],
     "t": "インファーナルフレイムが最大値に達した時に最大ライフとエナジーシールドの{0}%を[Fire|火]ダメージとして受ける",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hits_cannot_be_evaded_vs_blinded_maimed_bleeding_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Blind|盲目]、[Maim|重傷]および[Bleeding|出血]状態の対象はプレイヤーの[Hit|ヒット]を[Evasion|回避]できない",
     "h": []
    }
   ]
@@ -74524,6 +75671,20 @@
      "1|#"
     ],
     "t": "プレイヤーが[Incision|切開]を付与した敵は[Incision|切開]のスタックごとに受ける[Physical|物理]ダメージが{0}%増加する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "increases_and_reductions_to_move_speed_apply_to_es_recharge_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "移動スピードの増減のモッドは\\n[ESRechargeRate|エナジーシールドリチャージレート]にも適用される",
     "h": []
    }
   ]
@@ -75680,6 +76841,23 @@
  },
  {
   "stats": [
+   "life_loss_%_per_minute_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スプリント中に毎秒最大ライフの{0}%を失う",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_mana_flasks_restore_mana_life"
   ],
   "rows": [
@@ -75867,6 +77045,23 @@
     "t": "[Companion|コンパニオン]がプレイヤーの[Presence|存在下]にいる時にライフ自動回復レートが{0}%減少する",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_regeneration_per_minute_%_if_used_a_command_skill_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近][Command|コマンド]スキルを使用していれば毎秒最大ライフの{0}%を自動回復する",
+    "h": [
+     "per_minute_to_per_second",
      "1"
     ]
    }
@@ -77964,6 +79159,41 @@
  },
  {
   "stats": [
+   "local_idols_gain_additional_socketable_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "このアイテムにソケットされた[Idol|アイドル]はその[ShamanOnlyMods|絆]モッドの恩恵を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "この武器による[Attack|アタック]は{0}%の確率で[Exposure|曝露]を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "この武器による[Attack|アタック]は[Exposure|曝露]を付与する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_inflict_malignant_madness_on_critical_strike_%_if_eater_of_worlds_dominant"
   ],
   "rows": [
@@ -78414,6 +79644,20 @@
  },
  {
   "stats": [
+   "local_maximum_added_cold_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "敵への[Hit|ヒット]時に敵の[Power|パワー]と同量の追加[Cold|冷気]ダメージの最大値を20秒間獲得する。合計最大{0}まで",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_maximum_added_lightning_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
   ],
   "rows": [
@@ -78524,6 +79768,20 @@
  },
  {
   "stats": [
+   "local_physical_damage_roll_always_min_or_max"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Physical|物理]ダメージについて[BooleanDamageRoll|最小値と最大値のみをロールする]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_poison_on_critical_strike_chance_%"
   ],
   "rows": [
@@ -78581,6 +79839,48 @@
      "#|-1"
     ],
     "t": "この武器による[Projectile|投射物]スピードが{0}%減少する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_dexterity"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "要求能力値の{0}%を[Dexterity|器用さ]に[StatConversion|変換]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "要求能力値の{0}%を[Intelligence|知性]に[StatConversion|変換]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_strength"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "要求能力値の{0}%を[Strength|筋力]に[StatConversion|変換]する",
     "h": []
    }
   ]
@@ -78695,6 +79995,20 @@
      "#"
     ],
     "t": "盾を掲げている時に[StunThreshold|スタン閾値]が二倍になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_socketable_%_maximum_weapon_damage_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "この武器の最大ダメージの{0}%と同量の最大[Ward|ルーンワード]を獲得する",
     "h": []
    }
   ]
@@ -79498,6 +80812,30 @@
  },
  {
   "stats": [
+   "mana_cost_efficiency_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近]ドッジロールしていなければマナコスト[Efficiency|効率]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|直近]ドッジロールしていなければマナコスト[Efficiency|効率]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_cost_+%_per_10_devotion"
   ],
   "rows": [
@@ -79753,6 +81091,55 @@
     "h": [
      "negate",
      "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|コンパニオン]がプレイヤーの[Presence|存在下]にいる間マナ回復レートが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Companion|コンパニオン]がプレイヤーの[Presence|存在下]にいる間マナ回復レートが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_regeneration_rate_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "マナ自動回復レートが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "マナ自動回復レートが{0}%低下する",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
     ]
    }
   ]
@@ -89643,6 +91030,20 @@
  },
  {
   "stats": [
+   "mark_grants_%_max_glory_to_random_skill_on_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "グローリーを必要とするランダムなスキルは[Mark|呪印]が[MarkActivate|アクティベート]した時にそのグローリーの最大値の{0}%を生成する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mark_skill_duration_+%"
   ],
   "rows": [
@@ -90238,6 +91639,30 @@
      "#"
     ],
     "t": "トリビュート20ごとに最大ライフの{0}%が[EnergyShield|エナジーシールド]に[StatConversion|変換]される",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "最大ライフが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最大ライフが{0}%上昇する",
     "h": []
    }
   ]
@@ -91490,6 +92915,34 @@
  },
  {
   "stats": [
+   "minion_physical_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|ミニオン]はその[Physical|物理]ダメージの{0}%を追加[Lightning|雷]ダメージとして獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_physical_hit_and_dot_damage_%_taken_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ミニオンは[Physical|物理]ダメージの{0}%を[Lightning|雷]ダメージとして受ける",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "reservation_efficiency_+%_of_minion_skills"
   ],
   "rows": [
@@ -91703,6 +93156,20 @@
      "#"
     ],
     "t": "ミニオンのヒットは発火状態の敵だけを倒すことができる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_in_presence_have_onslaught_while_you_are_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[LowWard|低ルーンワード]状態の間プレイヤーの[Presence|存在下]の[Minion|ミニオン]は[Onslaught|猛攻]状態になる",
     "h": []
    }
   ]
@@ -91964,6 +93431,27 @@
  },
  {
   "stats": [
+   "movement_speed_+%_per_5_rage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rage|憤怒]5スタックごとに移動スピードの増加{0}%も付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rage|憤怒]5スタックごとに移動スピードの減少{0}%も付与する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "movement_speed_+%_while_affected_by_ailment"
   ],
   "rows": [
@@ -92017,6 +93505,20 @@
      "1|#"
     ],
     "t": "移動スピードが25%増加し、さらに[Evasion|回避力]{0}ごとに1%増加する、[MaximumTotal|最大]75%まで\\nスプリント以外の移動スピードの他のモッドは適用されない",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "abyss_socketable_movement_speed_is_only_base_+%_per_15_spirit_up_to_+40%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Spirit|スピリット]15ごとに移動スピードが{0}%増加する、最大40%まで\\nスプリント以外の移動スピードの他のモッドは適用されない",
     "h": []
    }
   ]
@@ -92567,6 +94069,20 @@
  },
  {
   "stats": [
+   "non_skill_all_damage_%_to_gain_as_fire_+_per_2%_attack_block_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ブロック率2%ごとにダメージの{0}%を[Fire|火ダメージ]として[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_chaos_per_active_undead_minion"
   ],
   "rows": [
@@ -92791,6 +94307,23 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_physical_per_10%_missing_mana_permyriad"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "喪失マナ10%ごとにダメージの{0}%を追加[Physical|物理]ダメージとして[Gain|獲得]する",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element"
   ],
   "rows": [
@@ -92805,6 +94338,20 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_random_element_per_socketed_rune"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|装備中]のアイテムにソケットした[Rune|ルーン]ごとに\\nダメ―ジの{0}%をランダムな[ElementalDamage|元素属性]の追加ダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element_while_shapeshifted"
   ],
   "rows": [
@@ -92813,6 +94360,20 @@
      "1|#"
     ],
     "t": "[Shapeshift|シェープシフト]中ダメ―ジの{0}%をランダムな[ElementalDamage|元素属性]の追加ダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_cold_fire_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ダメ―ジの{0}%を全ての[ElementalDamage|元素属性]の追加ダメージとして[Gain|獲得]する",
     "h": []
    }
   ]
@@ -93227,6 +94788,20 @@
      "1",
      "canonical_line"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "nova_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Nova|ノヴァ]スキルジェムのレベル {0:+d}",
+    "h": []
    }
   ]
  },
@@ -94694,6 +96269,44 @@
  },
  {
   "stats": [
+   "plant_skill_effect_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|プラント]スキルのスキル効果持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Plant|プラント]スキルのスキル効果持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "plant_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Plant|プラント]スキルジェムのレベル {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "poison_as_though_dealing_X_damage_on_block"
   ],
   "rows": [
@@ -95780,6 +97393,20 @@
  },
  {
   "stats": [
+   "recoup_life_equal_to_%_of_hit_damage_dealt_to_your_offerings"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Offering|オファリング]が受けたダメージの{0}%を最大ライフとして[Recoup|回収]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recoup_speed_+%"
   ],
   "rows": [
@@ -96116,6 +97743,20 @@
  },
  {
   "stats": [
+   "recover_ward_as_well_as_mana_from_mana_regeneration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "自動回復によるマナ回復は[Ward|ルーンワード]にも適用される",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_x%_of_maximum_mana_when_you_consume_a_power_charge"
   ],
   "rows": [
@@ -96124,6 +97765,20 @@
      "1|#"
     ],
     "t": "[Charges|パワーチャージ]を消費した時に最大マナの{0}%を回復する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_x%_of_maximum_ward_on_persistent_minion_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Reviving|復活する][Minion|ミニオン]のうち1体が[MinionDeath|倒された]時に最大[Ward|ルーンワード]の{0}%を回復する",
     "h": []
    }
   ]
@@ -96326,6 +97981,20 @@
      "#"
     ],
     "t": "マナ[Flask|フラスコ]使用した時に[Curse|呪い]を取り除く",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remove_damaging_ailment_on_using_command_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Command|コマンド]スキルを使用した時に[DamagingAilments|ダメージ性状態異常]を取り除く",
     "h": []
    }
   ]
@@ -96580,6 +98249,34 @@
  },
  {
   "stats": [
+   "revive_random_persistent_minion_on_offering_expiration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Offering|オファリング]の効果が切れた時に[Persistent|永続][Minion|ミニオン]の一体が復活する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_%_life_to_gain_as_guard_on_dodge_roll"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ドッジロール時に最大ライフの{0}%を[Sacrifice|捧げ]、同量の[Guard|ガード]を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack"
   ],
   "rows": [
@@ -96681,6 +98378,20 @@
      "#"
     ],
     "t": "プレイヤーが[Attack|アタック]した時に、その[Attack|アタック]を[Empowered|強化]している[Warcry|ウォークライ]の種類ごとにライフの{0}%を[Physical|物理]ダメージとして受ける",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "self_take_no_extra_damage_from_critical_strikes_while_on_consecrated_ground"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "プレイヤーが[ConsecratedGround|神聖領域]の上にいる間プレイヤーに対する[Hit|ヒット]は[CriticalDamageBonus|クリティカルダメージボーナス]が0になる",
     "h": []
    }
   ]
@@ -97215,6 +98926,54 @@
  },
  {
   "stats": [
+   "skill_speed_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Equipped|装備中]のコラプト状態のアイテム1個ごとに[SkillSpeed|スキルスピード]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Equipped|装備中]のコラプト状態のアイテム1個ごとに[SkillSpeed|スキルスピード]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_speed_+%_while_on_low_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LowMana|低マナ]状態の間[SkillSpeed|スキルスピード]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LowMana|低マナ]状態の間[SkillSpeed|スキルスピード]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_speed_+%_while_shapeshifted"
   ],
   "rows": [
@@ -97349,6 +99108,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "slam_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Slam|スラム]スキルジェムのレベル {0:+d}",
+    "h": []
    }
   ]
  },
@@ -97862,6 +99635,30 @@
  },
  {
   "stats": [
+   "spell_damage_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|コンパニオン]がプレイヤーの[Presence|存在下]にいる間[Spell|スペル]ダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Companion|コンパニオン]がプレイヤーの[Presence|存在下]にいる間[Spell|スペル]ダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_damage_+%_while_wielding_melee_weapon"
   ],
   "rows": [
@@ -98287,6 +100084,20 @@
  },
  {
   "stats": [
+   "spells_penetrates_elemental_resist_%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[LowWard|低ルーンワード]状態の間スペルダメージは敵の[ElementalDamage|元素][Resistances|耐性]の{0}%を[Penetration|貫通]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -98302,6 +100113,30 @@
      "#|-1"
     ],
     "t": "トリビュートが最低100ある場合[Spirit|スピリット]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Equipped|装備中]のコラプト状態のアイテム1個ごとに[Spirit|スピリット]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Equipped|装備中]のコラプト状態のアイテム1個ごとに[Spirit|スピリット]が{0}%減少する",
     "h": [
      "negate",
      "1"
@@ -98347,6 +100182,20 @@
      "#"
     ],
     "t": "プレイヤーが[Strength|筋力]を最低200持っていれば[Spirit|スピリット] {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+_per_2_levels"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "レベル2ごとに[Spirit|スピリット] {0:+d}",
     "h": []
    }
   ]
@@ -98419,6 +100268,30 @@
  },
  {
   "stats": [
+   "sprint_movement_speed_+%_per_active_persistent_minion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スプリント中は[Persistent|永続][Minion|ミニオン]ごとに移動スピードが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "スプリント中は[Persistent|永続][Minion|ミニオン]ごとに移動スピードが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "start_at_zero_energy_shield"
   ],
   "rows": [
@@ -98441,6 +100314,34 @@
      "1|#"
     ],
     "t": "マナ[Flask|フラスコ]を使用した時に[ESRecharge|エナジーシールドリチャージ]が開始する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Storm|ストーム]スキルジェムのレベル {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_limit_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スキルの[Limit|上限] +{0}",
     "h": []
    }
   ]
@@ -98503,6 +100404,20 @@
      "#"
     ],
     "t": "[Strength|筋力]は[Melee|近接]武器および[Melee|近接]スキルのその他の要求[Attributes|能力値]を満たすことができる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "strike_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Strike|ストライク]スキルジェムのレベル {0:+d}",
     "h": []
    }
   ]
@@ -98661,6 +100576,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_if_stunned_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近][Stun|スタン]していれば[StunThreshold|スタン閾値]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|直近][Stun|スタン]していれば[StunThreshold|スタン閾値]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour"
   ],
   "rows": [
@@ -98669,6 +100608,27 @@
      "#"
     ],
     "t": "兜の[Evasion|回避力]か[Armour|アーマー]の低い方と同量の[StunThreshold|スタン閾値]を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "stun_threshold_+_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最大[Ward|ルーンワード]10ごとに[StunThreshold|スタン閾値] +{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "最大[Ward|ルーンワード]10ごとに[StunThreshold|スタン閾値] -{0}",
     "h": []
    }
   ]
@@ -99496,6 +101456,20 @@
  },
  {
   "stats": [
+   "thorns_damage_is_lucky_against_enemies_with_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ArmourBreak|完全アーマー破壊]状態の対象に対する[Thorns|棘]ダメージが[Lucky|幸運]になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "thorns_damage_+%"
   ],
   "rows": [
@@ -99586,6 +101560,22 @@
      "#"
     ],
     "t": "{0}から{1}の[Fire|火][Thorns|棘]ダメージ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_minimum_base_lightning_damage",
+   "thorns_maximum_base_lightning_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の[Lightning|雷][Thorns|棘]ダメージ",
     "h": []
    }
   ]
@@ -101733,6 +103723,20 @@
  },
  {
   "stats": [
+   "warcry_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Warcry|ウォークライ]スキルジェムのレベル {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_speed_+%_per_25_tribute"
   ],
   "rows": [
@@ -101843,6 +103847,166 @@
  },
  {
   "stats": [
+   "ward_regeneration_rate_+%_if_have_crit_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近][Critical|クリティカルヒット]を与えていれば[Ward|ルーンワード]自動回復レートが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Recently|直近][Critical|クリティカルヒット]を与えていれば[Ward|ルーンワード]自動回復レートが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+%_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スプリント中の[Ward|ルーンワード]自動回復レートが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "スプリント中の[Ward|ルーンワード]自動回復レートが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+1%_final_per_x%_ward_lost_from_hits_up_to_100%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|直近][Hit|ヒット]で失った[Ward|ルーンワード]の{0}%ごとに[Ward|ルーンワード]自動回復レートが1%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_is_doubled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ward|ルーンワード]自動回復レートが2倍になる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_1"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "クロノマンシーモッドをロールできるようになる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_2"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ソウルモッドをロールできるようになる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_3"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "バーサークモッドをロールできるようになる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_4"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "マークスマンモッドをロールできるようになる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_5"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "腐敗モッドをロールできるようになる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_6"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "デストラクションモッドをロールできるようになる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "weapon_damage_+%_per_10_str"
   ],
   "rows": [
@@ -101910,6 +104074,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "全ての[Wind|ウィンド]スキルジェムのレベル {0:+d}",
+    "h": []
    }
   ]
  },
@@ -102664,6 +104842,20 @@
      "#"
     ],
     "t": "プリモーディアル",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "soul_core_cannot_roll_no_outcome_with_corruption"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "アイテムの[Corrupted|コラプト化]は常に変化する結果になる",
     "h": []
    }
   ]

@@ -974,5 +974,6 @@
  "That is not a waystone.": "これはウェイストーンではありません。",
  "The modifiers of the map are on every enemy and on your character in the simulator. Each kind of ground it has is one patch in the room; its rewards are not simulated.": "マップのモッドは、シミュレーター内のすべての敵とあなたのキャラクターに適用されます。マップにある地面の種類ごとに、部屋にパッチが1つ置かれます。報酬はシミュレートされません。",
  "Exilewright cannot start: port {0} of this computer is not free (another program uses it, or Windows keeps it).": "Exilewrightを起動できません：このコンピューターのポート{0}が空いていません（別のプログラムが使用中か、Windowsが予約しています）。",
- "Decimating Strike": "デシメ―ティングストライク"
+ "Decimating Strike": "デシメ―ティングストライク",
+ "Rune tattoos": "ルーンのタトゥー"
 }

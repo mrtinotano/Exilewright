@@ -3099,6 +3099,30 @@
  },
  {
   "stats": [
+   "base_curse_delay_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Curse|詛咒]區域爆發前延遲",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Curse|詛咒]區域爆發前延遲",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_curse_duration_+%"
   ],
   "rows": [
@@ -3789,6 +3813,20 @@
      "#"
     ],
     "t": "被輔助的技能無法引出[Impale|穿刺]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cannot_miss_against_full_life_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "滿血的敵人無法[Evasion|閃避]你的[Hit|擊中]",
     "h": []
    }
   ]
@@ -6160,6 +6198,20 @@
      "#"
     ],
     "t": "[Melee|近戰][Hit|擊中]時，獲得{0}層[Rage|盛怒]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "global_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Hit|擊中]時會[Knockback|擊退敵人]",
     "h": []
    }
   ]
@@ -19311,6 +19363,22 @@
  },
  {
   "stats": [
+   "minimum_added_cold_damage_vs_chilled_enemies",
+   "maximum_added_cold_damage_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "對冰緩敵人附加{0}至{1}冰冷傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -22065,6 +22133,27 @@
  },
  {
   "stats": [
+   "+_deflection_rating_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每10最大[Ward|符文保護]+{0}[Deflect|偏斜值]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每10最大[Ward|符文保護]-{0}[Deflect|偏斜值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "+_deflection_rating_per_50_missing_maximum_energy_shield"
   ],
   "rows": [
@@ -22604,6 +22693,27 @@
      "#"
     ],
     "t": "可以最多有3個工藝詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_can_have_additional_crafted_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可以有{0}個額外工藝詞綴",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "可以有{0}個額外工藝詞綴",
     "h": []
    }
   ]
@@ -30241,6 +30351,20 @@
  },
  {
   "stats": [
+   "totem_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部圖騰技能寶石的等級",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "trap_skill_gem_level_+"
   ],
   "rows": [
@@ -34746,6 +34870,20 @@
  },
  {
   "stats": [
+   "base_maximum_life_%_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatGain|獲得]等同於{0}%最大生命的額外最大[Ward|符文保護]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_%_to_gain_as_energy_shield"
   ],
   "rows": [
@@ -38636,6 +38774,34 @@
  },
  {
   "stats": [
+   "frenzy_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "如果你會獲得一顆[Charges|狂怒球]，改為由你[Presence|存在]中的[Allies|友方]獲得該[Charges|能量球]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "power_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "如果你會獲得一顆[Charges|暴擊球]，改為由你[Presence|存在]中的[Allies|友方]獲得該[Charges|能量球]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_chance_to_blind_on_hit_%"
   ],
   "rows": [
@@ -41320,6 +41486,20 @@
      "#"
     ],
     "t": "所承受[Cold|冰冷傷害]的{0}%視為[Fire|火焰傷害]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chaos_damage_from_hits_%_taken_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "承受[Hit|擊中]{0}%的混沌傷害會改為承受一種隨機[ElementalDamage|元素]傷害",
     "h": []
    }
   ]
@@ -53437,6 +53617,20 @@
  },
  {
   "stats": [
+   "accuracy_rating_+_per_evasion_rating_on_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "已裝備的頭盔每擁有1[ItemEvasion|物品閃避值]，{0:+d}[Accuracy|命中]值",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "accuracy_rating_is_doubled"
   ],
   "rows": [
@@ -53831,6 +54025,20 @@
  },
  {
   "stats": [
+   "additional_maximum_all_elemental_resistances_%_while_on_full_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ward|符文保護]全滿時，{0:+d}%[MaximumResistances|最大全元素抗性]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -53853,6 +54061,20 @@
      "#"
     ],
     "t": "當身上不存在耐力球時，增加{0:+d}%所有屬性的最大抗性",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_block_%_if_blocked_with_active_block_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你[Recently|近期]以一枚舉起的[Shield|盾牌][Block|格擋]，{0:+d}%最大[Block|格擋]機率",
     "h": []
    }
   ]
@@ -53884,6 +54106,20 @@
      "1|#"
     ],
     "t": "增加和減少召喚物傷害同時以他們數值的150%影響你",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additive_modifiers_to_life_regeneration_also_apply_to_mana_regeneration_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "生命回復率的增減也套用至魔力回復率",
     "h": []
    }
   ]
@@ -54633,6 +54869,20 @@
  },
  {
   "stats": [
+   "allies_in_presence_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你[Presence|存在範圍]內的[Allies|友方]增加{0}%移動速度",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "allies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos"
   ],
   "rows": [
@@ -54659,6 +54909,20 @@
      "per_minute_to_per_second",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "allies_in_your_presence_share_charges_with_you"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你[Presence|存在範圍]中的[Allies|友方]會和你共享[Charges|能量球]",
+    "h": []
    }
   ]
  },
@@ -55256,6 +55520,20 @@
  },
  {
   "stats": [
+   "armour_%_also_applies_to_chaos_damage_while_at_full_es"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[EnergyShield|能量護盾]全滿時，{0:+d}%的[Armour|護甲]同時套用到[Chaos|混沌傷害]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -55333,6 +55611,30 @@
      "#|-1"
     ],
     "t": "若你[Recently|近期]以[Melee|近戰攻擊][Hit|擊中]一個敵人，減少{0}%[Armour|護甲值]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你[Recently|近期]未閃避翻滾，增加{0}%[Armour|護甲值]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你[Recently|近期]未閃避翻滾，減少{0}%[Armour|護甲值]",
     "h": [
      "negate",
      "1"
@@ -55456,6 +55758,20 @@
  },
  {
   "stats": [
+   "armour_+_per_1_spirit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每有1[Spirit|精魂]{0:+d}[Armour|護甲值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_and_evasion_rating_+%_per_active_totem_in_presence"
   ],
   "rows": [
@@ -55472,6 +55788,30 @@
     ],
     "t": "你的[Presence|存在範圍]中每有一個召喚的[Totem|圖騰]，減少{0}%[Armour|護甲]及[Evasion|閃避]值",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_and_evasion_rating_+%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LowWard|低符文保護]時，增加{0}%[Armour|護甲]和[Evasion|閃避]值",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LowWard|低符文保護]時，減少{0}%[Armour|護甲]和[Evasion|閃避]值",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -56618,6 +56958,30 @@
  },
  {
   "stats": [
+   "attack_damage_+%_while_shapeshifted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Shapeshift|變形]期間增加{0}%[Attack|攻擊]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Shapeshift|變形]期間減少{0}%[Attack|攻擊]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_while_surrounded"
   ],
   "rows": [
@@ -57136,6 +57500,30 @@
  },
  {
   "stats": [
+   "attack_speed_+%_if_have_blocked_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你[Recently|近期]格擋過，增加{0}%[Attack|攻擊]速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你[Recently|近期]格擋過，減少{0}%[Attack|攻擊]速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_speed_+%_if_have_crit_recently"
   ],
   "rows": [
@@ -57265,6 +57653,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_spend_x%_maximum_ward_for_added_physical_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若允許，[Attack|攻擊]會消耗{0}%你的最大[Ward|符文保護]以獲得同等數值的附加[Physical|物理]傷害",
+    "h": []
    }
   ]
  },
@@ -57824,6 +58226,23 @@
  },
  {
   "stats": [
+   "base_banner_life_regeneration_rate_per_minute_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Banner|鬥旗]同時賦予被其影響的目標{0}%每秒生命回復",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_banner_resist_all_elements_%_to_apply"
   ],
   "rows": [
@@ -57966,6 +58385,20 @@
  },
  {
   "stats": [
+   "base_chaos_damage_resistance_%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每一[Equipped|裝備]的已汙染物品{0:+d}%[Resistances|混沌抗性]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_damage_%_deflected"
   ],
   "rows": [
@@ -57981,6 +58414,27 @@
      "#|-1"
     ],
     "t": "{0:+d}%[Deflect|偏斜]抵禦[Hit|傷害]量",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damage_%_deflected_if_you_have_not_deflected_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你[Recently|近期]沒有[Deflect|偏斜][Hit|擊中]，\\n避免{0:+d}%來自[Deflect|偏斜][Hit|擊中]的傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你[Recently|近期]沒有[Deflect|偏斜][Hit|擊中]，\\n避免{0:+d}%來自[Deflect|偏斜][Hit|擊中]的傷害",
     "h": []
    }
   ]
@@ -58664,6 +59118,20 @@
  },
  {
   "stats": [
+   "base_spirit_per_socketed_idol"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你[Equipment|裝備]中每鑲嵌一個[Idol|魔偶]即{0:+d}精魂",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_spirit_reservation_efficiency_+%_per_20_tribute"
   ],
   "rows": [
@@ -58760,6 +59228,47 @@
     "t": "減少{0}%你所賦予的[UnholyMight|不潔之力]增益效果[BuffMagnitude|幅度]",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_cost_efficiency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Ward|符文保護][Efficiency|效用]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Ward|符文保護][Efficiency|效用]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每秒回復{0}點[Ward|符文保護]",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
      "1"
     ]
    }
@@ -59085,6 +59594,32 @@
     ],
     "t": "若你有至少100貢禮，減少{0}%[Block|格擋]機率",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "當你的[Companion|盟友]位於你的[Presence|存在範圍]時增加{0}%[Block|格擋]機率",
+    "h": [
+     "canonical_line"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "當你的[Companion|盟友]位於你的[Presence|存在範圍]時減少{0}%[Block|格擋]機率",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -59454,6 +59989,20 @@
      "#"
     ],
     "t": "對一個敵人造成[Pinned|釘身]時，[ArmourBreak|破壞]其{0}%[Armour|護甲值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "break_armour_on_attack_hit_%_of_max_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|攻擊]會[ArmourBreak|破壞]等同於{0}%最大[Ward|符文保護]的護甲",
     "h": []
    }
   ]
@@ -60132,6 +60681,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_for_plants_to_overgrow_when_entering_your_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|植物]在首次進入你的[Presence|存在範圍]時有{0}%機率立即[Plant|過度生長]",
+    "h": []
    }
   ]
  },
@@ -61929,6 +62492,20 @@
  },
  {
   "stats": [
+   "companion_damage_+%_final_from_idol_per_different_dead_companion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你每有一種已死亡的[Companion|盟友]，盟友即造成{0}%更多傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companion_damage_+%_vs_immobilised_enemies"
   ],
   "rows": [
@@ -62109,6 +62686,33 @@
  },
  {
   "stats": [
+   "companions_gain_onslaught_on_hitting_enemies_marked_by_you_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Companion|盟友][Hit|擊中]你[Mark|標記]的目標時獲得[Onslaught|猛攻]，持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|盟友][Hit|擊中]你[Mark|標記]的目標時獲得[Onslaught|猛攻]，持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_gain_your_strength"
   ],
   "rows": [
@@ -62123,6 +62727,48 @@
  },
  {
   "stats": [
+   "companions_in_presence_base_chaos_damage_resistance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你[Presence|存在範圍]中[Companion|盟友]{0:+d}%[Resistances|混沌抗性]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_base_resist_all_elements_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你[Presence|存在範圍]中[Companion|盟友]{0:+d}%全[ElementalDamage|元素][Resistances|抗性]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_gain_x_rage_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "你[Presence|存在範圍]中[Companion|盟友]擊中時獲得{0}[Rage|盛怒]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_in_presence_have_onslaught_while_you_are_shapeshifted"
   ],
   "rows": [
@@ -62131,6 +62777,20 @@
      "#"
     ],
     "t": "你[Shapeshift|變形]期間，你[Presence|存在]中的[Companion|盟友]擁有[Onslaught|猛攻]。",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_non_skill_base_all_damage_%_to_gain_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "你[Presence|存在範圍]中[Companion|盟友]獲得等同於{0}%傷害的額外隨機一種[ElementalDamage|元素]傷害",
     "h": []
    }
   ]
@@ -62365,6 +63025,27 @@
  },
  {
   "stats": [
+   "critical_chance_luck_against_parry_debuffed_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[ParriedDebuff|受招架]敵人的[Critical|暴擊]率視為[Lucky|帶來幸運]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[ParriedDebuff|受招架]敵人的[Critical|暴擊]率視為[UnLucky|帶來厄運]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "critical_damage_+%_per_50_current_life"
   ],
   "rows": [
@@ -62556,6 +63237,30 @@
     ],
     "t": "[Critical|暴擊]會造成[Impale|穿刺]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "critical_hits_apply_life_regeneration_rate_+%_for_4_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "你[Critical|暴擊][Hit|擊中]的敵人增加{0}%生命回復率，持續4秒",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "你[Critical|暴擊][Hit|擊中]的敵人減少{0}%生命回復率，持續4秒",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -63498,6 +64203,30 @@
  },
  {
   "stats": [
+   "damage_+%_per_different_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "你[Presence|存在範圍]中每有一種[Companion|盟友]即增加{0}%傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "你[Presence|存在範圍]中每有一種[Companion|盟友]即減少{0}%傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_+%_per_enemy_elemental_ailment"
   ],
   "rows": [
@@ -63705,6 +64434,20 @@
      "#|99"
     ],
     "t": "[Block|格擋]傷害的{0}%[Recoup|補償]為魔力",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_cannot_be_taken_from_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "所有受到的傷害穿透[Ward|符文保護]",
     "h": []
    }
   ]
@@ -64147,6 +64890,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_from_hits_is_unlucky_if_ward_damaged_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若你的[Ward|符文保護][Recently|近期]被傷害\\n敵人[Hit|擊中]你的傷害很[Unlucky|不幸]",
+    "h": []
    }
   ]
  },
@@ -65645,6 +66402,104 @@
  },
  {
   "stats": [
+   "dummy_display_stat_rune_chaos_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "鑲嵌時，轉化所有[Fire|火焰]、[Cold|冰冷]、和[Lightning|閃電]詞綴為同階級的[Chaos|混沌]詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_cold_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "鑲嵌時，轉化所有[Fire|火焰]和[Lightning|閃電]詞綴為同階級的[Cold|冰冷]詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_create_jewel_socket"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "摧毀一件物品上所有的[Augment|增幅]插槽以創造一個[Jewel|珠寶]插槽",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_fire_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "鑲嵌時，轉化所有[Cold|冰冷]和[Lightning|閃電]詞綴為同階級的[Fire|火焰]詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_lightning_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "鑲嵌時，轉化所有[Fire|火焰]和[Cold|冰冷]詞綴為同階級的[Lightning|閃電]詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_olroths_legacy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當鑲嵌至一件[Rarity|傳奇]卡爾葛或艾茲麥物品時，摧毀該物品並創造一枚灌注該物品能力的[Rune|符文]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_upgrade"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "升級插槽中的[Rune|符文]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dummy_stat_zarokhs_gift_jewel_slot"
   ],
   "rows": [
@@ -66725,6 +67580,20 @@
  },
  {
   "stats": [
+   "enemies_you_blind_have_no_crit_bonus_for_x_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "敵人在你致盲他們後{0}秒內沒有[CriticalDamageBonus|暴擊傷害加成]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "enemies_you_curse_are_intimidated"
   ],
   "rows": [
@@ -67334,6 +68203,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_X_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每{0}最大[Ward|符文保護]增加1%[ESRechargeRate|能量護盾充能率]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_while_shapeshifted"
   ],
   "rows": [
@@ -67382,6 +68265,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_start_when_minions_reform"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你的[Minion|召喚物][Reform|重塑]時，你便會開始[ESRecharge|能量護盾充能]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_start_when_stunned"
   ],
   "rows": [
@@ -67390,6 +68287,20 @@
      "#"
     ],
     "t": "當你被暈眩時，[ESRecharge|能量護盾充能]會開始生效",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "energy_shield_recharge_starts_after_spending_2000_mana_every_2_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "消耗2000魔力後開始[ESRecharge|充能能量護盾]，\\n效果每2秒只能觸發一次",
     "h": []
    }
   ]
@@ -68748,6 +69659,20 @@
  },
  {
   "stats": [
+   "gain_X_druidic_prowess_on_heavy_stunning_rare_or_unique_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你[HeavyStun|沉重暈眩]一名[Rarity|稀有或傳奇]敵人時，獲得{0}[DruidicProwess|德魯伊之賦]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_X_instilling_fire_when_charge_is_consumed"
   ],
   "rows": [
@@ -68876,6 +69801,34 @@
      "#"
     ],
     "t": "當你裝填時，觸發雙靈波動，\\n交替獲得{0}[Surge|冰冷波動]或{1}[Surge|火焰波動]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_life_per_8_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "裝備的頭盔上每有8點[ItemArmour|護甲]，{0:+d}最大生命",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_mana_per_3_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Equipped|裝備的]頭盔每有3[ItemArmour|物品護甲]即{0:+d}最大魔力",
     "h": []
    }
   ]
@@ -69203,6 +70156,20 @@
  },
  {
   "stats": [
+   "gain_armour_from_%_life_loss_from_hits_lasting_8_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "獲得等同於在過去8秒內由於[Hit|擊中]所損失生命{0}%的[Armour|護甲]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_attack_damage_+%_for_each_your_minion_in_presence_capped"
   ],
   "rows": [
@@ -69253,6 +70220,20 @@
      "#"
     ],
     "t": "當你[HeavyStun|沉重暈眩]一個[Rarity|稀有或傳奇]敵人時，獲得一顆[Charges|耐力球]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_endurance_charge_on_reaching_low_life_once_per_2s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "達到[LowLife|貧血]時獲得1顆[Charges|耐力球]，最多每2秒一次",
     "h": []
    }
   ]
@@ -69356,6 +70337,48 @@
  },
  {
   "stats": [
+   "gain_guard_%_of_max_ward_for_2s_every_4s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每4秒獲得等同於{0}%最大[Ward|符文保護]的[Guard|守護]，持續2秒",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_%_of_maximum_life_for_4_seconds_on_taking_savage_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "承受[SavageHit|殘暴打擊]獲得等同於{0}%最大生命的[Guard|守護]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_after_sprinting_equal_to_x%_of_maximum_life_per_second_sprinted_up_to_20%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你停止衝刺時每已衝刺一秒，即獲得等同於{0}%最大生命的[Guard|保護]，最高20%，持續4秒",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll"
   ],
   "rows": [
@@ -69378,6 +70401,20 @@
      "#"
     ],
     "t": "[Hit|擊中]時有{0}%機率不會獲得[Rage|盛怒]，而是獲得最大盛怒",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_maximum_energy_shield_equal_to_%_total_strength_requirement_of_equipped_armour_items"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "獲得等同於所裝備[EquipArmour|護甲物品]總[Strength|力量]需求{0}%的[EnergyShield|最大能量護盾]",
     "h": []
    }
   ]
@@ -69473,6 +70510,20 @@
      "#"
     ],
     "t": "[Minion|召喚物]死亡時獲得[Onslaught|猛攻]，持續4秒",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_onslaught_for_x_seconds_when_your_marks_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你的[Mark|印記][MarkActivate|觸發]時，獲得持續{0}秒的[Onslaught|猛攻]",
     "h": []
    }
   ]
@@ -70022,6 +71073,22 @@
  },
  {
   "stats": [
+   "global_minimum_added_lightning_damage_vs_shocked_enemies",
+   "global_maximum_added_lightning_damage_vs_shocked_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "對感電的敵人附加{0}至{1}閃電傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "glory_generation_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -70364,6 +71431,20 @@
  },
  {
   "stats": [
+   "grenade_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Grenade|擲彈]技能寶石等級",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "grenade_skill_number_of_additional_projectiles"
   ],
   "rows": [
@@ -70418,6 +71499,30 @@
     ],
     "t": "被擊中時有{0}%機率散佈焦油",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "guard_gained_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%獲得的[Guard|守護]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%獲得的[Guard|守護]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -70664,6 +71769,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hazard_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Hazard|危險]技能寶石等級",
+    "h": []
    }
   ]
  },
@@ -73284,6 +74403,20 @@
  },
  {
   "stats": [
+   "herald_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Herald|捷光環]技能寶石等級",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_chance_%_on_spreading_poioson"
   ],
   "rows": [
@@ -73790,6 +74923,20 @@
      "#"
     ],
     "t": "赤獄烈炎達到最大時，受到等同於最大生命和能量護盾{0}%的[Fire|火焰]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hits_cannot_be_evaded_vs_blinded_maimed_bleeding_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "處於[Blind|致盲]、[Maim|癱瘓]且[Bleeding|流血]狀態的目標，無法[Evasion|閃避]你的[Hit|擊中]",
     "h": []
    }
   ]
@@ -74520,6 +75667,20 @@
      "1|#"
     ],
     "t": "你對敵人施加[Incision|切割]時，增加{0}%每層[Incision|切割]使其受到的[Physical|物理]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "increases_and_reductions_to_move_speed_apply_to_es_recharge_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "移動速度的增減同時套用到\\n[ESRechargeRate|能量護盾充能率]",
     "h": []
    }
   ]
@@ -75676,6 +76837,23 @@
  },
  {
   "stats": [
+   "life_loss_%_per_minute_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "衝刺時每秒損失{0}%最大生命",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_mana_flasks_restore_mana_life"
   ],
   "rows": [
@@ -75863,6 +77041,23 @@
     "t": "當你的[Companion|盟友]在你的[Presence|存在範圍]內時，減少{0}%生命回復率",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_regeneration_per_minute_%_if_used_a_command_skill_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你[Recently|近期]使用過一個[Command|號令]技能，即每秒回復{0}%最大生命",
+    "h": [
+     "per_minute_to_per_second",
      "1"
     ]
    }
@@ -77960,6 +79155,41 @@
  },
  {
   "stats": [
+   "local_idols_gain_additional_socketable_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "鑲嵌在此物品中的[Idol|魔偶]獲得其[ShamanOnlyMods|命定]詞綴的加成效果",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "此武器的[Attack|攻擊]有{0}%機率造成[Exposure|曝曬]",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "此武器的[Attack|攻擊]造成[Exposure|曝曬]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_inflict_malignant_madness_on_critical_strike_%_if_eater_of_worlds_dominant"
   ],
   "rows": [
@@ -78410,6 +79640,20 @@
  },
  {
   "stats": [
+   "local_maximum_added_cold_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|擊中]敵人時，在20秒內獲得等同於敵人[Power|強度]的最大附加[Cold|冰冷]傷害，最高總計{0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_maximum_added_lightning_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
   ],
   "rows": [
@@ -78520,6 +79764,20 @@
  },
  {
   "stats": [
+   "local_physical_damage_roll_always_min_or_max"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Physical|物理]傷害[BooleanDamageRoll|只會骰出最低或最高傷害數值]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_poison_on_critical_strike_chance_%"
   ],
   "rows": [
@@ -78577,6 +79835,48 @@
      "#|-1"
     ],
     "t": "減少{0}%此武器的[Projectile|投射物]速度",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_dexterity"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}%需求[StatConversion|轉換]為[Dexterity|敏捷]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}%需求[StatConversion|轉換]為[Intelligence|智慧]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_strength"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}%需求[StatConversion|轉換]為[Strength|力量]",
     "h": []
    }
   ]
@@ -78691,6 +79991,20 @@
      "#"
     ],
     "t": "舉起盾牌時，[StunThreshold|暈眩門檻]加倍",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_socketable_%_maximum_weapon_damage_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "獲得等同於此武器最大傷害{0}%的最大[Ward|符文保護]",
     "h": []
    }
   ]
@@ -79494,6 +80808,30 @@
  },
  {
   "stats": [
+   "mana_cost_efficiency_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你[Recently|近期]沒有閃避翻滾，增加{0}%魔力消耗[Efficiency|效用]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你[Recently|近期]沒有閃避翻滾，減少{0}%魔力消耗[Efficiency|效用]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_cost_+%_per_10_devotion"
   ],
   "rows": [
@@ -79749,6 +81087,55 @@
     "h": [
      "negate",
      "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "當你的[Companion|盟友]位於你的[Presence|存在範圍]內時，增加{0}%魔力回復速率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "當你的[Companion|盟友]位於你的[Presence|存在範圍]內時，減少{0}%魔力回復速率",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_regeneration_rate_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多魔力回復率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少魔力回復率",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
     ]
    }
   ]
@@ -89639,6 +91026,20 @@
  },
  {
   "stats": [
+   "mark_grants_%_max_glory_to_random_skill_on_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你的[Mark|印記][MarkActivate|啟動]時，一個隨機需要榮耀的技能會獲得{0}%最大榮耀",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mark_skill_duration_+%"
   ],
   "rows": [
@@ -90234,6 +91635,30 @@
      "#"
     ],
     "t": "每有20貢禮，{0}%最大生命[StatConversion|轉換]為[EnergyShield|能量護盾]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少最大生命",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多最大生命",
     "h": []
    }
   ]
@@ -91486,6 +92911,34 @@
  },
  {
   "stats": [
+   "minion_physical_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|召喚物]獲得等同於其[Physical|物理]傷害{0}%的額外[Lightning|閃電]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_physical_hit_and_dot_damage_%_taken_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "召喚物受到的{0}%[Physical|物理]傷害會承受為[Lightning|閃電]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "reservation_efficiency_+%_of_minion_skills"
   ],
   "rows": [
@@ -91699,6 +93152,20 @@
      "#"
     ],
     "t": "召喚物擊中只能擊殺點燃敵人",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_in_presence_have_onslaught_while_you_are_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你處於[LowWard|貧符文保護]狀態時，[Presence|存在範圍]內的[Minion|召喚物]獲得[Onslaught|猛攻]",
     "h": []
    }
   ]
@@ -91960,6 +93427,27 @@
  },
  {
   "stats": [
+   "movement_speed_+%_per_5_rage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每5[Rage|盛怒]同時使你增加{0}%移動速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每5[Rage|盛怒]同時使你減少{0}%移動速度",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "movement_speed_+%_while_affected_by_ailment"
   ],
   "rows": [
@@ -92013,6 +93501,20 @@
      "1|#"
     ],
     "t": "增加25%移動速度，每{0}點[Evasion|閃避值]額外增加1%，[MaximumTotal|上限為75]%。\\n除套用至衝刺以外的其他移動速度詞綴將失效",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "abyss_socketable_movement_speed_is_only_base_+%_per_15_spirit_up_to_+40%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每15[Spirit|精魂]增加{0}%移動速度，上限為40%。\\n除套用至衝刺的外其他移動速度詞墜將失效",
     "h": []
    }
   ]
@@ -92563,6 +94065,20 @@
  },
  {
   "stats": [
+   "non_skill_all_damage_%_to_gain_as_fire_+_per_2%_attack_block_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每擁有2%[ChanceToBlock|格擋率]，[Gain|獲得]等同於{0}%傷害的[Fire|火焰]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_chaos_per_active_undead_minion"
   ],
   "rows": [
@@ -92787,6 +94303,23 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_physical_per_10%_missing_mana_permyriad"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每失去十分之一魔力，即[Gain|獲得]等同於{0}%傷害的額外[Physical|物理]傷害",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element"
   ],
   "rows": [
@@ -92801,6 +94334,20 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_random_element_per_socketed_rune"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "裝備的物品中每鑲嵌一個[Rune|符文]，即[Gain|獲得]等同於{0}%傷害的[Gain|額外]隨機[ElementalDamage|元素]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element_while_shapeshifted"
   ],
   "rows": [
@@ -92809,6 +94356,20 @@
      "1|#"
     ],
     "t": "[Shapeshift|變形]時[Gain|獲得]{0}%傷害的額外隨機[ElementalDamage|元素]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_cold_fire_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|獲得]等同於{0}%傷害的全[ElementalDamage|元素]額外傷害",
     "h": []
    }
   ]
@@ -93223,6 +94784,20 @@
      "1",
      "canonical_line"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "nova_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Nova|新星]技能寶石等級",
+    "h": []
    }
   ]
  },
@@ -94690,6 +96265,44 @@
  },
  {
   "stats": [
+   "plant_skill_effect_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Plant|植物]技能的持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Plant|植物]技能的持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "plant_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Plant|植物]技能寶石等級",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "poison_as_though_dealing_X_damage_on_block"
   ],
   "rows": [
@@ -95776,6 +97389,20 @@
  },
  {
   "stats": [
+   "recoup_life_equal_to_%_of_hit_damage_dealt_to_your_offerings"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "你[Recoup|補償]{0}%你的[Offering|奉獻]召喚物所承受的傷害為生命",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recoup_speed_+%"
   ],
   "rows": [
@@ -96112,6 +97739,20 @@
  },
  {
   "stats": [
+   "recover_ward_as_well_as_mana_from_mana_regeneration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "來自回復的魔力恢復也會套用於[Ward|符文保護]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_x%_of_maximum_mana_when_you_consume_a_power_charge"
   ],
   "rows": [
@@ -96120,6 +97761,20 @@
      "1|#"
     ],
     "t": "你消耗[Charges|暴擊球]時，恢復{0}%的最大魔力",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_x%_of_maximum_ward_on_persistent_minion_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你的[Reviving|復甦][Minion|召喚物]被[MinionDeath|擊殺]時，恢復{0}%最大[Ward|符文保護]",
     "h": []
    }
   ]
@@ -96322,6 +97977,20 @@
      "#"
     ],
     "t": "當你使用魔力[Flask|藥劑]時移除[Curse|詛咒]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remove_damaging_ailment_on_using_command_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你使用[Command|號令]技能時，移除一個[DamagingAilments|傷害型異常狀態]",
     "h": []
    }
   ]
@@ -96576,6 +98245,34 @@
  },
  {
   "stats": [
+   "revive_random_persistent_minion_on_offering_expiration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當一個[Offering|奉獻]效果持續時間結束時，復活你的一名[Persistent|永久][Minion|召喚物]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_%_life_to_gain_as_guard_on_dodge_roll"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你閃避翻滾時，[Sacrifice|犧牲]{0}%最大生命來獲得等量的[Guard|守護]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack"
   ],
   "rows": [
@@ -96677,6 +98374,20 @@
      "#"
     ],
     "t": "當你[Attack|攻擊]時，[Attack|攻擊]每受一個[Warcry|戰吼][Empowered|強化]，就會受到等同於{0}%生命的[Physical|物理]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "self_take_no_extra_damage_from_critical_strikes_while_on_consecrated_ground"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "當你身處[ConsecratedGround|奉獻地面]時，以你為目標的[Hit|擊中]沒有[CriticalDamageBonus|暴擊傷害加成]",
     "h": []
    }
   ]
@@ -97211,6 +98922,54 @@
  },
  {
   "stats": [
+   "skill_speed_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每[Equipped|裝備]一件已汙染物品，即增加{0}%[SkillSpeed|技能速度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每[Equipped|裝備]一件已汙染物品，即減少{0}%[SkillSpeed|技能速度]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_speed_+%_while_on_low_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[LowMana|貧魔]時增加{0}%[SkillSpeed|技能速度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[LowMana|貧魔]時減少{0}%[SkillSpeed|技能速度]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_speed_+%_while_shapeshifted"
   ],
   "rows": [
@@ -97345,6 +99104,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "slam_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Slam|重擊]技能寶石等級",
+    "h": []
    }
   ]
  },
@@ -97858,6 +99631,30 @@
  },
  {
   "stats": [
+   "spell_damage_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "當你的[Companion|盟友]在你的[Presence|存在範圍]內時，增加{0}%[Spell|法術]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "當你的[Companion|盟友]在你的[Presence|存在範圍]內時，減少{0}%[Spell|法術]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_damage_+%_while_wielding_melee_weapon"
   ],
   "rows": [
@@ -98283,6 +100080,20 @@
  },
  {
   "stats": [
+   "spells_penetrates_elemental_resist_%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[LowWard|低符文保護]時，法術傷害[Penetration|穿透]敵人{0}%的[ElementalDamage|元素][Resistances|抗性]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -98298,6 +100109,30 @@
      "#|-1"
     ],
     "t": "若你有至少100貢禮，減少{0}%[Spirit|精魂]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每[Equipped|裝備]一件已汙染物品，即增加{0}%[Spirit|精魂]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每[Equipped|裝備]一件已汙染物品，即減少{0}%[Spirit|精魂]",
     "h": [
      "negate",
      "1"
@@ -98343,6 +100178,20 @@
      "#"
     ],
     "t": "當你擁有至少200[Strength|力量]時，{0:+d}[Spirit|精魂]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+_per_2_levels"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每2級{0:+d}[Spirit|精魂]",
     "h": []
    }
   ]
@@ -98415,6 +100264,30 @@
  },
  {
   "stats": [
+   "sprint_movement_speed_+%_per_active_persistent_minion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有一名[Persistent|常駐][Minion|召喚物]，增加{0}%衝刺時的移動速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有一名[Persistent|常駐][Minion|召喚物]，減少{0}%衝刺時的移動速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "start_at_zero_energy_shield"
   ],
   "rows": [
@@ -98437,6 +100310,34 @@
      "1|#"
     ],
     "t": "當你使用魔力[Flask|藥劑]，[ESRecharge|能量護盾充能]會開始生效",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Storm|風暴]技能寶石等級",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_limit_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "技能[Limit|上限]+{0}",
     "h": []
    }
   ]
@@ -98499,6 +100400,20 @@
      "#"
     ],
     "t": "[Strength|力量]可滿足[Melee|近戰]武器和[Melee|近戰]技能的其他[Attributes|能力值]需求",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "strike_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Strike|打擊]技能寶石等級",
     "h": []
    }
   ]
@@ -98657,6 +100572,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_if_stunned_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你[Recently|近期內]曾被[Stun|暈眩]，增加{0}%[StunThreshold|暈眩門檻]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你[Recently|近期內]曾被[Stun|暈眩]，減少{0}%[StunThreshold|暈眩門檻]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour"
   ],
   "rows": [
@@ -98665,6 +100604,27 @@
      "#"
     ],
     "t": "獲得等同於已裝備頭盔的[Evasion|閃避值]和[Armour|護甲值]中較低者的[StunThreshold|暈眩門檻]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "stun_threshold_+_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每10最大[Ward|符文保護]+{0}[StunThreshold|暈眩門檻]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每10最大[Ward|符文保護]-{0}[StunThreshold|暈眩門檻]",
     "h": []
    }
   ]
@@ -99492,6 +101452,20 @@
  },
  {
   "stats": [
+   "thorns_damage_is_lucky_against_enemies_with_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "你的[Thorns|荊棘]傷害對[ArmourBreak|護甲完全破壞]的目標很[Lucky|幸運]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "thorns_damage_+%"
   ],
   "rows": [
@@ -99582,6 +101556,22 @@
      "#"
     ],
     "t": "{0}至{1}點[Fire|火焰][Thorns|荊棘]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_minimum_base_lightning_damage",
+   "thorns_maximum_base_lightning_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}至{1}點[Lightning|閃電][Thorns|荊棘]傷害",
     "h": []
    }
   ]
@@ -101739,6 +103729,20 @@
  },
  {
   "stats": [
+   "warcry_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Warcry|戰吼]技能寶石等級",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_speed_+%_per_25_tribute"
   ],
   "rows": [
@@ -101849,6 +103853,166 @@
  },
  {
   "stats": [
+   "ward_regeneration_rate_+%_if_have_crit_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若你[Recently|近期]有造成[Critical|暴擊]，增加{0}%[Ward|符文保護]回復率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若你[Recently|近期]有造成[Critical|暴擊]，減少{0}%[Ward|符文保護]回復率",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+%_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "衝刺時增加{0}%[Ward|符文保護]回復率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "衝刺時減少{0}%[Ward|符文保護]回復率",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+1%_final_per_x%_ward_lost_from_hits_up_to_100%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Recently|近期]每因為[Hit|擊中]損失{0}%最大[Ward|符文保護]，即獲得1%更多[Ward|符文保護]回復率，最多100%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_is_doubled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ward|符文保護]回復率翻倍",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_1"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可以骰出時空術師詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_2"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可以骰出靈魂詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_3"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可以骰出狂戰詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_4"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可以骰出射手詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_5"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可以骰出衰敗詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_6"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可骰出毀滅詞綴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "weapon_damage_+%_per_10_str"
   ],
   "rows": [
@@ -101916,6 +104080,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}全部[Wind|疾風]技能寶石等級",
+    "h": []
    }
   ]
  },
@@ -102670,6 +104848,20 @@
      "#"
     ],
     "t": "先祖",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "soul_core_cannot_roll_no_outcome_with_corruption"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Corrupted|汙染]的結果總會是改變",
     "h": []
    }
   ]

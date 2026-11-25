@@ -3098,6 +3098,30 @@
  },
  {
   "stats": [
+   "base_curse_delay_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Curse] zones erupt after {0}% increased delay",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Curse] zones erupt after {0}% reduced delay",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_curse_duration_+%"
   ],
   "rows": [
@@ -3788,6 +3812,20 @@
      "#"
     ],
     "t": "Supported Skills cannot Extract [Impale]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cannot_miss_against_full_life_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Enemies which are on Full Life cannot [Evasion|Evade] your [Hit|Hits]",
     "h": []
    }
   ]
@@ -6159,6 +6197,20 @@
      "#"
     ],
     "t": "Gain {0} [Rage|Rage] on [Melee] [Hit]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "global_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Knockback|Knocks Enemies Back] on [Hit]",
     "h": []
    }
   ]
@@ -19311,6 +19363,22 @@
  },
  {
   "stats": [
+   "minimum_added_cold_damage_vs_chilled_enemies",
+   "maximum_added_cold_damage_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Adds {0} to {1} Cold Damage against Chilled Enemies",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "minion_life_regeneration_rate_per_minute_%"
   ],
   "rows": [
@@ -22065,6 +22133,27 @@
  },
  {
   "stats": [
+   "+_deflection_rating_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "+{0} to [Deflect|Deflection Rating] per 10 maximum [Ward|Runic Ward]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "-{0} to [Deflect|Deflection Rating] per 10 maximum [Ward|Runic Ward]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "+_deflection_rating_per_50_missing_maximum_energy_shield"
   ],
   "rows": [
@@ -22604,6 +22693,27 @@
      "#"
     ],
     "t": "Can have up to 3 Crafted Modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_can_have_additional_crafted_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Can have {0} additional Crafted Modifier",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Can have {0} additional Crafted Modifiers",
     "h": []
    }
   ]
@@ -30241,6 +30351,20 @@
  },
  {
   "stats": [
+   "totem_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Totem] Skill Gems",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "trap_skill_gem_level_+"
   ],
   "rows": [
@@ -34746,6 +34870,20 @@
  },
  {
   "stats": [
+   "base_maximum_life_%_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatGain|Gain] {0}% of maximum Life as Extra maximum [Ward|Runic Ward]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_%_to_gain_as_energy_shield"
   ],
   "rows": [
@@ -38636,6 +38774,34 @@
  },
  {
   "stats": [
+   "frenzy_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "If you would gain a [Charges|Frenzy Charge], [Allies] in your [Presence] gain that [Charges|Charge] instead",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "power_only_conduit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "If you would gain a [Charges|Power Charge], [Allies] in your [Presence] gain that [Charges|Charge] instead",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_chance_to_blind_on_hit_%"
   ],
   "rows": [
@@ -41320,6 +41486,20 @@
      "#"
     ],
     "t": "{0}% of [Cold|Cold Damage] taken as [Fire|Fire Damage]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chaos_damage_from_hits_%_taken_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% of [Chaos] Damage from [Hit|Hits] taken as Damage of a random [ElementalDamage|Element]",
     "h": []
    }
   ]
@@ -53437,6 +53617,20 @@
  },
  {
   "stats": [
+   "accuracy_rating_+_per_evasion_rating_on_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to [Accuracy] Rating per 1 [ItemEvasion|Item Evasion Rating] on Equipped Helmet",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "accuracy_rating_is_doubled"
   ],
   "rows": [
@@ -53831,6 +54025,20 @@
  },
  {
   "stats": [
+   "additional_maximum_all_elemental_resistances_%_while_on_full_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% to all [MaximumResistances|Maximum Elemental Resistances] while on full [Ward|Runic Ward]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "additional_maximum_all_resistances_%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -53853,6 +54061,20 @@
      "#"
     ],
     "t": "{0:+d}% to all maximum Resistances while you have no Endurance Charges",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additional_maximum_block_%_if_blocked_with_active_block_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% to maximum [Block] chance if you've [Block|Blocked] with a raised [Shield] [Recently]",
     "h": []
    }
   ]
@@ -53884,6 +54106,20 @@
      "1|#"
     ],
     "t": "Increases and Reductions to Minion Damage also affect you at 150% of their value",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "additive_modifiers_to_life_regeneration_also_apply_to_mana_regeneration_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Increases and Reductions to Life Regeneration Rate also apply to Mana Regeneration Rate",
     "h": []
    }
   ]
@@ -54633,6 +54869,20 @@
  },
  {
   "stats": [
+   "allies_in_presence_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Allies|Allies] in your [Presence|Presence] have {0}% increased Movement Speed",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "allies_in_presence_non_skill_base_all_damage_%_to_gain_as_chaos"
   ],
   "rows": [
@@ -54659,6 +54909,20 @@
      "per_minute_to_per_second",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "allies_in_your_presence_share_charges_with_you"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Allies] in your [Presence] share [Charges] with you",
+    "h": []
    }
   ]
  },
@@ -55256,6 +55520,20 @@
  },
  {
   "stats": [
+   "armour_%_also_applies_to_chaos_damage_while_at_full_es"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% of [Armour|Armour] also applies to [Chaos|Chaos Damage] while on full [EnergyShield|Energy Shield]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_%_applies_to_fire_cold_lightning_damage_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -55333,6 +55611,30 @@
      "#|-1"
     ],
     "t": "{0}% reduced [Armour] if you've [Hit] an Enemy with a [Melee|Melee Attack] [Recently]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Armour] if you haven't Dodge Rolled [Recently]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Armour] if you haven't Dodge Rolled [Recently]",
     "h": [
      "negate",
      "1"
@@ -55456,6 +55758,20 @@
  },
  {
   "stats": [
+   "armour_+_per_1_spirit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to [Armour] per 1 [Spirit]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "armour_and_evasion_rating_+%_per_active_totem_in_presence"
   ],
   "rows": [
@@ -55472,6 +55788,30 @@
     ],
     "t": "{0}% reduced [Armour] and [Evasion] Rating per Summoned [Totem] in your [Presence]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "armour_and_evasion_rating_+%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Armour] and [Evasion] Rating while on [LowWard|Low Runic Ward]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Armour] and [Evasion] Rating while on [LowWard|Low Runic Ward]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -56618,6 +56958,30 @@
  },
  {
   "stats": [
+   "attack_damage_+%_while_shapeshifted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Attack] Damage while [Shapeshift|Shapeshifted]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Attack] Damage while [Shapeshift|Shapeshifted]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_damage_+%_while_surrounded"
   ],
   "rows": [
@@ -57136,6 +57500,30 @@
  },
  {
   "stats": [
+   "attack_speed_+%_if_have_blocked_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Attack] Speed if you have Blocked [Recently]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Attack] Speed if you have Blocked [Recently]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "attack_speed_+%_if_have_crit_recently"
   ],
   "rows": [
@@ -57265,6 +57653,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "attack_spend_x%_maximum_ward_for_added_physical_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|Attacks] spend {0}% of your maximum [Ward|Runic Ward] if possible to gain that much added [Physical] damage",
+    "h": []
    }
   ]
  },
@@ -57824,6 +58226,23 @@
  },
  {
   "stats": [
+   "base_banner_life_regeneration_rate_per_minute_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Banner|Banners] also grant {0}% of Life Regenerated per second to affected targets",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_banner_resist_all_elements_%_to_apply"
   ],
   "rows": [
@@ -57966,6 +58385,20 @@
  },
  {
   "stats": [
+   "base_chaos_damage_resistance_%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}% to [Resistances|Chaos Resistance] for each Corrupted Item [Equipped]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_damage_%_deflected"
   ],
   "rows": [
@@ -57981,6 +58414,27 @@
      "#|-1"
     ],
     "t": "{0:+d}% to amount of [Hit|Damage] Prevented by [Deflect|Deflection]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_damage_%_deflected_if_you_have_not_deflected_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Prevent {0:+d}% of Damage from [Deflect|Deflected] [Hit|Hits] if you've\\n[Deflect|Deflected] no [Hit|Hits] [Recently]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0:+d}% to amount of [Hit|Damage] Prevented by [Deflect|Deflection] if you haven't [Deflect|Deflected] a [Hit] [Recently]",
     "h": []
    }
   ]
@@ -58664,6 +59118,20 @@
  },
  {
   "stats": [
+   "base_spirit_per_socketed_idol"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to [Spirit] per [Idol] socketed in your [Equipment]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_spirit_reservation_efficiency_+%_per_20_tribute"
   ],
   "rows": [
@@ -58760,6 +59228,47 @@
     "t": "{0}% reduced [BuffMagnitude|Magnitude] of [UnholyMight|Unholy Might] buffs you grant",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_cost_efficiency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Ward|Runic Ward] Cost [Efficiency]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Ward|Runic Ward] Cost [Efficiency]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_ward_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Regenerate {0} [Ward|Runic Ward] per second",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
      "1"
     ]
    }
@@ -59085,6 +59594,32 @@
     ],
     "t": "{0}% reduced [Block|Block] chance if you have at least 100 Tribute",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "block_chance_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Block] chance while your [Companion] is in your [Presence]",
+    "h": [
+     "canonical_line"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Block] chance while your [Companion] is in your [Presence]",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -59454,6 +59989,20 @@
      "#"
     ],
     "t": "[ArmourBreak|Break] {0}% of [Armour] on [Pinned|Pinning] an Enemy",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "break_armour_on_attack_hit_%_of_max_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Attack|Attacks] [ArmourBreak|Break Armour] equal to {0}% of maximum [Ward|Runic Ward]",
     "h": []
    }
   ]
@@ -60132,6 +60681,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_for_plants_to_overgrow_when_entering_your_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|Plants] have a {0}% chance to immediately [Plant|Overgrow] when they enter your [Presence] for the first time",
+    "h": []
    }
   ]
  },
@@ -61929,6 +62492,20 @@
  },
  {
   "stats": [
+   "companion_damage_+%_final_from_idol_per_different_dead_companion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|Companions] deal {0}% more Damage for each different type of dead Companion you have",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companion_damage_+%_vs_immobilised_enemies"
   ],
   "rows": [
@@ -62109,6 +62686,33 @@
  },
  {
   "stats": [
+   "companions_gain_onslaught_on_hitting_enemies_marked_by_you_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Companion|Companions] gain [Onslaught] for {0} second on [Hit|Hitting] your [Mark|Marked] targets",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|Companions] gain [Onslaught] for {0} seconds on [Hit|Hitting] your [Mark|Marked] targets",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_gain_your_strength"
   ],
   "rows": [
@@ -62123,6 +62727,48 @@
  },
  {
   "stats": [
+   "companions_in_presence_base_chaos_damage_resistance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|Companions] in your [Presence] have {0:+d}% to [Resistances|Chaos Resistance]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_base_resist_all_elements_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Companion|Companions] in your [Presence] have {0:+d}% to all [ElementalDamage|Elemental] [Resistances]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_gain_x_rage_on_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|Companions] in your [Presence] gain {0} [Rage] on hit",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "companions_in_presence_have_onslaught_while_you_are_shapeshifted"
   ],
   "rows": [
@@ -62131,6 +62777,20 @@
      "#"
     ],
     "t": "[Companion|Companions] in your [Presence] have [Onslaught] while you are [Shapeshift|Shapeshifted]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "companions_in_presence_non_skill_base_all_damage_%_to_gain_as_random_element"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Companion|Companions] in your [Presence] [Gain] {0}% of Damage as Extra Damage of a random [ElementalDamage|Element]",
     "h": []
    }
   ]
@@ -62365,6 +63025,27 @@
  },
  {
   "stats": [
+   "critical_chance_luck_against_parry_debuffed_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Critical|Critical Hit] chance is [Lucky] against [ParriedDebuff|Parried] enemies",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Critical|Critical Hit] chance is [Unlucky] against [ParriedDebuff|Parried] enemies",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "critical_damage_+%_per_50_current_life"
   ],
   "rows": [
@@ -62556,6 +63237,30 @@
     ],
     "t": "[Critical|Critical Hits] inflict [Impale]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "critical_hits_apply_life_regeneration_rate_+%_for_4_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Enemies you [Critical|Critically] [Hit] get {0}% increased Life Regeneration Rate for 4 seconds",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Enemies you [Critical|Critically] [Hit] get {0}% reduced Life Regeneration Rate for 4 seconds",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -63498,6 +64203,30 @@
  },
  {
   "stats": [
+   "damage_+%_per_different_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Damage per each different [Companion] in your [Presence]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Damage per each different [Companion] in your [Presence]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "damage_+%_per_enemy_elemental_ailment"
   ],
   "rows": [
@@ -63705,6 +64434,20 @@
      "#|99"
     ],
     "t": "{0}% of damage [Block|Blocked] is [Recoup|Recouped] as Mana",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_cannot_be_taken_from_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "All damage taken bypasses [Ward|Runic Ward]",
     "h": []
    }
   ]
@@ -64147,6 +64890,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "damage_taken_from_hits_is_unlucky_if_ward_damaged_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Damage of Enemies [Hit|Hitting] you is [Unlucky] if\\nyour [Ward|Runic Ward] has been damaged [Recently]",
+    "h": []
    }
   ]
  },
@@ -65645,6 +66402,104 @@
  },
  {
   "stats": [
+   "dummy_display_stat_rune_chaos_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Transforms all [Fire], [Cold] and [Lightning] modifiers on the item into equivalent [Chaos] modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_cold_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "When socketed, transforms all [Fire] and [Lightning] modifiers to equivalent [Cold] modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_create_jewel_socket"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Destroys all [Augment] Sockets on the item to create a [Jewel] Socket",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_fire_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Transforms all [Cold] and [Lightning] modifiers on the item into equivalent [Fire] modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_lightning_convert"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Transforms all [Fire] and [Cold] modifiers on the item into equivalent [Lightning] modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_olroths_legacy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "When socketed into a [Rarity|Unique] Kalguuran or Ezomyte item, destroys the item to create a [Rune] imbued with that item's power",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "dummy_display_stat_rune_upgrade"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Upgrades a socketed [Rune]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "dummy_stat_zarokhs_gift_jewel_slot"
   ],
   "rows": [
@@ -66725,6 +67580,20 @@
  },
  {
   "stats": [
+   "enemies_you_blind_have_no_crit_bonus_for_x_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Enemies have no [CriticalDamageBonus|Critical Damage Bonus] for {0} seconds after you Blind them",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "enemies_you_curse_are_intimidated"
   ],
   "rows": [
@@ -67334,6 +68203,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_rate_+%_per_X_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "1% increased [ESRechargeRate|Energy Shield Recharge Rate] per {0} maximum [Ward|Runic Ward]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_rate_+%_while_shapeshifted"
   ],
   "rows": [
@@ -67382,6 +68265,20 @@
  },
  {
   "stats": [
+   "energy_shield_recharge_start_when_minions_reform"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Your [ESRecharge|Energy Shield Recharge] starts when your [Minion|Minions] are [Reform|Reformed]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "energy_shield_recharge_start_when_stunned"
   ],
   "rows": [
@@ -67390,6 +68287,20 @@
      "#"
     ],
     "t": "[ESRecharge|Energy Shield Recharge] starts when you are Stunned",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "energy_shield_recharge_starts_after_spending_2000_mana_every_2_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ESRecharge|Energy Shield Recharge] starts after spending a total of\\n 2000 Mana, no more than once every 2 seconds",
     "h": []
    }
   ]
@@ -68748,6 +69659,20 @@
  },
  {
   "stats": [
+   "gain_X_druidic_prowess_on_heavy_stunning_rare_or_unique_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain {0} [DruidicProwess|Druidic Prowess] when you [HeavyStun|Heavy Stun] a [Rarity|Rare or Unique] Enemy",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_X_instilling_fire_when_charge_is_consumed"
   ],
   "rows": [
@@ -68876,6 +69801,34 @@
      "#"
     ],
     "t": "When you reload, triggers Gemini Surge to alternately\\ngain {0} [Surge|Cold Surges] or {1} [Surge|Fire Surges]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_life_per_8_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to maximum Life per 8 [ItemArmour|Armour] on [Equipped] Helmet",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_X_max_mana_per_3_armour_on_equipped_helmet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to maximum Mana per 3 [ItemArmour|Item Armour] on [Equipped] Helmet",
     "h": []
    }
   ]
@@ -69203,6 +70156,20 @@
  },
  {
   "stats": [
+   "gain_armour_from_%_life_loss_from_hits_lasting_8_seconds"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Gain [Armour] equal to {0}% of Life Lost from [Hit|Hits] in the past 8 seconds",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_attack_damage_+%_for_each_your_minion_in_presence_capped"
   ],
   "rows": [
@@ -69253,6 +70220,20 @@
      "#"
     ],
     "t": "Gain an [Charges|Endurance Charge] when you [HeavyStun|Heavy Stun] a [Rarity|Rare or Unique] Enemy",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_endurance_charge_on_reaching_low_life_once_per_2s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain 1 [Charges|Endurance Charge] on reaching [LowLife|Low Life], only once every 2 seconds",
     "h": []
    }
   ]
@@ -69356,6 +70337,48 @@
  },
  {
   "stats": [
+   "gain_guard_%_of_max_ward_for_2s_every_4s"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Every 4 seconds, gain [Guard] equal to {0}% of maximum [Ward|Runic Ward] for 2 seconds",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_%_of_maximum_life_for_4_seconds_on_taking_savage_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain [Guard] equal to {0}% of maximum Life for 4 seconds on taking [SavageHit|Savage Hit]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_guard_after_sprinting_equal_to_x%_of_maximum_life_per_second_sprinted_up_to_20%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "When you stop Sprinting, gain [Guard] equal to {0}% of maximum Life per second spent Sprinting, up to a maximum of 20%, for 4 seconds",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "gain_guard_equal_to_%_of_your_missing_energy_shield_for_4_seconds_on_dodge_roll"
   ],
   "rows": [
@@ -69378,6 +70401,20 @@
      "#"
     ],
     "t": "{0}% chance that if you would gain [Rage] on [Hit], you instead gain up to your maximum Rage",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_maximum_energy_shield_equal_to_%_total_strength_requirement_of_equipped_armour_items"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain [EnergyShield|Maximum Energy Shield] equal to {0}% of total\\n[Strength] Requirements of [EquipArmour|Equipped Armour Items]",
     "h": []
    }
   ]
@@ -69473,6 +70510,20 @@
      "#"
     ],
     "t": "Gain [Onslaught|Onslaught] for 4 seconds when a [Minion] Dies",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gain_onslaught_for_x_seconds_when_your_marks_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain [Onslaught|Onslaught] for {0} seconds when your [Mark|Marks] [MarkActivate|Activate]",
     "h": []
    }
   ]
@@ -70022,6 +71073,22 @@
  },
  {
   "stats": [
+   "global_minimum_added_lightning_damage_vs_shocked_enemies",
+   "global_maximum_added_lightning_damage_vs_shocked_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Adds {0} to {1} Lightning Damage against Shocked Enemies",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "glory_generation_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -70364,6 +71431,20 @@
  },
  {
   "stats": [
+   "grenade_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Grenade] Skill Gems",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "grenade_skill_number_of_additional_projectiles"
   ],
   "rows": [
@@ -70418,6 +71499,30 @@
     ],
     "t": "{0}% chance to spread Tar when Hit",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "guard_gained_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Guard] gained",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Guard] gained",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -70664,6 +71769,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hazard_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Hazard] Skill Gems",
+    "h": []
    }
   ]
  },
@@ -73287,6 +74406,20 @@
  },
  {
   "stats": [
+   "herald_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Herald] Skill Gems",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_chance_%_on_spreading_poioson"
   ],
   "rows": [
@@ -73793,6 +74926,20 @@
      "#"
     ],
     "t": "Take {0}% of maximum Life and Energy Shield as [Fire] Damage when Infernal Flame reaches maximum",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hits_cannot_be_evaded_vs_blinded_maimed_bleeding_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Targets that are [Blind|Blinded], [Maim|Maimed], and [Bleeding] cannot [Evasion|Evade] your [Hit|Hits]",
     "h": []
    }
   ]
@@ -74523,6 +75670,20 @@
      "1|#"
     ],
     "t": "Enemies you apply [Incision] to take {0}% increased [Physical] Damage per [Incision]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "increases_and_reductions_to_move_speed_apply_to_es_recharge_rate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Increases and Reductions to Movement Speed also\\n apply to [ESRechargeRate|Energy Shield Recharge Rate]",
     "h": []
    }
   ]
@@ -75679,6 +76840,23 @@
  },
  {
   "stats": [
+   "life_loss_%_per_minute_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Lose {0}% of maximum Life per second while Sprinting",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "life_mana_flasks_restore_mana_life"
   ],
   "rows": [
@@ -75866,6 +77044,23 @@
     "t": "{0}% reduced Life Recovery Rate while your [Companion] is in your [Presence]",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "life_regeneration_per_minute_%_if_used_a_command_skill_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Regenerate {0}% of maximum Life per Second if you have used a [Command] Skill [Recently]",
+    "h": [
+     "per_minute_to_per_second",
      "1"
     ]
    }
@@ -77963,6 +79158,41 @@
  },
  {
   "stats": [
+   "local_idols_gain_additional_socketable_mods"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Idol|Idols] socketed in this item gain the benefits of their [ShamanOnlyMods|Bonded] modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "[Attack|Attacks] with this Weapon have {0}% chance to inflict [Exposure]",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[Attack|Attacks] with this Weapon inflict [Exposure]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_inflict_malignant_madness_on_critical_strike_%_if_eater_of_worlds_dominant"
   ],
   "rows": [
@@ -78413,6 +79643,20 @@
  },
  {
   "stats": [
+   "local_maximum_added_cold_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "On [Hit|Hitting] an enemy, gains maximum added [Cold] damage equal to the enemy's [Power] for 20 seconds, up to a total of {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_maximum_added_lightning_damage_equal_to_total_monster_power_of_enemies_hit_in_past_20_seconds_up_to_X"
   ],
   "rows": [
@@ -78523,6 +79767,20 @@
  },
  {
   "stats": [
+   "local_physical_damage_roll_always_min_or_max"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[BooleanDamageRoll|Rolls only the minimum or maximum Damage value] for [Physical] Damage",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "local_poison_on_critical_strike_chance_%"
   ],
   "rows": [
@@ -78580,6 +79838,48 @@
      "#|-1"
     ],
     "t": "{0}% reduced [Projectile|Projectile] Speed with this Weapon",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_dexterity"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|Convert] {0}% of Requirements to [Dexterity|Dexterity]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_intelligence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|Convert] {0}% of Requirements to [Intelligence|Intelligence]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_requirements_%_to_convert_to_strength"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[StatConversion|Convert] {0}% of Requirements to [Strength|Strength]",
     "h": []
    }
   ]
@@ -78694,6 +79994,20 @@
      "#"
     ],
     "t": "Double [StunThreshold|Stun Threshold] while Shield is Raised",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "local_socketable_%_maximum_weapon_damage_to_gain_as_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gain maximum [Ward|Runic Ward] equal to {0}% of this Weapon's maximum damage",
     "h": []
    }
   ]
@@ -79497,6 +80811,30 @@
  },
  {
   "stats": [
+   "mana_cost_efficiency_+%_if_not_dodge_rolled_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Mana Cost [Efficiency] if you haven't Dodge Rolled [Recently]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Mana Cost [Efficiency] if you haven't Dodge Rolled [Recently]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "mana_cost_+%_per_10_devotion"
   ],
   "rows": [
@@ -79752,6 +81090,55 @@
     "h": [
      "negate",
      "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_recovery_rate_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Mana Recovery rate while your [Companion] is in your [Presence]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Mana Recovery rate while your [Companion] is in your [Presence]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_regeneration_rate_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% more Mana Regeneration Rate",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% less Mana Regeneration Rate",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
     ]
    }
   ]
@@ -89642,6 +91029,20 @@
  },
  {
   "stats": [
+   "mark_grants_%_max_glory_to_random_skill_on_activate"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "A random Skill that requires Glory generates {0}% of its maximum Glory when your [Mark|Marks] [MarkActivate|Activate]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "mark_skill_duration_+%"
   ],
   "rows": [
@@ -90237,6 +91638,30 @@
      "#"
     ],
     "t": "{0}% of Maximum Life [StatConversion|Converted] to [EnergyShield|Energy Shield] per 20 Tribute",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "maximum_life_+%_final_from_caster_weapon_runic_ward_socketable"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% less maximum Life",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% more maximum Life",
     "h": []
    }
   ]
@@ -91489,6 +92914,34 @@
  },
  {
   "stats": [
+   "minion_physical_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Minions] gain {0}% of their [Physical] Damage as Extra [Lightning] Damage",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_physical_hit_and_dot_damage_%_taken_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Minions take {0}% of [Physical|Physical] Damage as [Lightning|Lightning] Damage",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "reservation_efficiency_+%_of_minion_skills"
   ],
   "rows": [
@@ -91702,6 +93155,20 @@
      "#"
     ],
     "t": "Minions' Hits can only Kill Ignited Enemies",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minions_in_presence_have_onslaught_while_you_are_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|Minions] in your [Presence] have [Onslaught] while you are on [LowWard|Low Runic Ward]",
     "h": []
    }
   ]
@@ -91963,6 +93430,27 @@
  },
  {
   "stats": [
+   "movement_speed_+%_per_5_rage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Every five [Rage] also grants you {0}% increased Movement Speed",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Every five [Rage] also grants you {0}% reduced Movement Speed",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "movement_speed_+%_while_affected_by_ailment"
   ],
   "rows": [
@@ -92016,6 +93504,20 @@
      "1|#"
     ],
     "t": "Increases Movement Speed by 25%, plus 1% per {0} [Evasion] Rating, up to [MaximumTotal|a maximum of 75]%\\nOther Modifiers to Movement Speed except for Sprinting do not apply",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "abyss_socketable_movement_speed_is_only_base_+%_per_15_spirit_up_to_+40%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Movement Speed per 15 [Spirit], up to a maximum of 40%\\nOther Modifiers to Movement Speed except for Sprinting do not apply",
     "h": []
    }
   ]
@@ -92566,6 +94068,20 @@
  },
  {
   "stats": [
+   "non_skill_all_damage_%_to_gain_as_fire_+_per_2%_attack_block_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Gain] {0}% of damage as [Fire] damage per 2% [ChanceToBlock|Chance to Block]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_chaos_per_active_undead_minion"
   ],
   "rows": [
@@ -92790,6 +94306,23 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_physical_per_10%_missing_mana_permyriad"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain] {0}% of Damage as Extra [Physical] Damage per ten percent missing Mana",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element"
   ],
   "rows": [
@@ -92804,6 +94337,20 @@
  },
  {
   "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_random_element_per_socketed_rune"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Gain] {0}% of Damage as [Gain|Extra] Damage of a random [ElementalDamage|Element] per\\n[Rune] Socketed in [Equipped] Items",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "non_skill_base_all_damage_%_to_gain_as_random_element_while_shapeshifted"
   ],
   "rows": [
@@ -92812,6 +94359,20 @@
      "1|#"
     ],
     "t": "[Gain] {0}% of Damage as Extra Damage of a random [ElementalDamage|Element] while [Shapeshift|Shapeshifted]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "non_skill_base_all_damage_%_to_gain_as_cold_fire_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain] {0}% of Damage as Extra Damage of all [ElementalDamage|Elements]",
     "h": []
    }
   ]
@@ -93226,6 +94787,20 @@
      "1",
      "canonical_line"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "nova_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Nova] Skill Gems",
+    "h": []
    }
   ]
  },
@@ -94693,6 +96268,44 @@
  },
  {
   "stats": [
+   "plant_skill_effect_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Skill Effect Duration with [Plant|Plant] Skills",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Skill Effect Duration with [Plant|Plant] Skills",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "plant_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Plant] Skill Gems",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "poison_as_though_dealing_X_damage_on_block"
   ],
   "rows": [
@@ -95779,6 +97392,20 @@
  },
  {
   "stats": [
+   "recoup_life_equal_to_%_of_hit_damage_dealt_to_your_offerings"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "You [Recoup] {0}% of Damage taken by your [Offering|Offerings] as Life",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recoup_speed_+%"
   ],
   "rows": [
@@ -96115,6 +97742,20 @@
  },
  {
   "stats": [
+   "recover_ward_as_well_as_mana_from_mana_regeneration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Mana Recovery from Regeneration is also applied to [Ward|Runic Ward]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "recover_x%_of_maximum_mana_when_you_consume_a_power_charge"
   ],
   "rows": [
@@ -96123,6 +97764,20 @@
      "1|#"
     ],
     "t": "Recover {0}% of maximum Mana when you consume a [Charges|Power Charge]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "recover_x%_of_maximum_ward_on_persistent_minion_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Recover {0}% of maximum [Ward|Runic Ward] when one of your [Reviving] [Minion|Minions] is [MinionDeath|Killed]",
     "h": []
    }
   ]
@@ -96325,6 +97980,20 @@
      "#"
     ],
     "t": "Remove a [Curse] when you use a Mana [Flask]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "remove_damaging_ailment_on_using_command_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Remove a [DamagingAilments|Damaging Ailment] when you use a [Command] Skill",
     "h": []
    }
   ]
@@ -96579,6 +98248,34 @@
  },
  {
   "stats": [
+   "revive_random_persistent_minion_on_offering_expiration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "One of your [Persistent] [Minion|Minions] revives when an [Offering] expires",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_%_life_to_gain_as_guard_on_dodge_roll"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Sacrifice] {0}% of maximum Life to gain that much [Guard] when you Dodge Roll",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "sacrifice_%_maximum_life_to_gain_half_as_much_ward_on_attack"
   ],
   "rows": [
@@ -96680,6 +98377,20 @@
      "#"
     ],
     "t": "When you [Attack], take {0}% of Life as [Physical] Damage for\\neach [Warcry] [Empowered|Empowering] the [Attack]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "self_take_no_extra_damage_from_critical_strikes_while_on_consecrated_ground"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|Hits] against you have no [CriticalDamageBonus|Critical Damage Bonus] while on [ConsecratedGround|Consecrated Ground]",
     "h": []
    }
   ]
@@ -97214,6 +98925,54 @@
  },
  {
   "stats": [
+   "skill_speed_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [SkillSpeed|Skill Speed] for each Corrupted Item [Equipped]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [SkillSpeed|Skill Speed] for each Corrupted Item [Equipped]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_speed_+%_while_on_low_mana"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [SkillSpeed|Skill Speed] while on [LowMana|Low Mana]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [SkillSpeed|Skill Speed] while on [LowMana|Low Mana]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_speed_+%_while_shapeshifted"
   ],
   "rows": [
@@ -97348,6 +99107,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "slam_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Slam] Skill Gems",
+    "h": []
    }
   ]
  },
@@ -97861,6 +99634,30 @@
  },
  {
   "stats": [
+   "spell_damage_+%_while_companion_in_presence"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Spell] Damage while your [Companion] is in your [Presence]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Spell] Damage while your [Companion] is in your [Presence]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_damage_+%_while_wielding_melee_weapon"
   ],
   "rows": [
@@ -98286,6 +100083,20 @@
  },
  {
   "stats": [
+   "spells_penetrates_elemental_resist_%_while_on_low_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Spell damage [Penetration|Penetrates] {0}% of enemy [ElementalDamage|Elemental] [Resistances] while on [LowWard|Low Runic Ward]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spirit_+%_if_you_have_at_least_100_tribute"
   ],
   "rows": [
@@ -98301,6 +100112,30 @@
      "#|-1"
     ],
     "t": "{0}% reduced [Spirit] if you have at least 100 Tribute",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+%_per_equipped_corrupted_item"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Spirit] for each Corrupted Item [Equipped]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Spirit] for each Corrupted Item [Equipped]",
     "h": [
      "negate",
      "1"
@@ -98346,6 +100181,20 @@
      "#"
     ],
     "t": "{0:+d} to [Spirit] while you have at least 200 [Strength]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spirit_+_per_2_levels"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to [Spirit] per 2 Levels",
     "h": []
    }
   ]
@@ -98418,6 +100267,30 @@
  },
  {
   "stats": [
+   "sprint_movement_speed_+%_per_active_persistent_minion"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased Movement Speed while Sprinting per [Persistent] [Minion]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced Movement Speed while Sprinting per [Persistent] [Minion]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "start_at_zero_energy_shield"
   ],
   "rows": [
@@ -98440,6 +100313,34 @@
      "1|#"
     ],
     "t": "[ESRecharge|Energy Shield Recharge] starts when you use a Mana [Flask]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Storm] Skill Gems",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "storm_skill_limit_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Storm] Skills have +{0} to [Limit]",
     "h": []
    }
   ]
@@ -98502,6 +100403,20 @@
      "#"
     ],
     "t": "[Strength] can satisfy other [Attributes|Attribute] Requirements of [Melee] Weapons and [Melee] Skills",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "strike_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Strike] Skill Gems",
     "h": []
    }
   ]
@@ -98660,6 +100575,30 @@
  },
  {
   "stats": [
+   "stun_threshold_+%_if_stunned_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [StunThreshold|Stun Threshold] if you've been [Stun|Stunned] [Recently]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [StunThreshold|Stun Threshold] if you've been [Stun|Stunned] [Recently]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "stun_threshold_+_from_lowest_of_base_helmet_evasion_rating_and_armour"
   ],
   "rows": [
@@ -98668,6 +100607,27 @@
      "#"
     ],
     "t": "Gain [StunThreshold|Stun Threshold] equal to the lowest of [Evasion|Evasion] and [Armour|Armour] on your Helmet",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "stun_threshold_+_per_10_maximum_ward"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "+{0} to [StunThreshold|Stun Threshold] per 10 maximum [Ward|Runic Ward]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "-{0} to [StunThreshold|Stun Threshold] per 10 maximum [Ward|Runic Ward]",
     "h": []
    }
   ]
@@ -99495,6 +101455,20 @@
  },
  {
   "stats": [
+   "thorns_damage_is_lucky_against_enemies_with_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Thorns] Damage is [Lucky] against targets with [ArmourBreak|Fully Broken Armour]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "thorns_damage_+%"
   ],
   "rows": [
@@ -99585,6 +101559,22 @@
      "#"
     ],
     "t": "{0} to {1} [Fire|Fire] [Thorns|Thorns] damage",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thorns_minimum_base_lightning_damage",
+   "thorns_maximum_base_lightning_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0} to {1} [Lightning|Lightning] [Thorns|Thorns] damage",
     "h": []
    }
   ]
@@ -101732,6 +103722,20 @@
  },
  {
   "stats": [
+   "warcry_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Warcry] Skill Gems",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "warcry_speed_+%_per_25_tribute"
   ],
   "rows": [
@@ -101842,6 +103846,166 @@
  },
  {
   "stats": [
+   "ward_regeneration_rate_+%_if_have_crit_recently"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Ward|Runic Ward] Regeneration Rate if you've dealt a [Critical|Critical Hit] [Recently]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Ward|Runic Ward] Regeneration Rate if you've dealt a [Critical|Critical Hit] [Recently]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+%_while_sprinting"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% increased [Ward|Runic Ward] Regeneration Rate while Sprinting",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% reduced [Ward|Runic Ward] Regeneration Rate while Sprinting",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_+1%_final_per_x%_ward_lost_from_hits_up_to_100%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "1% more [Ward|Runic Ward] Regeneration rate per {0}% of maximum [Ward|Runic Ward] lost from [Hit|Hits] [Recently], up to 100% more",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "ward_regeneration_rate_is_doubled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ward|Runic Ward] Regeneration Rate is doubled",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_1"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Can roll Chronomancy modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_2"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Can roll Soul modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_3"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Can roll Berserking modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_4"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Can roll Marksman modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_5"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Can roll Decay modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "warping_rune_add_item_tag_6"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Can roll Destruction modifiers",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "weapon_damage_+%_per_10_str"
   ],
   "rows": [
@@ -101909,6 +104073,20 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_skill_gem_level_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} to Level of all [Wind] Skill Gems",
+    "h": []
    }
   ]
  },
@@ -102663,6 +104841,20 @@
      "#"
     ],
     "t": "Primordial",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "soul_core_cannot_roll_no_outcome_with_corruption"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Corrupted|Corrupting] will always result in change",
     "h": []
    }
   ]

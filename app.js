@@ -5,7 +5,7 @@ import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
 import { skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
-import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed } from './items.js';
+import { initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
 import { initSkills } from './skills.js';
 import { initOpt } from './optview.js';
 import { toughness } from './optimize.js';
@@ -185,6 +185,16 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   const NT = sum.minions_get_amulet_stats_instead_of_you && b.items?.amulet;
   for (const [k, v] of Object.entries(gearStats(Object.fromEntries(Object.entries(wornItems(b, sum) || {}).filter(([slot, it]) => (!slot.startsWith('jewel:') || sockOn(b).has(slot.slice(6)) && !(isPhyl(slot.slice(6)) && it.unique)) && slotOpen(slot, sum) && !(NT && slot === 'amulet')))))) sum[k] = (sum[k] || 0) + v;
   if (NT) for (const [k, v] of Object.entries(gearStats({ amulet: b.items.amulet }))) sum['minion:' + k] = (sum['minion:' + k] || 0) + v;
+  // the Augments socketed in the equipment (it.socketed): Wisdom of the Maji's Bonded modifiers, Idolatry's per idol and
+  // per other one; Runic Meridians' runes tattooed for a slot (b.chakra: { helmet: [names], ... }), as socketed there
+  { const W = !!sum.ascendancy_shaman_gain_additional_socketable_mods; let idols = 0, others = 0;
+    for (const [slot, it] of Object.entries(wornItems(b, sum) || {})) if (!slot.startsWith('jewel:') && slotOpen(slot, sum)) {
+      const own = statsOf(it), r = socketStats(it, own); idols += r.idols; others += r.others;
+      if (W) plusStats(sum, socketStats(it, own, true).stats); }
+    if (sum.enable_chakras) for (const [slot, names] of Object.entries(b.chakra || {})) { const it = { socketed: names.filter(n => SOCKETABLES[n]?.kind === 'Rune') }, cls = CHAKRA[slot];
+      if (cls) { plusStats(sum, socketStats(it, {}, false, cls).stats); if (W) plusStats(sum, socketStats(it, {}, true, cls).stats); } }
+    plusStats(sum, { 'base_reservation_efficiency_+%': idols * (sum['reservation_efficiency_+%_of_skills_per_socketed_idol'] || 0), 'companion_damage_+%': idols * (sum['companion_damage_+%_per_socketed_idol'] || 0),
+      'base_resist_all_elements_%': others * (sum['resist_all_elements_%_per_socketed_non_idol_augment'] || 0) }); }
   // Ritualist's Mystic Attunement: increased bonuses from the equipped rings and amulet. note: the whole of what they grant
   const JE = sum['equipped_jewellery_effect_of_bonuses_+%'];
   if (JE) for (const [k, v] of Object.entries(gearStats(Object.fromEntries(['ring1', 'ring2', 'ring3', 'amulet'].filter(s => b.items?.[s] && slotOpen(s, sum)).map(s => [s, b.items[s]]))))) sum[k] = (sum[k] || 0) + v * JE / 100;

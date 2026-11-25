@@ -611,6 +611,7 @@ for f in ('gem_stat_descriptions.csd', 'skill_stat_descriptions.csd', 'active_sk
 skill_keys = lambda sk: set(sk['constant']) | {k for lv in (sk['levels'] or {}).values() for k in lv}
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
 used |= {k for sk in skills.values() for k in skill_keys(sk)}
+used |= {stats[x]['Id'] for r in load('SoulCoreStats') for x in [*r['Stats'], *r['BondedStats']]}   # runes, soul cores, idols (the item editor's sockets)
 used |= {s for k in [*conquerors, *alt_over.values(), *alt_notables.values()] for s in k['stats']}   # the keystones timeless jewels put in place of the tree's, the notables Undying Hate's modifiers name
 used |= {s for v in alt_versions for st in [*v.get('becomes', {}).values(), *v.get('plus', {}).values()] for s in st} | {to for v in alt_versions for _, to in v.get('extra', {}).values()}   # and what the passives they conquer become or get (Tribute)
 kept = [d for d in descs.values() if used & set(d['stats'])]
@@ -724,6 +725,26 @@ def one_name(bases):
 # reads a "(rune)" line no modifier is worded like by these (SoulCoreStats; the Bonded ones are not counted)
 rune_sets = list({tuple((sid(x), v, v) for x, v in zip(r['Stats'], r['StatsValues'])): 1 for r in load('SoulCoreStats') if r['Stats']})
 assert any(x[0][0] == 'base_fire_damage_resistance_%' for x in rune_sets), 'SoulCoreStats'
+# what can be socketed (runes, soul cores, idols...: SoulCores), for the item editor's sockets: its name, kind,
+# (SoulCoreTypes), required level and, per item class it goes in, its stats and its Bonded ones (the Shaman's Wisdom of the Maji):
+# by: [[classes, stats, bonded]]. A category with no item classes of its own (SoulCoreStatCategories "All", "Martial
+# Weapon", "Armour") is the classes with weapon damage / defences, a "Martial ..." one those and its own
+_bit, _sc_types = load('BaseItemTypes'), [t['Id'] for t in load('SoulCoreTypes')]
+_martial = sorted({b['class'] for b in bases if b.get('weapon')})
+_armour = sorted({b['class'] for b in bases if b.get('armour')})
+def _sc_classes(c):
+    own = [classes[i]['Name'] for i in c['TargetItemClasses']]
+    return sorted({*own, *(_martial if c['Id'].startswith('Martial') else []), *(_armour if c['Id'] in ('Armour', 'All') else []),
+                   *(_martial + ['Wands', 'Staves', 'Sceptres'] if c['Id'] == 'All' else [])})
+_sc_cats = [_sc_classes(c) for c in load('SoulCoreStatCategories')]
+_sc_stats = {}
+for r in load('SoulCoreStats'):
+    if r['Stats'] or r['BondedStats']:
+        _sc_stats.setdefault(r['SoulCore'], []).append([_sc_cats[r['StatCategory']], [[sid(x), v] for x, v in zip(r['Stats'], r['StatsValues'])], [[sid(x), v] for x, v in zip(r['BondedStats'], r['BondedStatsValues'])]])
+socketables = [{'name': _bit[c['BaseItemType']]['Name'], **tr(bases_tr, c['BaseItemType']), 'kind': _sc_types[c['Type']], 'level': c['RequiredLevel'],
+                'by': _sc_stats[i]}
+               for i, c in enumerate(load('SoulCores')) if i in _sc_stats and ok(_bit[c['BaseItemType']]['Name'])]
+assert next(x for x in socketables if x['name'] == 'Lesser Desert Rune')['by'][2] == [_armour, [['base_fire_damage_resistance_%', 10]], [['base_maximum_life', 20], ['base_maximum_mana', 20]]], 'socketables'
 assert next(b for b in bases if b['name'] == 'Ruby Charm')['charm']['stats'] == {'base_fire_damage_resistance_%': 25}, 'UtilityFlaskBuffs'
 assert all(b.get('charm') and b['charm']['icon'] for b in bases if b['class'] == 'Charms'), 'a charm without its effect or icon'
 assert next(b for b in bases if b['name'] == 'Lesser Life Flask')['flask'] == {'life': 50, 'mana': 0, 'recovery_s': 3.0, 'charges': 60, 'per_use': 10}, 'Flasks / ComponentCharges'
@@ -739,6 +760,8 @@ for fam_i, fam in enumerate(load('ModFamily')):
                           for m in mods if m['GenerationType'] == 3 and fam_i in m['Families']])
 save('items.json', {
     'runes': rune_sets,
+    'socketables': socketables,
+    'socketable_kinds': {r['Id']: {'name': plain(r['Name']), **tr(load_langs('SoulCoreTypes'), i)} for i, r in enumerate(load('SoulCoreTypes'))},   # their kinds' names (Rune, Idol...)
     # a radius jewel's size by its radius (PassiveJewelRadii: 1000 is "Small"), as the item shows it ("Radius: Small")
     'jewel_radii': {r['Radius']: re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', r['ID']) for r in load('PassiveJewelRadii')},
     # the rings a jewel can be limited to ("Only affects Passives in Medium-Large Ring": local_jewel_variable_ring_radius_value
