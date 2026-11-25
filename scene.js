@@ -31,7 +31,7 @@ function segDist(p, a, b) {
 }
 const noLeech = () => ({ life: { left: 0, rate: 0 }, mana: { left: 0, rate: 0 } });
 const ailOf = els => els.flatMap(e => e === 'cold' ? ['chill', 'freeze'] : AILMENT[e] ? [AILMENT[e]] : []);
-const ONCE = new Set(['buff', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
+const ONCE = new Set(['buff', 'splinters', 'warcry', 'mark', 'curse', 'orb', 'wall', 'totem', 'raise', 'triskelion', 'sigil', 'banner', 'galvanic', 'cstaff', 'feast', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'temper', 'jade']);   // one use per key press
 const NOHIT = new Set(['meditate', 'march', 'temper', 'hollow', 'banner', 'calamity', 'apocalypse', 'chayula', 'curse', 'mark', 'aura', 'herald', 'meta', 'buff', 'warcry', 'minion', 'raise', 'field', 'triskelion', 'sigil', 'parry', 'shield', 'reprieve', 'galvanic', 'cstaff', 'feast', 'tempering', 'tempest', 'pain', 'bone', 'mantra', 'demon', 'soul', 'drain', 'trift', 'pinnacle', 'tfreeze', 'iron', 'sacrifice', 'agony', 'jade', 'wardbound']);
 const AREAL = new Set(['area', 'hexblast', 'nova', 'slam', 'rain', 'grenade', 'orb', 'curse', 'warcry', 'zone', 'storm', 'dot', 'meteor', 'wave', 'sweep', 'cone']);
 const PIP = { ignite: 'fire', chill: 'cold', freeze: 'ice', shock: 'lightning', poison: 'poison', bleed: 'blood', armour: 'dust', stun: 'white', expo: 'gold', curse: 'curse', mark: 'mark', electrocute: 'lightning', pin: 'dust', maim: 'blood', blind: 'white' };
@@ -3396,6 +3396,23 @@ export function initScene(el, api) {
       for (const d of inside(c, R)) { dot(d, S); d.wob = .5; }
       touch(c, R, S);
     },
+    // Animus Splinters: a short-lived copy of you that uses one of its Socketed Skills once and vanishes. Its look
+    // (falselife .epk/.pet): on you a shimmer with blue rune embers and wisps (falselife_activate); beside you a blur and
+    // curls of blue (false_life_spawn) out of which the copy steps, deep blue with pale cyan light (falselife_skin,
+    // falselife_spectre_skin: RGB up to 0.42 / 0.88 / 1), and fades in its wisps (flaselife_wisps). note: where the copy
+    // stands and which skill it uses when it holds two are not in the data: beside you, one of them at random
+    splinters(S) {
+      const js = api.build().gems.map((_, j) => j).filter(j => api.usedBy(j) === S.g && base(j)); if (!js.length) return;
+      const j = js[Math.floor(rnd(js.length))], b = base(j), d = near(pp, 30), at = d ? { x: d.pos.x, z: d.pos.z } : { ...S.at };
+      const a = Math.atan2(at.x - pp.x, at.z - pp.z) + (rnd(1) < .5 ? 1 : -1) * Math.PI / 2, p = { x: pp.x + Math.sin(a) * 1.5, z: pp.z + Math.cos(a) * 1.5 };
+      fx.glow({ x: pp.x, y: 1.1, z: pp.z }, 1.8, SPLINTER, .4, 2); fx.emit(18, { p: { x: pp.x, y: .3, z: pp.z }, r: .4, h: 1.5, up: 1.4, v: .3, life: .8, size: .13, c: SPLINTER, c2: 0x0b2cff, k: 2, drag: 1 });
+      fx.bolt(V(pp.x, 1.1, pp.z), V(p.x, 1, p.z), SPLINTER, .25, .04, 0);
+      visage(p, at, { name: S.name, c: SPLINTER, body: 0x8fe6ff, glow: .85, a: .55, dark: 0x0b2cff, back: { x: 0, z: 0 }, look: api.look?.(),
+        spawn: q => { fx.ball({ x: q.x, y: 1, z: q.z }, 1.1, SPLINTER, .35, 1.5); fx.glow({ x: q.x, y: 1.2, z: q.z }, 2, SPLINTER, .45, 2.2);
+          fx.emit(26, { p: { x: q.x, y: .3, z: q.z }, r: .6, h: 1.6, v: 1.4, life: .5, size: .2, grow: 1.5, c: SPLINTER, c2: 'white', k: 1.6, drag: 2.5 });
+          fx.emit(14, { p: { x: q.x, y: .1, z: q.z }, r: .5, up: 2, v: .3, life: .9, size: .12, c: 0x2a5bff, c2: SPLINTER, k: 2, drag: 1 }); } },
+        () => use(j, { at, src: 'meta' }), b.P, b);
+    },
     buff(S) {
       const P = S.P, st = S.dmg?.stats || {};
       if (P.corpse && !useCorpse(S)) return;
@@ -3971,6 +3988,10 @@ export function initScene(el, api) {
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
   const NOMARK = new Set(["Alchemist's Boon", 'Align Fate']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
+  // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
+  const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
+    * api.build().gems.reduce((n, _, j) => { const b = api.usedBy(j) === S.g && base(j); return n + (b ? (b.dmg?.cost || 0) + (b.dmg?.lifeCost || 0) : 0); }, 0);
   const FATE = 0x8fb4ff;   // Align Fate's blue (imageGlow_Skin.mat's RGB multiplier 0.94 / 1.28 / 2.5)
   function fate() {
     const F = onS('Align Fate'), st = F?.dmg?.stats; if (!st) return;
@@ -4711,7 +4732,7 @@ export function initScene(el, api) {
       // a Runic Ward cost (Conductive Runes); Scouring Flame, Runic Extraction, Olroth's Conviction: its share of the life
       // and mana cost as Runic Ward too; Olroth's Hubris: its share of your maximum Ward more, added physical and
       // cold damage of their shares of it (its physical counts for freeze: afflict). note: added as they are, not scaled by the skill's modifiers
-      const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100 + (cost + life) * (OH?.['base_skill_ward_cost_as_%_of_life_and_mana_cost'] || 0) / 100;
+      const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100 + (cost + life) * (OH?.['base_skill_ward_cost_as_%_of_life_and_mana_cost'] || 0) / 100 + (S.kind === 'splinters' ? splinterCost(S) : 0);
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) { spendWard(WC); S.wardPaid = WC; }
       // Derange: an Energy Shield cost equal to your Intelligence
