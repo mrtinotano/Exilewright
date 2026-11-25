@@ -2624,14 +2624,25 @@ export function initScene(el, api) {
   function standSlow(map, c, R, pct, keep) {
     for (const d of inside(c, R)) { let v = map.get(d); if (!v || !d.slows.includes(v)) { map.set(d, v = { pct }); d.slows.push(v); } v.until = time + keep; }
   }
+  // Chayula's Will's wind: its dark core and violet wind (alpha, as smoke), pale violet flames and embers whirling up it,
+  // debris and dust pulled in at its foot
+  function chayulaWind(L, p, R, s) {
+    for (let i = 0; i < 5; i++) {
+      const a = s * 9 + i * 1.26 + rnd(.6), h = rnd(3.6), rr = .2 + h * .32 * (R / 3 + .3);
+      fx.emit(1, { p: { x: p.x + Math.cos(a) * rr * .6, y: h, z: p.z + Math.sin(a) * rr * .6 }, dir: V(-Math.sin(a) * 2.5, .8, Math.cos(a) * 2.5), life: .6, size: .8 + h * .2, grow: 1.5, c: i < 2 ? L.core : L.wind, smoke: true, a: .75 });
+      if (i < 3) fx.emit(1, { p: { x: p.x + Math.cos(a + 1) * rr, y: h, z: p.z + Math.sin(a + 1) * rr }, dir: V(-Math.sin(a + 1) * 4, 1.4, Math.cos(a + 1) * 4), life: .45, size: .32, c: L.flame, c2: L.string, k: 2.2 });
+    }
+    if (Math.random() < .5) fx.emit(1, { p: { x: p.x, y: rnd(.2, 3), z: p.z }, r: R * .5, up: 2, v: .5, life: .6, size: .08, c: L.flame, c2: 'white', k: 2.4 });
+    if (Math.random() < .3) { const a = rnd(TAU); fx.emit(1, { p: { x: p.x + Math.cos(a) * R, y: .1, z: p.z + Math.sin(a) * R }, dir: V(-Math.cos(a) * 3, .8, -Math.sin(a) * 3), life: .45, size: .1, c: 0x3a3030, c2: 'dust', g: 2 }); }
+  }
   function vortex(S, c, R, dur, o = {}) {   // Tornado: drifts towards the enemies and takes the element of the ground it crosses
     const g = holder(c), ts = S.dmg?.stats || {}, pull = ts['tornado_pull_strength_%'], DOT = Object.keys(S.dmg?.dot || {}).length > 0; let cur = S, tk = .2, pt = 0;
     limit(x => x.vortex && x.name === S.name, ts.number_of_tornados_allowed ?? ts.base_number_of_tornado_shots_allowed);
     // Tornado Shot's: it stays where it lands and Hinders the enemies standing in it; your arrows, spears and bolts that reach
     // it are sucked in and it spits a ring of copies (its number, range and less damage) that are not copied again, up to
     // its most times
-    const cs = o.copy, hold = new Map();
-    const e = thing(g, dur, { name: S.name, vortex: true, R, copy: cs && { left: cs.tornado_shot_number_of_hits_allowed + lasts(S) },
+    const cs = o.copy, hold = new Map(), L = o.look, SP = L && fx.decal(c, R * .7, 'rune', L.spiral, { a: .4, spin: -3 });
+    const e = thing(g, dur, { name: S.name, vortex: true, R, off: () => SP?.remove(), copy: cs && { left: cs.tornado_shot_number_of_hits_allowed + lasts(S) },
       spit(C, k) {
         const n = cs.base_number_of_projectiles, a0 = rnd(TAU), p = { x: g.position.x, z: g.position.z };
         if (--e.copy.left <= 0) e.dur = e.s;
@@ -2639,7 +2650,7 @@ export function initScene(el, api) {
       },
       tick(dt, e) {
         const p = g.position, col = cur.el === 'physical' ? 'dust' : cur.el;
-        for (let i = 0; i < 3; i++) {
+        if (L) { SP.move(p); chayulaWind(L, p, R, e.s); } else for (let i = 0; i < 3; i++) {
           const a = e.s * 9 + i * 2.1 + rnd(.6), h = rnd(3.4), rr = .2 + h * .28 * (R / 3 + .3);
           fx.emit(1, { p: { x: p.x + Math.cos(a) * rr, y: h, z: p.z + Math.sin(a) * rr }, dir: V(-Math.sin(a) * 3.5, 1.2, Math.cos(a) * 3.5), life: .45, size: .34, c: col, c2: 'white', k: cur.el === 'physical' ? 1.1 : 2.2 });
         }
@@ -2656,7 +2667,7 @@ export function initScene(el, api) {
             for (const el of cur.els) if (!S.els.includes(el)) dot(d, { ...cur, P, name: cur.name + el, els: [el], dmg: { ...cur.dmg, dot: { [el]: ts.active_skill_base_elemental_damage_to_deal_per_minute / 60 * scale } } });
           }
         }
-        if ((tk -= dt) <= 0) { tk = DOT ? .4 : o.every || .4; fx.ring(p, R * .3, R, col, .35, { a: .45 }); if (!DOT) area(p, R, { ...cur, self: e }, { mult: o.mult ?? .4 }); }
+        if ((tk -= dt) <= 0) { tk = DOT ? .4 : o.every || .4; if (!L) fx.ring(p, R * .3, R, col, .35, { a: .45 }); if (!DOT) area(p, R, { ...cur, self: e }, { mult: o.mult ?? .4 }); }
       } });
   }
   // Landing a jump: Xibaqua's Rending sets off the corpses within its secondary radius (up to its most) after its delay, each
@@ -3681,15 +3692,26 @@ export function initScene(el, api) {
   };
   // Archon of Chayula: for its duration you are his Archon: more physical and chaos damage, its chance to Wither on hit, and
   // at its interval Chayula's Will, a chaos tornado that seeks the enemies within its secondary radius at its speed and
-  // hits in its area at its interval
+  // hits in its area at its interval.
+  // Its look (archonofchayula .mat/.pet/.ao): on taking the form a violet flash and flames on you, sparks of pink and a
+  // pulse of pale pink and violet (buff_apply: flash 0.74 / 0.35 / 1, sparks 1 / 0.23 / 0.54, growcore 1 / 0.7 / 0.98 and
+  // 0.52 / 0.25 / 1); while it lasts your skin glows magenta, your eyes too, with ribbons of chaos rising off you (buff
+  // skin pass 0.98 / 0.41 / 1, ribbons and strings 1 / 0.23 / 1); the tornado a near-black core in a dark violet wind
+  // (0.01 / 0 / 0.03, 0.28 / 0.2 / 0.44) with pale violet Breach flames and embers on it (0.78 / 0.65 / 1), a violet
+  // spiral on the ground under it (0.37 / 0.14 / 1), debris and dust pulled in at its foot
+  const CHAYULA = { skin: 0xfa69ff, string: 0xff3bff, flash: 0xbd59ff, spark: 0xff3b8a, pulse: 0xffb3fa, violet: 0x8540ff,
+    core: 0x030008, wind: 0x47336f, flame: 0xc7a6ff, spiral: 0x5e24ff };
   K.chayula = S => {
     const st = S.dmg?.stats || {}, dur = durOf(S); let tk = 0;
     me.chayula = { until: time + dur, more: st['archon_of_chayula_physical_and_chaos_damage_+%_final'] || 0, wither: st['archon_of_chayula_withered_on_hit_for_4_seconds_%_chance'] || 0 };
     setBuff({ label: S.label, name: S.name, c: css('chaos'), s: dur });
-    fx.ring(pp, .3, 3, 'chaos', .6);
+    fx.glow({ x: pp.x, y: 1.1, z: pp.z }, 3.2, CHAYULA.flash, .5, 3);
+    fx.emit(20, { p: { x: pp.x, y: .2, z: pp.z }, r: .35, h: 1.6, up: 2, v: .6, life: .6, size: .3, c: CHAYULA.flash, c2: CHAYULA.string, k: 2, drag: 1 });
+    fx.emit(24, { p: { x: pp.x, y: 1.1, z: pp.z }, r: .3, v: 4, life: .45, size: .09, c: CHAYULA.spark, c2: 'white', k: 2.4, drag: 2 });
+    fx.ring(pp, .3, 2.6, CHAYULA.pulse, .45, { a: .75 }); later(.1, () => fx.ring(pp, .3, 3.4, CHAYULA.violet, .5, { a: .6 }));
     thing(holder(pp), dur, { name: S.name, tick(dt, e) {
       if ((tk -= dt) > 0) return; tk = st.archon_of_chayula_spawn_chaos_tornado_interval_ms / 1000;
-      vortex(S, { x: pp.x, z: pp.z }, S.A, e.dur - e.s, { speed: st.archon_chayula_storm_movement_speed / 10, every: st.archon_of_chayula_tornado_attack_interval_ms / 1000, mult: 1, seek: S.G?.radius2 || 9 });
+      vortex(S, { x: pp.x, z: pp.z }, S.A, e.dur - e.s, { speed: st.archon_chayula_storm_movement_speed / 10, every: st.archon_of_chayula_tornado_attack_interval_ms / 1000, mult: 1, seek: S.G?.radius2 || 9, look: CHAYULA });
     } });
   };
   // Conductive Runes: its Runes in a cone in front of you up to its limit, each arming after its time and going off its
@@ -4402,14 +4424,19 @@ export function initScene(el, api) {
   // 1.5 s, Apocalypse's orange for 1 s; note: how long is not in the data)
   const WARD = 0x125eff, WG = new THREE.Color();
   function kaomLook(dt) {
-    const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
-    if (w) WG.set(sk.hex);
+    const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
+    let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
+    if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
+    if (ch) {
+      for (const s of [-1, 1]) { const q = player.eye(V(), s); fx.emit(1, { p: q, v: 0, life: .05, size: .13, c: CHAYULA.skin, c2: 'white', k: 3 }); }
+      if (Math.random() < .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.7), z: pp.z }, r: .3, up: 1.4, v: .25, life: .8, size: .14, c: CHAYULA.string, c2: CHAYULA.violet, k: 2, drag: 1 });
+    }
     if (!k && !w && !player.kaomed) return;
     player.kaomed = k > 0 || w > 0; player.group.scale.setScalar(1 + .2 * k);
     player.group.traverse(m => { if (!m.isSkinnedMesh || !m.material?.emissive) return; const M = m.material, u = M.userData;
       if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; }
       M.color.copy(u.c0).lerp(KAOM_SKIN, k).lerp(WG, w * .6); M.emissive.copy(u.e0).lerp(KG, k).lerp(WG, w); M.emissiveIntensity = u.i0 * (1 - Math.max(k, w)) + k * (.22 + .08 * Math.sin(time * 7)) + w * .9; });
-    if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: sk.hex, k: 1.8, drag: 1 });   // its runes, embers rising off you
+    if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: WG.getHex(), k: 1.8, drag: 1 });   // its runes, embers rising off you
     if (k && Math.random() < k * .6) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 2), z: pp.z }, r: .35, up: 1.2, v: .3, life: .6, size: .12, c: 'fire', c2: 'ember', k: 1.6, drag: 1 });
   }
   const demon = () => me.demon ? Math.min(me.demon.max, Math.floor(time - me.demon.at)) : 0;
