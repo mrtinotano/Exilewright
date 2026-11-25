@@ -994,5 +994,6 @@
  "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "패시브 트리: 드래그로 이동, 휠이나 두 손가락으로 확대, 클릭이나 탭으로 찍기. 검색창으로 키보드로 패시브에 갈 수 있습니다.",
  "Copy this build as a new one": "이 빌드를 새 빌드로 복사",
  "{0} (copy)": "{0} (사본)",
- "What each number has more (green) or less (red) than the build you pick": "선택한 빌드보다 각 수치가 많은 만큼(초록) 또는 적은 만큼(빨강)"
+ "What each number has more (green) or less (red) than the build you pick": "선택한 빌드보다 각 수치가 많은 만큼(초록) 또는 적은 만큼(빨강)",
+ "Compared with {0}": "{0}와(과) 비교"
 }

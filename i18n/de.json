@@ -994,5 +994,6 @@
  "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "Passivbaum: Ziehen zum Verschieben, Mausrad oder zwei Finger zum Zoomen, Klick oder Tippen zum Zuweisen. Das Suchfeld erreicht eine Passive per Tastatur.",
  "Copy this build as a new one": "Diesen Build als neuen kopieren",
  "{0} (copy)": "{0} (Kopie)",
- "What each number has more (green) or less (red) than the build you pick": "Was jede Zahl mehr (grün) oder weniger (rot) hat als der gewählte Build"
+ "What each number has more (green) or less (red) than the build you pick": "Was jede Zahl mehr (grün) oder weniger (rot) hat als der gewählte Build",
+ "Compared with {0}": "Verglichen mit {0}"
 }

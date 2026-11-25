@@ -994,5 +994,6 @@
  "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "パッシブツリー: ドラッグで移動、ホイールまたは2本指で拡大縮小、クリックまたはタップで割り振り。検索ボックスでキーボードからパッシブを選べます。",
  "Copy this build as a new one": "このビルドを新しいビルドとしてコピー",
  "{0} (copy)": "{0}（コピー）",
- "What each number has more (green) or less (red) than the build you pick": "選んだビルドと比べて各数値が多い分（緑）・少ない分（赤）"
+ "What each number has more (green) or less (red) than the build you pick": "選んだビルドと比べて各数値が多い分（緑）・少ない分（赤）",
+ "Compared with {0}": "{0}と比較"
 }

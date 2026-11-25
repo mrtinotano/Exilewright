@@ -994,5 +994,6 @@
  "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "ต้นไม้พาสซีฟ: ลากเพื่อเลื่อน ล้อเมาส์หรือสองนิ้วเพื่อซูม คลิกหรือแตะเพื่อลงแต้ม ช่องค้นหาเข้าถึงพาสซีฟด้วยคีย์บอร์ดได้",
  "Copy this build as a new one": "คัดลอกบิลด์นี้เป็นบิลด์ใหม่",
  "{0} (copy)": "{0} (สำเนา)",
- "What each number has more (green) or less (red) than the build you pick": "ค่าที่แต่ละตัวเลขมากกว่า (เขียว) หรือน้อยกว่า (แดง) บิลด์ที่เลือก"
+ "What each number has more (green) or less (red) than the build you pick": "ค่าที่แต่ละตัวเลขมากกว่า (เขียว) หรือน้อยกว่า (แดง) บิลด์ที่เลือก",
+ "Compared with {0}": "เทียบกับ {0}"
 }

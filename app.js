@@ -396,7 +396,7 @@ $('delBuild').onclick = async () => {
 // character panel: name, base class and ascendancy are edited in place
 $('charPanel').onchange = e => {
   const d = e.target.dataset;
-  if (d.act === 'vs') { vsId = e.target.value || null; renderStats(); return; }
+  if (d.act === 'vs') { vsId = e.target.value || null; renderStats(); if (!$('skills').hidden) renderSkills(); return; }
   if (d.act === 'name') edit((e, b) => b.name = e.target.value.trim() || t('New build'))(e);
   if (d.act === 'level') edit((e, b) => { const v = Math.round(+e.target.value); if (v >= 1) b.lvl = Math.min(100, v); else delete b.lvl; })(e);
   if (d.cond) edit((e, b) => { const C = b.conds ||= {}; if (e.target.checked) C[d.cond] = 1; else delete C[d.cond]; })(e);   // a condition of the character's (charpanel.js)
@@ -1492,7 +1492,7 @@ const renderItems = initItems($('items'), B, () => { keepSplit(); save(); render
   sockets,
   items => snap({ ...B(), items }), treeSum,
   { can: slot => SEARCH_SLOTS.includes(slot) || slot.startsWith('jewel:'), map: drawSocket, show: id => showOnTree([id]), money: () => renderOpt.money(), tough: items => { const b = { ...B(), items }; return toughness(character(b, sumOf(b))); }, find: (...a) => renderOpt.better(...a), price: p => renderOpt.price(p), site: siteQuery, item: (league, l, state) => siteQuery(league, listingQuery(l, state)) });
-const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo);
+const renderSkills = initSkills($('skills'), $('skillPanel'), B, () => { save(); renderSide(); }, treeSum, addGem, geo, () => builds[vsId] && vsId !== cur && { b: builds[vsId], sum: sumOf(builds[vsId]) });
 const renderOpt = initOpt($('opt'), { build: B, id: () => cur, rev: () => rev, sumOf, snap, tree, N, rootOf: b => classRoot(b.asc), splitRoots, jewels: optJewels, total: TOTAL.tree, sockets: b => [...sockOn(b)].filter(isSock), setNodes, showOnTree,
   change: fn => { fn(B()); save(); renderSide(); drawTree(); } });
 const lootEl = document.createElement('section');   // the equipment comparison: a section of Settings

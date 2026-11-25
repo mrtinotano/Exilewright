@@ -994,5 +994,6 @@
  "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "Дерево пассивных умений: перетаскивайте для перемещения, колесо или два пальца для масштаба, щелчок или касание, чтобы взять. Поиск позволяет выбрать умение с клавиатуры.",
  "Copy this build as a new one": "Скопировать этот билд как новый",
  "{0} (copy)": "{0} (копия)",
- "What each number has more (green) or less (red) than the build you pick": "Насколько каждое значение больше (зелёным) или меньше (красным), чем у выбранного билда"
+ "What each number has more (green) or less (red) than the build you pick": "Насколько каждое значение больше (зелёным) или меньше (красным), чем у выбранного билда",
+ "Compared with {0}": "В сравнении с {0}"
 }

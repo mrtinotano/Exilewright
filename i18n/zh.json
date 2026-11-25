@@ -994,5 +994,6 @@
  "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "天赋树：拖动移动，滚轮或双指缩放，点击或轻触点取。可用搜索框通过键盘找到天赋。",
  "Copy this build as a new one": "将此构筑复制为新构筑",
  "{0} (copy)": "{0}（副本）",
- "What each number has more (green) or less (red) than the build you pick": "各数值比所选构筑多出（绿）或少出（红）的部分"
+ "What each number has more (green) or less (red) than the build you pick": "各数值比所选构筑多出（绿）或少出（红）的部分",
+ "Compared with {0}": "与{0}比较"
 }

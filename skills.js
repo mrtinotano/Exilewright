@@ -96,7 +96,7 @@ function details(g, b, sum, geo) {
     }).join('') : `<p class="note">${t('No supports socketed')}</p>`}`;
 }
 
-export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
+export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, getVs = () => null) {   // getVs: the build the character panel compares with, { b, sum }
   let open = null;  // [gem index, socket index] being edited
   let sel = 0;      // skill shown in the details panel
   function render() {
@@ -120,7 +120,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
         const s = sups[si];
         return `<span class="sockw"><button class="sock${open?.[0] === gi && open[1] === si ? ' on' : ''}" data-gi="${gi}" data-si="${si}" title="${s ? esc(tn(s)) + ' — ' + t('right click to remove') : t('Empty support socket')}" ${s && colour(s) ? `style="border-color:${ATTRS[colour(s)][2]}"` : ''}>${s ? `<img src="${img(s.icon)}" alt="">` : ''}</button>${s ? `<button class="sockx" data-unsup="${gi}:${si}" title="${t('Remove support')}">✕</button>` : ''}</span>`;
       }).join('');
-      const d = skill(g, b, sum);
+      const d = skill(g, b, sum), vs = getVs(), vg = vs && d.dps != null && vs.b.gems.find(x => x.name === g.name), vd = vg && skill(vg, vs.b, vs.sum).dps, dd = vd != null && Math.round(d.dps - vd);   // the same skill in the compared build
       let picker = '';
       if (open?.[0] === gi) {   // only supports this skill can take, with icon, what they do and what they would do to its DPS
         const gain = name => { const supports = [...g.supports]; supports[open[1]] = name; return impactLine(dpsDiff(skill(own, b, sum).dps, skill({ ...own, supports }, b, sum).dps)); };
@@ -139,7 +139,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo) {
       return `<div class="skill${gi === sel ? ' sel' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
         <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level">${d.stats?._level > g.level ? ` <b class="slv" title="${t('With the levels your passives and gear add')}">${d.stats._level}</b>` : ''} <span title="${t('Quality')}">Q:</span> <input type="number" min="0" max="40" value="${g.quality || 0}" data-gi="${gi}" data-k="quality" title="${t('Quality')}"> <label class="scor"><input type="checkbox"${g.corrupted ? ' checked' : ''} data-gi="${gi}" data-k="corrupted">${t('Corrupted')}</label> <b>${esc(tn(G))}</b>
           ${inMeta}<span class="sockn"${holder ? ' hidden' : ''}>${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
-          <b class="sdps" title="${esc(t(d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' : /weapon/.test(d.reason) ? `<small class="swhy">${esc(t(d.reason))}</small>` : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
+          <b class="sdps" title="${esc(t(d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' + (dd ? `<i class="vs ${dd > 0 ? 'up' : 'dn'}" title="${esc(t('Compared with {0}', vs.b.name))}">${dd > 0 ? '+' : ''}${fmt(dd)}</i>` : '') : /weapon/.test(d.reason) ? `<small class="swhy">${esc(t(d.reason))}</small>` : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
         <div class="socks">${sockets}</div>${picker}</div></div>`;
     }).join('');
     const per = SK.support_capacity_per_attribute;
