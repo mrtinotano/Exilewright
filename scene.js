@@ -53,7 +53,8 @@ const UNHOLY = 30;   // note: keywords.json Unholy Might: 30% of all damage as e
 const PERFECTION = { time: 10, max: 4, more: 5 };   // keywords.json PerfectionBuff: 10 s, up to 4 stacks, 5% more damage each
 const TASALIO = { more: 10, max: 5, win: 30 };   // Tasalio's Rhythm (its text): 10% more damage and a 30% shorter Perfect Timing window per stack, up to 5
 const JAGGED = { slow: 20 };   // keywords.json Jagged Ground: slows enemies in its area by 20%
-const WASTING = { regen: 50, time: 6 };   // KeywordPopups AbyssalWasting: 50% less life regeneration rate for 6 seconds
+const WASTING = { regen: 50, time: 6 };
+const EVERLASTING = { res: 5, time: 4 };   // KeywordPopups EverlastingSacrifice   // KeywordPopups AbyssalWasting: 50% less life regeneration rate for 6 seconds
 const HINDER = { slow: 30, time: 4 };   // keywords.json Hinder: 30% slower movement for 4 seconds
 const DAZE = { time: 8, stun: 50 };   // keywords.json Daze: lasts 8 seconds, 50% more stun buildup
 const WEAK = { per: .5, max: 20, time: 4 };   // keywords.json CriticalWeakness: +0.5% critical hit chance per stack, up to 20, 4 seconds each
@@ -5547,6 +5548,7 @@ export function initScene(el, api) {
     { const U = sheet().uDef || {}, low = lowLife();   // uniques: fire resistance and evasion on Low Life, more armour per 1% of your energy shield
       if (low && U.fireLow) { const F = c.res.fire, value = F.value + U.fireLow; c = { ...c, res: { ...c.res, fire: { ...F, value, capped: Math.min(value, F.max) } } }; }
       if (low && U.evaLow) c = { ...c, evasion: (c.evasion || 0) + U.evaLow * (c.evasionInc || 1) };
+      if (time < me.ever) c = { ...c, res: Object.fromEntries(Object.entries(c.res).map(([e, r]) => { const max = r.max + EVERLASTING.res; return [e, r.immune || r.max == null ? r : { ...r, max, capped: Math.min(r.value, max) }]; })) };   // Everlasting Sacrifice
       if (U.resPower && charges.power) c = { ...c, res: { ...c.res, ...Object.fromEntries(ELEM.map(e => { const value = c.res[e].value + U.resPower * charges.power; return [e, { ...c.res[e], value, capped: Math.min(value, c.res[e].max) }]; })) } };   // Adonia's Ego: per Power Charge
       if (U.deflMissing && me.maxE > me.es && c.deflect) c = { ...c, deflect: { ...c.deflect, flat: Math.floor((me.maxE - me.es) / 50) * U.deflMissing } };
       if (U.esArmour && me.maxE > 0) c = { ...c, armourX: (c.armourX || 1) * (1 + me.es / me.maxE * U.esArmour) }; }
@@ -6027,6 +6029,9 @@ export function initScene(el, api) {
     if (me.widow && time - me.widowAt >= c.widowFor) me.widow = 0;   // Widow's Reign: what damage took of your life is reserved until none takes life for its time
     if (c.lifeReserved || me.widow) me.life = Math.min(me.life, me.maxL * (1 - (c.lifeReserved || 0) / 100) - me.widow);   // the reserved life cannot be filled (with none, life may Overflow)
     for (const a in me.st) if (me.st[a] > 0 && immune(a)) { me.st[a] = 0; delete me.burn[a]; }   // a state that makes you immune ends the ailment
+    // Everlasting Sacrifice (KeywordPopups EverlastingSacrifice): at full energy shield, all of it Sacrificed for +5% to all
+    // maximum resistances for 4 seconds
+    if (c.everlasting && me.maxE > 0 && me.es >= me.maxE) { me.es = 0; me.ever = time + EVERLASTING.time; setBuff({ label: statLines({ keystone_everlasting_sacrifice: 1 })[0] || 'Everlasting Sacrifice', name: 'ever', c: css('arcane'), s: EVERLASTING.time }); }
     if (me.mounted && (!c.mountOk || !tog['Rhoa Mount'])) me.mounted = false;   // no Bow or Spear, or Rhoa Mount off: on foot
     if (E !== me.maxE) { me.es = me.maxE ? me.es / me.maxE * E : E; me.maxE = E; }
     const W = c.ward || 0; if (W !== me.maxW) { me.ward = me.maxW ? me.ward / me.maxW * W : W; me.maxW = W; }
