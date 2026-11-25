@@ -1003,5 +1003,9 @@
  "{0} rules imported.": "{0} règles importées.",
  "{0} lines the creator has no field for were left out.": "{0} lignes sans champ dans l'éditeur ont été ignorées.",
  "This build is already here: \u00ab{0}\u00bb. It is open.": "Ce build est déjà ici : « {0} ». Il est ouvert.",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "« {0} » mis à jour depuis Path of Building. Annuler le remet comme avant."
+ "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "« {0} » mis à jour depuis Path of Building. Annuler le remet comme avant.",
+ "Delete several…": "En supprimer plusieurs…",
+ "Pick builds to delete at once": "Choisir des builds à supprimer d'un coup",
+ "Delete the selected ({0})": "Supprimer la sélection ({0})",
+ "Delete {0} builds? This cannot be undone.": "Supprimer {0} builds ? C'est irréversible."
 }

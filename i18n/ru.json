@@ -1003,5 +1003,9 @@
  "{0} rules imported.": "Импортировано правил: {0}.",
  "{0} lines the creator has no field for were left out.": "Пропущено строк, для которых в редакторе нет поля: {0}.",
  "This build is already here: \u00ab{0}\u00bb. It is open.": "Этот билд уже здесь: «{0}». Он открыт.",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "«{0}» обновлён из Path of Building. Отмена вернёт прежний вариант."
+ "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "«{0}» обновлён из Path of Building. Отмена вернёт прежний вариант.",
+ "Delete several…": "Удалить несколько…",
+ "Pick builds to delete at once": "Выберите билды, чтобы удалить их разом",
+ "Delete the selected ({0})": "Удалить выбранные ({0})",
+ "Delete {0} builds? This cannot be undone.": "Удалить билды ({0})? Это нельзя отменить."
 }

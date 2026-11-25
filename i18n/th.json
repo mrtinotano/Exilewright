@@ -1003,5 +1003,9 @@
  "{0} rules imported.": "นำเข้ากฎ {0} ข้อแล้ว",
  "{0} lines the creator has no field for were left out.": "ข้าม {0} บรรทัดที่ตัวสร้างไม่มีช่องรองรับ",
  "This build is already here: \u00ab{0}\u00bb. It is open.": "บิลด์นี้มีอยู่แล้ว: «{0}» เปิดอยู่",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "อัปเดต «{0}» จาก Path of Building แล้ว เลิกทำจะคืนค่าเดิม"
+ "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "อัปเดต «{0}» จาก Path of Building แล้ว เลิกทำจะคืนค่าเดิม",
+ "Delete several…": "ลบหลายรายการ…",
+ "Pick builds to delete at once": "เลือกบิลด์ที่จะลบพร้อมกัน",
+ "Delete the selected ({0})": "ลบที่เลือก ({0})",
+ "Delete {0} builds? This cannot be undone.": "ลบ {0} บิลด์? ไม่สามารถย้อนกลับได้"
 }

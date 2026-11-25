@@ -132,7 +132,9 @@ function renderSide() {
   const b = B();
   seenItems.set(b, structuredClone({ items: b.items || {}, stash: b.stash }));
   b.gems.forEach(g => { g.level ??= 20; });  // builds saved before gem levels existed
-  $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(x.name)}</option>`).join('');
+  // builds of the same name (versions of one build) told apart by their level
+  const names = Object.values(builds).map(x => x.name);
+  $('buildList').innerHTML = Object.entries(builds).map(([id, x]) => `<option value="${id}" ${id === cur ? 'selected' : ''}>${esc(x.name)}${names.indexOf(x.name) !== names.lastIndexOf(x.name) ? ' · ' + t('Level {0}', x.level) : ''}</option>`).join('');
   $('notes').value = b.notes;
   $('notesBtn').textContent = t('Notes') + (b.notes ? ' •' : '');
   renderStats();
@@ -398,6 +400,27 @@ $('delBuild').onclick = async () => {
   if (await ask(t('Delete the build «{0}»? This cannot be undone.', B().name), t('Delete')) !== 0) return;
   delete builds[cur]; if (!Object.keys(builds).length) builds[Date.now()] = blank();
   save(); select(Object.keys(builds)[0]);
+};
+// several builds deleted at once: each with its class, level and the day it was made, ticked to go
+$('delMany').onclick = () => {
+  const d = document.createElement('div');
+  d.className = 'ask';
+  d.innerHTML = `<div class="pick"><button class="close" data-a="close">✕</button>${Object.entries(builds).map(([id, x]) => `<label><input type="checkbox" value="${id}"> ${esc(x.name)} <small>${esc(tn(ascs.find(a => a.name === x.asc)) || clsLabel(x.asc))} · ${t('Level {0}', x.level)} · ${new Date(+id).toLocaleDateString()}</small></label>`).join('')}
+    <button data-a="go" disabled></button></div>`;
+  const go = d.querySelector('[data-a=go]'), ticked = () => [...d.querySelectorAll(':checked')].map(c => c.value);
+  const count = () => { go.textContent = t('Delete the selected ({0})', ticked().length); go.disabled = !ticked().length; };
+  count(); d.onchange = count;
+  d.onclick = async e => {
+    if (e.target === d || e.target.dataset.a === 'close') return d.remove();
+    if (e.target !== go) return;
+    const ids = ticked();
+    if (await ask(t('Delete {0} builds? This cannot be undone.', ids.length), t('Delete')) !== 0) return;
+    d.remove(); ids.forEach(id => delete builds[id]);
+    if (!Object.keys(builds).length) builds[Date.now()] = blank();
+    if (!builds[cur]) cur = Object.keys(builds)[0];
+    select(cur); save();
+  };
+  document.body.append(d);
 };
 // character panel: name, base class and ascendancy are edited in place
 $('charPanel').onchange = e => {

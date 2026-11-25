@@ -1003,5 +1003,9 @@
  "{0} rules imported.": "已导入 {0} 条规则。",
  "{0} lines the creator has no field for were left out.": "已略过 {0} 行编辑器没有对应项的内容。",
  "This build is already here: \u00ab{0}\u00bb. It is open.": "此构筑已经存在：「{0}」。已打开。",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "「{0}」已从 Path of Building 更新。撤销可恢复原状。"
+ "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "「{0}」已从 Path of Building 更新。撤销可恢复原状。",
+ "Delete several…": "批量删除…",
+ "Pick builds to delete at once": "选择要一次删除的构筑",
+ "Delete the selected ({0})": "删除所选（{0}）",
+ "Delete {0} builds? This cannot be undone.": "删除 {0} 个构筑？此操作无法撤销。"
 }
