@@ -2919,7 +2919,7 @@ export function initScene(el, api) {
         // Tawhoa's Tending: on death it explodes for that share of the totem's life (calc.js totemLife) in its area
         die() {
           { const SM = !e.dead && sheet().soulCurse, X = SM?.[Math.floor(Math.random() * SM.length)]; if (X) hexMe(X.name, X.C, X.s, 1, true); }   // Soul Mantle
-          e.dead = true; const T = S.dmg?.trig?.find(T => T.stats?.['base_physical_damage_equal_to_%_of_totem_life']);
+          e.dead = true; if (e.spirit) e.spirit.dead = true; const T = S.dmg?.trig?.find(T => T.stats?.['base_physical_damage_equal_to_%_of_totem_life']);   // its Ancestral Spirit dies with it
           if (T && S.dmg.totemLife) { const X = asTrig(S, T, scale(T.hits, S.dmg.totemLife * T.stats['base_physical_damage_equal_to_%_of_totem_life'] / 1e4)), p = { x: e.pos.x, z: e.pos.z }; say(X.label, X.el); boom(p, X.A, X); }
         },
         remove() { fx.emit(14, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.4, up: 1, life: .6, size: .14, c: 0x5c4026, g: 8, k: 1 }); f.dispose(); } };
@@ -2927,6 +2927,10 @@ export function initScene(el, api) {
       const TL = S.dmg?.totemLife * (S.totemLife || 1) * less('support_splinter_totem_maximum_life_+%_final_each_splinter');   // Spell Totem: more per Endurance Charge consumed; Splinter Totem: less each time it splintered
       if (TL > 0) Object.assign(e, { decoy: true, segs: [{ p: e.pos, r: .4, life: TL, max: TL, res: S.dmg.totemRes, hurt(n) { if (e.dead) return; const RC = sheet().recoup, g = n * (RC?.totem || 0) / 100; if (g) me.recoup.push({ k: 'life', left: g, rate: g / RC.time }); if (this.life > 0 && (this.life -= n) <= 0) sheet().lastTremor ? later(sheet().lastTremor, () => e.dead || e.die()) : e.die(); } }] });   /* Unnamed Heartwood: it dies that long after its life is gone */   /* Watchtowers: its share of the damage your totems take recouped as your life */
       objs.push(e);
+      // Warbringer's Answered Call: summoning a totem triggers Ancestral Spirits (the build's gem), an Ancestral Spirit
+      // minion for its duration that dies with that totem (its description)
+      const AJ = sheet().defender ? api.build().gems.findIndex(g => g.name === 'Ancestral Spirits') : -1, AS = AJ >= 0 && base(AJ);
+      if (AS?.dmg) e.spirit = minion(AS, around(c, 1), durOf(AS) || Infinity, { kind: AS.name });   // no duration in the data: as long as the totem
     },
     travel(S) {
       // Shield Charge: it crashes into the first enemy on its path and stops there, its more damage from the distance
