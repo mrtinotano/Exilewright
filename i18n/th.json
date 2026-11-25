@@ -988,5 +988,6 @@
  "Taken by this level": "เอาแล้วภายในเลเวลนี้",
  "Click: take it at this level": "คลิก: เอาที่เลเวลนี้",
  "All builds (backup)": "บิลด์ทั้งหมด (สำรอง)",
- "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "บิลด์ทั้งหมดในไฟล์ JSON เดียว: ไฟล์ JSON ในนำเข้าจะนำกลับมาทั้งหมด อยู่ข้างบิลด์ที่มีอยู่"
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "บิลด์ทั้งหมดในไฟล์ JSON เดียว: ไฟล์ JSON ในนำเข้าจะนำกลับมาทั้งหมด อยู่ข้างบิลด์ที่มีอยู่",
+ "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "บิลด์นี้ถูกแก้ไขครั้งล่าสุดด้วยข้อมูลเกมวันที่ {0} และแอปนี้มีข้อมูลวันที่ {1}: สิ่งที่แพตช์เปลี่ยนอาจคำนวณต่างไป การแก้ไขครั้งถัดไปจะเปลี่ยนมาใช้ข้อมูลนี้"
 }

@@ -988,5 +988,6 @@
  "Taken by this level": "Pris à ce niveau",
  "Click: take it at this level": "Clic : le prendre à ce niveau",
  "All builds (backup)": "Tous les builds (sauvegarde)",
- "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Tous les builds dans un fichier JSON : Fichier JSON dans Importer les récupère tous, à côté de ceux que vous avez."
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Tous les builds dans un fichier JSON : Fichier JSON dans Importer les récupère tous, à côté de ceux que vous avez.",
+ "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "Ce build a été modifié pour la dernière fois avec les données du jeu du {0}, et cette application a celles du {1} : ce qu'un patch a changé peut compter différemment. Votre prochaine modification le passe à ces données."
 }

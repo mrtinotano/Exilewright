@@ -988,5 +988,6 @@
  "Taken by this level": "Уже взято к этому уровню",
  "Click: take it at this level": "Щелчок: взять на этом уровне",
  "All builds (backup)": "Все билды (резервная копия)",
- "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Все билды в одном файле JSON: «Файл JSON» в Импорте вернёт их все, рядом с уже имеющимися."
+ "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Все билды в одном файле JSON: «Файл JSON» в Импорте вернёт их все, рядом с уже имеющимися.",
+ "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "Этот билд последний раз изменяли с данными игры от {0}, а у приложения данные от {1}: то, что изменил патч, может считаться иначе. Следующее изменение переведёт его на эти данные."
 }

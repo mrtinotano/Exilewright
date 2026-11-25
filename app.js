@@ -49,8 +49,11 @@ const store = () => {
   if (!ok && !unsaved) ask(t('Your changes are not being saved: the storage of this window is full or closed to it. Export the build so they are not lost.'), t('Export')).then(i => { if (i === 0) openShare(true); });
   unsaved = !ok;
 };
+// the game data's date (poe2_data/available/version.json: when its tables were extracted): a build keeps the one it was last
+// changed with, and says so while it is another (renderStats)
+const DATA = (await fetch('poe2_data/available/version.json').then(r => r.json()).catch(() => ({}))).data;
 const save = () => {
-  if (B()) linkMetas(B());
+  if (B()) { linkMetas(B()); if (DATA) B().data = DATA; }
   const now = JSON.stringify(B() ?? null), h = hist[cur] ||= { undo: [], redo: [] };
   if (now !== shown && shown) {
     if (Date.now() - stepAt > 1000 || !h.undo.length || !document.activeElement?.matches('textarea, input:not([type]), input[type=text], input[type=number]')) { h.undo.push(shown); if (h.undo.length > HIST_MAX) h.undo.shift(); }
@@ -310,6 +313,7 @@ function renderStats() {
   renderChar($('charPanel'), b, sum, { asc: b.asc, cls: clsOf(b.asc), points, need, pending, picking,
     classes: CLASSES, ascOptions: [clsOf(b.asc), ...ascs.filter(a => a.class === clsOf(b.asc)).map(a => a.name)], portrait: portraitOf(b.asc),
     ascLabel: x => CLASSES.includes(x) ? t('No ascendancy') : tn(ascs.find(a => a.name === x)) || x, clsLabel });
+  if (b.data && DATA && b.data !== DATA) $('charPanel').insertAdjacentHTML('afterbegin', `<p class="disc">${esc(t('This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.', b.data, DATA))}</p>`);
 }
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
 const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';

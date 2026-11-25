@@ -54,6 +54,12 @@ def save(name, data):
     print(name, len(data))
 
 
+# the game data's date: when its tables were extracted (extract.mjs, after a patch). A build keeps the one it was saved
+# with, and the app says so when it is not its own (other numbers, passives or items may have changed)
+_T = os.path.join(ROOT, 'tables', 'English')
+save('version.json', {'data': __import__('datetime').date.fromtimestamp(max(os.path.getmtime(os.path.join(_T, f)) for f in os.listdir(_T))).isoformat()})
+
+
 def parse_psg(path):
     """Passive tree graph: returns {node_id: [connected ids]}, class root ids, {node_id: (x, y)},
     group centres [(x, y)], {node_id: (group index, orbit)} and the orbit radii (the app draws same-orbit links as arcs)."""
