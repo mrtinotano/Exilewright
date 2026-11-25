@@ -4022,7 +4022,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -4236,6 +4236,16 @@ export function initScene(el, api) {
   // Archmage: while it is on, your non-channelling spells cost its share of your maximum mana more and gain its share of
   // their damage as lightning per 100 maximum mana
   const archmage = S => S.P.spell && !S.P.channel && !S.src && onS('Archmage')?.dmg.stats;
+  // its look on each spell it empowers (addedSurge_archmage.pet, nothing on you otherwise): a surge of mana blue from your
+  // hand along the cast, its lightning (manapower_lightning: 0.25 / 0.35 / 1), ribbons (manapower_ribbons: 0.08 / 0.14 /
+  // 1) and mana dust (manadust: 0.13 / 0.21 / 1)
+  const ARCHMAGE = { bolt: 0x4059ff, ribbon: 0x1424ff, dust: 0x2236ff };
+  function archLook(S) {
+    const H = hand(), e = V(H.x + S.dx * 1.3, H.y, H.z + S.dz * 1.3);
+    fx.glow(H, 1.4, ARCHMAGE.bolt, .3, 2.8); fx.bolt(H, e, ARCHMAGE.bolt, .22, .08, .5); fx.bolt(H, e, ARCHMAGE.ribbon, .25, .05, .8); fx.bolt(H, e, 'white', .12, .02, .35);
+    fx.emit(22, { p: H, dir: V(S.dx, .1, S.dz), v: 3.2, life: .35, size: .1, c: ARCHMAGE.dust, c2: 'white', k: 2.5, drag: 2 });
+    fx.emit(8, { p: H, r: .25, v: 1.2, life: .5, size: .2, c: ARCHMAGE.ribbon, k: 2, drag: 1.5 });
+  }
   const empowered = S => S.P.spell && !S.src && S.dmg?.cost > 0 && tempest() || null;   // a mana-costing spell of yours in its storm
   const tempest = () => { const o = me.tempest; return o && !o.dead && (dist(o.c, pp) <= o.R || time - o.outAt < o.linger) && o.S; };
   K.tempest = S => {
@@ -4885,6 +4895,7 @@ export function initScene(el, api) {
     const run = S.dmg?.cmd && (!P.toggle || tog[S.name]) ? djinnCast : K[S.kind] || K.area;
     run(S); whirl(S);
     if (!auto) zealotry(S);
+    if (archmage(S)) archLook(S);
     if (!auto) apparition(i, S);
     // Olroth's Conviction: the skill uses it Empowers, and that many more. note: not an Echoing Cry's later ones
     if (!auto && P.spell && S.dmg?.castTime) event('cast', pp, S, null, S.dmg.castTime / 100);   // Spellslinger
