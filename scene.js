@@ -2883,7 +2883,7 @@ export function initScene(el, api) {
       else if (wc && uses) { empower = empower.filter(e => e.type !== 'cold'); empower.push({ type: 'cold', label: S.label, name: S.name, uses, s: 12, add: [wc * k5, ws.wolf_warcry_empowered_attack_cold_damage_max_per_5_power_up_to_cap * k5], chill: (ws.base_secondary_skill_effect_duration || 0) / 1000 }); say(t('{0} gains {1} from {2}', t('Attack'), t('Cold'), S.label) + ` ×${uses}`, 'cold'); }
       // Infernal Cry: its Empowered melee attacks gain its share of all their damage as fire
       else if (IC && uses) { empower = empower.filter(e => e.type !== 'fire'); empower.push({ type: 'fire', label: S.label, name: S.name, uses, s: durOf(S), pct: IC }); say(t('{0} gains {1} from {2}', t('Attack'), t('Fire'), S.label) + ` ×${uses}`, 'fire'); }
-      else if (S.P.empowers && uses && !FG) { empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
+      else if (S.P.empowers && uses && !FG && !S.dmg?.stats?.ancestral_cry_triggers_shockwave_every_X_units_travelled) {   /* Ancestral Cry boosts through Kaom (below) */ empower = empower.filter(e => e.type !== 'echo'); empower.push({ type: 'echo', label: S.label, name: S.name, uses, s: 12, slam: ws.seismic_cry_slam_skill_additional_aftershocks || 0 }); say(t('{0}: your next melee attacks repeat as an aftershock', S.label) + ` ×${uses}`, 'gold'); }
       // Fortifying Cry: its Guard per 5 Power of the enemies in its area (up to its cap); its Empowered melee attacks (one
       // per its Power, up to its cap) trigger its Shield Wave where they land. note: any melee attack, not only shield ones
       if (FG) {
@@ -2901,6 +2901,11 @@ export function initScene(el, api) {
         me.kaom = { S, walked: 0, every: every / 10, more: st.ancestral_cry_empowered_attacks_strike_X_additional_enemies || 0, X: partOf(S, 'AncestralCryProjectilePlayer'),
           until: time + durOf(S) * (1 + (st['ancestral_cry_duration_+%_final_per_removable_endurance_charge'] || 0) * n / 100) };
         setBuff({ label: S.label, name: S.name, c: css('fire'), s: me.kaom.until - time });
+        // its look (ancestral_cry.ao: fire_flare, energy_streak and karui_sigil .mat's red-orange): a flare on you, streaks of
+        // fire bursting out and Karui sigils rising in a ring around you (ancestral_runes_circle.pet: 1.2 s)
+        fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 2.4, KAOM_GLOW, .45, 3);
+        fx.emit(40, { p: { x: pp.x, y: 1, z: pp.z }, r: .2, v: R * 3, flat: true, life: .35, size: .35, grow: 2, c: 'fire', c2: 'white', k: 2, drag: 1 });
+        for (let k = 0; k < 16; k++) { const a = k / 16 * TAU; fx.emit(3, { p: { x: pp.x + Math.cos(a) * 1.3, y: .1, z: pp.z + Math.sin(a) * 1.3 }, r: .1, up: 2.2, v: .2, life: 1.2, size: .4, c: 'fire', c2: 'ember', k: 2.4, drag: .5 }); }
       }
     },
     toggle(S) {   // heralds, persistent buffs, meta gems, minions and manual auras stay on until used again
@@ -4256,6 +4261,19 @@ export function initScene(el, api) {
   };
   // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
   // each second in it (up to Demonic Possession's most, 10 in its description; no most with Mastered Darkness), each its more spell damage and its Life lost per minute; its cast speed
+  // Ancestral Cry's Kaom (ancestralcrykaom*.ao: Kaom's skin on you): the figure a fifth larger, its skin dark red
+  // glowing as embers (warcry_ancestral's red-orange) and sparks rising off it, while it lasts
+  const KAOM_SKIN = new THREE.Color(0x6e2414), KAOM_GLOW = 0xff5a1e, KG = new THREE.Color(KAOM_GLOW);
+  let kaomK = 0;
+  function kaomLook(dt) {
+    const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2)));
+    if (!k && !player.kaomed) return;
+    player.kaomed = k > 0; player.group.scale.setScalar(1 + .2 * k);
+    player.group.traverse(m => { if (!m.isSkinnedMesh || !m.material?.emissive) return; const M = m.material, u = M.userData;
+      if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; }
+      M.color.copy(u.c0).lerp(KAOM_SKIN, k); M.emissive.copy(u.e0).lerp(KG, k); M.emissiveIntensity = u.i0 * (1 - k) + k * (.22 + .08 * Math.sin(time * 7)); });
+    if (k && Math.random() < k * .6) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 2), z: pp.z }, r: .35, up: 1.2, v: .3, life: .6, size: .12, c: 'fire', c2: 'ember', k: 1.6, drag: 1 });
+  }
   const demon = () => me.demon ? Math.min(me.demon.max, Math.floor(time - me.demon.at)) : 0;
   const demonOff = () => { say(t('{0} off', me.demon.label), 'dust'); me.demon = null; };
   K.demon = S => { if (me.demon) return demonOff(); const sm = S.dmg.sum || {}; me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name, max: sm.demon_form_has_no_max_stacks ? Infinity : sm.max_demon_form_stacks || 10 }; say(t('{0} on', S.label), 'fire'); };
@@ -6385,7 +6403,11 @@ export function initScene(el, api) {
     const far = Math.hypot(pp.x, pp.z); if (far > ROOM) { pp.x *= ROOM / far; pp.z *= ROOM / far; }   // the room's wall
     const step = Math.hypot(pp.x - (me.lastX ?? pp.x), pp.z - (me.lastZ ?? pp.z)); me.lastX = pp.x; me.lastZ = pp.z;
     if (step > 1e-4) { me.walked = (me.walked || 0) + step; me.trav += step; me.movedAt = time; }
-    const KA = me.kaom; if (KA && time < KA.until && (KA.walked += step) >= KA.every) { KA.walked = 0; fx.ring(pp, .2, KA.S.A, 'fire', .35); boom({ x: pp.x, z: pp.z }, KA.S.A, KA.S, { soft: true }); }
+    const KA = me.kaom; if (KA && time < KA.until && (KA.walked += step) >= KA.every) {
+      KA.walked = 0;   // a Volcanic Step: a wave of fire on the ground from your feet, flames rising (hires_shockwave, fire_flare .mat)
+      const c = { x: pp.x, z: pp.z }, R = KA.S.A; fx.ring(c, .3, R, 'fire', .4, { a: .7 }); fx.emit(30, { p: { x: c.x, y: .15, z: c.z }, r: .3, v: R * 2.2, flat: true, life: .4, size: .22, c: 'fire', c2: 'ember', drag: 1.5 });
+      fx.emit(14, { p: { x: c.x, y: .1, z: c.z }, r: .4, up: 2.4, v: .8, life: .45, size: .3, c: 'fire', c2: 'ember', k: 1.8, drag: 1.5 }); area(c, R, KA.S, { soft: true }); }
+    kaomLook(dt);
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
     // camera and cursor
