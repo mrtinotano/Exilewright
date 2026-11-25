@@ -23,9 +23,8 @@ const ico = k => `<img class="cp-ico ${k}" src="poe2_data/available/img/panel/${
 export function renderChar(el, b, sum, { asc, cls, points, need, pending, classes = [], ascOptions = [], picking = null, portrait = '', ascLabel = x => x, clsLabel = x => x, others = [], vsId = null, vs = null }) {
   const c = character(b, sum), R = c.res, o = vs && character(vs.b, vs.sum);
   // compared with another build: what this one has more (green) or less (red) of each number
-  const free = x => x.spirit - (x.reserved || 0), D = o ? { life: c.life - o.life, es: c.es - o.es, mana: c.mana - o.mana, spirit: free(c) - free(o),
-    armour: c.armourPct != null ? c.armourPct - o.armourPct : c.armour - o.armour, evasion: c.evadePct != null ? c.evadePct - o.evadePct : c.evasion - o.evasion, block: c.block - o.block,
-    str: c.attrs.str - o.attrs.str, dex: c.attrs.dex - o.attrs.dex, int: c.attrs.int - o.attrs.int, ...Object.fromEntries(Object.keys(R).map(k => [k, R[k].capped - o.res[k].capped])) } : {};
+  const free = x => x.spirit - (x.reserved || 0), D = o ? { spirit: free(c) - free(o), ...Object.fromEntries([...['life', 'es', 'mana', 'block'].map(k => [k, c[k] - o[k]]), ...['str', 'dex', 'int'].map(k => [k, c.attrs[k] - o.attrs[k]]), ...Object.keys(R).map(k => [k, R[k].capped - o.res[k].capped])]),
+    armour: c.armourPct != null ? c.armourPct - o.armourPct : c.armour - o.armour, evasion: c.evadePct != null ? c.evadePct - o.evadePct : c.evasion - o.evasion } : {};
   const dv = k => { const x = Math.round(D[k]); return x ? `<i class="vs ${x > 0 ? 'up' : 'dn'}">${x > 0 ? '+' : ''}${fmt(x)}</i>` : ''; };
   const questsOpen = el.querySelector('.cp-quests')?.open, condsOpen = el.querySelector('.cp-conds')?.open, conds = condList(b, sum);   // drawn anew at every change: stays as it was left
   const reward = o => [...statLines(o.stats), ...o.missed.map(l => `${l} (ⓘ ${t('Not understood: it is not counted')})`)].map(esc).join(' · ');   // ⓘ: the app's own notice (.disc in index.html), in words alone: an option of a list takes no markup
