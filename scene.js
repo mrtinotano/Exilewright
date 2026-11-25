@@ -2613,7 +2613,7 @@ export function initScene(el, api) {
     for (const g of fissures) if (g !== f && time >= g.next && crosses(f, g)) later(.05, () => aftershock(g));
   }
   function slash(S, dx, dz, r = 2, half = .95) {
-    fx.sector(pp, dx, dz, r, half, S.el, .2, { k: 2.6, a: .85, grow: true });
+    fx.arc(pp, dx, dz, r, half, S.el); fx.sector(pp, dx, dz, r, half, S.el, .2, { a: .25, grow: true });
     fx.emit(8, { p: { x: pp.x + dx, y: 1.1, z: pp.z + dz }, dir: V(dx * 4, 0, dz * 4), v: 2, life: .25, size: .16, c: S.el, c2: 'white', drag: 2 });
   }
 
@@ -2766,7 +2766,7 @@ export function initScene(el, api) {
       const strip = fx.strip(a, b, 1.2, S.el, dur, { a: .6 }), burns = Object.keys(S.dmg?.dot || {}).length > 0;
       thing(holder(c), dur, { wall: true, fire, volt, a, b, name: S.name, label: S.label, S,
         tick(dt, e) {
-          for (let i = Math.ceil(dt * 100); i > 0; i--) { const k = rnd(); fx.emit(1, { p: { x: a.x + (b.x - a.x) * k, y: .05, z: a.z + (b.z - a.z) * k }, v: .3, up: fire ? 3.4 : 2.2, life: .6, size: .5, c: S.el, c2: fire ? 'ember' : 'white', drag: .5 }); }
+          for (let i = Math.ceil(dt * (fire ? 40 * L : 100)); i > 0; i--) { const k = rnd(); fx.emit(1, { p: { x: a.x + (b.x - a.x) * k, y: .05, z: a.z + (b.z - a.z) * k }, v: .3, up: fire ? 1.8 : 2.2, life: fire ? .8 : .6, size: fire ? .8 : .5, grow: fire ? .4 : .2, k: fire ? 1.6 : undefined, c: S.el, c2: fire ? 'ember' : 'white', drag: .5 }); }   // fire: a dense curtain, as Flame Wall's
           if ((tk -= dt) > 0) return; tk = burns ? .2 : VS ? VS / 1000 : .5;
           for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= .7 + SIM.body) burns ? dot(d, { ...S, P: { ...S.P, dur: .3 } }) : hit(d, { ...S, self: e }, { mult: VS ? 1 : .3, noPay: true });
         }, off: () => { strip.dur = Math.min(strip.dur, strip.t); } });   // a wall over the limit goes
@@ -3168,8 +3168,9 @@ export function initScene(el, api) {
     },
     sweep(S) {
       const half = coneHalf(S), R = S.R || meleeR(S), c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
-      fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .45 : .7 });
+      fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .2 : .7 });
       fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
+      if (ch) fx.emit(36, { p: { x: c.x + S.dx * .6, y: 1, z: c.z + S.dz * .6 }, r: .1, dir: V(S.dx * R * 1.7, .3, S.dz * R * 1.7), v: R * half * 1.3, life: .5, size: .2, grow: 4, k: 1.6, c: S.el, c2: S.el === 'fire' ? 'ember' : 'white', drag: .8 });   // a jet widening from the hand, as Incinerate's
       for (const d of inside(c, R)) if (inCone(c, a0, half, d.pos) && hit(d, S) && S.parries) d.parried = S.parries;
       touch({ x: c.x + S.dx * R * .55, z: c.z + S.dz * R * .55 }, R * .5, S);
       // Incinerate's Fire Infusion: Ignited Ground in front of you as its channelling starts (its ground part)
