@@ -989,5 +989,7 @@
  "Click: take it at this level": "クリック: このレベルで取得",
  "All builds (backup)": "全ビルド（バックアップ）",
  "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "すべてのビルドを1つのJSONファイルに保存します。インポートのJSONファイルで、今あるビルドに加えてすべて復元できます。",
- "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "このビルドは{0}のゲームデータで最後に変更されました。このアプリのデータは{1}のものです。パッチで変わった部分は異なる計算になる場合があります。次に変更すると、このデータに切り替わります。"
+ "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "このビルドは{0}のゲームデータで最後に変更されました。このアプリのデータは{1}のものです。パッチで変わった部分は異なる計算になる場合があります。次に変更すると、このデータに切り替わります。",
+ "Enter: next match · Shift+Enter: previous · Ctrl+Enter: allocate or remove it": "Enter: 次の結果 · Shift+Enter: 前の結果 · Ctrl+Enter: 割り振る／外す",
+ "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "パッシブツリー: ドラッグで移動、ホイールまたは2本指で拡大縮小、クリックまたはタップで割り振り。検索ボックスでキーボードからパッシブを選べます。"
 }

@@ -21,7 +21,7 @@ export function setLang(l) { try { localStorage.setItem(KEY, l); } catch {} loca
 document.documentElement.lang = lang;
 for (const el of document.querySelectorAll('[data-t]')) {
   if (el.children.length === 0 && el.textContent.trim()) el.textContent = t(el.textContent.trim());
-  for (const a of ['title', 'placeholder']) if (el.hasAttribute(a)) el.setAttribute(a, t(el.getAttribute(a)));
+  for (const a of ['title', 'placeholder', 'aria-label']) if (el.hasAttribute(a)) el.setAttribute(a, t(el.getAttribute(a)));
 }
 export const cap = s => s[0].toUpperCase() + s.slice(1);
 

@@ -989,5 +989,7 @@
  "Click: take it at this level": "คลิก: เอาที่เลเวลนี้",
  "All builds (backup)": "บิลด์ทั้งหมด (สำรอง)",
  "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "บิลด์ทั้งหมดในไฟล์ JSON เดียว: ไฟล์ JSON ในนำเข้าจะนำกลับมาทั้งหมด อยู่ข้างบิลด์ที่มีอยู่",
- "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "บิลด์นี้ถูกแก้ไขครั้งล่าสุดด้วยข้อมูลเกมวันที่ {0} และแอปนี้มีข้อมูลวันที่ {1}: สิ่งที่แพตช์เปลี่ยนอาจคำนวณต่างไป การแก้ไขครั้งถัดไปจะเปลี่ยนมาใช้ข้อมูลนี้"
+ "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "บิลด์นี้ถูกแก้ไขครั้งล่าสุดด้วยข้อมูลเกมวันที่ {0} และแอปนี้มีข้อมูลวันที่ {1}: สิ่งที่แพตช์เปลี่ยนอาจคำนวณต่างไป การแก้ไขครั้งถัดไปจะเปลี่ยนมาใช้ข้อมูลนี้",
+ "Enter: next match · Shift+Enter: previous · Ctrl+Enter: allocate or remove it": "Enter: ผลถัดไป · Shift+Enter: ก่อนหน้า · Ctrl+Enter: ลงแต้มหรือเอาออก",
+ "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "ต้นไม้พาสซีฟ: ลากเพื่อเลื่อน ล้อเมาส์หรือสองนิ้วเพื่อซูม คลิกหรือแตะเพื่อลงแต้ม ช่องค้นหาเข้าถึงพาสซีฟด้วยคีย์บอร์ดได้"
 }

@@ -989,5 +989,7 @@
  "Click: take it at this level": "클릭: 이 레벨에서 찍기",
  "All builds (backup)": "모든 빌드 (백업)",
  "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "모든 빌드를 하나의 JSON 파일로 저장합니다. 가져오기의 JSON 파일로 기존 빌드 옆에 모두 복원됩니다.",
- "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "이 빌드는 {0}의 게임 데이터로 마지막으로 변경되었고, 이 앱은 {1}의 데이터를 사용합니다. 패치로 바뀐 부분은 다르게 계산될 수 있습니다. 다음 변경 시 이 데이터로 바뀝니다."
+ "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "이 빌드는 {0}의 게임 데이터로 마지막으로 변경되었고, 이 앱은 {1}의 데이터를 사용합니다. 패치로 바뀐 부분은 다르게 계산될 수 있습니다. 다음 변경 시 이 데이터로 바뀝니다.",
+ "Enter: next match · Shift+Enter: previous · Ctrl+Enter: allocate or remove it": "Enter: 다음 결과 · Shift+Enter: 이전 · Ctrl+Enter: 찍기 또는 해제",
+ "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "패시브 트리: 드래그로 이동, 휠이나 두 손가락으로 확대, 클릭이나 탭으로 찍기. 검색창으로 키보드로 패시브에 갈 수 있습니다."
 }

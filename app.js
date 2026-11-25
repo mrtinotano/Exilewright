@@ -989,6 +989,7 @@ $('treeFind').onkeydown = e => {   // Enter / Shift+Enter: centre the view on th
   if (e.key === 'Escape') { e.target.value = ''; search(); }
   if (e.key !== 'Enter' || !found.size) return;
   const ids = [...found];
+  if ((e.ctrlKey || e.metaKey) && foundAt >= 0) { clickNode(ids[foundAt]); return; }   // the keyboard's click: allocate / remove the match shown
   foundAt = (foundAt + (e.shiftKey ? -1 : 1) + ids.length) % ids.length;
   [view.x, view.y] = WP[ids[foundAt]]; view.s = Math.max(view.s, .12);
   $('treeFindN').textContent = `${foundAt + 1} / ${ids.length}`;
@@ -1203,10 +1204,20 @@ function tipHtml(tip, id, n) {
     + `<div class="tf">${n.type === 'attribute' ? t('Right click: Str / Dex / Int') + '<br>' : ''}${cq?.tell ? t('Right click: what it is in the game') + '<br>' : ''}${lv ? t(lvlNodes(b).includes(id) ? 'Taken by this level' : 'Click: take it at this level') : start ? t('Ascendancy start') : cost ? (forSet ? t(cost > 1 ? 'Click: allocate ({0} points of set {1})' : 'Click: allocate (1 point of set {1})', cost, mode) : t(cost > 1 ? 'Click: allocate ({0} points)' : 'Click: allocate (1 point)', cost)) : preview(id).length ? t('Click: start here')
       : mine ? t('Click: remove') : forSet && !setOK(id) ? t('Cannot be allocated to a weapon set') : t('Cannot be allocated from here')}</div>`;
 }
+// mouse, pen and touch alike (pointer events): one pointer pans, two pinch to zoom; a touch or pen held half a second
+// does what the right button does (Str / Dex / Int)
 let drag = null;
-cv.onmousedown = e => drag = { x: e.offsetX, y: e.offsetY, moved: false };
-cv.onmousemove = e => {
-  if (drag) {
+const pts = new Map(), gap = () => { const [a, b] = [...pts.values()]; return Math.hypot(a[0] - b[0], a[1] - b[1]); };
+function zoomAt(x, y, k) {
+  const mx = x - cv.clientWidth / 2, my = y - cv.clientHeight / 2, ns = Math.min(1.5, Math.max(.01, view.s * k)), kk = ns / view.s;
+  view.x += mx / view.s * (1 - 1 / kk); view.y += my / view.s * (1 - 1 / kk); view.s = ns; $('tip').hidden = true; redraw();
+}
+cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); pts.set(e.pointerId, [e.offsetX, e.offsetY]);
+  drag = pts.size === 1 ? { x: e.offsetX, y: e.offsetY, moved: false, at: Date.now() } : { moved: true, d: gap() }; };
+cv.onpointermove = e => {
+  if (pts.size === 2 && pts.has(e.pointerId)) { pts.set(e.pointerId, [e.offsetX, e.offsetY]); const d = gap(), [a, b] = [...pts.values()];
+    if (drag.d) zoomAt((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, d / drag.d); drag.d = d; return; }
+  if (drag && pts.size === 1) {
     const dx = e.offsetX - drag.x, dy = e.offsetY - drag.y;
     if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
     if (drag.moved) { view.x -= dx / view.s; view.y -= dy / view.s; drag.x = e.offsetX; drag.y = e.offsetY; $('tip').hidden = true; redraw(); return; }
@@ -1216,23 +1227,25 @@ cv.onmousemove = e => {
   cv.style.cursor = h ? 'pointer' : 'grab';
   showTip(h, e.offsetX, e.offsetY);
 };
-cv.onmouseup = e => { if (drag && !drag.moved) { const h = nodeAt(e.offsetX, e.offsetY); if (h) { e.button === 2 ? (cycleAttr(h), tellConquest(h)) : clickNode(h); showTip(h, e.offsetX, e.offsetY); } } drag = null; };
-cv.oncontextmenu = e => e.preventDefault();
-cv.onmouseleave = () => { drag = null; hover = null; $('tip').hidden = true; redraw(); };
-cv.onwheel = e => {
-  e.preventDefault();
-  const k = e.deltaY < 0 ? 1.15 : 1 / 1.15, mx = e.offsetX - cv.clientWidth / 2, my = e.offsetY - cv.clientHeight / 2;
-  const ns = Math.min(1.5, Math.max(.01, view.s * k)), kk = ns / view.s;
-  view.x += mx / view.s * (1 - 1 / kk); view.y += my / view.s * (1 - 1 / kk); view.s = ns; $('tip').hidden = true; redraw();
+cv.onpointerup = e => {
+  pts.delete(e.pointerId);
+  if (drag && !drag.moved && !pts.size) { const h = nodeAt(e.offsetX, e.offsetY), held = e.pointerType !== 'mouse' && Date.now() - drag.at > 500;
+    if (h) { e.button === 2 || held ? (cycleAttr(h), tellConquest(h)) : clickNode(h); showTip(h, e.offsetX, e.offsetY); } }
+  if (!pts.size) drag = null;
 };
+cv.onpointercancel = e => { pts.delete(e.pointerId); if (!pts.size) drag = null; };
+cv.oncontextmenu = e => e.preventDefault();
+cv.onpointerleave = e => { if (pts.size) return; drag = null; hover = null; $('tip').hidden = true; redraw(); };
+cv.onwheel = e => { e.preventDefault(); zoomAt(e.offsetX, e.offsetY, e.deltaY < 0 ? 1.15 : 1 / 1.15); };
 addEventListener('resize', redraw);
+document.querySelectorAll('nav button').forEach(x => { x.setAttribute('role', 'tab'); x.setAttribute('aria-selected', x.classList.contains('on')); });
 
 // ---------- tabs
 // side panel: character sheet in Tree / Equipment, details of the selected skill in Skills, in the 3D scene what changes while
 // you play (resistances, speeds, damage taken...) over the skills whose damage changes with it
 document.querySelectorAll('nav button').forEach(btn => btn.onclick = () => {
   const v = btn.dataset.v;
-  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === btn));
+  document.querySelectorAll('nav button').forEach(x => { x.classList.toggle('on', x === btn); x.setAttribute('aria-selected', x === btn); });
   document.querySelectorAll('.view').forEach(x => x.hidden = x.id !== v);
   $('charPanel').hidden = v === 'skills' || v === 'scene';
   $('simChar').hidden = v !== 'scene';
@@ -1485,3 +1498,14 @@ watchUpdates($('updNote'));
 const renderFilter = initFilter($('filter'));
 select(builds[localStorage.getItem(KEY + ':last')] ? localStorage.getItem(KEY + ':last') : Object.keys(builds)[0]);
 $('boot')?.remove();   // the page is ready
+
+// accessibility: a button with a symbol for text (✕, ↶, ⟲) is named by its title for screen readers; a clickable row or
+// cell that is no button (a skill, an equipment slot: [data-sel], .cell[data-pick]) takes the keyboard's focus and Enter / Space
+const ACT = '[data-sel], .cell[data-pick]';
+const a11y = root => { for (const x of root.querySelectorAll?.('button[title]:not([aria-label])') || []) if (!/\p{L}/u.test(x.textContent)) x.setAttribute('aria-label', x.title);
+  for (const x of root.querySelectorAll?.(ACT) || []) if (!x.hasAttribute('tabindex')) { x.tabIndex = 0; x.setAttribute('role', 'button'); } };
+new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) a11y(n.parentNode || n); }).observe(document.body, { childList: true, subtree: true });
+a11y(document.body);
+addEventListener('keydown', e => { if ((e.key !== 'Enter' && e.key !== ' ') || !e.target.matches?.(ACT)) return;
+  const { sel, pick } = e.target.dataset; e.preventDefault(); e.target.click();   // drawn anew: the focus goes back to the same one
+  requestAnimationFrame(() => document.querySelector(sel != null ? `[data-sel="${CSS.escape(sel)}"]` : `.cell[data-pick="${CSS.escape(pick)}"]`)?.focus()); });

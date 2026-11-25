@@ -280,6 +280,8 @@
   #treeSearch { position:absolute; top:62px; left:10px; z-index:2; display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
   #treeFind { width:220px; padding:6px 10px; background:#0b0a08e6; border:1px solid #4a3e2a; color:#e8d8a8; font:13px Georgia, serif; outline:none; }
   #treeFind:focus { border-color:#9fe8ff; }
+  :focus-visible { outline:2px solid #9fe8ff; outline-offset:1px; }
+  #treeCanvas { touch-action:none; }
   #treeFindN { font:11px Georgia, serif; color:#9fe8ff; background:#0b0a08e6; padding:0 6px; } #treeFindN:empty { display:none; }
   #treePts { position:absolute; top:10px; left:10px; display:flex; gap:4px; z-index:2; font-family:Georgia, serif; }
   #treePts > * { display:flex; flex-direction:column; align-items:center; min-width:76px; padding:4px 10px; background:#0b0a08e6; border:1px solid #4a3e2a; color:#a89870; font:12px Georgia, serif; font-variant:small-caps; }
@@ -503,8 +505,8 @@
   <div id="sceneSkills" hidden><div id="sceneList"></div></div>
 </aside>
 <main>
-  <nav><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="opt" data-t>Optimizer</button><button data-v="filter" data-t>Loot filter</button><button data-v="scene" data-t>Simulator</button><button data-v="settings" data-t>Settings</button></nav>
-  <div class="view" id="tree"><canvas id="treeCanvas"></canvas><canvas id="treeRings"></canvas><div id="treePts"></div><div id="treeSearch"><input id="treeFind" type="search" placeholder="Search nodes…" autocomplete="off" data-t><span id="treeFindN"></span></div><div id="tip" hidden></div></div>
+  <nav role="tablist"><button data-v="tree" class="on" data-t>Tree</button><button data-v="items" data-t>Equipment</button><button data-v="skills" data-t>Skills</button><button data-v="opt" data-t>Optimizer</button><button data-v="filter" data-t>Loot filter</button><button data-v="scene" data-t>Simulator</button><button data-v="settings" data-t>Settings</button></nav>
+  <div class="view" id="tree"><canvas id="treeCanvas" role="img" aria-label="Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard." data-t></canvas><canvas id="treeRings"></canvas><div id="treePts"></div><div id="treeSearch"><input id="treeFind" type="search" placeholder="Search nodes…" title="Enter: next match · Shift+Enter: previous · Ctrl+Enter: allocate or remove it" autocomplete="off" data-t><span id="treeFindN"></span></div><div id="tip" hidden></div></div>
   <div class="view" id="items" hidden></div>
   <div class="view" id="skills" hidden></div>
   <div class="view" id="opt" hidden></div>

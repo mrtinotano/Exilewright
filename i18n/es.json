@@ -989,5 +989,7 @@
  "Click: take it at this level": "Clic: cogerla a este nivel",
  "All builds (backup)": "Todas las builds (copia)",
  "Every build in one JSON file: JSON file in Import brings them all back, next to the ones you have.": "Todas las builds en un archivo JSON: Archivo JSON en Importar las recupera todas, junto a las que ya tengas.",
- "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "Esta build se cambió por última vez con los datos del juego del {0}, y esta app tiene los del {1}: lo que cambió un parche puede contar distinto. Tu próximo cambio la pasa a estos datos."
+ "This build was last changed with the game data of {0}, and this app has that of {1}: what a patch changed may count differently. Your next change takes it to this data.": "Esta build se cambió por última vez con los datos del juego del {0}, y esta app tiene los del {1}: lo que cambió un parche puede contar distinto. Tu próximo cambio la pasa a estos datos.",
+ "Enter: next match · Shift+Enter: previous · Ctrl+Enter: allocate or remove it": "Enter: siguiente resultado · Mayús+Enter: anterior · Ctrl+Enter: asignarlo o quitarlo",
+ "Passive tree: drag to move, wheel or two fingers to zoom, click or tap to allocate. The search box reaches a passive with the keyboard.": "Árbol de pasivas: arrastra para moverlo, rueda o dos dedos para acercar, clic o toque para asignar. El cuadro de búsqueda llega a una pasiva con el teclado."
 }
