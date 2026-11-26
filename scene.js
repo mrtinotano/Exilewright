@@ -1080,9 +1080,11 @@ export function initScene(el, api) {
     const live = Object.entries(me.hexes || {}).filter(([n, h]) => n !== name && time < h.until), lim = live.filter(([, h]) => !h.free);
     me.hexes = Object.fromEntries([...live.filter(([, h]) => h.free), ...free || sheet().curseIgnore ? lim : lim.slice(-((sheet().curseLimit || 1) - 1) || Infinity), [name, { until: time + s * R.time, C, k: (C.effect ?? 1) * x * R.effect, free }]]);
   };
+  // the Consecrated Ground you stand on, if any (Gifts from Above: you have it around you while stationary)
+  const holyAt = () => grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r) || sheet().holyStill && !walk && !move && {};
   const hexN = () => Object.values(me.hexes || {}).filter(h => time < h.until).length;
   const uncurse = () => { const k = Object.keys(me.hexes || {}).find(n => time < me.hexes[n].until); if (k) { delete me.hexes[k]; fx.ring(pp, .2, 1.2, 'gold', .35); } };   // one of the curses on you
-  const onMe = f => Object.values(me.hexes || {}).reduce((t, h) => t + (time < h.until ? (f(h.C) || 0) * h.k : 0), 0);
+  const onMe = f => Object.values(me.hexes || {}).reduce((t, h) => t + (time < h.until ? (f(h.C) || 0) * h.k : 0), 0) * (holyAt() ? .5 : 1);   // on Consecrated Ground, 50% reduced effect (keywords.json)
   const curseFx = (d, f) => [d.curse, ...(d.hexes || [])].reduce((t, u) => t + (u ? (f(u.C) || 0) * (u.k || 0) * (u.full && u.s <= u.full / 2 ? 1 + (sheet().cursed?.half || 0) / 100 : 1) * (me.whisp ? 1 + me.whisp.n * WHISPER.mag / 100 / (u.C?.inc || 1) : 1) : 0), 0);
   // Watchtowers: each totem of yours its increased damage taken on the enemies in its Presence (note: your Presence's radius)
   const watched = d => { const s = sheet(), k = s.watch; return k ? 1 + k * objs.filter(o => o.totemOf && !o.dead && dist(o.pos, d.pos) <= s.overgrow.r).length / 100 : 1; };
@@ -1968,7 +1970,7 @@ export function initScene(el, api) {
     else if (g.type === 'shocked') fx.emit(2, { p, r, v: 1.5, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
     else if (g.type === 'gas') fx.emit(1, { p, r, h: .8, v: .3, up: .3, life: 1.6, size: 1.1, grow: 1.6, c: 0x5c7a22, smoke: true, a: .28 });
     else if (g.type === 'caustic') fx.emit(1, { p, r, v: .1, up: .7, life: .9, size: .2, c: 'poison' });
-    else if (g.type === 'consecrated') fx.emit(1, { p, r, v: .1, up: .8, life: 1, size: .14, c: 'holy' });
+    else if (g.type === 'consecrated') fx.emit(1, { p, r, v: .1, up: .8, life: .8, size: .5, c: 0xffa74c, k: 1.4, a: .5 });   // its warm wisps rising (ground_effects holy cyl.pet: smoke_whisp, 0.8 s)
   }
   // S with element e added, as the one it now deals most (got: the one it picked up)
   const astral = S => S.P.nova && S.g?.supports?.includes('Astral Projection');
@@ -3113,6 +3115,17 @@ export function initScene(el, api) {
     }
     area(c, R, S); shake = Math.max(shake, .5);
   }
+  // Consecrate's look (consecrate_nova.ao: holyWave, lightBeams on its ring of 24 bones): a wave out to its area for 1 s
+  // with a glowing ring for 0.4 s (ringGlow boost 1 / 1 / 0.55), beams of light rising round it for 0.1-0.35 s and sparks
+  // hanging in the air for 1-8 s (waveSparks boost 4 / 2.5 / 1); its Consecrated Ground is the holy ground's (below).
+  // note: the beams' colour is their vertex colour, not in the files: the ring's
+  const CONSEC = { ring: 0xffff8c, spark: 0xffa040 };
+  function consecrate(c, R) {
+    fx.ring(c, .2, R, CONSEC.ring, .4, { k: 2.4 }); fx.ring(c, .3, R * 1.05, 'holy', 1, { a: .35, y: .1 });
+    for (let k = 0; k < 24; k++) { const a = k / 24 * TAU, q = { x: c.x + Math.cos(a) * R, y: 0, z: c.z + Math.sin(a) * R };
+      later(k / 24 * .2, () => fx.emit(1, { p: q, r: .05, v: .1, up: 6, life: rnd(.1, .35), size: .25, c: CONSEC.ring, k: 2.4, drag: 1 })); }   // its beams
+    fx.emit(30, { p: { x: c.x, y: .6, z: c.z }, r: R * .8, v: .4, up: .2, life: 4, size: .05, c: CONSEC.spark, k: 2.4, drag: 4 });   // its sparks hanging
+  }
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const full = life;
     const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
@@ -3668,6 +3681,7 @@ export function initScene(el, api) {
       const P = S.P; let c = S.src && !S.here ? S.at : S.from;   // here: cast as by hand where it stands (an Abyssal Apparition)
       if (P.from) { const q = objs.find(o => o.proj && o.name === P.from && !o.dead); if (q) { c = { x: q.pos.x, z: q.pos.z }; say(t('{0} erupts from {1}', S.label, labelOf(P.from)), S.el); } }
       const R = stageR(S), dur = Math.min(.5, .12 + R * .045);
+      if (S.name === 'Consecrate') { consecrate(c, R); ground('consecrated', c, R, durOf(S), S); return; }   // only its ground, for its duration
       // Elemental Sundering: its pulse deals nothing; it Consumes the Freeze, Shock and Ignite of the enemies in it, nearest
       // first, each an explosion of that element around the enemy (the cold one the gem's, the others its parts), up to its
       // most, with its more damage from a Unique
@@ -7318,7 +7332,7 @@ export function initScene(el, api) {
     const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
     // Consecrated Ground: on it you regenerate 5% of your maximum life a second (keywords.json), more by its effect (Consecrate)
     // Gifts from Above: you have it around you while stationary (note: its radius is not in the data: it is under you alone)
-    const CG = grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r) || sheet().holyStill && !walk && !move && {};
+    const CG = holyAt();
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
     // Gloomform: a Smoke Cloud of its radius around you while stationary; the enemies standing in it are Blinded (KeywordPopups SmokeCloud)
     if (sheet().smoke && !walk && !move) for (const d of inside(pp, sheet().smoke)) d.st.blind = Math.max(d.st.blind || 0, .2);
