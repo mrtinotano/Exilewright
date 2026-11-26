@@ -2118,6 +2118,55 @@ export function initScene(el, api) {
       for (let k = Math.min(T.stats.support_hatching_elementals_number_of_elementals_per_hatch, room); k > 0; k--) minion(X, around(at, 1), T.shape?.duration || T.stats.base_skill_effect_duration / 1000, { kind: T.id });
     }
   }
+  // Artillery Ballista (its bolt: Rain, Area, ProjectileNoCollision; crossbow_ripwire_ballista): the totem looses its
+  // salvo skyward with an orange flash, sparks and a puff of grey steam at its muzzle (muzzle_flash: cone 1 / 0.65 / 0.45,
+  // sparks 1 / 0.39 / 0.39, steam 0.3 / 0.29 / 0.27, a small screen shake); each bolt falls on a spot of its own around
+  // the target with an orange head and a pale salmon trail (proj_head 0.8 / 0.41 / 0.26, ripwire_trail 1 / 0.66 / 0.58)
+  // and hits its area there, flinging orange embers (spear_embers 1 / 0.38 / 0.24). A look only, around them: the volley
+  // loosed skyward (onACT_clusterFire: at least 64 arrows in a 7.5° cone) and the rain of bolts that falls with them
+  // (rain_of_death: at least 32 Arrow meshes in a filled circle, falling fast, leaning 0.18 to 0.43 rad, stuck in the
+  // ground for 10 to 15 s). note: how far apart the bolts land is not in the data (within the bolt's radius of the
+  // target here), nor the parameter that raises those counts (the least of each here); flight time and height are the
+  // scene's
+  const ART = { flash: 0xffa673, spark: 0xff6363, steam: 0x4d4a45, head: 0xff8254, trail: 0xffa894, ember: 0xff613d, bolt: 0x4a3828 };
+  function artillery(TS, e, d, n, R) {
+    const top = V(e.pos.x, 1.5, e.pos.z);
+    fx.glow(top, 1.1, ART.flash, .15, 2); fx.emit(10, { p: top, up: 3, r: .1, v: 1.5, life: .25, size: .06, c: ART.spark, c2: 'white', k: 2.4, drag: 2 });
+    fx.emit(4, { p: top, up: .8, r: .15, v: .3, life: 1.2, size: .45, grow: 1.6, c: ART.steam, smoke: true, a: .4, drag: 1 });
+    shake = Math.max(shake, .06);
+    fx.emit(64, { p: top, dir: V(0, 14, 0), v: 1.8, life: .3, size: .05, c: ART.trail, c2: 'white', k: 2 });
+    const c = { x: d.pos.x, z: d.pos.z }; later(.8, () => rain.fall(c, R, 32));
+    for (let i = 0; i < n; i++) later(i * .07, () => {
+      const a = rnd(TAU), l = Math.sqrt(Math.random()) * R, to = V(d.pos.x + Math.cos(a) * l, 0, d.pos.z + Math.sin(a) * l), m = fx.arrow(ART.head);
+      m.children[0].material.color.copy(fx.color(ART.bolt, 2.6)); m.children[1].scale.setScalar(.35);
+      lob(m, top.clone(), to, .8, 6, () => {
+        area(to, R, TS);
+        fx.emit(8, { p: { x: to.x, y: .15, z: to.z }, r: .1, v: 2.5, up: 1.5, life: .35, size: .06, c: ART.ember, c2: 'white', k: 2.2, drag: 2, g: 6 });
+        fx.glow({ x: to.x, y: .3, z: to.z }, .8, ART.flash, .12, 1.8);
+      }, { trail: ART.trail, aim: true });
+    });
+  }
+  const rain = (() => {
+    const N = 512, m = new THREE.InstancedMesh(new THREE.CylinderGeometry(.012, .012, .8, 5).translate(0, .4, 0), new THREE.MeshStandardMaterial({ color: ART.bolt, roughness: .8 }), N);
+    const L = Array.from({ length: N }, () => ({ end: -1 })), M = new THREE.Matrix4(), Z = new THREE.Matrix4().makeScale(0, 0, 0), Q = new THREE.Quaternion(), E = new THREE.Euler(), P = new THREE.Vector3(), S1 = new THREE.Vector3();
+    for (let i = 0; i < N; i++) m.setMatrixAt(i, Z);
+    m.frustumCulled = false; scene.add(m); let next = 0;
+    return {
+      fall(c, R, n) {
+        for (let k = 0; k < n; k++, next = (next + 1) % N) { const a = rnd(TAU), l = Math.sqrt(Math.random()) * R; L[next] = { x: c.x + Math.cos(a) * l, z: c.z + Math.sin(a) * l, at: time + rnd(.35), end: time + rnd(10, 15), rx: rnd(.18, .43), ry: rnd(TAU) }; }
+      },
+      update() {
+        for (let i = 0; i < N; i++) {
+          const b = L[i]; if (b.end < 0) continue;
+          const k = (time - b.at) / .12;
+          if (time >= b.end || k < 0) { m.setMatrixAt(i, Z); if (time >= b.end) b.end = -1; continue; }
+          if (k >= 1 && !b.hit) { b.hit = true; fx.emit(2, { p: { x: b.x, y: .1, z: b.z }, v: 1.5, up: 1, life: .25, size: .05, c: ART.ember, c2: 'white', k: 2.2, g: 6 }); }
+          P.set(b.x, Math.max(0, 1 - k) * 3 - .1, b.z); Q.setFromEuler(E.set(b.rx, b.ry, 0, 'YXZ'));
+          m.setMatrixAt(i, M.compose(P, Q, S1.set(1, Math.min(1, b.end - time), 1)));   // sinking away in its last second
+        }
+        m.instanceMatrix.needsUpdate = true;
+      } };
+  })();
   function lob(mesh, from, to, dur, h, land, o = {}) {
     mesh.position.copy(from); scene.add(mesh); let k = 0;
     const e = { pos: mesh.position, dead: false,
@@ -2125,6 +2174,7 @@ export function initScene(el, api) {
         k = Math.min(1, k + dt / dur);
         mesh.position.set(from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k + Math.sin(k * Math.PI) * h, from.z + (to.z - from.z) * k);
         if (o.spin) mesh.rotation.x += dt * 9;
+        if (o.aim) mesh.lookAt(from.x + (to.x - from.x) * (k + .01), from.y + (to.y - from.y) * (k + .01) + Math.sin((k + .01) * Math.PI) * h, from.z + (to.z - from.z) * (k + .01));   // pointing the way it flies
         if (o.drip && Math.random() < dt * 40) fx.emit(1, { p: mesh.position, v: .2, life: .7, size: .09, c: o.drip, g: 9 });   // a flask spilling its liquid as it flies (liquid_spill trails)
         if (o.trail) fx.emit(o.big ? 4 : 1, { p: mesh.position, v: .5, life: o.big ? .6 : .3, size: o.big ? .6 : .16, c: o.trail, c2: 'white', drag: 1 });
         if (k >= 1) { e.dead = true; land(); }
@@ -3068,7 +3118,7 @@ export function initScene(el, api) {
       const su = S.dmg?.sum || {}, SPL = su.support_splinter_totem_X_times, gen = S.gen || 0, less = k => (1 + (su[k] || 0) / 100) ** gen;
       const mine = objs.filter(o => o.totemOf === S.name && !o.dead);
       if (SPL) { if (!gen) mine.forEach(o => o.die()); } else if (mine.length >= (F.dmg?.totems || 2)) mine[0].die();
-      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista), TS0 = { ...F, src: real ? 'totemHit' : 'totem', mult: F.mult * (S.totemMult || 1) * less('support_splinter_totem_damage_+%_final_each_splinter') }, R0 = (F.R || S.R || SIM.totemArea) * Math.sqrt(less('support_splinter_totem_area_of_effect_+%_final_each_splinter')), far = S.P.ballista || S.P.ranged;
+      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista, S.name === 'Artillery Ballista'), TS0 = { ...F, src: real ? 'totemHit' : 'totem', mult: F.mult * (S.totemMult || 1) * less('support_splinter_totem_damage_+%_final_each_splinter') }, R0 = (F.R || S.R || SIM.totemArea) * Math.sqrt(less('support_splinter_totem_area_of_effect_+%_final_each_splinter')), far = S.P.ballista || S.P.ranged;
       const every = (real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3) / less('support_splinter_totem_skill_speed_+%_final_each_splinter');
       if (gen) f.group.scale.setScalar(.8 ** gen);
       let acts = 0;
@@ -3096,6 +3146,7 @@ export function initScene(el, api) {
           const gw = gwN();
           const TS = gw ? { ...TS0, mult: TS0.mult * (1 + gw * su['damage_+%_final_per_totem_in_radius_from_support_greatwood'] / 100) } : TS0, R = R0 * Math.sqrt(1 + gw * (su['area_of_effect_+%_per_totem_in_radius_from_support_greatwood'] || 0) / 100);
           if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
+          else if (S.name === 'Artillery Ballista') artillery(TS, e, d, n, R);
           else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
           else if (AW) {
             const l = Math.max(.6, Math.min(1.5, k - 1)), q = { x: e.pos.x + (d.pos.x - e.pos.x) / k * l, z: e.pos.z + (d.pos.z - e.pos.z) / k * l }, at = { x: d.pos.x, z: d.pos.z };
@@ -6681,7 +6732,7 @@ export function initScene(el, api) {
       KA.walked = 0;   // a Volcanic Step: a wave of fire on the ground from your feet, flames rising (hires_shockwave, fire_flare .mat)
       const c = { x: pp.x, z: pp.z }, R = KA.S.A; fx.ring(c, .3, R, 'fire', .4, { a: .7 }); fx.emit(30, { p: { x: c.x, y: .15, z: c.z }, r: .3, v: R * 2.2, flat: true, life: .4, size: .22, c: 'fire', c2: 'ember', drag: 1.5 });
       fx.emit(14, { p: { x: c.x, y: .1, z: c.z }, r: .4, up: 2.4, v: .8, life: .45, size: .3, c: 'fire', c2: 'ember', k: 1.8, drag: 1.5 }); area(c, R, KA.S, { soft: true }); }
-    kaomLook(dt); arcticLook(dt); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
+    kaomLook(dt); arcticLook(dt); rain.update(); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
     // camera and cursor

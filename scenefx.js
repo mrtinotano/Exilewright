@@ -595,12 +595,16 @@ export function makeMinion(fx, c) {
   return { group: g, arm, draw: P.draw, dispose() { g.parent?.remove(g); eyes.traverse(m => m.material?.dispose()); P.dispose(); } };
 }
 
-export function makeTotem(fx, c, ballista) {
+export function makeTotem(fx, c, ballista, up) {   // up: an upward ballista (Artillery Ballista), its bow raised on a round base
   const M = mats(), g = new THREE.Group();
   const mesh = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); g.add(o); return o; };
   if (ballista) {
-    mesh(new THREE.CylinderGeometry(.06, .3, .9, 6), M.darkwood, 0, .45, 0); mesh(new THREE.BoxGeometry(.16, .14, 1.1), M.wood, 0, 1, 0);
-    mesh(new THREE.BoxGeometry(1.3, .07, .09), M.wood, 0, 1.05, .35); mesh(new THREE.BoxGeometry(.1, .1, .3), M.metal, 0, 1.08, .5);
+    mesh(new THREE.CylinderGeometry(.06, .3, .9, 6), M.darkwood, 0, .45, 0);
+    const bow = [mesh(new THREE.BoxGeometry(.16, .14, 1.1), M.wood, 0, 1, 0), mesh(new THREE.BoxGeometry(1.3, .07, .09), M.wood, 0, 1.05, .35), mesh(new THREE.BoxGeometry(.1, .1, .3), M.metal, 0, 1.08, .5)];
+    if (up) {
+      const b = new THREE.Group(); b.position.y = 1; b.rotation.x = -1; g.add(b); for (const o of bow) { o.position.y -= 1; b.add(o); }
+      mesh(new THREE.CylinderGeometry(.6, .66, .1, 20), M.metal, 0, .05, 0); mesh(new THREE.TorusGeometry(.5, .03, 6, 24), M.darkwood, 0, .11, 0).rotation.x = Math.PI / 2;
+    }
   } else {
     mesh(new THREE.CylinderGeometry(.26, .32, 1.7, 8), M.wood, 0, .85, 0); mesh(new THREE.BoxGeometry(.7, .22, .5), M.darkwood, 0, 1.75, 0);
     mesh(new THREE.BoxGeometry(.46, .3, .12), M.darkwood, 0, 1.25, .24); mesh(new THREE.ConeGeometry(.2, .4, 6), M.darkwood, 0, 2.05, 0);
