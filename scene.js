@@ -3230,7 +3230,7 @@ export function initScene(el, api) {
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook)
+      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, kaomLook)
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       say(t('{0} on', S.label), S.el);
     },
@@ -4275,7 +4275,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -4650,7 +4650,30 @@ export function initScene(el, api) {
   // Ancestral Cry's Kaom (ancestralcrykaom*.ao: Kaom's skin on you): the figure a fifth larger, its skin dark red
   // glowing as embers (warcry_ancestral's red-orange) and sparks rising off it, while it lasts
   const KAOM_SKIN = new THREE.Color(0x6e2414), KAOM_GLOW = 0xff5a1e, KG = new THREE.Color(KAOM_GLOW);
-  let kaomK = 0, apoK = 0;
+  // Barkskin's look (reservation_barkskin barkSkin_Skin.mat, on its buff while it is on): the game's bark texture laid
+  // over you triplanar, growing out from your chest (its sphere mask), coloured by its look-up (0.63 / 0.41 / 0.2 from a
+  // fifth of the texture's brightness up, darker below; sRGB, as linear here) with a yellow-green glow flowing through its
+  // cracks (scrolling caustic noise, 0.67 / 1 / 0.2 by 1.9). note: the bark's tiling and the glow's strength are the scene's
+  const barkTex = new THREE.TextureLoader().load('poe2_data/available/img/art/particles/fxlib/pbr/bark_clr.webp');
+  barkTex.wrapS = barkTex.wrapT = THREE.RepeatWrapping; barkTex.colorSpace = THREE.SRGBColorSpace;
+  const barkU = { barkK: { value: 0 }, barkT: { value: 0 }, barkMap: { value: barkTex } };
+  function barkSkin(M) {
+    M.onBeforeCompile = sh => {
+      Object.assign(sh.uniforms, barkU);
+      sh.vertexShader = 'varying vec3 vBark, vBarkN;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vBark = position; vBarkN = normal;');
+      sh.fragmentShader = 'uniform float barkK, barkT; uniform sampler2D barkMap; varying vec3 vBark, vBarkN;\n' + sh.fragmentShader
+        .replace('#include <map_fragment>', `#include <map_fragment>
+          vec3 bw = pow(abs(normalize(vBarkN)), vec3(4.)); bw /= bw.x + bw.y + bw.z; vec3 bp = vBark * 2.2;
+          vec3 bark = texture2D(barkMap, bp.zy).rgb * bw.x + texture2D(barkMap, bp.xz).rgb * bw.y + texture2D(barkMap, bp.xy).rgb * bw.z;
+          float bl = pow(dot(bark, vec3(.333)), 1. / 2.2), bm = smoothstep(barkK * 1.35, barkK * 1.35 - .12, length(vBark - vec3(0., 1.1, 0.)));
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(.36, .14, .03) * smoothstep(0., .21, bl) * (.15 + 1.6 * smoothstep(.2, .5, bl)), bm);`)
+        .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+          float bf = .5 + .5 * sin(vBark.y * 7. + vBark.x * 3. - barkT * 1.6);
+          totalEmissiveRadiance = mix(totalEmissiveRadiance, vec3(.42, 1., .03) * 1.9 * .5 * bf * smoothstep(.3, .22, bl), bm);`);
+    };
+    M.needsUpdate = true;
+  }
+  let kaomK = 0, apoK = 0, barkK = 0;
   // (and a skill's glow on your skin for a moment, w: me.skin = { at, hex, dur }: Animus Exchange's Runic Ward blue for
   // 1.5 s, Apocalypse's orange for 1 s; note: how long is not in the data)
   // Arctic Howl's look (werewolf_warcry: warCry_01.pet, tundraHunter_buff.epk, exertedPower_01): its howl a wave of
@@ -4690,10 +4713,11 @@ export function initScene(el, api) {
       for (const s of [-1, 1]) { const q = player.eye(V(), s); fx.emit(1, { p: q, v: 0, life: .05, size: .13, c: CHAYULA.skin, c2: 'white', k: 3 }); }
       if (Math.random() < .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.7), z: pp.z }, r: .3, up: 1.4, v: .25, life: .8, size: .14, c: CHAYULA.string, c2: CHAYULA.violet, k: 2, drag: 1 });
     }
-    if (!k && !w && !player.kaomed) return;
-    player.kaomed = k > 0 || w > 0; player.group.scale.setScalar(1 + .2 * k);
+    const bk = barkK = Math.max(0, Math.min(1, barkK + (onS('Barkskin') ? dt : -dt * 2)));   // grows over you in a second
+    if (!k && !w && !bk && !player.kaomed) return;
+    player.kaomed = k > 0 || w > 0 || bk > 0; barkU.barkK.value = bk; barkU.barkT.value = time; player.group.scale.setScalar(1 + .2 * k);
     player.group.traverse(m => { if (!m.isSkinnedMesh || !m.material?.emissive) return; const M = m.material, u = M.userData;
-      if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; }
+      if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; } if (!u.bark) { u.bark = true; barkSkin(M); }
       M.color.copy(u.c0).lerp(KAOM_SKIN, k).lerp(WG, w * .6); M.emissive.copy(u.e0).lerp(KG, k).lerp(WG, w); M.emissiveIntensity = u.i0 * (1 - Math.max(k, w)) + k * (.22 + .08 * Math.sin(time * 7)) + w * .9; });
     if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: WG.getHex(), k: 1.8, drag: 1 });   // its runes, embers rising off you
     if (k && Math.random() < k * .6) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 2), z: pp.z }, r: .35, up: 1.2, v: .3, life: .6, size: .12, c: 'fire', c2: 'ember', k: 1.6, drag: 1 });
