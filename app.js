@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
+import { gemName, withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { SLOTS, initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
 import { initSkills } from './skills.js';
@@ -330,7 +330,7 @@ function renderStats() {
 // lower half of the side panel in the 3D scene: the build's skills with how the scene draws them
 const gemImg = p => p ? 'poe2_data/available/img/' + p.toLowerCase().replace(/\.dds$/, '.webp') : '';
 // a support's triggered skill (SK.skills[id].triggered_by) has no gem: its own name and types, the support's icon
-const gemInfo = g => { const d = SK.skills[g.name], gem = GEM[g.name] || d?.triggered_by && { ...d, icon: GEM[d.triggered_by]?.icon }; return { gem, data: d || {}, label: tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
+const gemInfo = g => { const d = SK.skills[g.name], gem = GEM[g.name] || d?.triggered_by && { ...d, icon: GEM[d.triggered_by]?.icon }; return { gem, data: d || {}, label: g.spectre ? gemName(g) : tn(gem) || g.name, icon: gemImg(gem?.icon), buff: gemImg(gem?.buff_icon) }; };
 // enemy of the 3D scene (not part of a build): the monster the clicks place, its level (0 = the level of the build) and its attack
 const SCENE_KEY = 'poe2scene';
 // and its map: { tier, mods: { id: [values] } } of a waystone's modifiers (enemies.js MAP), null when there is none

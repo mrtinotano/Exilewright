@@ -998,13 +998,13 @@
  "What each number has more (green) or less (red) than the build you pick": "Насколько каждое значение больше (зелёным) или меньше (красным), чем у выбранного билда",
  "Compared with {0}": "В сравнении с {0}",
  "A .filter file of yours: its rules come in here to edit": "Ваш файл .filter: его правила попадут сюда для правки",
- "Import a .filter file\u2026": "Импортировать файл .filter…",
+ "Import a .filter file…": "Импортировать файл .filter…",
  "No rules found in {0}": "В {0} нет правил",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "В {0} правил: {1}. Заменить ими ваши или добавить после ваших?",
  "{0} rules imported.": "Импортировано правил: {0}.",
  "{0} lines the creator has no field for were left out.": "Пропущено строк, для которых в редакторе нет поля: {0}.",
- "This build is already here: \u00ab{0}\u00bb. It is open.": "Этот билд уже здесь: «{0}». Он открыт.",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "«{0}» обновлён из Path of Building. Отмена вернёт прежний вариант.",
+ "This build is already here: «{0}». It is open.": "Этот билд уже здесь: «{0}». Он открыт.",
+ "«{0}» updated from Path of Building. Undo brings back how it was.": "«{0}» обновлён из Path of Building. Отмена вернёт прежний вариант.",
  "Delete several…": "Удалить несколько…",
  "Pick builds to delete at once": "Выберите билды, чтобы удалить их разом",
  "Delete the selected ({0})": "Удалить выбранные ({0})",
@@ -1018,5 +1018,7 @@
  "Skills removed: {0}": "Убранные умения: {0}",
  "Other supports on: {0}": "Другие поддержки у: {0}",
  "Items changed: {0}": "Изменённые предметы: {0}",
- "Additional physical damage reduction": "Дополнительное уменьшение получаемого физического урона"
+ "Additional physical damage reduction": "Дополнительное уменьшение получаемого физического урона",
+ "Its monster": "Монстр",
+ "{0}: choose its monster in the Skills tab": "{0}: выберите монстра на вкладке «Умения»"
 }

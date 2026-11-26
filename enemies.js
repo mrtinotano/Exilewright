@@ -27,6 +27,13 @@ export const ENEMIES = [...MON.monsters].sort((a, b) => a.name.localeCompare(b.n
 const BY_ID = new Map(ENEMIES.map(m => [m.id, m]));
 export const PLACED = ENEMIES.filter(m => m.areas?.length);   // those the game places in a zone (search)
 export const enemy = id => BY_ID.get(id) || null;
+// Bind Spectre: the monsters whose corpse it can bind (not Unique, with a corpse to bind, not disabled: monsters.json
+// no_spectre) and the monster its Spectre is (SpectreOverrides: its own Spectre variety, else itself)
+export const BINDABLE = PLACED.filter(m => !m.boss && !m.no_spectre);
+export const spectreOf = id => { const m = enemy(id); return m && (enemy(m.spectre_of) || m); };
+// its Spirit: the gem's base times its experience multiplier to the 0.75. note: Path of Building 2's formula (the game's
+// tables do not say it); it fits 0.3.0's change, high costs lower and low ones higher than the half of the experience before
+export const spectreSpirit = (id, base) => { const m = spectreOf(id); return m ? Math.floor((m.xp ?? 1) ** .75 * base) : base; };
 export const monSkill = key => MON.skills?.[key] || null;   // a monster skill as the data has it (its cast time, cooldown)
 // every word of the query has to appear in the name, category or areas; names that start with the query come first.
 // Only monsters the game places somewhere (a zone's packs or bosses): the tables also keep NPCs, test dummies and

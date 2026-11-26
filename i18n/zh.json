@@ -998,13 +998,13 @@
  "What each number has more (green) or less (red) than the build you pick": "各数值比所选构筑多出（绿）或少出（红）的部分",
  "Compared with {0}": "与{0}比较",
  "A .filter file of yours: its rules come in here to edit": "你自己的 .filter 文件：其规则导入到这里编辑",
- "Import a .filter file\u2026": "导入 .filter 文件…",
+ "Import a .filter file…": "导入 .filter 文件…",
  "No rules found in {0}": "{0} 中没有规则",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} 有 {1} 条规则。用它们替换你的规则，还是添加到你的规则之后？",
  "{0} rules imported.": "已导入 {0} 条规则。",
  "{0} lines the creator has no field for were left out.": "已略过 {0} 行编辑器没有对应项的内容。",
- "This build is already here: \u00ab{0}\u00bb. It is open.": "此构筑已经存在：「{0}」。已打开。",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "「{0}」已从 Path of Building 更新。撤销可恢复原状。",
+ "This build is already here: «{0}». It is open.": "此构筑已经存在：「{0}」。已打开。",
+ "«{0}» updated from Path of Building. Undo brings back how it was.": "「{0}」已从 Path of Building 更新。撤销可恢复原状。",
  "Delete several…": "批量删除…",
  "Pick builds to delete at once": "选择要一次删除的构筑",
  "Delete the selected ({0})": "删除所选（{0}）",
@@ -1018,5 +1018,7 @@
  "Skills removed: {0}": "移除的技能：{0}",
  "Other supports on: {0}": "辅助有变：{0}",
  "Items changed: {0}": "更换的物品：{0}",
- "Additional physical damage reduction": "額外物理傷害減免"
+ "Additional physical damage reduction": "額外物理傷害減免",
+ "Its monster": "怪物",
+ "{0}: choose its monster in the Skills tab": "{0}：在技能分頁選擇怪物"
 }

@@ -998,13 +998,13 @@
  "What each number has more (green) or less (red) than the build you pick": "Ce que chaque valeur a de plus (vert) ou de moins (rouge) que le build choisi",
  "Compared with {0}": "Comparé à {0}",
  "A .filter file of yours: its rules come in here to edit": "Un fichier .filter à vous : ses règles arrivent ici pour être modifiées",
- "Import a .filter file\u2026": "Importer un fichier .filter…",
+ "Import a .filter file…": "Importer un fichier .filter…",
  "No rules found in {0}": "Aucune règle trouvée dans {0}",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} contient {1} règles. Remplacer les vôtres par celles-ci, ou les ajouter après les vôtres ?",
  "{0} rules imported.": "{0} règles importées.",
  "{0} lines the creator has no field for were left out.": "{0} lignes sans champ dans l'éditeur ont été ignorées.",
- "This build is already here: \u00ab{0}\u00bb. It is open.": "Ce build est déjà ici : « {0} ». Il est ouvert.",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "« {0} » mis à jour depuis Path of Building. Annuler le remet comme avant.",
+ "This build is already here: «{0}». It is open.": "Ce build est déjà ici : « {0} ». Il est ouvert.",
+ "«{0}» updated from Path of Building. Undo brings back how it was.": "« {0} » mis à jour depuis Path of Building. Annuler le remet comme avant.",
  "Delete several…": "En supprimer plusieurs…",
  "Pick builds to delete at once": "Choisir des builds à supprimer d'un coup",
  "Delete the selected ({0})": "Supprimer la sélection ({0})",
@@ -1018,5 +1018,7 @@
  "Skills removed: {0}": "Compétences retirées : {0}",
  "Other supports on: {0}": "Autres soutiens sur : {0}",
  "Items changed: {0}": "Objets changés : {0}",
- "Additional physical damage reduction": "Réduction supplémentaire des dégâts physiques"
+ "Additional physical damage reduction": "Réduction supplémentaire des dégâts physiques",
+ "Its monster": "Son monstre",
+ "{0}: choose its monster in the Skills tab": "{0} : choisissez son monstre dans l'onglet Compétences"
 }

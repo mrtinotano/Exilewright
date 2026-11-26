@@ -5,7 +5,7 @@ import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef, wornItems, newItem } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
-import { enemy, attackOf, attacksOf, monSkill, ENEMIES, deflection, K as MON_K } from './enemies.js';
+import { enemy, spectreOf, spectreSpirit, attackOf, attacksOf, monSkill, ENEMIES, deflection, K as MON_K } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
 // Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
@@ -128,6 +128,8 @@ const load = f => fetch('poe2_data/available/' + f).then(r => r.json());
 const [ASCS, GEMS] = await Promise.all([load('ascendancies.json'), load('gems.json')]);
 // a gem by its name. Of several with one name the one you can cut stays (Spark and a unique's own triggered Spark), as
 // in skills.json; of the others the first (a staff's Lightning Bolt and a unique's)
+// a gem's name as the game shows it: Bind Spectre's, once its monster is chosen, "Spectre: <monster>"
+export const gemName = g => { const n = tn(GEM[g.name]) || g.name; return g.spectre ? n.replace('{0}', enemy(g.spectre)?.name || '?') : n; };
 export const GEM = Object.fromEntries([...GEMS].reverse().sort((a, b) => (a.source === 'gem_cutting') - (b.source === 'gem_cutting')).map(g => [g.name, g]));
 console.assert(GEM.Spark.source === 'gem_cutting' && GEM.Unleash.kind === 'support', 'GEM: the gem you can cut');
 // self-check: 3 Strength Motes of its own, 2 for Berserk, which requires Strength alone, and 1 each for Mortar Cannon and
@@ -174,7 +176,7 @@ export function reservation(g, sum = {}, b, life = false, maxLife) {
   const PG = sum['buff_skills_spirit_reservation_efficiency_+%_per_100_maximum_life'], perLife = PG && b && GEM[g.name]?.tags?.includes('buff') ? PG * Math.floor((maxLife ?? character(b, sum).life ?? 0) / 100) : 0;
   const eff = perLife + (st[id] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   // Skeletal Warrior: its first minions reserve no Spirit. note: the planner has no number of minions per gem; those first ones
-  const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
+  const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : g.spectre ? spectreSpirit(g.spectre, st._spirit || 0) : st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
   const AC = (g.supports || []).includes("Atziri's Communion") && SK.skills["Atziri's Communion"].constant.skill_reserves_X_life_permyriad_per_spirit_instead_of_spirit;
   if (life || AC) return life && AC ? own * AC / 100 : 0;
@@ -1758,7 +1760,7 @@ export function skill(g, b, treeGear) {
   const djinn = x => { const id = SK.minions[x?.name]?.[0]; return /Djinn$/.test(id || '') && enemy(id) || null; };   // by its monster (not Supporting Fire's artillery, the other undamageable Commanded minion)
   const host = !djinn(g) && GEM[g.name]?.types?.includes('CommandsMinions') && (b.gems || []).find(x => djinn(x)?.skills?.some(k => monSkill(k)?.name === g.name)) || null;
   const DJ = djinn(host || g), ckey = DJ && (host ? DJ.skills.find(k => monSkill(k)?.name === g.name) : DJ.skills[0]);
-  const mid = host ? DJ.id : SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
+  const mid = host ? DJ.id : g.spectre && spectreOf(g.spectre)?.id || SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
   // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
   // speed, area, resistances). note: their movement speed is not counted (minions move at their monster's speed here)
   const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;
@@ -1769,6 +1771,12 @@ export function skill(g, b, treeGear) {
   const gsum = mid && (flags.has('minions_are_gigantic') || flags.has('companions_are_gigantic')) ? { ...msum, minions_are_gigantic: 1 } : msum;   // Hulking Minions, Tangmazu's Thurible
   const mst = host ? skill(host, b, treeGear).stats : st, djPart = (key, si) => attacksOf(DJ).some(a => a.key === key) && monSkill(key).sets[si]?.label !== 'Hidden' ? minionOf(mst, gsum, fin, mid, attributes(sum, b?.asc), wAdd, key, si) : null;
   const mn = out.minion = DJ ? djPart(ckey, 0) : mid ? minionOf(st, gsum, { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] }, mid, attributes(sum, b?.asc), wAdd) : null;
+  // a Spectre (Bind Spectre's monster) uses every skill of its monster that deals damage, each with its own hits, speed
+  // (its cooldown) and how it reaches (enemies.js attackOf: melee, slam, projectile, bolt, area). note: the DPS shown is
+  // its first skill's; how often the game's monster picks each skill is not in the data (the scene picks at random among those off cooldown)
+  if (g.spectre && mid) { const M = enemy(mid), FS = { ...fin, 'support_minion_damage_with_non_command_skills_+%_final': finals['support_minion_damage_with_non_command_skills_+%_final'] };
+    out.spectre = attacksOf(M).flatMap(a => { const x = minionOf(st, gsum, FS, mid, attributes(sum, b?.asc), wAdd, a.key), A = x && attackOf(M, x.level, a.key, 'normal', true);
+      return x && Object.keys(x.hits).length ? [{ key: a.key, name: a.name, hits: x.hits, speed: x.speed, crit: x.crit, critBonus: x.critBonus, shape: A.shape, radius: A.radius, count: A.count, projSpeed: A.projSpeed, period: A.period, cooldown: A.cooldown }] : []; }); }
   // Carrion Call: your minions' resistances are your own
   if (mn?.res && sum.minion_resistances_equal_yours) { const R = character(b, sum).res; for (const e of ['fire', 'cold', 'lightning', 'chaos']) mn.res[e] = R[e].capped; }
   if (DJ) {

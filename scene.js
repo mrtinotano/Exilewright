@@ -2630,9 +2630,9 @@ export function initScene(el, api) {
   // of its horn, the Turtle's bite and its bubble (turtle_aura.mat). note: which one a totem calls is not in the data:
   // one at random here; their own skills' effects (the bubble, the horn's buff, the jade prison) are not simulated
   const SPECTRE = 0x73d6ff, JADE = 0x38ff4d, SPIRIT_SIZE = { hulk: 1.5, caster: 1, horn: 1.25, turtle: 1 };
-  function spectre(f, kind, p, from) {
+  function spectre(f, kind, p, from, list = []) {
     f.group.traverse(m => { if (m.isMesh) m.visible = false; });
-    const plate = f.group.children.find(m => m.isSprite), sz = SPIRIT_SIZE[kind];
+    const plate = f.group.children.find(m => m.isSprite), sz = SPIRIT_SIZE[kind] ?? 1, born = time;
     let G = null, shell = null;
     const skin = m => { m.color.set(0x9fe2ff); m.emissive?.set(SPECTRE); m.emissiveIntensity = .55; m.transparent = true; m.opacity = .55; m.depthWrite = false; };
     if (kind === 'turtle') {   // its shell, head and legs
@@ -2647,22 +2647,38 @@ export function initScene(el, api) {
     fx.glow({ x: p.x, y: 1, z: p.z }, 1.6 * sz, SPECTRE, .4, 2); fx.ring(p, .2, 1.2 * sz, SPECTRE, .4, { a: .6 });
     const bubble = q => fx.ball({ x: q.x, y: .6, z: q.z }, 1.3, SPECTRE, .9, .6);
     if (kind === 'turtle') bubble(p);
-    let last = { x: p.x, z: p.z };
+    if (kind === 'bound') for (let i = 0; i < 18; i++) { const a = i / 18 * TAU; fx.emit(1, { p: { x: p.x + Math.cos(a) * .9 * sz, y: .1, z: p.z + Math.sin(a) * .9 * sz }, up: 1.4, v: .2, life: .8, size: .16, grow: 1.4, c: SPECTRE, c2: 'white', k: 1.6, drag: 1 }); }   // a Spectre's: a ring of ribbons (spectreSummon_ringRibbons)
+    // a Spectre: one of its monster's skills at a time (calc.js out.spectre), its range by that skill's shape
+    let last = { x: p.x, z: p.z }, cur = null;
+    const ready = {}, pick = () => { if (cur) return cur; const R = list.filter(c => time >= (ready[c.key] ?? 0)); return cur = R[Math.floor(Math.random() * R.length)] || null; }, far = c => !!c && c.shape !== 'melee' && c.shape !== 'slam';
     return {
+      stop: () => kind === 'bound' && list.length ? far(pick()) ? 7 : 1.1 : null,
       tick(dt, e) {
         const moving = Math.hypot(e.pos.x - last.x, e.pos.z - last.z) > 1e-3; last = { x: e.pos.x, z: e.pos.z };
-        if (G) { G.update(dt, { moving, speed: 4 }); G.group.traverse(m => { if (m.isMesh && m.material && !m.userData.dyed) { m.userData.dyed = true; m.material = m.material.clone(); skin(m.material); m.castShadow = false; } }); }
+        const fade = kind === 'bound' && time - born < .8 ? (time - born) / .8 : 1;   // a Spectre fades in (MainSkinFADE)
+        if (G) { G.update(dt, { moving, speed: 4 }); G.group.traverse(m => { if (m.isMesh && m.material && !m.userData.dyed) { m.userData.dyed = true; m.material = m.material.clone(); skin(m.material); m.castShadow = false; } if (m.isMesh && m.userData.dyed) m.material.opacity = .55 * fade; }); }
         else shell.position.y = moving ? Math.abs(Math.sin(e.s * 8)) * .04 : 0;
         if (Math.random() < dt * 14) fx.emit(1, { p: { x: e.pos.x, y: rnd(.3, 1.6) * (G ? sz : .5), z: e.pos.z }, r: .3 * sz, up: .5, v: .4, life: .55, size: .14, c: SPECTRE, k: 1.4, drag: 1 });   // its ghost ribbons
       },
       blow(e, d, MX, k) {
         const dx = (d.pos.x - e.pos.x) / k, dz = (d.pos.z - e.pos.z) / k;
+        const c = kind === 'bound' && pick();
+        if (c) {   // its skill's hits, in its element's colour, reaching as the skill does; its next use after its own time
+          cur = null; const els = Object.keys(c.hits).sort((a, b) => c.hits[b][1] - c.hits[a][1]), X = { ...MX, dmg: { ...MX.dmg, hits: c.hits, crit: c.crit, critBonus: c.critBonus }, el: els[0], els }, R = c.radius || 1.5;
+          if (c.shape === 'projectile') { G.act('fire', .5); for (let n = 0; n < (c.count || 1); n++) { const a = (n - ((c.count || 1) - 1) / 2) * .18, ca = Math.cos(a), sa = Math.sin(a); shoot(X, e.pos, dx * ca - dz * sa, dx * sa + dz * ca, { speed: c.projSpeed || 14, range: 13 }); } }
+          else if (c.shape === 'bolt') { G.act('fire', .5); fx.bolt(V(e.pos.x, 1.3 * sz, e.pos.z), V(d.pos.x, 1, d.pos.z), X.el, .25, .05, 0); hit(d, X); }
+          else if (c.shape === 'area' || c.shape === 'slam') { G.act(c.shape === 'slam' ? 'slam' : 'fire', .6); fx.ring(d.pos, .2, R, X.el, .4, { a: .7 }); fx.disc(d.pos, R, X.el, .3, { a: .35 }); area(d.pos, R, X); }
+          else { G.act('punch', .4); fx.sector(e.pos, dx, dz, 1.3 * sz, .8, X.el, .18, { a: .6 }); hit(d, X); }
+          if (c.cooldown) ready[c.key] = time + c.cooldown;   // a skill with a cooldown waits it out; meanwhile its others
+          return c.cooldown ? c.period : 1 / (c.speed || 1);
+        }
         if (kind === 'caster') { G.act('fire', .5); shoot({ ...MX, el: JADE }, e.pos, dx, dz, { speed: 14, range: 13 }); return; }
         if (kind === 'hulk') {
           G.act('slam', .6); fx.ring(d.pos, .2, 1.6, JADE, .4, { a: .7 });
           fx.emit(18, { p: { x: d.pos.x, y: .2, z: d.pos.z }, r: .5, v: 2.5, up: 3, life: .6, size: .16, c: JADE, c2: 0x1f6b2e, k: 1.2, g: 8 });
         } else if (kind === 'horn') { G.act('shout', .6); fx.ring(e.pos, .3, 3, SPECTRE, .55, { a: .55 }); fx.emit(16, { p: { x: e.pos.x, y: 1.6, z: e.pos.z }, r: .2, v: 2.5, flat: true, life: .5, size: .18, c: SPECTRE, c2: 'white', drag: 1.5 }); }
-        else { fx.sector(e.pos, dx, dz, 1.1, .7, SPECTRE, .2, { a: .7 }); if (Math.random() < .3) bubble(e.pos); }
+        else if (kind === 'turtle') { fx.sector(e.pos, dx, dz, 1.1, .7, SPECTRE, .2, { a: .7 }); if (Math.random() < .3) bubble(e.pos); }
+        else G.act('punch', .4);
         if (G) fx.sector(e.pos, dx, dz, 1.3 * sz, .8, kind === 'hulk' ? JADE : SPECTRE, .18, { a: .6 });
         hit(d, MX);
       },
@@ -2677,9 +2693,15 @@ export function initScene(el, api) {
     // shield is lost before its life, it regenerates and Recoups (over 8 seconds: keywords.json Recoup) what the tree
     // gives minions, and a Gigantic one is 20% bigger. note: its armour and evasion are not counted, and its energy
     // shield does not recharge (a monster's recharge is not in the data)
+    // a Spectre (Bind Spectre's monster, chosen in the Skills tab: the gem becomes "Spectre: <monster>"): a pale blue
+    // see-through ghost of it (necromancer_spectre/raiseSpectre_Skin: spectreSkin_01 0.45 / 0.84 / 1, spectre()) trailing
+    // ghost ribbons, summoned in a ring of ribbons and fading in (MainSkinFADE), its hits and life its monster's at the
+    // gem's level (calc.js minionOf). note: its ghost is a humanoid (the scene's monsters are training dummies); its
+    // monster's skills past its first and its warp to you (spectre_warping) are not simulated
+    if (S.name === 'Spectre: {0}') o = { ...o, spirit: 'bound' };
     const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, comp = !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), MS = real ? { ...S, src: 'minionHit', comp } : { ...S, src: 'minion', mult: .5 * S.mult, comp }, ranged = o.spirit ? o.spirit === 'caster' : S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
-    const SP = o.spirit && spectre(f, o.spirit, p, o.from);
+    const SP = o.spirit && spectre(f, o.spirit, p, o.from, S.dmg?.spectre);
     if (o.look) o.look.start(f, p); else if (!SP) { fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el }); }
     let wait = rnd(.3, 1), sw = 0;
     const e = { pos: f.group.position, fig: f, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), skeleton: !!S.g && !!api.info(S.g).gem?.types?.includes('CreatesSkeletonMinion'),
@@ -2706,10 +2728,11 @@ export function initScene(el, api) {
         const MI = S.dmg?.sum?.['explode_on_low_life_%_maximum_life_to_deal'], low = q0 && q0.life > 0 && q0.life <= q0.max * LOW;
         if (MI && low && !e.blew) { const x = q0.max * MI / 100; boom({ x: e.pos.x, z: e.pos.z }, SIM.area, { ...MS, dmg: { ...S.dmg, hits: { fire: [x, x] }, trig: [] }, els: ['fire'], el: 'fire', mult: 1, src: 'trigger' }); }
         if (q0) e.blew = low;
-        const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? (ranged ? 7 : 1.1) : 2.4;
+        const d = near(e.pos, ranged ? 12 : 9), goal = d ? d.pos : pp, k = dist(goal, e.pos), stop = d ? SP?.stop?.() ?? (ranged ? 7 : 1.1) : 2.4;
         if (k > .05) f.group.rotation.y = Math.atan2(goal.x - e.pos.x, goal.z - e.pos.z);
         const ON = e.companion && (time < (me.compOns ?? -9) || sheet().compShiftOns && (me.form || me.demon) && dist(e.pos, pp) <= sheet().overgrow.r);   // Companions' Onslaught (the tree's on kill)
-        if (k > stop) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
+        // (a hair past where it stops: walking exactly up to it leaves it a rounding error short, never in reach)
+        if (k > stop + 1e-6) { const v = Math.min(k - stop, 5.5 * (o.speed || 1) * (1 + ((sheet().minionMove || 0) + (e.companion ? sheet().companionMove || 0 : 0) + (ON ? ONSLAUGHT.move : 0) + PUPPET.move * pup()) / 100) * dt);   /* the tree's increased minion / companion movement speed */ e.pos.x += (goal.x - e.pos.x) / k * v; e.pos.z += (goal.z - e.pos.z) / k * v; e.pos.y = Math.abs(Math.sin(e.s * 9)) * .05; }
         else if (d && wait <= 0 && !S.dmg?.cmd) {   // (a djinn acts only on Command: djinnCast)
           // note: Skeletal Reaver's Enrage (its Command: Rage on hit, life lost over time, 3% attack speed per Rage) is not
           // simulated: the Rage a hit gives them and the life they lose are not in the data
@@ -2717,7 +2740,7 @@ export function initScene(el, api) {
           const MU = S.dmg?.sum?.['support_varied_troops_damage_+%_final_per_different_persistent_ominion'], UW = me.mana < me.maxM ? sheet().upwell || 0 : 0;
           const PO = painOn(e), NC = (1 + (S.dmg?.finals?.['support_minion_damage_with_non_command_skills_+%_final'] || 0) / 100) * (time - (e.revAt ?? -99) <= RECENT ? 1 + (S.dmg?.finals?.['support_crazed_minions_minion_damage_+%_final_if_revived_recently'] || 0) / 100 : 1) * (MU ? 1 + MU * new Set(objs.filter(x => x.minion && x.keep && !x.dead).map(x => x.ofS)).size / 100 : 1) * (1 + UW / 100) * (1 + ((sheet().minionRage?.dmg || 0) * me.rage + (meIs.HitRecently() ? sheet().minionRage?.hit || 0 : 0)) / 100), MX = PO || NC !== 1 ? { ...MS, mult: MS.mult * (PO ? 1 + PO['pain_offering_damage_+%'] * PO._x / 100 : 1) * NC } : MS;   // Commandment: no damage with its own attacks
           wait = (real && S.dmg.speed ? 1 / S.dmg.speed : ranged ? 1.5 : 1.1) / (1 + (PO?.['pain_offering_attack_and_cast_speed_+%'] || 0) * (PO?._x || 1) / 100) / (ON ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + PUPPET.speed * pup() / 100) / (1 + (e.lg || 0) / 100) / (1 + (sheet().minionRage?.speed5 || 0) * Math.floor(me.rage / 5) / 100); sw = 1;   // Tecrod's Revenge: faster while undying
-          if (SP) SP.blow(e, d, MX, k);
+          if (SP) { const w = SP.blow(e, d, MX, k); if (w) wait = w; }
           else if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
           else { if (o.look) o.look.hit(e, d); else fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
@@ -3226,11 +3249,11 @@ export function initScene(el, api) {
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : {}));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : {}));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
+      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk' || k === 'Spectre: {0}') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       say(t('{0} on', S.label), S.el);
     },
@@ -5253,7 +5276,7 @@ export function initScene(el, api) {
     const su = S.dmg?.sum, VO = !auto && su?.support_static_charge_maximum_charge;
     S.volt = VO && Math.floor(Math.min(VO, (me.trav - (me.voltAt[S.name] ?? 0)) * su.support_static_charge_charge_gain_per_metre) / 10) * su['support_static_charge_%_damage_gained_as_lightning_per_10_charge'];
     if (VO) me.voltAt[S.name] = me.trav;
-    const run = S.dmg?.cmd && (!P.toggle || tog[S.name]) ? djinnCast : K[S.kind] || K.area;
+    const run = S.name === 'Bind Spectre' ? () => toast(t('{0}: choose its monster in the Skills tab', S.label)) : S.dmg?.cmd && (!P.toggle || tog[S.name]) ? djinnCast : K[S.kind] || K.area;
     run(S); whirl(S);
     if (!auto) zealotry(S);
     if (archmage(S)) archLook(S);

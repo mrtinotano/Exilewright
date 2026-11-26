@@ -998,13 +998,13 @@
  "What each number has more (green) or less (red) than the build you pick": "Lo que cada número tiene de más (verde) o de menos (rojo) que la build que elijas",
  "Compared with {0}": "Comparado con {0}",
  "A .filter file of yours: its rules come in here to edit": "Un archivo .filter tuyo: sus reglas entran aquí para editarlas",
- "Import a .filter file\u2026": "Importar un archivo .filter…",
+ "Import a .filter file…": "Importar un archivo .filter…",
  "No rules found in {0}": "No hay reglas en {0}",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} tiene {1} reglas. ¿Sustituyes las tuyas por ellas o las añades después de las tuyas?",
  "{0} rules imported.": "{0} reglas importadas.",
  "{0} lines the creator has no field for were left out.": "Se han dejado fuera {0} líneas para las que el creador no tiene campo.",
- "This build is already here: \u00ab{0}\u00bb. It is open.": "Esta build ya está aquí: «{0}». Está abierta.",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "«{0}» actualizada desde Path of Building. Deshacer la deja como estaba.",
+ "This build is already here: «{0}». It is open.": "Esta build ya está aquí: «{0}». Está abierta.",
+ "«{0}» updated from Path of Building. Undo brings back how it was.": "«{0}» actualizada desde Path of Building. Deshacer la deja como estaba.",
  "Delete several…": "Borrar varias…",
  "Pick builds to delete at once": "Elige builds para borrarlas de una vez",
  "Delete the selected ({0})": "Borrar las marcadas ({0})",
@@ -1018,5 +1018,7 @@
  "Skills removed: {0}": "Habilidades quitadas: {0}",
  "Other supports on: {0}": "Otros apoyos en: {0}",
  "Items changed: {0}": "Objetos cambiados: {0}",
- "Additional physical damage reduction": "Reducción adicional de daño físico"
+ "Additional physical damage reduction": "Reducción adicional de daño físico",
+ "Its monster": "Su monstruo",
+ "{0}: choose its monster in the Skills tab": "{0}: elige su monstruo en la pestaña Habilidades"
 }

@@ -1016,7 +1016,9 @@ def mod_stats(ids):
     return out
 
 
-monsters, mskills, seen = [], {}, {}
+# Bind Spectre: the variety a monster's Spectre is (SpectreOverrides; none there = itself, an empty one = it cannot be bound)
+sp_over = {r['Monster']: r['Spectre'] for r in load('SpectreOverrides')}
+monsters, mskills, seen, alias = [], {}, {}, {}
 for i, m in enumerate(varieties):
     if not ok(m['Name']) or not re.search(r'[A-Za-z]{2}', m['Name']):
         continue
@@ -1029,7 +1031,11 @@ for i, m in enumerate(varieties):
         'crit': round(m['AttackCrit'] * 100, 2), 'ranged': 'ranged' in [tags_tab[x]['Id'] for x in m['Tags']],
         'areas': sorted(areas.get(m['Name'], ())), 'skills': [ge_tab[g]['Id'] for g in m['GrantedEffects']],
         # its own mods' attack speed (Raging Spirit: 40% more)
-        'attack_speed': {k: v for k, v in mod_stats(m['Mods'] + m['Special_Mods']).items() if k in ('attack_speed_+%', 'active_skill_attack_speed_+%_final')}}),
+        'attack_speed': {k: v for k, v in mod_stats(m['Mods'] + m['Special_Mods']).items() if k in ('attack_speed_+%', 'active_skill_attack_speed_+%_final')},
+        # its corpse cannot be bound as a Spectre: none left (unusable_corpse) or disabled (SpectreOverrides)
+        'no_spectre': 'unusable_corpse' in [tags_tab[x]['Id'] for x in m['Tags']] or (i in sp_over and sp_over[i] is None),
+        'spectre_of': varieties[sp_over[i]]['Id'] if sp_over.get(i) is not None else None}),
+        'xp': m['ExperienceMultiplier'] / 100,   # its experience multiplier: a Spectre's Spirit (enemies.js spectreSpirit)
         'life': m['LifeMultiplier'] / 100, 'damage': m['DamageMultiplier'] / 100, 'spread': t['DamageSpread'] / 100,
         'res': [res[el + '1'][0] if res else 0 for el in ('Fire', 'Cold', 'Lightning', 'Chaos')],
         'attack_time': m['AttackSpeed'] / 1000, 'range': m['MaximumAttackDistance'], 'speed': m['MovementSpeed'], 'aggro': m['MaxAgroRange'],   # game units: 10 = 1 m, like the player's speed
@@ -1039,10 +1045,15 @@ for i, m in enumerate(varieties):
     same = json.dumps({k: v for k, v in mon.items() if k not in ('id', 'areas', 'aggro')}, sort_keys=True)
     if same in seen:   # the same monster placed somewhere else: one entry, all its areas
         seen[same]['areas'] = sorted(set(seen[same].get('areas', []) + mon.get('areas', [])))
+        alias[m['Id']] = seen[same]['id']
         continue
     seen[same] = mon
     monsters.append(mon)
     mskills.update({ge_tab[g]['Id']: g for g in m['GrantedEffects']})
+mon_ids = {m['id'] for m in monsters}
+for m in monsters:   # a Spectre variety merged into a monster of the same numbers: that one
+    if 'spectre_of' in m and (s := alias.get(m['spectre_of'], m['spectre_of'])) in mon_ids: m['spectre_of'] = s
+    else: m.pop('spectre_of', None)
 monsters.sort(key=lambda m: (m['name'], m['id']))
 mon_stats = ot_stats(text('metadata', 'monsters', 'monster.ot'))
 dms = load('DefaultMonsterStats')

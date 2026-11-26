@@ -998,13 +998,13 @@
  "What each number has more (green) or less (red) than the build you pick": "選んだビルドと比べて各数値が多い分（緑）・少ない分（赤）",
  "Compared with {0}": "{0}と比較",
  "A .filter file of yours: its rules come in here to edit": "自分の .filter ファイル：そのルールをここで編集できます",
- "Import a .filter file\u2026": ".filter ファイルをインポート…",
+ "Import a .filter file…": ".filter ファイルをインポート…",
  "No rules found in {0}": "{0} にルールがありません",
  "{0} has {1} rules. Replace yours with them, or add them after yours?": "{0} には {1} 個のルールがあります。今のルールを置き換えますか、それとも後ろに追加しますか？",
  "{0} rules imported.": "{0} 個のルールをインポートしました。",
  "{0} lines the creator has no field for were left out.": "エディタに項目のない {0} 行は除外しました。",
- "This build is already here: \u00ab{0}\u00bb. It is open.": "このビルドはすでにあります：「{0}」。開いています。",
- "\u00ab{0}\u00bb updated from Path of Building. Undo brings back how it was.": "「{0}」をPath of Buildingから更新しました。元に戻すで前の状態に戻ります。",
+ "This build is already here: «{0}». It is open.": "このビルドはすでにあります：「{0}」。開いています。",
+ "«{0}» updated from Path of Building. Undo brings back how it was.": "「{0}」をPath of Buildingから更新しました。元に戻すで前の状態に戻ります。",
  "Delete several…": "まとめて削除…",
  "Pick builds to delete at once": "まとめて削除するビルドを選ぶ",
  "Delete the selected ({0})": "選択したものを削除（{0}）",
@@ -1018,5 +1018,7 @@
  "Skills removed: {0}": "外したスキル: {0}",
  "Other supports on: {0}": "サポートを変更: {0}",
  "Items changed: {0}": "変更したアイテム: {0}",
- "Additional physical damage reduction": "追加物理ダメージ軽減率"
+ "Additional physical damage reduction": "追加物理ダメージ軽減率",
+ "Its monster": "モンスター",
+ "{0}: choose its monster in the Skills tab": "{0}：スキルタブでモンスターを選択"
 }
