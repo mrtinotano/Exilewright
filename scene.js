@@ -2926,8 +2926,9 @@ export function initScene(el, api) {
       // explosion's area is not in the data: the scene's
       const BC = !S.echoK && sheet().bellow.corpse;
       if (BC) for (const d of corpses(c, R)) { const p = { x: d.pos.x, z: d.pos.z }, x = d.max * BC / 100; eat(d, 'blood'); boom(p, SIM.area, { ...S, dmg: { ...S.dmg, hits: { physical: [x, x] }, trig: [] }, els: ['physical'], el: 'physical', mult: 1, src: 'trigger' }); }
-      fx.ring(c, .5, R, col, .55, { k: 2.8 }); fx.ring(c, .3, R * .7, 'white', .4, { a: .5 }); shake = Math.max(shake, .22);
-      fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 });
+      if (S.name === 'Arctic Howl') howlLook(c, R);
+      else { fx.ring(c, .5, R, col, .55, { k: 2.8 }); fx.ring(c, .3, R * .7, 'white', .4, { a: .5 }); fx.emit(40, { p: { x: c.x, y: .3, z: c.z }, v: R * 2, flat: true, life: .4, size: .2, c: col, c2: 'white', drag: 1.5 }); }
+      shake = Math.max(shake, .22);
       const list = inside(c, R);
       for (const o of [...objs]) if (o.earth && o.shatter && !o.dead && !o.segs && o.near(c) <= R) o.shatter('warcry');   // earthen objects near it
       // Vruun's Aftermath: it destroys the Ice Crystals and Ice Fragments in its area; five or more, and it Empowers its additional attacks
@@ -4422,11 +4423,39 @@ export function initScene(el, api) {
   let kaomK = 0, apoK = 0;
   // (and a skill's glow on your skin for a moment, w: me.skin = { at, hex, dur }: Animus Exchange's Runic Ward blue for
   // 1.5 s, Apocalypse's orange for 1 s; note: how long is not in the data)
+  // Arctic Howl's look (werewolf_warcry: warCry_01.pet, tundraHunter_buff.epk, exertedPower_01): its howl a wave of
+  // pale blue going out over its area with an echo after it (warCry_Wave 0.7 / 0.82 / 1) and a ring of snow blown out
+  // (waveSnow, its glow 0.35 / 0.4 / 0.4), your skin lit pale blue for a moment and a flare of glitter on you (buffApply
+  // skin 0.7 / 0.82 / 1, glitter 0.45 / 0.67 / 1), frost on the enemies it reaches; while it Empowers your attacks your
+  // skin and paws glow pale blue with glitter and mist ribbons round you (wolfPackBuff skin and paws 0.7 / 0.85 / 1,
+  // ribbons 0.94 / 0.96 / 1), and each Empowered attack leaves a trail of mist (exertedMist 0.7 / 0.87 / 1)
+  const HOWL = { wave: 0xb3d1ff, snow: 0xc8d0d6, glitter: 0x73abff, skin: 0xb3d9ff, mist: 0xeef5ff, trail: 0xb3deff };
+  function howlLook(c, R) {
+    me.skin = { at: time, hex: HOWL.skin, dur: .8 };
+    for (let k = 0; k < 3; k++) later(k * .14, () => fx.ring(c, .4, R * (1 - k * .12), HOWL.wave, .6, { a: .75 - k * .2, k: 2 }));
+    fx.emit(60, { p: { x: c.x, y: .25, z: c.z }, r: .4, v: R * 1.6, flat: true, life: .9, size: .35, grow: 1.6, c: HOWL.snow, smoke: true, a: .55, drag: 1.4 });
+    fx.glow({ x: pp.x, y: 1.4, z: pp.z }, 2.2, HOWL.wave, .35, 2);
+    fx.emit(14, { p: { x: pp.x, y: 1.2, z: pp.z }, r: .5, h: .8, v: .6, life: 1.2, size: .08, c: HOWL.glitter, c2: 'white', k: 2.4, drag: 1 });
+    for (const d of inside(c, R)) fx.emit(5, { p: { x: d.pos.x, y: .9, z: d.pos.z }, r: .35, h: 1, v: .3, up: .3, life: 1, size: .3, grow: 1.5, c: HOWL.mist, smoke: true, a: .45, drag: 1 });
+  }
+  function howlTrail(S) {
+    const H = hand(), to = S.at || { x: pp.x + S.dx * 2, z: pp.z + S.dz * 2 };
+    for (let i = 0; i < 16; i++) { const k = i / 15; fx.emit(1, { p: { x: H.x + (to.x - H.x) * k, y: H.y + (1 - H.y) * k, z: H.z + (to.z - H.z) * k }, r: .12, v: .3, life: .6, size: .36, grow: 1.6, c: HOWL.trail, smoke: true, a: .7, drag: 1.5 }); }
+    fx.emit(8, { p: { x: to.x, y: 1, z: to.z }, r: .3, v: 1.2, up: .4, life: .7, size: .4, grow: 1.6, c: HOWL.mist, smoke: true, a: .55, drag: 1.5 });   // its frost bursting where it lands
+    fx.emit(10, { p: { x: to.x, y: 1, z: to.z }, r: .3, v: 2, life: .5, size: .08, c: HOWL.glitter, c2: 'white', k: 2.4, drag: 2 });
+  }
   const WARD = 0x125eff, WG = new THREE.Color();
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
+    const howl = empower.some(e => e.type === 'cold');   // Arctic Howl Empowering your attacks
+    if (!w && howl) { w = .3; WG.set(HOWL.skin); }
+    if (howl) {
+      if (Math.random() < .4) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .45, v: .15, up: .2, life: 1.4, size: .06, c: HOWL.glitter, c2: 'white', k: 2.2, drag: 1 });
+      if (Math.random() < .15) fx.emit(1, { p: { x: pp.x, y: rnd(.2, 1.2), z: pp.z }, r: .5, v: .2, up: .4, life: 1.6, size: .35, grow: 1.5, c: HOWL.mist, smoke: true, a: .25, drag: 1 });
+      if (Math.random() < .3) { const H = hand(); fx.emit(1, { p: { x: H.x, y: H.y, z: H.z }, r: .05, v: .1, life: .4, size: .1, c: HOWL.wave, k: 2, drag: 1 }); }
+    }
     if (ch) {
       for (const s of [-1, 1]) { const q = player.eye(V(), s); fx.emit(1, { p: q, v: 0, life: .05, size: .13, c: CHAYULA.skin, c2: 'white', k: 3 }); }
       if (Math.random() < .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.7), z: pp.z }, r: .3, up: 1.4, v: .25, life: .8, size: .14, c: CHAYULA.string, c2: CHAYULA.violet, k: 2, drag: 1 });
@@ -4665,6 +4694,7 @@ export function initScene(el, api) {
           say(t('{0} gains {1} from {2}', S.label, t(cap(E.el)), E.label), E.el);
         } else if (E.type === 'cold' && P.attack && hits && S.dmg) {
           const h = S.dmg.hits.cold || [0, 0]; S.dmg = { ...S.dmg, hits: { ...S.dmg.hits, cold: [h[0] + E.add[0], h[1] + E.add[1]] } }; S.els = [...new Set([...S.els, 'cold'])]; if (P.slams) S.chillFor = E.chill;
+          howlTrail(S);
           if (spendEmp(E)) empower.splice(k, 1);
         } else if (E.type === 'fire' && P.attack && P.melee && hits && S.dmg) { Object.assign(S, gainAs(S, 'fire', E.pct)); if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'break' && P.attack && hits) { S.breakAdd = E.n; if (spendEmp(E)) empower.splice(k, 1); }
