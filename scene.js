@@ -1702,10 +1702,9 @@ export function initScene(el, api) {
     const EB = st.shock > 0 && S && !S.src && sheet().sparkKill && base(byName('Spark'));
     if (EB) { const l = dist(p, pp) || 1; me.trigAt = time; later(.05, () => K.projectile({ ...EB, from: p, dx: (p.x - pp.x) / l, dz: (p.z - pp.z) / l })); }
     if (st.electrocute > 0) trigger(S, 'electrocuteKill', d);
-    // Bursting Fen Toad: its chance on a kill for a toad that leaps about and explodes in its area, always Poisoning. note:
-    // how long it leaps is not in the data (half a second, as Doedre's toads here)
+    // Bursting Fen Toad: its chance on a kill for a toad that leaps about and explodes in its area, always Poisoning
     const FT = S?.src ? -1 : byName('Bursting Fen Toad'), T = FT >= 0 && base(FT);
-    if (T && Math.random() * 100 < T.dmg.stats['trigger_toad_spawn_chance_%']) { const q = around(p, 1.5); later(.5, () => { pop(q, T.A, 'chaos'); boom(q, T.A, { ...T, src: 'toad' }); }); }
+    if (T && Math.random() * 100 < T.dmg.stats['trigger_toad_spawn_chance_%']) fenToad(T, p);
     deathBlast(d, frozen, S);
     // the tree's explosions on kill: a cursed enemy for a quarter of its maximum life as chaos, any for all of it as physical.
     // Zealous Inquisition's chance doubled against Undead and Demons (its text). note: their radius is not in the data (a herald's here)
@@ -2450,6 +2449,31 @@ export function initScene(el, api) {
     const T = asTrig(S, { ...D, id: 'Elemental Storm' }), X = partOf(T, `ElementalStorm${cap(el)}Player`); if (!X) return;
     const c = { x: d.pos.x, z: d.pos.z }, st = D.stats; let tk = 0;
     thing(holder(c), st.base_skill_effect_duration / 1000, { tick(dt) { if ((tk -= dt) <= 0) { tk = st.tornado_base_damage_interval_ms / 1000; fx.ring(c, T.A * .3, T.A, el, .3, { a: .45 }); area(c, T.A, X); } } });
+  }
+  // Bursting Fen Toad's toad (exploding_poison_toad: Murkshaft UniqueExplodingToadHeld, GiantUglyToadCritter): it
+  // emerges, hops at 0.79, 1.25 and 1.8 s and bursts at 2.1 s (its animation's hop and contact events), swelling first
+  // (frog_swellpop). Its burst (frog_explode: FE_burst_midline): green rings for 0.4 and 0.6 s (FE_glowring 0.69 / 1 /
+  // 0.2), a yellow-green nova ring for 0.6 s (vibrance 1.83 / 2 / 0.96), a blur for 0.25 s, blood sprayed for 0.6-1.1 s
+  // and murky splashes for 1.5-2.5 s (explode_splash translucency 0.62 / 0.56 / 0.12). note: the toad is a figure of the
+  // scene's in the mean colour of its texture (116 / 101 / 79 sRGB), where each hop lands too
+  const FEN = { skin: 0x74654f, eye: 0xc8d850, ring: 0xb0ff33, nova: 0xebff7a, splash: 0x9e8e1f, blood: 0x5a0006 }, TOAD = new THREE.SphereGeometry(1, 12, 8);
+  function fenToad(T, p) {
+    const g = holder(p), skin = new THREE.MeshStandardMaterial({ color: FEN.skin, roughness: .7, emissive: FEN.nova, emissiveIntensity: 0 }), at = { x: p.x, z: p.z };
+    const body = new THREE.Mesh(TOAD, skin); body.scale.set(.2, .13, .25); body.position.y = .13; body.castShadow = true; g.add(body);
+    for (const s of [-1, 1]) { const e = new THREE.Mesh(TOAD, new THREE.MeshStandardMaterial({ color: FEN.eye, roughness: .3 })); e.scale.setScalar(.045); e.position.set(s * .09, .22, .14); g.add(e); }
+    fx.emit(8, { p: { x: p.x, y: .1, z: p.z }, r: .2, v: .8, up: 1.2, life: .6, size: .08, c: FEN.splash, smoke: true, a: .8, g: 8 });   // it emerges (frog_splash)
+    let from = at, to = at, t0 = 0;
+    for (const h of [.79, 1.25, 1.8]) later(h, () => { from = { x: g.position.x, z: g.position.z }; to = around(from, .7); t0 = time; g.rotation.y = Math.atan2(to.x - from.x, to.z - from.z); });
+    thing(g, 2.1, { tick(dt, e) {
+      const k = Math.min(1, (time - t0) / .35); g.position.set(from.x + (to.x - from.x) * k, Math.sin(k * Math.PI) * .35, from.z + (to.z - from.z) * k);
+      const sw = Math.max(0, (e.s - 1.85) / .25); g.scale.setScalar(1 + sw * .6); skin.emissiveIntensity = sw * 1.5;   // swelling
+    }, end: () => {
+      const q = { x: g.position.x, z: g.position.z }, c = { x: q.x, y: .3, z: q.z }, R = T.A;
+      fx.ring(q, .1, R * .7, FEN.ring, .4, { a: .8 }); fx.ring(q, .2, R, FEN.ring, .6, { a: .5 }); fx.ring(q, .3, R, FEN.nova, .6, { k: 2.4 }); fx.glow(c, R, FEN.nova, .25, 2.5);
+      fx.emit(18, { p: c, r: .1, v: 3, up: 2.5, life: .85, size: .09, c: FEN.blood, smoke: true, a: .9, g: 10, drag: .4 });
+      fx.emit(24, { p: c, r: .2, v: R * 2, up: 2, life: 2, size: .12, c: FEN.splash, smoke: true, a: .85, g: 9, drag: .6 });
+      area(q, R, { ...T, src: 'toad' });
+    } });
   }
   // Doedre's Undoing: the curse's area stays for the curse's duration (up to its most areas), cursing the enemies that
   // enter it, and spawns Witchtoads in it at its interval (up to its most at once); a toad leaps at an enemy and explodes
