@@ -4522,7 +4522,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Cackling Companions']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
