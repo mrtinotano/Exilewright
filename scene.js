@@ -1392,7 +1392,7 @@ export function initScene(el, api) {
   // and the rune's height over the head are the scene's; its ribbons are drawn as blood falling and staining the ground
   const HM = { rune: 0xff1218, flash: 0xff2626, core: 0xff0d0d, spark: 0xff8080, ember: 0xb01010, blast: 0xff1f0d, ring: 0xff1c05, spike: 0xff2213, burst: 0x5a0000, mist: 0x1a0000, ribbon: 0x0b0000 };
   const MARK_RUNE = { "Bloodhound's Mark": ['huntersmark', HM.rune] };   // each Mark's own rune (curses_02/marks/mark_runes)
-  const runeAt = d => ({ x: d.pos.x, y: 2.05 * d.sc + .9, z: d.pos.z });
+  const runeAt = d => d.fig.rune.getWorldPosition(V(0, 0, 0));
   function hmBreak(d) {
     const at = runeAt(d); fx.glow(at, 1.6, HM.core, .2, 3);
     fx.emit(32, { p: at, r: .1, v: 3, life: .1, size: .04, c: HM.spark, k: 2.5, drag: 2 });
