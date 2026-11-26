@@ -1664,7 +1664,7 @@ export function initScene(el, api) {
     if (Math.random() * 100 < (S?.dmg?.sum?.['create_verisium_remmant_on_kill_enemy_%'] || 0)) infRemnant('verisium', p, { dur: (S.dmg.sum.base_remnant_duration_ms || 0) / 1000 });   // Runic Extraction
     hatch(p);
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
-    f.ice.visible = f.curse.visible = f.mark.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
+    f.ice.visible = f.curse.visible = f.mark.visible = f.blood.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
     if (frozen) {   // frozen enemies shatter: no corpse
       fx.emit(46, { p: { x: p.x, y: 1, z: p.z }, r: .3, h: 1, v: 5, up: 2, life: .8, size: .2, c: 'ice', c2: 'white', g: 9 });
       fx.ring(p, .3, 1.8, 'ice', .4); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;
@@ -4176,11 +4176,24 @@ export function initScene(el, api) {
     const S = onS('Malice'), st = S?.dmg?.stats; if (!st || time - (me.maliceAt ?? -99) < st.critical_chance_against_aura_apply_brittle_every_x_ms / 1000) return;
     me.maliceAt = time; for (const d of inside(pp, sheet().overgrow.r)) weaken(d, 1, durOf(S));
   }
+  // Blood Boil's look (BuffVisuals blood_boil_buff: ritualist/blood_boil blood_boil_debuff.epk, its blistered skin red
+  // 1 / 0.04 / 0.03; MiscAnimated BloodBoilNova: blood_mist_explode.pet): the boiling enemy's body blistered red, and where
+  // the boils pop a red flash for 0.4 s, dark red smoke rising and over the ground for 1.8-2.2 s and a mist of blood for
+  // 1-3 s. note: its body redder with more boils is the scene's (when the game's larger blisters show is not in the
+  // data); the ring of its blur is not drawn
+  const BOIL = { skin: [.35, .013, .009], flash: 0xff1a0a, smoke: 0x2a0202, mist: 0x8a0006 };
+  function boilPop(p, R) {
+    const at = { x: p.x, y: .6, z: p.z };
+    fx.flash(p, BOIL.flash, 10, .4, 5);
+    fx.emit(8, { p: at, r: R * .3, v: R * .8, up: .8, life: 2, size: 1, grow: 1.8, c: BOIL.smoke, smoke: true, a: .7, drag: 1 });
+    fx.disc(p, R, BOIL.smoke, 2, { dark: true, a: .6, tex: 'patch', hold: .4 });
+    fx.emit(32, { p: at, r: R * .4, h: .8, v: R * 1.2, up: .5, life: 2, size: .35, grow: 1.5, c: BOIL.mist, smoke: true, a: .6, drag: 1.2 });
+  }
   function popBoils(d) {
     const n = d.boils, S = d.boilS; d.boils = 0; d.boilAt = null; if (!n) return;
     const st = S.dmg.stats, p = { x: d.pos.x, z: d.pos.z }, dps = d.max * st['blood_boil_%_health_as_corrupted_blood_damage_per_minute'] / 6000;
     later(st.blood_boil_explosion_delay_ms / 1000, () => {
-      const R = S.A * Math.sqrt(1 + n * st['blood_boil_explosion_area_+%_final_per_boil'] / 100); fx.ring(p, .2, R, 'blood', .5);
+      const R = S.A * Math.sqrt(1 + n * st['blood_boil_explosion_area_+%_final_per_boil'] / 100); boilPop(p, R);
       for (const e of inside(p, R)) dot(e, { ...S, mult: 1, els: ['physical'], dmg: { ...S.dmg, dot: { physical: dps } }, P: { ...S.P, dur: durOf(S) } });
     });
   }
@@ -4342,7 +4355,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -5900,26 +5913,27 @@ export function initScene(el, api) {
       }
     }
     d.flash = Math.max(0, d.flash - dt); d.wob = Math.max(0, d.wob - dt * 2.2);
-    const frozen = st.freeze > 0, e = f.sack.emissive;
+    const frozen = st.freeze > 0, e = f.sack.emissive, xd = d.dots.some(v => v.el !== 'physical'), pd = d.dots.length && !xd;   // a physical one (Corrupted Blood) has nothing on the body in the game (BuffVisuals corrupted_blood): its blood as Bleeding's
     if (!frozen) { let a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) - f.group.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a)); f.group.rotation.y += a * Math.min(1, dt * 5); }   // they watch you
     d.lunge = Math.max(0, d.lunge - dt * 3.2);
     f.upper.rotation.x = frozen ? 0 : Math.sin(time * 22 + d.ph) * d.wob * .16 + Math.sin(d.lunge * Math.PI) * .42; f.upper.rotation.z = frozen ? 0 : Math.cos(time * 17 + d.ph) * d.wob * .1;
     f.ice.visible = frozen; f.curse.visible = !!d.curse; f.mark.visible = !!d.mark;
     if (d.curse) f.curse.rotation.y += dt * .8;
     if (d.mark) { f.mark.rotation.y += dt * 2.5; f.mark.scale.setScalar(1 + Math.sin(time * 5) * .08); }
+    const nb = Math.min(10, d.dots.reduce((n, v) => n + (v.el === 'physical' ? v.stacks || 1 : 0), 0)); f.blood.visible = nb > 0;   // Corrupted Blood's orbs, one a debuff
+    f.blood.children.forEach((o, i) => { const a = time * 1.6 + i / nb * Math.PI * 2; o.visible = i < nb; o.position.set(Math.cos(a) * .45, Math.sin(time * 3 + i) * .05, Math.sin(a) * .45); });
     if (d.flash > 0) e.setRGB(.9, .3, .2).multiplyScalar(d.flash / .18);
-    else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (st.poison > 0 || d.dots.length) e.setRGB(.1, .28, .04);
-    else if (st.chill > 0) e.setRGB(.05, .2, .35); else e.setRGB(0, 0, 0);
+    else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (st.poison > 0 || xd) e.setRGB(.1, .28, .04);
+    else if (st.chill > 0) e.setRGB(.05, .2, .35); else if (d.boils > 0) e.setRGB(...BOIL.skin).multiplyScalar(Math.min(1, .4 + d.boils * .15)); else e.setRGB(0, 0, 0);
     const p = { x: d.pos.x, y: .9 * d.sc, z: d.pos.z };
     if (st.ignite > 0 && Math.random() < dt * 22) fx.emit(1, { p, r: .25, h: .8, v: .2, up: 1.8, life: .5, size: .32, c: 'fire', c2: 'ember' });
     if (st.shock > 0 && Math.random() < dt * 9) fx.emit(2, { p, r: .3, h: 1, v: 1.6, life: .18, size: .13, c: 'lightning', c2: 'white', k: 3 });
     if (st.poison > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .8, life: .9, size: .16, c: 'poison' });
-    if (st.bleed > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
+    if ((st.bleed > 0 || pd) && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if ((st.chill > 0 || frozen) && Math.random() < dt * 6) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
-    if (d.dots.length && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
-    const pips = Object.keys(PIP).filter(s => has(d, s)).map(s => css(PIP[s])); if (d.dots.length) pips.push(css('chaos'));
-    const top = d === topD, sig = (top ? 'top' : Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : '')) + pips.join('');
-    if (sig !== d.sig) { d.sig = sig; f.draw(top ? { pips } : { life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null, pips }); }
+    if (xd && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
+    const top = d === topD, sig = (top ? 'top' : Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : ''));
+    if (sig !== d.sig) { d.sig = sig; f.draw(top ? {} : { life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null }); }
   }
 
   // ---------- the enemies attack: the chosen attack at their level against your defences (enemies.js)

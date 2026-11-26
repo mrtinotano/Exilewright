@@ -549,14 +549,19 @@ export function makeDummy(fx, o = {}) {
   ice.position.y = 1.05; ice.scale.set(1, 1.95, 1); ice.visible = false; g.add(ice);
   const curse = new THREE.Mesh(G.plane, fx.glowMat('curse', 1.8, .85, fx.T.rune)); curse.position.y = .05 / sc; curse.scale.set(.85, 1, .85); curse.visible = false; g.add(curse);
   const mark = new THREE.Mesh(G.torus, fx.glowMat('mark', 2.6, .95)); mark.position.y = 1.2; mark.visible = false; g.add(mark);
+  // Corrupted Blood's orbs (BuffVisualOrbs CorruptedBlood: chargeFloat_CorruptingBlood.ao, a sphere of dark red liquid,
+  // charge_corruptBloodCore subsurface 0.39 / 0 / 0), circling the enemy, one a debuff (up to 10). note: their size,
+  // radius and height are the scene's (the game only has stats that add to them)
+  const blood = new THREE.Group(), bm = new THREE.MeshStandardMaterial({ color: 0x3a0000, emissive: 0x630000, roughness: .12, metalness: .3 }), bg = new THREE.SphereGeometry(.08 / sc, 12, 8);
+  for (let i = 0; i < 10; i++) blood.add(new THREE.Mesh(bg, bm)); blood.position.y = 1.75; blood.visible = false; g.add(blood);
   const P = lifePlate(g, 2.05 + .5 / sc, 2.5 / sc);
   return {
-    group: g, upper, sack, ice, curse, mark, plate: P.plate, scale: sc, draw: P.draw,
-    dispose() { g.parent?.remove(g); sack.dispose(); ice.material.dispose(); curse.material.dispose(); mark.material.dispose(); P.dispose(); },
+    group: g, upper, sack, ice, curse, mark, blood, plate: P.plate, scale: sc, draw: P.draw,
+    dispose() { g.parent?.remove(g); sack.dispose(); ice.material.dispose(); curse.material.dispose(); mark.material.dispose(); bm.dispose(); bg.dispose(); P.dispose(); },
   };
 }
 
-// The bar over a figure's head, as the game's: its states as coloured pips, a small energy shield bar, its life under it.
+// The bar over a figure's head, as the game's: a small energy shield bar, its life under it (no state pips over it).
 function lifePlate(g, y, w) {
   const W = 256, H = 80, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace;
@@ -564,11 +569,9 @@ function lifePlate(g, y, w) {
   plate.position.y = y; plate.scale.set(w, w * H / W, 1); plate.renderOrder = 25; g.add(plate);
   return {
     plate,
-    // life / es = fractions left (null hides the bar), pips = css colours of the active states
-    draw({ life = null, es = null, pips = [] }) {
+    // life / es = fractions left (null hides the bar)
+    draw({ life = null, es = null }) {
       const c = cv.getContext('2d'); c.clearRect(0, 0, W, H);
-      let x = W / 2 - pips.length * 8;
-      for (const p of pips) { c.fillStyle = p; c.beginPath(); c.arc(x + 8, 10, 6.5, 0, TAU); c.fill(); c.strokeStyle = '#000'; c.lineWidth = 1.5; c.stroke(); x += 16; }
       const bar = (y, h, k, col) => {
         c.fillStyle = 'rgba(0,0,0,.78)'; c.fillRect(68, y, 120, h); c.fillStyle = col; c.fillRect(69, y + 1, 118 * Math.max(0, Math.min(1, k)), h - 2);
         c.strokeStyle = '#3a3020'; c.lineWidth = 1; c.strokeRect(68.5, y + .5, 120, h);
