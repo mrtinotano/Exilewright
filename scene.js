@@ -5607,7 +5607,7 @@ export function initScene(el, api) {
       const BX = DR.name === 'Black Powder Blitz'; if (BX) { Object.assign(move, { dur: .52, h: 1, powder: true }); me.powderGlow = time + BP.glowFor; fx.emit(8, { p: { x: pp.x, y: 1.2, z: pp.z }, r: .3, v: .4, up: .8, life: 1, size: .6, grow: 1.5, c: 0x343839, smoke: true, a: .45 }); }
       if (DR.name === 'Blink') { move.blink = true; blinkFx(move.from, move.to); }   // a teleport: no roll
       if (Object.keys(DR.dmg.hits).length) { if (BX) { powderBlast(move.from, DR.A); area(move.from, DR.A, { ...DR, mult: 1 }); } else boom(move.from, DR.A, { ...DR, mult: 1 }); } }
-    if (DR?.name !== 'Blink') fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });   // a teleport kicks up no dust
+    if (!move.blink) fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });   // a teleport kicks up no dust
     event('dodge', near(pp, 30)?.pos || pp, NONE, null, L);
     for (const k in clips) { const X = onS(k), n = X?.dmg?.sum?.crossbow_load_x_bolts_on_dodge; if (n && X.dmg.clip) clips[k] = Math.min(X.dmg.clip.bolts, clips[k] + n); }   // Ratha's Assault: bolts loaded when you Dodge
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
