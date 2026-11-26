@@ -2848,7 +2848,7 @@ export function initScene(el, api) {
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
       // explosion's damage is not in its data
       const B = objs.find(o => o.bone && !o.dead);
-      if (B) { if (e.shot !== B && n > L * B.bone['bone_offering_hit_threshold_%_of_maximum_life'] / 100) { e.shot = B; fx.ring(e.pos, .2, 1.2, 'dust', .35); fx.emit(12, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 2, life: .4, size: .12, c: 0xd8d0b8 }); return; }
+      if (B) { if (e.shot !== B && n > L * B.bone['bone_offering_hit_threshold_%_of_maximum_life'] / 100) { e.shot = B; fx.ring(e.pos, .2, 1.2, BOF.ring, .3); fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 3, up: 1.5, life: 1, size: .12, c: BOF.bone, smoke: true, a: .95, g: 10, drag: .5 }); return; }
         n *= 1 + (e.shot === B ? B.bone['bone_offering_damage_taken_+%_final_after_shield_loss'] || 0 : B.bone['bone_offering_damage_taken_+%_final']) / 100; }
       if (time < e.guard?.until) { const G = Math.min(e.guard.n, n); e.guard.n -= G; n -= G; }   // Arbiter's Reach: its Guard takes it first
       n *= (o.taken || 1) * (1 + (FN['feeding_frenzy_minion_damage_taken_+%_final'] || 0) / 100) * (1 + (FN['support_minion_defensive_stance_minion_damage_taken_+%_final'] || 0) / 100);   // an Empowered Zombie's less damage taken; Feeding Frenzy's more, Meat Shield's less
@@ -4707,7 +4707,7 @@ export function initScene(el, api) {
   function offer(S, tag, max) {
     const m = objs.filter(o => o.minion && !o.dead).sort((a, b) => dist(a.pos, pp) - dist(b.pos, pp))[0];
     if (!m) return toast(t('{0} needs a Minion', S.label));
-    const c = { x: m.pos.x, z: m.pos.z }, ring = fx.decal(c, S.A, 'outline', 'blood', { a: .4, rot: 0 }); m.dead = true;
+    const c = { x: m.pos.x, z: m.pos.z }, ring = tag !== 'bone' && fx.decal(c, S.A, 'outline', 'blood', { a: .4, rot: 0 }); m.dead = true;
     limit(o => o[tag], max);
     if (Math.random() * 100 < sheet().undeath.offer) undeathGo();   // the tree's chance of Archon of Undeath
     const OH = sheet().offerHeal; if (OH) me.life = Math.min(me.maxL, me.life + me.maxL * OH / 100);   // the tree's life recovered when you create an Offering
@@ -4717,9 +4717,39 @@ export function initScene(el, api) {
     // its buff effect (_x): the tree's increased, Sacrificial Offering's; Danse Macabre's when a second skeletal minion is there to go too
     const DM = S.dmg?.sup?.['offering_spells_effect_+%_if_consumed_additional_skeleton'], m2 = DM && objs.find(o => o.minion && !o.dead && o.skeleton); if (m2) m2.dead = true;
     const X = 1 + ((GA['offering_spells_effect_+%'] || 0) + (m2 ? DM : 0)) / 100;
-    fx.pillar(c, .3, 2.2, 'blood', .5, 2); thing(holder(c), durOf(S), { [tag]: { ...S.dmg.stats, _x: X }, R: S.A, off: () => ring.remove(),
-      tick(dt, e) { if (PC && Math.floor(e.s / PC) > Math.floor((e.s - dt) / PC)) gainCharge('power', S.label); },
+    const g = holder(c), L = tag === 'bone' && boneOffer(c, g, S.A); if (!L) fx.pillar(c, .3, 2.2, 'blood', .5, 2);
+    thing(g, durOf(S), { [tag]: { ...S.dmg.stats, _x: X }, R: S.A, off: () => { if (ring) ring.remove(); if (L) L.off(); },
+      tick(dt, e) { if (L) L.tick(dt, e); if (PC && Math.floor(e.s / PC) > Math.floor((e.s - dt) / PC)) gainCharge('power', S.label); },
       end(e) { if (RG) for (const [k, M] of [['life', me.maxL], ['mana', me.maxM]]) me.recoup.push({ k, left: M * RG * e.s, rate: M * RG }); } }); say(t('{0} active', S.label), 'blood');
+  }
+  // Bone Offering's look (its spike: OfferingSpike, BoneOfferingSpike.ao): a bone spike with its skeleton's bones on it
+  // (offeringBONE_spire bone01, bone tinted 1 / 0.64 / 0.2) over green necromantic energy rising from the ground while it
+  // stands (offeringGroundBase necroEnergySpire 0.55 / 1 / 0.77, its wisps), a surge as it is made (offeringSurge: a pale
+  // flash 1.13 / 1.14 / 1.5 for 0.14 s, a green burst up for 0.65 s, embers for 0.5-2.25 s; Offering_AoE: a ring for
+  // 0.5 s) and green wisps bursting as it ends (offeringEnd); your minions' bone armour while it stands
+  // (bone_armour_buff_effect: boneArmor, 16 + 8 bone pieces round each), bursting when a shield breaks (boneArmor_Explode:
+  // a ring 0.8 / 0.68 / 0.44 for 0.3 s, shrapnel and bone debris). note: the spike's and the pieces' shapes, sizes and
+  // how they circle are the scene's (cones and shards)
+  const BOF = { bone: 0xd8ccb0, energy: 0x8cffc5, flash: 0xc0c2ff, ring: 0xffd9a0 };
+  function boneOffer(c, g, R) {
+    const mat = new THREE.MeshStandardMaterial({ color: BOF.bone, roughness: .6, flatShading: true }), sp = new THREE.Mesh(EARTH.spike, mat);
+    sp.position.y = 1.15; sp.scale.set(.45, 1.45, .45); sp.castShadow = true; g.add(sp);
+    for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + rnd(.4), s = new THREE.Mesh(EARTH.spike, mat); s.position.set(Math.sin(a) * .35, .3 + rnd(.6), Math.cos(a) * .35); s.rotation.set(Math.cos(a) * .7, 0, -Math.sin(a) * .7); s.scale.setScalar(rnd(.15, .25)); g.add(s); }   // its skeleton's bones
+    const base = fx.decal(c, 1, 'disc', BOF.energy, { a: .45, pulse: 3 }), at = { x: c.x, y: .5, z: c.z }, armour = new Map();
+    fx.flash(c, BOF.flash, 8, .14, 5); fx.glow({ x: c.x, y: 1.4, z: c.z }, 2, BOF.flash, .14, 2.5); fx.pillar(c, .6, 3.5, BOF.energy, .65, 1.6); fx.ring(c, .2, R, BOF.energy, .5, { a: .6 });
+    fx.emit(60, { p: at, r: .3, h: 1.5, v: 2.5, up: 1, life: 1.4, size: .05, c: BOF.energy, c2: BOF.flash, k: 2, drag: 1.5 });
+    return {
+      tick(dt, B) {
+        if (Math.random() < dt * 10) fx.emit(1, { p: c, r: .45, v: .1, up: 1.6, life: 1.8, size: .06, c: BOF.energy, k: 1.6, drag: .5 });   // its wisps rising
+        for (const m of objs) if (m.minion && !m.dead && m.fig && m.shot !== B && !armour.has(m)) {   // a minion's bone armour
+          const a = new THREE.Group(); a.position.y = .9;
+          for (let k = 0; k < 8; k++) { const s = new THREE.Mesh(EARTH.spike, mat), q = k / 8 * TAU; s.position.set(Math.sin(q) * .42, rnd(-.4, .4), Math.cos(q) * .42); s.rotation.set(rnd(TAU), rnd(TAU), rnd(TAU)); s.scale.setScalar(.08); a.add(s); }
+          m.fig.group.add(a); armour.set(m, a);
+        }
+        for (const [m, a] of armour) if (m.dead || m.shot === B) { m.fig.group.remove(a); armour.delete(m); } else a.rotation.y += dt * 1.5;
+      },
+      off() { base.remove(); for (const [m, a] of armour) m.fig.group.remove(a); fx.emit(24, { p: at, r: .3, h: 1.2, v: 2, life: .5, size: .06, c: BOF.energy, k: 2, drag: 1 }); },
+    };
   }
   K.pain = S => offer(S, 'pain', S.dmg.stats.base_number_of_pain_offerings_allowed);
   // Soul Offering: while its spike stands, your spells deal its more damage. note: its increased spell damage is applied as more
