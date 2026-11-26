@@ -3696,13 +3696,13 @@ export function initScene(el, api) {
       // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
       const ER = st['emergency_reload_damage_+%_final'];
       if (ER) { for (const k in clips) delete clips[k]; me.ereload = { until: time + durOf(S), more: 1 + ER / 100 }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: durOf(S) }); return say(t('{0} active', S.label), 'gold'); }
-      fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
+      if (S.name === 'Barrage') barrageReady(S.spent > 0); else { fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       // Barrage: repeats from its stats (else the scene's 2, one more per charge spent: Unleash), each with its less damage
       // Ice-Tipped Arrows: its number of your next projectile attacks are empowered, for its duration (icetip)
       const IT = partOf(S, 'IceTippedArrowsIceFragmentPlayer');
       if (IT) { const uses = S.dmg.stats.shearing_bolts_number_of_empowered_attacks; empower = empower.filter(e => e.type !== 'icetip'); empower.push({ type: 'icetip', label: S.label, name: S.name, el: 'cold', uses, s: durOf(S), X: IT, cv: S.dmg.stats['shearing_bolts_non_skill_base_physical_damage_%_to_convert_to_cold'] }); say(t('{0} active', S.label) + ` ×${uses}`, 'cold'); }
       else if (P.repeats) { const st = S.dmg?.stats || {}, n = (st.empower_barrage_base_number_of_barrage_repeats ?? 2) + (st.empower_barrage_number_of_barrage_repeats_per_frenzy_charge ?? 1) * S.spent;
-        empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n, less: st['empower_barrage_damage_-%_final_with_repeated_projectiles'] || 0, cd: st['empower_barrage_cooldown_%_of_attack_time'], max: st.empowered_barrage_maximum_cooldown_ms / 1000, label: S.label, name: S.name, s: sh(S).duration || 12 }); say(t('{0}: your next skill repeats {1} times', S.label, n), 'gold'); }
+        empower = empower.filter(e => e.type !== 'repeat'); empower.push({ type: 'repeat', flag: P.repeats, n, charged: S.spent > 0, less: st['empower_barrage_damage_-%_final_with_repeated_projectiles'] || 0, cd: st['empower_barrage_cooldown_%_of_attack_time'], max: st.empowered_barrage_maximum_cooldown_ms / 1000, label: S.label, name: S.name, s: sh(S).duration || 12 }); say(t('{0}: your next skill repeats {1} times', S.label, n), 'gold'); }
       else if (P.empowers && P.els.length) { empower = empower.filter(e => e.type !== 'infuse'); empower.push({ type: 'infuse', el: P.els[0], label: S.label, name: S.name, s: 12 }); say(t('{0}: your next attack gains {1}', S.label, t(cap(P.els[0]))), P.els[0]); }
       else { setBuff({ label: S.label, name: S.name, c: css(S.el), s: P.dur || 6 }); say(t('{0} active', S.label), S.el); }
     },
@@ -4697,11 +4697,30 @@ export function initScene(el, api) {
     fx.emit(8, { p: { x: to.x, y: 1, z: to.z }, r: .3, v: 1.2, up: .4, life: .7, size: .4, grow: 1.6, c: HOWL.mist, smoke: true, a: .55, drag: 1.5 });   // its frost bursting where it lands
     fx.emit(10, { p: { x: to.x, y: 1, z: to.z }, r: .3, v: 2, life: .5, size: .08, c: HOWL.glitter, c2: 'white', k: 2.4, drag: 2 });
   }
+  // Barrage's look (bow_barrage: exert_buff / exert_buff_charges.pet on your bow or spear, buff_flash_pass.mat, muzzle.pet):
+  // readying it a green flash over you (0.36 / 1 / 0.2) and a swirl of pale green round your weapon, which glows on while
+  // it Empowers (its core, glow and ring 0.75 / 1 / 0.55; 0.66 / 1 / 0.4 with Frenzy Charges consumed); each shot of the
+  // Empowered attack green ribbons and sparks at your weapon (0.66 / 1 / 0.4, 0.72 / 1 / 0.5)
+  const BARRAGE = { flash: 0x5cff33, core: 0xbfff8c, charged: 0xa8ff66, ribbon: 0xa8ff66, spark: 0xb8ff80 };
+  function barrageReady(ch) {
+    const H = hand(), c = ch ? BARRAGE.charged : BARRAGE.core;
+    me.skin = { at: time, hex: BARRAGE.flash, dur: .5 };
+    fx.glow(H, 1.1, c, .4, 2.4);
+    for (let i = 0; i < 18; i++) { const a = i / 18 * TAU; later(i * .012, () => { const q = hand(); fx.emit(1, { p: { x: q.x + Math.cos(a) * .35, y: q.y + Math.sin(a) * .18, z: q.z + Math.sin(a) * .35 }, dir: V(-Math.sin(a) * 1.5, .3, Math.cos(a) * 1.5), life: .4, size: .12, c, c2: 'white', k: 2.4, drag: 2 }); }); }
+  }
+  function barrageMuzzle() {
+    const H = hand();
+    fx.glow(H, 1, BARRAGE.ribbon, .2, 2.6);
+    fx.emit(10, { p: H, r: .08, v: 3, life: .3, size: .07, c: BARRAGE.spark, c2: 'white', k: 2.6, drag: 3 });
+    for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; fx.emit(1, { p: { x: H.x + Math.cos(a) * .2, y: H.y + Math.sin(a) * .2, z: H.z }, dir: V(-Math.sin(a) * 2, Math.cos(a) * 2, 0), life: .3, size: .16, c: BARRAGE.ribbon, k: 2.2, drag: 2 }); }
+  }
   const WARD = 0x125eff, WG = new THREE.Color();
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
+    const BR = empower.find(e => e.type === 'repeat' && e.name === 'Barrage');   // Barrage Empowering: your weapon glows
+    if (BR) { const H = hand(), c = BR.charged ? BARRAGE.charged : BARRAGE.core; fx.emit(2, { p: H, r: .15, v: .2, up: .15, life: .4, size: .13, c, c2: 'white', k: 2.4, drag: 1 }); if (Math.random() < .25) fx.glow(H, .7, c, .2, 2); }
     const howl = empower.some(e => e.type === 'cold');   // Arctic Howl Empowering your attacks
     if (!w && howl) { w = .3; WG.set(HOWL.skin); }
     if (howl) {
@@ -4953,7 +4972,7 @@ export function initScene(el, api) {
         } else if (E.type === 'fire' && P.attack && P.melee && hits && S.dmg) { Object.assign(S, gainAs(S, 'fire', E.pct)); if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'break' && P.attack && hits) { S.breakAdd = E.n; if (spendEmp(E)) empower.splice(k, 1); }
         else if (E.type === 'echo' && P.attack && P.melee && hits) { S.echo = E.label; S.echoN = 1 + (P.slams ? E.slam : 0); if (spendEmp(E)) empower.splice(k, 1); }
-        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n + (S.P.attack && sheet().lioneye && !inside(pp, sheet().overgrow.r).length ? sheet().lioneye : 0); S.repBy = E.label; S.repX = 1 - E.less / 100; empower.splice(k, 1); lengthen(E, S); }
+        else if (E.type === 'repeat' && P[E.flag]) { S.rep = E.n + (S.P.attack && sheet().lioneye && !inside(pp, sheet().overgrow.r).length ? sheet().lioneye : 0); S.repBy = E.label; S.repX = 1 - E.less / 100; S.barrage = E.name === 'Barrage'; empower.splice(k, 1); lengthen(E, S); }
         else if (E.type === 'trisk' && P.spell && api.info(S.g).gem?.types?.includes('Cascadable')) { S.trisk = E; S.at = { x: pp.x, z: pp.z }; S.mult *= E.mult; S.A *= E.area; empower.splice(k, 1);
           lengthen(E, S); say(`${E.label}: ${S.label}`, 'fire'); }
         else if (E.type === 'fate' && !auto && S.name === E.spell) { S.mult *= E.mult; empower.splice(k, 1); say(`${E.label}: ${S.label}`, FATE); fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 2.4, FATE, .6, 2.4); fx.ring(pp, .3, 1.5, FATE, .5); fx.emit(20, { p: { x: pp.x, y: .3, z: pp.z }, r: .4, h: 1.4, up: 1.4, life: .7, size: .14, c: FATE, c2: 'white', k: 1.8, drag: 1.5 }); }
@@ -5275,7 +5294,7 @@ export function initScene(el, api) {
     const NA = !auto && S.P.spell && S.dmg?.sum, NT = NA && S.g && api.info(S.g).gem?.types || [];
     if (NT.includes('Unleashable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_spell_%_chance_to_reoccur_an_additional_time'] || 0)) { S.rep = (S.rep || 0) + 1; S.repBy ||= S.label; S.repX ||= 1; }
     if (NT.includes('Cascadable') && Math.random() * 100 < (NA['ascendancy_spell_deja_vu_skill_echo_chance_%'] || 0)) { echoed(); later(.25, () => run({ ...S, rep: 0 })); }
-    if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.act(clipOf(P, S.kind, player.family()), .16); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
+    if (S.rep) { say(t('{0} repeats {1} times ({2})', S.label, S.rep, S.repBy), 'gold'); if (S.barrage) barrageMuzzle(); for (let k = 1; k <= S.rep; k++) later(k * .16, () => { player.act(clipOf(P, S.kind, player.family()), .16); if (S.barrage) barrageMuzzle(); run({ ...S, rep: 0, mult: S.mult * S.repX, from: { x: pp.x, z: pp.z } }); }); }
     // an Orb of Storms nearby answers your spells with a bolt of its own ("when you cast a Spell near the Orb")
     if (!auto && S.P.spell) for (const ob of objs) if (ob.zap && !ob.dead && ob.name !== S.name && dist(ob.pos, pp) <= ob.r) ob.zap(true);
     return true;
