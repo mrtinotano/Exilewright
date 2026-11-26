@@ -1737,12 +1737,11 @@ export function initScene(el, api) {
   // 2-2.5 s, and its stain on the ground for 4.5-7.5 s
   const BLD = { flask: 0xd0000a, core: 0xff1010, blood: 0x8a0008, dark: 0x4a0004, stain: 0x5a0006 };
   function bloodBurst(c, R) {
-    fx.flash(c, BLD.core, 6, .2, 5); fx.ring(c, .2, R, BLD.core, .65, { a: .8 }); fx.ball({ x: c.x, y: .3, z: c.z }, R * .5, BLD.dark, .75, 1.4);
     const at = { x: c.x, y: .3, z: c.z };
+    fx.flash(c, BLD.core, 6, .2, 5); fx.ring(c, .2, R, BLD.core, .65, { a: .8 }); fx.ball(at, R * .5, BLD.dark, .75, 1.4);
     fx.emit(40, { p: at, r: .2, v: R * 1.5, up: 5, life: 1.5, size: .2, c: BLD.blood, smoke: true, a: .95, g: 12, drag: .3 });   // the splash
     fx.emit(Math.min(120, 30 + R * R * 8), { p: at, r: .2, v: R * 2.2, up: 3, life: 2.2, size: .08, c: BLD.blood, c2: BLD.dark, k: 1.2, g: 9, drag: .3 });   // the spray
     fx.disc(c, R * .9, BLD.stain, 6, { dark: true, a: .9, tex: 'patch', hold: .7, y: .03 });
-    shake = Math.max(shake, Math.min(.5, R * .09));
   }
   // Acidic Concoction: its flask Consumes the Poisons of each enemy it hits, which bursts there (its secondary radius,
   // more area per Poison consumed): the enemies in the burst lose its % of the expected remaining damage of the
@@ -3059,7 +3058,8 @@ export function initScene(el, api) {
         return;
       }
       shot(() => {
-        if (FT === 4) { fx.acid(c, R); shake = Math.max(shake, Math.min(.5, R * .09)); area(c, R, S); return acidBurst(S, c, R); }
+        if (FT) shake = Math.max(shake, Math.min(.5, R * .09));
+        if (FT === 4) { fx.acid(c, R); area(c, R, S); return acidBurst(S, c, R); }
         if (FT === 3) { bloodBurst(c, R); return area(c, R, S); }
         if (P.plant && P.dur) return K.zone({ ...S, at: c });
         boom(c, R, S); if (P.ground) ground(P.ground, c, R, P.dur, S);
