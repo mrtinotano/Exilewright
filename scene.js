@@ -5197,11 +5197,34 @@ export function initScene(el, api) {
     const st = S.dmg.stats, n = S.spent, dur = n * st.elemental_power_buff_duration_per_power_charge_ms / 1000;
     me.pinn = { until: time + dur, more: n * st['elemental_power_elemental_damage_+%_final_per_power_charge'] }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: dur });
   };
-  // Charged Staff: consumes all power charges for stacks; using it again while it lasts adds to its stacks and duration
-  const cstaff = S => S.P.attack && !S.src && time < me.cstaff?.until && me.cstaff;
+  // Charged Staff: consumes all power charges for stacks, up to your maximum power charges; using it again while it lasts
+  // adds to its stacks and duration (its duration per charge with the build's skill effect duration)
+  const cstaff = S => S.P.attack && S.kind !== 'cstaff' && !S.src && time < me.cstaff?.until && me.cstaff;   // not its own use
+  // its look (monk_energyblades): while it lasts an energy blade at each end of the staff (charged_staff_buff.epk:
+  // charged_buff.pet blade_main_R, Vibrance 0.5 / 0.55 / 1) dropping little bolts for 0.2-0.4 s (blade_dropbolt 0.0247 /
+  // 0.0287 / 0.1237); each shockwave (energy_slash.ao) an upright wave sweeping out over the cone (slash_wave.pet
+  // wave_main_rec, 0.5 / 0.55 / 1 and wave_trail 0.4 / 0.46 / 1), 32 bolts dropping for 0.2-0.4 s and 64 embers for 1-2.5 s
+  // off its curve. note: the wave's mesh as the scene's crescents swept out in 0.3 s (its particle lives 1.1 s); its
+  // ground decal sits below the ground (Offset Y -200) and is not drawn
+  const CSTAFF = { blade: 0x808cff, trail: 0x6675ff, bolt: 0x333bff }, csA = V(), csB = V();
+  function cstaffWave(p, dx, dz, R, half) {
+    const a0 = Math.atan2(dz, dx);
+    fx.sector(p, dx, dz, R, half, CSTAFF.trail, .5, { grow: true, a: .35 });
+    for (let k = 1; k <= 4; k++) later(k * .075, () => {
+      fx.arc(p, dx, dz, R * k / 4, half, CSTAFF.blade);
+      for (let i = -2; i <= 2; i++) { const q = a0 + half * i / 2, r = R * k / 4, c = { x: p.x + Math.cos(q) * r, y: 1, z: p.z + Math.sin(q) * r };
+        fx.emit(2, { p: c, r: .2, v: .8, life: rnd(.2, .4), size: .06, c: CSTAFF.bolt, c2: CSTAFF.blade, k: 3, g: 4 });
+        fx.emit(3, { p: c, r: .3, v: .4, up: .6, life: rnd(1, 2.5), size: .04, c: CSTAFF.blade, k: 2.4, g: 1, drag: 1.2 }); }
+    });
+  }
+  function cstaffBlades(dt) {
+    if (!(time < me.cstaff?.until) || player.family() !== 'qstaff') return;
+    player.ends(csA, csB);
+    for (const q of [csA, csB]) { fx.glow(q, .35, CSTAFF.blade, .06, 2.4); if (Math.random() < dt * 12) fx.emit(1, { p: q, r: .05, v: .5, life: rnd(.2, .4), size: .05, c: CSTAFF.bolt, c2: CSTAFF.blade, k: 3, g: 3 }); }
+  }
   K.cstaff = S => {
     const on = time < me.cstaff?.until, n = S.spent;
-    me.cstaff = { S, n: (on ? me.cstaff.n : 0) + n, until: (on ? me.cstaff.until : time) + n * S.dmg.stats.charged_staff_buff_duration_per_stack_ms / 1000 };
+    me.cstaff = { S, n: Math.min(maxC('power'), (on ? me.cstaff.n : 0) + n), until: (on ? me.cstaff.until : time) + n * S.dmg.stats.charged_staff_buff_duration_per_stack_ms / 1000 * (sh(S).durMore || 1) };
     setBuff({ label: S.label, name: S.name, c: css('lightning'), s: me.cstaff.until - time }); say(`${S.label}: ${me.cstaff.n}`, 'lightning');
   };
   // Galvanic Field: a buff that raises your shock chance; shocking an enemy consumes it to attach its orb to that enemy,
@@ -5695,7 +5718,7 @@ export function initScene(el, api) {
     if (!auto && P.spell) briar(S);
     // Charged Staff: your attacks while it lasts also send its lightning shockwave in its cone ahead
     const CW = cstaff(S) && partOf(me.cstaff.S, 'ChargedStaffShockwavePlayer');
-    if (CW) { const a0 = Math.atan2(S.dz, S.dx), half = CW.dmg.stats.charged_staff_cone_angle * Math.PI / 360; fx.sector(pp, S.dx, S.dz, CW.A, half, 'lightning', .3, { grow: true, a: .6 }); for (const d of inside(pp, CW.A)) if (inCone(pp, a0, half, d.pos)) hit(d, { ...CW, mult: S.mult }); }
+    if (CW) { const a0 = Math.atan2(S.dz, S.dx), half = CW.dmg.stats.charged_staff_cone_angle * Math.PI / 360; cstaffWave(pp, S.dx, S.dz, CW.A, half); for (const d of inside(pp, CW.A)) if (inCone(pp, a0, half, d.pos)) hit(d, { ...CW, mult: S.mult }); }
     // Spell Echo: the spell echoes its number of times at the same target after it, the echo with its increased area
     // note: the delay of an echo is not in its data, the scene's quarter second
     const SE = (S.dmg?.sum?.support_spell_echo_number_of_echo_cascades || 0) + (S.sealEcho || 0);   // and Tul's Avalanche's per Seal broken
@@ -7451,6 +7474,7 @@ export function initScene(el, api) {
     if (time < me.powderGlow) fx.emit(1, { p: { x: pp.x, y: pp.y + .35, z: pp.z }, r: .05, v: .1, up: .3, life: .25, size: .18, c: BP.glow, k: 1.5 });
     if (moving && !move && (powderStep -= dt) <= 0 && onS('Black Powder Blitz')) { powderStep = .3; const p = { x: pp.x, y: .05, z: pp.z };
       fx.emit(6, { p, r: .1, v: 1.5, up: 1.2, life: .3, size: .06, c: BP.spark, c2: BP.ember, k: 2.5, g: 6, drag: 1.5 }); fx.emit(2, { p, r: .1, v: .4, up: .2, life: .6, size: .3, grow: 1.5, c: BP.smoke, smoke: true, a: .35 }); }
+    cstaffBlades(dt);
     player.update(dt, { moving: moving && !move, speed: spd(), hold: !!held, charge: charge ? Math.min(1, charge.s / (base(charge.i)?.P.perfect ? 1 : 1.6)) : null,
       roll: move?.roll && !move.powder && !move.blink ? move.k : null, leap: move && (move.powder || !move.roll && move.h) ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
     reticle(); arena.update(dt, pp); fx.update(dt);

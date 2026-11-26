@@ -237,7 +237,7 @@ export function makeHumanoid(fx) {
   }
   const PALM = .085, hip0 = jt.hips.position.clone();   // wrist to the middle of the palm; where the hips stand
   let UPPER = .27, FORE = .27 + PALM;   // shoulder to elbow, elbow to palm: the mannequin's once it is loaded
-  const tip = new THREE.Object3D(), grip2 = new THREE.Object3D(), nock = new THREE.Object3D();
+  const tip = new THREE.Object3D(), butt = new THREE.Object3D(), grip2 = new THREE.Object3D(), nock = new THREE.Object3D();
   let made = [], orbs = [], fam = 'unarmed', stance = STANCE.unarmed, glow = null, string = null, lookKey = null, rig = null;
 
   const put = (parent, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; parent.add(m); made.push(m); return m; };
@@ -377,7 +377,7 @@ export function makeHumanoid(fx) {
       },
       crossbow() { put(g, box(.05, .62, .07), M.wood, 0, .16, 0); for (const s of [1, -1]) put(g, box(.36, .03, .03), M.metal, s * .17, .42, 0).rotation.z = -s * .22; rod(g, .008, .1, .52, M.metal); top = .52; low = .3; },
     })[model]?.();
-    tip.position.set(0, top, model === 'bow' ? .05 : 0); grip2.position.set(0, low, 0); nock.position.set(0, 0, -.2); g.add(tip, grip2, nock);
+    tip.position.set(0, top, model === 'bow' ? .05 : 0); grip2.position.set(0, low, 0); nock.position.set(0, 0, -.2); butt.position.set(0, -top, 0); g.add(tip, butt, grip2, nock);
     // the other hand: a shield on the forearm, a focus over the palm, a quiver on the back
     if (off === 'Shields' || off === 'Bucklers') {
       const r = off === 'Shields' ? .3 : .19;
@@ -444,6 +444,7 @@ export function makeHumanoid(fx) {
     // a second figure (Abyssal Apparition) takes its weapon trail out of the scene with it
     dispose() { root.parent?.remove(root); trail.parent?.remove(trail); trail.geometry.dispose(); trail.material.dispose(); },
     hand(v) { return tip.getWorldPosition(v); },
+    ends(a, b) { tip.getWorldPosition(a); butt.getWorldPosition(b); },   // a quarterstaff's two ends
     eye(v, s) { return jt.head.localToWorld(v.set(s * .035, .09, .1)); },   // left (-1) or right (1) eye, roughly
     setColor(c) { trail.material.color.copy(fx.color(c, .5)).lerp(WHITE, .3); if (!glow) return; glow.userData.core.material.color.copy(fx.color(c, 3.2)); glow.userData.glow.material.color.copy(fx.color(c, 1.6)); },
     // a use of a skill: its clip from its moment on, lasting the time to the next use

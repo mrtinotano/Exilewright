@@ -1683,7 +1683,7 @@ export function skill(g, b, treeGear) {
     extraProj: st.base_number_of_projectiles || own.includes('projectile') ? { chance: v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover') + (attack && tags.includes('bow') ? v(sum, 'chance_to_fire_1_additional_projectile_%_with_rollover_with_bow_attacks') : 0) + (attack && own.includes('melee') ? 100 * v(sum, 'melee_attacks_number_of_additional_projectiles') : 0),
       two: spell ? v(sum, 'spell_skills_fire_2_additional_projectiles_final_chance_%') : 0 } : null,
     detonate: sec('base_skill_detonation_time', (1 + v(sum, 'grenade_fuse_duration_+%', 'skill_detonation_time_+%') / 100) * (1 + (finals['support_fast_forward_detonation_time_+%_final'] || 0) / 100)), curseDelay: sec('curse_delay_duration_ms', (1 + v(sum, 'curse_delay_+%') / 100) * (1 + v(finals, 'support_ritual_curse_curse_delay_+%_final') / 100) * (1 + v(finals, 'support_focus_curse_curse_delay_+%_final') / 100) * (sum.keystone_hex_master ? 2 : 1)),
-    duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100),
+    duration: sec('base_skill_effect_duration', durMore), totem: sec('base_totem_duration', 1 + v(sum, 'totem_duration_+%') / 100), durMore,   // for a duration the scene computes itself (Charged Staff's per charge)
     // Pierce, Fork and Chain as PoB2 counts them (CalcOffence, SkillStatMap) and the glossary orders them: a projectile
     // pierces, else forks (the first time it hits), else chains; chaining reaches 6 m from a projectile, 4 m otherwise
     // (Orb of Storms' own distance), more with increased chaining range. The less damage after piercing or forking
