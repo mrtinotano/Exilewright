@@ -5932,7 +5932,7 @@ export function initScene(el, api) {
     if ((st.bleed > 0 || pd) && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if ((st.chill > 0 || frozen) && Math.random() < dt * 6) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
     if (xd && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
-    const top = d === topD, sig = (top ? 'top' : Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : ''));
+    const top = d === topD, sig = top ? 'top' : Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : '');
     if (sig !== d.sig) { d.sig = sig; f.draw(top ? {} : { life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null }); }
   }
 
