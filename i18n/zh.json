@@ -1017,5 +1017,6 @@
  "New skills: {0}": "新技能：{0}",
  "Skills removed: {0}": "移除的技能：{0}",
  "Other supports on: {0}": "辅助有变：{0}",
- "Items changed: {0}": "更换的物品：{0}"
+ "Items changed: {0}": "更换的物品：{0}",
+ "Additional physical damage reduction": "額外物理傷害減免"
 }

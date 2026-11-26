@@ -1017,5 +1017,6 @@
  "New skills: {0}": "สกิลใหม่: {0}",
  "Skills removed: {0}": "สกิลที่เอาออก: {0}",
  "Other supports on: {0}": "ซัพพอร์ตเปลี่ยนที่: {0}",
- "Items changed: {0}": "ไอเทมที่เปลี่ยน: {0}"
+ "Items changed: {0}": "ไอเทมที่เปลี่ยน: {0}",
+ "Additional physical damage reduction": "เสริมค่าป้องกันกายภาพ"
 }

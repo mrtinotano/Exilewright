@@ -1017,5 +1017,6 @@
  "New skills: {0}": "Nouvelles compétences : {0}",
  "Skills removed: {0}": "Compétences retirées : {0}",
  "Other supports on: {0}": "Autres soutiens sur : {0}",
- "Items changed: {0}": "Objets changés : {0}"
+ "Items changed: {0}": "Objets changés : {0}",
+ "Additional physical damage reduction": "Réduction supplémentaire des dégâts physiques"
 }

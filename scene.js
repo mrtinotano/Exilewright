@@ -13,7 +13,7 @@
 // Alt-drag orbit, wheel zoom, C corpse, G charges, V refill, X reset (all but the bar can be changed), and a controller when one is seen.
 import * as THREE from 'three';
 import { t, esc, tn, fmt, cap } from './i18n.js';
-import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, mapGround, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection } from './enemies.js';
+import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, mapGround, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection, armourNow } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
 import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem } from './scenefx.js';
 import { makeHumanoid, clipOf } from './humanoid.js';
@@ -6077,9 +6077,9 @@ export function initScene(el, api) {
   const seen = () => { const st = onS('Future-Past')?.dmg.stats; return !!st && time - me.fpAt >= st.base_skill_effect_duration / 1000; };   // Future-Past's Foresight
   // Kalisa's Crescendo: an enemy in the final share of its curse's duration is Pacified and deals no damage (keywords.json Pacify)
   const pacified = d => { const C = d.curse, P = C?.S?.dmg?.sum?.['curse_pacify_for_final_%_of_duration']; return P && C.s <= C.full * P / 100 && !(time < d.noPac); };
-  function struck(d) {
-    if (pacified(d)) return;
-    const a = d.atk; let c = { ...withCharms(sheet()), esNow: me.es };   // your current energy shield (Disciple of Varashta's armour from it)
+  // your defences as they are now: the sheet's with what the fight changes (buffs, charges, states, broken armour)
+  function defNow() {
+    let c = { ...withCharms(sheet()), esNow: me.es };   // your current energy shield (Disciple of Varashta's armour from it)
     if (time < me.woo?.until && c.deflect) c = { ...c, deflect: { ...c.deflect, flat: (c.deflect.flat || 0) + (c.evasion || 0) * me.woo.pct / 100 / (c.deflect.inc || 1) } };   // Window of Opportunity II: as flat rating
     me.bark = me.bark.filter(b => b.until > time);   // Barkskin's armour, up to your armour items' own
     if (me.cu.some(u => u?.c.armour2)) c = { ...c, armourX: (c.armourX || 1) * 2 };   // For Utopia: defend with 200% of Armour during its effect
@@ -6096,6 +6096,13 @@ export function initScene(el, api) {
       if (U.esArmour && me.maxE > 0) c = { ...c, armourX: (c.armourX || 1) * (1 + me.es / me.maxE * U.esArmour) }; }
     if (me.bark.length) c = { ...c, armour: (c.armour || 0) + Math.min(armourItems(api.build().items).armour, me.bark.reduce((t, b) => t + b.v, 0)) };
     if (me.armCut || time < me.armBroken) c = { ...c, armour: time < me.armBroken ? 0 : Math.max(0, (c.armour || 0) - me.armCut) };   // your armour a monster modifier broke
+    const DFW = (c.deflMove && meIs.Moving() ? c.deflMove : 0) + (c.deflSurr && meIs.Surrounded() ? c.deflSurr : 0);   // increased deflection rating while moving, while Surrounded
+    if (DFW && c.deflect) c = { ...c, deflect: { ...c.deflect, inc: c.deflect.inc + DFW / 100 } };
+    return c;
+  }
+  function struck(d) {
+    if (pacified(d)) return;
+    const a = d.atk; let c = defNow();
     if (d.dead || me.safe > 0 || !a.hasHit) return;
     // Future-Past: after its Hindsight (its duration) Hinekora's Foresight keeps the roll from avoiding hits; a hit while
     // rolling restores your life first and grants Sight Beyond Sight (its secondary duration: you cannot die), then
@@ -6121,8 +6128,7 @@ export function initScene(el, api) {
     if (SR && Math.random() * 100 < SR.dmg.sum[SH]) c = { ...c, res: Object.fromEntries(Object.entries(c.res || {}).map(([e, r]) => [e, { ...r, capped: 90 }])) };
     // Deflect (keywords.json): its chance like evasion's, your deflection rating against their accuracy; a deflected hit
     // deals its less damage
-    const DFW = (c.deflMove && meIs.Moving() ? c.deflMove : 0) + (c.deflSurr && meIs.Surrounded() ? c.deflSurr : 0);   // increased deflection rating while moving, while Surrounded
-    const DF = c.deflect && deflection(DFW ? { ...c, deflect: { ...c.deflect, inc: c.deflect.inc + DFW / 100 } } : c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && !heavyStunned() && (Math.random() * 100 >= DHC || (c.glancing || c.luckyDeflLow && lowLife()) && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
+    const DF = c.deflect && deflection(c), DHC = hitChance(d.stat.accuracy * (d.st.blind > 0 ? 1 - blindLess() / 100 : 1), DF), dfl = DF > 0 && !heavyStunned() && (Math.random() * 100 >= DHC || (c.glancing || c.luckyDeflLow && lowLife()) && Math.random() * 100 >= DHC);   // Glancing Blows: deflecting is Lucky
     if (dfl) me.dflAt = time, fx.text(above(), t('Deflected'), GREY, .32);
     // a curse that lowers their damage (Enfeeble)
     // Oracle's The Lesser Harm: critical chance against you and damage of hits are Unlucky (rolled twice, the better for you)
@@ -6357,7 +6363,7 @@ export function initScene(el, api) {
   // (null: the build cannot change it). Recovery: regeneration and the constant flasks, with the flasks being drunk;
   // damage over time: your ignite, bleeding and poison and the ground you stand in, after resistances and shock, as vitals() and tickHazards() deal it
   function live() {
-    const c = sheet(), w = withCharms(c), act = stuck() ? 0 : slowed(), gain = buffs.find(b => b.gain)?.gain, R = c.rage;
+    const c = sheet(), w = defNow(), act = stuck() ? 0 : slowed(), gain = buffs.find(b => b.gain)?.gain, R = c.rage;
     const rate = (k, on) => (on ? me.drink : flasks().filter(f => f?.always).map(f => ({ k: f.k, rate: f.amount / f.time }))).reduce((t, D) => t + (D?.k === k ? D.rate : 0), 0);
     const RG = regenNow(c), rec = k => { const own = RG[k] + rate(k); return [own + rate(k, true), own]; };
     let dot = 0;
@@ -6369,6 +6375,10 @@ export function initScene(el, api) {
       res: ['fire', 'cold', 'lightning', 'chaos'].map(e => [e, w.res?.[e]?.capped ?? 0, c.res?.[e]?.capped ?? 0]),
       move: [spd() * act * maimed(), spd()], action: [act * 100, 100], taken: [me.st.shock > 0 ? me.mag.shock : 0, 0],
       life: rec('life'), mana: rec('mana'), dot: [dot * (me.st.shock > 0 ? 1 + me.mag.shock / 100 : 1), 0],
+      // your defences now against what the sheet has (Barkskin, Tailwind, Jade, a broken armour, Maim...): a melee hit's block
+      armour: [armourNow(w), armourNow({ ...c, esNow: me.maxE })], evasion: [(w.evasion || 0) * (me.st.maim > 0 ? 1 - MAIM.evasion / 100 : 1), c.evasion || 0],
+      deflect: c.deflect && (deflection(w) || deflection(c)) ? [deflection(w), deflection(c)] : null, block: w.block || c.block ? [blockChance(w, { shape: 'melee' }), blockChance(c, { shape: 'melee' })] : null,
+      physDR: w.physDR || c.physDR ? [w.physDR || 0, c.physDR || 0] : null,
       rage: rageMax() ? [rageNow(), 0] : null, ward: me.maxW ? [me.ward, 0] : null, guard: me.guard > 0 || charms().some(f => f?.guard) ? [me.guard, 0] : null,
       berserk: bz ? { v: [raging ? me.maxL * bz.lifePerRage / 100 * me.rage : 0, 0], name: api.info(api.build().gems.find(g => g.name === bz.name) || { name: bz.name }).label } : null,
       // the share of its damage per second a skill you use deals now: action speed, Rage on attacks, a mark's buff (not a

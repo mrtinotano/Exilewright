@@ -207,13 +207,15 @@ export const deflection = c => ((c.armour * c.deflect.arm + (c.evasion || 0) * c
 // c.takenAs: shares of a type's damage taken as another ("Physical damage from Hits taken as Fire"), each part
 // mitigated as its new type. note: armour then counts against each part, not the whole hit
 // pen: the hit's penetration of your elemental resistances (a map's), as yours works on a monster (enemyTakes)
+// the armour a physical hit meets: yours (Tactician's at 200%), evasion as armour, armour from your energy shield
+export const armourNow = c => (c.armour || 0) * (c.armourX || 1) + (c.evaPhys ? c.evasion || 0 : 0) + (c.esNow ?? c.es ?? 0) * (c.esArm || 0) / 100;
 export function playerTakes(c, type, raw, isHit = true, conv = true, pen = 0) {
   const to = conv && c.takenAs?.[isHit ? 'hit' : 'dot']?.[type];
   if (to) { let left = raw, t = 0; for (const [e, p] of Object.entries(to)) { const x = raw * Math.min(p, 100) / 100; left -= x; t += playerTakes(c, e, x, isHit, false, pen); } return t + (left > 0 ? playerTakes(c, type, left, isHit, false, pen) : 0); }
   // c.physDR: additional physical damage reduction (Jade), within the same cap
   const cap = K.player_max_physical_reduction ?? 90;
   const A = (c.armour || 0) * (c.armourX || 1), pcap = Math.min(cap, c.physMax ?? cap);   // Tactician: armour at 200%, its cap
-  if (type === 'physical') return isHit ? raw * (1 - Math.min(pcap / 100, armourCut(A + (c.evaPhys ? c.evasion || 0 : 0) + (c.esNow ?? c.es ?? 0) * (c.esArm || 0) / 100, raw, pcap) + (c.physDR || 0) / 100)) : raw;
+  if (type === 'physical') return isHit ? raw * (1 - Math.min(pcap / 100, armourCut(armourNow(c), raw, pcap) + (c.physDR || 0) / 100)) : raw;
   // the share of armour that applies to the type (c.armourEl) cuts its hits like physical ones, then resistances
   // note: armour taken against the hit's damage before resistances
   const ER = A * (c.armourEl?.[type] || 0) / 100 + (type !== 'chaos' ? (c.evasion || 0) * (c.evaEl || 0) / 100 + (c.esNow ?? c.es ?? 0) * (c.esEl || 0) / 100 : 0);   // and evasion's share against elements (Pathfinder), current energy shield's (Silks of Veneration)

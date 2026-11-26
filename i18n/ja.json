@@ -1017,5 +1017,6 @@
  "New skills: {0}": "新しいスキル: {0}",
  "Skills removed: {0}": "外したスキル: {0}",
  "Other supports on: {0}": "サポートを変更: {0}",
- "Items changed: {0}": "変更したアイテム: {0}"
+ "Items changed: {0}": "変更したアイテム: {0}",
+ "Additional physical damage reduction": "追加物理ダメージ軽減率"
 }

@@ -1017,5 +1017,6 @@
  "New skills: {0}": "새 스킬: {0}",
  "Skills removed: {0}": "제거한 스킬: {0}",
  "Other supports on: {0}": "보조 변경: {0}",
- "Items changed: {0}": "변경된 아이템: {0}"
+ "Items changed: {0}": "변경된 아이템: {0}",
+ "Additional physical damage reduction": "물리 피해 추가 감소"
 }
