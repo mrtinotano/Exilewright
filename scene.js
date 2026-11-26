@@ -1329,16 +1329,20 @@ export function initScene(el, api) {
         ms = u0 ? 1000 * ((b ? 1 / (b * Math.max(.1, 2 * u0 / b - 1)) : 1 / u0) + 2 * a) : 1000 * SIM.castTime;
       T.N[j] = ms / T.perMs; T.E[j] = Math.min(T.cap || T.N[j], (T.E[j] || 0) + x);
     }
-    return energyOf(T, js);
+    energyOf(T, js);
   }
-  const energyOf = (T, js) => { T.energy = T.E[js[0]] || 0; T.need = T.N[js[0]] || 0; return js; };
+  const energyOf = (T, js) => { T.energy = T.E[js[0]] || 0; T.need = T.N[js[0]] || 0; };
+  function metaFire(T, js, at = near(pp, 30)?.pos || { x: pp.x, z: pp.z }) {   // a meta gem triggers these spells
+    say(t('{0} triggers {1}', T.label, [...new Set(js)].map(j => base(j).label).join(', ')), T.el);
+    if (CAST_ON[T.name]) metaTrig(T.name); else fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
+    js.forEach((j, q) => later(.12 + q * .25, () => use(j, { at: { x: at.x, z: at.z }, src: 'meta', rand: T.rand })));
+  }
   function invoke(T) {
     const js = trigsOf(T), go = [];
     for (const j of js) while (T.E[j] >= T.N[j]) { T.E[j] -= T.N[j] * (Math.random() * 100 < (sheet().invokeHalf || 0) ? .5 : 1); go.push(j); }   // the tree's chance a spell costs half
     energyOf(T, js);
     if (!go.length) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need)));
-    say(t('{0} triggers {1}', T.label, [...new Set(go)].map(j => base(j).label).join(', ')), T.el); if (CAST_ON[T.name]) metaTrig(T.name);
-    go.forEach((j, k) => later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand })));
+    metaFire(T, go);
   }
   // The Cast on X family's look (each one's SkillArtVariations: activate_<kind>.epk as it is turned on, crit_activate.ao
   // and <kind>_surge.ao as it triggers): turned on, your skin flashes in its activation's colour (activation<kind>_skin,
@@ -1378,15 +1382,11 @@ export function initScene(el, api) {
       const T = tog[k];
       if (T.kind === 'meta' && (T.per ? T.per[type] : T.wants.includes(type))) {
         let js = trigsOf(T);
-        if (T.per) { gainEnergy(T, T.per[type] / 100 * (n ?? pow(d)) * (1 + (S.dmg?.stats?.['active_skill_energy_generated_+%_final'] || 0) / 100));   /* the skill's own less Energy generated (Flame Wall, Incinerate) */ if (T.cap) continue; js = js.filter(j => T.E[j] >= T.N[j]); }
+        if (T.per) { gainEnergy(T, T.per[type] / 100 * (n ?? pow(d)) * (1 + (S.dmg?.stats?.['active_skill_energy_generated_+%_final'] || 0) / 100));   /* the skill's own less Energy generated (Flame Wall, Incinerate) */ if (T.cap) continue; js = js.filter(j => T.E[j] >= T.N[j]); if (!js.length) continue;
+          for (const j of js) T.E[j] -= T.N[j] * (Math.random() * 100 < (sheet().trigRefund || 0) ? .5 : 1);   // the tree's half of it refunded
+          energyOf(T, trigsOf(T)); }
         else { if (!js.length || ++T.energy < T.need) continue; T.energy = 0; js = js.slice(0, 1); }
-        if (!js.length) continue;
-        for (const j of js) if (T.per) T.E[j] -= T.N[j] * (Math.random() * 100 < (sheet().trigRefund || 0) ? .5 : 1);   // the tree's half of it refunded
-        if (T.per) energyOf(T, trigsOf(T));
-        const at = { x: p.x, z: p.z };
-        say(t('{0} triggers {1}', T.label, js.map(j => base(j).label).join(', ')), T.el);
-        if (CAST_ON[k]) metaTrig(k); else fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
-        js.forEach((j, q) => later(.12 + q * .25, () => use(j, { at, src: 'meta', rand: T.rand })));
+        metaFire(T, js, p);
       } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
     }
   }
@@ -7413,7 +7413,7 @@ export function initScene(el, api) {
       // Ritual Cadence: an Invocation triggers its spell every 2 seconds (its Energy no longer does). note: its invoked
       // spells' 50% less Energy is not played: with no Energy gained there is none to spend
       if (T.cap && sheet().ritual && time - T.last >= 2) { const js = trigsOf(T); T.last = time;
-        if (js.length) { say(t('{0} triggers {1}', T.label, js.map(j => base(j).label).join(', ')), T.el); js.forEach((j, q) => later(.12 + q * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }))); } }
+        if (js.length) metaFire(T, js); }
       if (T.kind === 'herald' && Math.random() < dt * 14) { const a = time * 3 + rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .8, y: rnd(.2, 1.8), z: pp.z + Math.sin(a) * .8 }, v: .1, up: .8, life: .6, size: .16, c: T.el }); }
       if (T.kind === 'field') for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= T.R + SIM.body) d.flash = Math.max(d.flash, .06);
     }
