@@ -554,10 +554,12 @@ export function makeDummy(fx, o = {}) {
   // radius and height are the scene's (the game only has stats that add to them)
   const blood = new THREE.Group(), bm = new THREE.MeshStandardMaterial({ color: 0x3a0000, emissive: 0x630000, roughness: .12, metalness: .3 }), bg = new THREE.SphereGeometry(.08 / sc, 12, 8);
   for (let i = 0; i < 10; i++) blood.add(new THREE.Mesh(bg, bm)); blood.position.y = 1.75; blood.visible = false; g.add(blood);
+  const rune = new THREE.Sprite(new THREE.SpriteMaterial({ blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false }));   // a Mark's own rune over its head
+  rune.position.y = 2.05 + .9 / sc; rune.scale.setScalar(.6 / sc); rune.visible = false; g.add(rune);
   const P = lifePlate(g, 2.05 + .5 / sc, 2.5 / sc);
   return {
-    group: g, upper, sack, ice, curse, mark, blood, plate: P.plate, scale: sc, draw: P.draw,
-    dispose() { g.parent?.remove(g); sack.dispose(); ice.material.dispose(); curse.material.dispose(); mark.material.dispose(); bm.dispose(); bg.dispose(); P.dispose(); },
+    group: g, upper, sack, ice, curse, mark, blood, rune, plate: P.plate, scale: sc, draw: P.draw,
+    dispose() { g.parent?.remove(g); sack.dispose(); ice.material.dispose(); curse.material.dispose(); mark.material.dispose(); rune.material.dispose(); bm.dispose(); bg.dispose(); P.dispose(); },
   };
 }
 

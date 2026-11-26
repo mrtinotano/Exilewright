@@ -1288,7 +1288,8 @@ export function initScene(el, api) {
     const LB = S.dmg?.stats?.living_bomb_base_number_of_bombs_allowed ?? S.dmg?.stats?.number_of_marks_allowed_per_type;
     if (LB) { const on = dummies.filter(e => e !== d && e.mark?.name === S.name).sort((a, b) => a.mark.at - b.mark.at); while (on.length >= LB) on.shift().mark = null; }
     d.mark = { at: time, s: sh(S).duration || S.P.dur || 8, els: S.P.els, label: S.label, name: S.name, D: S.dmg?.mark, gain: S.P.gain, bomb: S.P.bomb, hits: 0, R: S.A, S: { ...S, src: 'mark', ail: ailOf(S.P.els) }, hound: S.dmg?.stats?.['hunters_mark_%_of_phys_damage_over_time_as_build_up'] != null && S };
-    fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1);
+    if (MARK_RUNE[S.name]) fx.glow(runeAt(d), .8, HM.flash, .15, 3);   // its own flash as it lands
+    else { fx.ring(d.pos, 2.2, .5, 'mark', .4); fx.bolt(hand(), V(d.pos.x, 2, d.pos.z), 'mark', .15, .02, .1); }
   }
   // Called Shots: while it is on, every five seconds a Mark placed in it marks its number of unmarked enemies within its
   // radius, the nearest; a consumed one passes (its meta_support's chance) to the nearest unmarked enemy within 3 m of
@@ -1382,11 +1383,36 @@ export function initScene(el, api) {
   }
   // Bloodhound's Mark: the marked enemy heavily stunned, or killed after enough blood loss (its % of the stun threshold),
   // consumes it for Blood Explosion there, its more damage and area up to its most from the buildup
+  // Bloodhound's Mark's look (BuffVisualOrbs HuntersMarkOrb: curses_02/marks mark_hunter): its rune over the marked enemy
+  // (mark_runes HuntersMark, red 1 / 0.07 / 0.09), a red flash as it lands (mark_hunter_surge 0.15 s, 1 / 0.15 / 0.15),
+  // and as it ends a red core for 0.2 s with 32 sparks and embers for 1-3 s (mark_hunter_break); its Blood Explosion
+  // (HuntersMarkExplosion: mark_hunter_explode): a flash for 0.15 s (2 / 0.24 / 0.1), a red ring for 0.25 s (up to
+  // 2 / 0.22 / 0.04), 32 spikes of blood for 0.2-0.3 s (2 / 0.27 / 0.1), a burst of blood for 0.5 s, 32 puffs of blood
+  // mist for 1-3 s (0.1 / 0 / 0) and 16 ribbons of blood for 10 s (0.03 / 0 / 0). note: the burst's colour, the embers'
+  // and the rune's height over the head are the scene's; its ribbons are drawn as blood falling and staining the ground
+  const HM = { rune: 0xff1218, flash: 0xff2626, core: 0xff0d0d, spark: 0xff8080, ember: 0xb01010, blast: 0xff1f0d, ring: 0xff1c05, spike: 0xff2213, burst: 0x5a0000, mist: 0x1a0000, ribbon: 0x0b0000 };
+  const MARK_RUNE = { "Bloodhound's Mark": ['huntersmark', HM.rune] };   // each Mark's own rune (curses_02/marks/mark_runes)
+  const runeAt = d => ({ x: d.pos.x, y: 2.05 * d.sc + .9, z: d.pos.z });
+  function hmBreak(d) {
+    const at = runeAt(d); fx.glow(at, 1.6, HM.core, .2, 3);
+    fx.emit(32, { p: at, r: .1, v: 3, life: .1, size: .04, c: HM.spark, k: 2.5, drag: 2 });
+    fx.emit(10, { p: at, r: .2, v: .6, up: .3, life: 2, size: .05, c: HM.ember, k: 1.6, g: -.2, drag: 1 });
+  }
+  function hmBlast(c, R) {
+    const at = { x: c.x, y: .8, z: c.z };
+    fx.flash(c, HM.blast, 10, .15, 5); fx.glow(at, R * 1.2, HM.blast, .15, 3); fx.ring(c, .2, R, HM.ring, .25, { a: .9 }); fx.ball(at, R * .5, HM.burst, .5, 1.4);
+    for (let i = 0; i < 32; i++) { const a = rnd(TAU), l = R * rnd(.4, 1); fx.strip(c, { x: c.x + Math.sin(a) * l, z: c.z + Math.cos(a) * l }, .1, HM.spike, .25, { a: .8, k: 1.4, y: .07 }); }
+    fx.emit(32, { p: at, r: R * .3, v: R * .8, up: .4, life: 2, size: .7, grow: 1.6, c: HM.mist, smoke: true, a: .7, drag: 1.2 });
+    fx.emit(16, { p: { x: c.x, y: 1.4, z: c.z }, r: .2, v: R * 1.2, up: 4, life: 1.4, size: .1, c: HM.ribbon, smoke: true, a: .95, g: 12, drag: .3 });
+    fx.disc(c, R * .8, HM.ribbon, 10, { dark: true, a: .85, tex: 'patch', hold: .8, y: .03 });
+    shake = Math.max(shake, Math.min(.5, R * .09));
+  }
   function houndBlow(d, full) {
     const M = d.mark, X = M?.hound; if (!X) return; const st = X.dmg.stats, k = full ? 1 : Math.min(1, (d.bar.stun || 0) / 100);
     if (!full && (d.bar.stun || 0) < st['hunters_mark_%_of_max_threshold_to_trigger_explosion_on_death']) return;
-    d.mark = null; say(M.label, 'blood');
-    boom({ x: d.pos.x, z: d.pos.z }, M.R * Math.sqrt(1 + st['hunters_mark_explosion_area_of_effect_+%_final_from_buildup'] * k / 100), { ...X, mult: X.mult * (1 + st['hunters_mark_buildup_%_as_explosion_damage_+%_final'] * k / 100) });
+    d.mark = null; say(M.label, 'blood'); hmBreak(d);
+    const c = { x: d.pos.x, z: d.pos.z }, R = M.R * Math.sqrt(1 + st['hunters_mark_explosion_area_of_effect_+%_final_from_buildup'] * k / 100);
+    hmBlast(c, R); area(c, R, { ...X, mult: X.mult * (1 + st['hunters_mark_buildup_%_as_explosion_damage_+%_final'] * k / 100) });
   }
   // Blood Hunt: its hit on an enemy with at least its Blood Loss (keywords.json BloodLoss: the physical damage over time
   // it has taken) consumes it and its bleeding in a blood explosion (its part), the area larger by its % per its amount
@@ -1686,7 +1712,7 @@ export function initScene(el, api) {
     if (Math.random() * 100 < (S?.dmg?.sum?.['create_verisium_remmant_on_kill_enemy_%'] || 0)) infRemnant('verisium', p, { dur: (S.dmg.sum.base_remnant_duration_ms || 0) / 1000 });   // Runic Extraction
     hatch(p);
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
-    f.ice.visible = f.curse.visible = f.mark.visible = f.blood.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
+    f.ice.visible = f.curse.visible = f.mark.visible = f.rune.visible = f.blood.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
     if (frozen) {   // frozen enemies shatter: no corpse
       fx.emit(46, { p: { x: p.x, y: 1, z: p.z }, r: .3, h: 1, v: 5, up: 2, life: .8, size: .2, c: 'ice', c2: 'white', g: 9 });
       fx.ring(p, .3, 1.8, 'ice', .4); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;
@@ -5910,7 +5936,7 @@ export function initScene(el, api) {
     if (d.curse && (d.curse.s -= dt) <= 0) { const KC = d.curse.S?.dmg?.sum?.apply_unaffected_by_pacifying_curses_for_x_ms_on_curse_expiry; if (KC) d.noPac = time + KC / 1000; d.curse = d.hexes?.pop() || null; }   // Kalisa's Crescendo: not Pacified again for its time
     if (d.hexes?.length) d.hexes = d.hexes.filter(u => (u.s -= dt) > 0);
     if (d.mark && !(d.mark.hound && st.bleed > 0) && (d.mark.s -= dt) <= 0) {   // Bloodhound's Mark lasts while they bleed
-      if (d.mark.bomb) markOff(d); else d.mark = null; }
+      if (d.mark.hound) hmBreak(d); if (d.mark.bomb) markOff(d); else d.mark = null; }
     for (let i = d.dots.length - 1; i >= 0; i--) if ((d.dots[i].s -= dt) <= 0) d.dots.splice(i, 1);
     if (d.pustule) pustule(d, dt);
     if (d.spectral && time >= d.spectral.until) spectralBlow(d);
@@ -5939,7 +5965,8 @@ export function initScene(el, api) {
     if (!frozen) { let a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) - f.group.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a)); f.group.rotation.y += a * Math.min(1, dt * 5); }   // they watch you
     d.lunge = Math.max(0, d.lunge - dt * 3.2);
     f.upper.rotation.x = frozen ? 0 : Math.sin(time * 22 + d.ph) * d.wob * .16 + Math.sin(d.lunge * Math.PI) * .42; f.upper.rotation.z = frozen ? 0 : Math.cos(time * 17 + d.ph) * d.wob * .1;
-    f.ice.visible = frozen; f.curse.visible = !!d.curse; f.mark.visible = !!d.mark;
+    const MR = d.mark && MARK_RUNE[d.mark.name]; f.ice.visible = frozen; f.curse.visible = !!d.curse; f.mark.visible = !!d.mark && !MR; f.rune.visible = !!MR;
+    if (MR) { const m = f.rune.material, T = fx.T[artTex('rune_' + MR[0], `particles/curses_02/marks/mark_runes/${MR[0]}`)]; if (m.map !== T) { m.map = T; m.color.set(MR[1]).multiplyScalar(2.5); m.needsUpdate = true; } m.opacity = .8 + Math.sin(time * 4) * .2; }
     if (d.curse) f.curse.rotation.y += dt * .8;
     if (d.mark) { f.mark.rotation.y += dt * 2.5; f.mark.scale.setScalar(1 + Math.sin(time * 5) * .08); }
     const nb = Math.min(10, d.dots.reduce((n, v) => n + (v.el === 'physical' ? v.stacks || 1 : 0), 0)); f.blood.visible = nb > 0;   // Corrupted Blood's orbs, one a debuff
