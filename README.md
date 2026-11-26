@@ -5,7 +5,7 @@ plus an in-game price check and a loot filter creator.
 Every number comes from the game's own data (see `poe2_data/README.md`).
 
 Fan-made, not affiliated with or endorsed by Grinding Gear Games. Path of Exile, its data and images are (c)
-Grinding Gear Games; support stat readings come from Path of Building Community (MIT). See `LICENSE`.
+Grinding Gear Games; support stat readings come from Path of Building Community (MIT). See `LICENSE` and `NOTICE.md`.
 
 > **Early version.** Exilewright is a young tool: many things do not work quite right yet, and some numbers may be
 > off. It is being improved as fast as possible. If something looks wrong, please
