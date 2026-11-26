@@ -376,7 +376,7 @@ export function initScene(el, api) {
     hazards.forEach(h => h.decal.remove()); hazards = [];
     divine.forEach(f => f.dec.remove()); divine = [];
     frags.forEach(f => f.dec.remove()); frags = [];
-    timers = []; empower = []; buffs = []; fissures = []; surges = []; archonAt = -Infinity; charge = held = move = null; pp.y = 0; me.pup = []; me.uarch = me.uarchOff = -9;
+    timers = []; empower = []; buffs = []; fissures = []; surges = []; archonAt = -Infinity; charge = held = move = null; for (const m of bst) fx.drop(m); bst = []; pp.y = 0; me.pup = []; me.uarch = me.uarchOff = -9;
     for (const k in charges) charges[k] = 0;
     stats.kills = stats.dealt = stats.taken = stats.deaths = 0; clog = []; byS = {}; lastHit = null; dummies.forEach(restore); heal(); hudT = 0;
   }
@@ -4495,16 +4495,51 @@ export function initScene(el, api) {
   // Bonestorm: channelled, it conjures bone spikes (note: one per the scene's channel tick, the data has no rate), up to
   // its most; released, they fly at the enemies within its target length of the target, each exploding in its part.
   // Power Charges consumed widen the explosions: its + radius, and its more area per charge past the first
+  // Its look (bone_spearvolley: boneSpear_Main; BoneSpikePlayer: boneSpear_Projectiles): while channelled its bone spears
+  // assemble behind you, each lit green as it appears (boneSpear_ObjectAssemble: vibrance 0.875 / 1 / 0.94) with
+  // necromantic embers (bonespear_tracker_startflash, 1.5-4 s); released they fly at 27 m/s (BoneSpikePlayer 2700) and
+  // shatter where they land (bonespear_impactshatter: bone shards for 2-3.5 s, sparks, dust for 1-1.85 s); with Power
+  // Charges a blue burst (powerCharge_AoE: a ring 0.15 / 0.18 / 0.3 for 0.3 s, a flash for 0.28 s, dark dust for 2 s, a
+  // shockwave for 0.57 s, blue sparks for 0.65-2 s). note: the spears' shape, where they stand behind you and how their
+  // green fades are the scene's
+  const BST = { bone: 0xe6d6b8, glow: 0x9fffbe, ember: 0x8cffc5, ring: 0x7a96ff, spark: 0xa8b8ff, dust: 0x2f2f2f }, BSPEAR = new THREE.ConeGeometry(.05, 1.2, 5).rotateX(Math.PI / 2);
+  let bst = [];
+  function bstGrow(S, s) {   // one spear per channel tick, up to its most, standing behind you towards the cursor
+    const n = Math.min(S.dmg?.stats?.base_number_of_allowed_bone_storm_projectiles || 1, Math.max(1, Math.floor(s / SIM.channelTick)));
+    while (bst.length < n) {
+      const m = new THREE.Mesh(BSPEAR, new THREE.MeshStandardMaterial({ color: BST.bone, roughness: .5, emissive: BST.glow, emissiveIntensity: 1.5 }));
+      m.userData = { at: time, o: { x: rnd(-1.1, 1.1), y: 1 + rnd(-.5, .7), z: -.6 - rnd(.7) } }; scene.add(m); bst.push(m);
+    }
+    const fx0 = Math.sin(facing), fz = Math.cos(facing);
+    for (const m of bst) {
+      const o = m.userData.o, x = pp.x + fz * o.x + fx0 * o.z, z = pp.z - fx0 * o.x + fz * o.z, fresh = time - m.userData.at < .02;
+      m.position.set(x, o.y, z); m.lookAt(x + fx0, o.y, z + fz); m.material.emissiveIntensity = Math.max(.3, 1.5 * (1 - (time - m.userData.at) / .5));
+      if (fresh) fx.emit(5, { p: m.position, r: .3, v: .3, up: .4, life: 2.7, size: .05, c: BST.ember, k: 1.8, drag: 1 });
+    }
+  }
   K.bonestorm = S => {
-    const st = S.dmg.stats, X = partOf(S, 'BonestormExplosionPlayer') || S, xs = X.dmg?.stats || {}, h = hand();
+    const st = S.dmg.stats, X = partOf(S, 'BonestormExplosionPlayer') || S, xs = X.dmg?.stats || {};
     const n = Math.min(st.base_number_of_allowed_bone_storm_projectiles || 1, Math.max(1, Math.floor((S.held || 0) / SIM.channelTick)));
     const r = S.spent ? (X.A + (xs['bone_spear_power_charged_aoe_+'] || 0) / 10) * Math.sqrt(1 + (S.spent - 1) * (xs['bone_spear_power_charged_aoe_+%_final_per_additional_power_charge'] || 0) / 100) : X.A;
     const foes = nearest(S.at, n, d => dist(d.pos, S.at) <= (st.bone_spear_target_rectangle_length || 0) / 10);
+    bstGrow(S, Math.max(S.held || 0, SIM.channelTick)); const sp = bst.splice(0); for (const m of sp.splice(n)) fx.drop(m);
     for (let k = 0; k < n; k++) later(k * .04, () => {
       const d = foes[k % (foes.length || 1)], q = d && !d.dead ? { x: d.pos.x, z: d.pos.z } : around(S.at, 1);
-      fx.streak(h, V(q.x, .3, q.z), 'physical', .12, .04, 1); later(.12, () => { pop(q, r, 'physical'); boom(q, r, { ...X, mult: S.mult }, { noPay: k > 0 }); });
+      const m = sp[k], from = m.position.clone(), to = V(q.x, .3, q.z);
+      lob(m, from, to, Math.max(.05, from.distanceTo(to) / 27), 0, () => { fx.drop(m); bstHit(q, r, S.spent); area(q, r, { ...X, mult: S.mult }, { noPay: k > 0 }); }, { aim: true, trail: BST.ember });
     });
   };
+  function bstHit(q, r, power) {
+    const at = { x: q.x, y: .4, z: q.z };
+    fx.emit(14, { p: at, r: .15, v: 3, up: 2.5, life: 2.5, size: .09, c: BST.bone, g: 10, drag: .4, smoke: true, a: .95 });   // the spear shattered
+    fx.emit(10, { p: at, r: .1, v: 4, life: .2, size: .07, c: 0xffffff, c2: BST.bone, k: 2.5, drag: 2 });
+    fx.emit(6, { p: at, r: .3, v: .5, up: .4, life: 1.4, size: .5, grow: 1.6, c: 0x5a5650, smoke: true, a: .45, drag: 1 });
+    if (!power) return;
+    fx.ring(q, .2, r, BST.ring, .3, { k: 2.5 }); fx.flash(q, BST.spark, 8, .28, 5); fx.ball(at, r * .5, BST.ring, .57, 1.2);
+    fx.emit(28, { p: at, r: r * .5, v: r * 1.2, up: .5, life: 2, size: .7, grow: 2, c: BST.dust, smoke: true, a: .6, drag: 1.2 });
+    fx.emit(24, { p: at, r: .3, v: r * 2.5, up: 1.5, life: 1.3, size: .07, c: BST.spark, c2: 0xffffff, k: 2.2, drag: 1 });
+    shake = Math.max(shake, Math.min(.4, r * .08));
+  }
   // Explosive Spear: its spear lodges where it lands (up to its most) and explodes in its part at the end of its
   // detonation time, or at once when Detonated; a Frenzy Charge consumed explodes it on landing in its infused part: a
   // cross of its arms (its radius long, its secondary width), with Ignited Ground (its tertiary radius, its duration).
@@ -7237,7 +7272,8 @@ export function initScene(el, api) {
     if (charge) {
       charge.s += dt; castAt = time; me.act = actMove(base(charge.i)); facing = Math.atan2(cursor.x - pp.x, cursor.z - pp.z);
       const b = base(charge.i), h = hand();
-      if (b) fx.emit(2, { p: { x: h.x + rnd(-1, 1), y: h.y + rnd(-.6, .6), z: h.z + rnd(-1, 1) }, dir: V(0, 0, 0), v: .3, life: .3, size: .16 + Math.min(1, charge.s) * .16, c: b.el, c2: 'white' });
+      if (b?.name === 'Bonestorm') bstGrow(b, charge.s);
+      else if (b) fx.emit(2, { p: { x: h.x + rnd(-1, 1), y: h.y + rnd(-.6, .6), z: h.z + rnd(-1, 1) }, dir: V(0, 0, 0), v: .3, life: .3, size: .16 + Math.min(1, charge.s) * .16, c: b.el, c2: 'white' });
     } else if (held && !move && cd <= 0) fire(held.i);
 
     // the world
