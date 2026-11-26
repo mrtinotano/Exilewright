@@ -1331,13 +1331,14 @@ export function initScene(el, api) {
     if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need))); say(t('{0} triggers {1}', T.label, base(j).label), T.el);
     for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }));
   }
-  // Cast on Block's look (cast_on_block: CastOnBlockActivation activate_lightning.epk; CastOnBlockTriggerEffect
-  // crit_activate.ao, CastOnBlockSurgeEffect lightning_surge.ao): turned on, your skin flashes lightning blue
-  // (activationLightning_skin 0.75 / 0.87 / 2.5) with a lens flare, strings of lightning for 0.12-0.75 s and 16 bolts out
+  // The lightning Cast on X's look, the same in each one's art (Cast on Block's cast_on_block: CastOnBlockActivation
+  // activate_lightning.epk, CastOnBlockTriggerEffect crit_activate.ao, CastOnBlockSurgeEffect lightning_surge.ao): turned
+  // on, your skin flashes lightning blue (activationLightning_skin 0.75 / 0.87 / 2.5) with a lens flare, strings of lightning for 0.12-0.75 s and 16 bolts out
   // of your chest for 0.09-0.45 s; as it triggers, a star flare for 0.2 s and a ring for 0.35 s (trigger_activate:
   // crit_star, crit_ring, boosted 1 / 1 / 2) and a lightning trail rising round you (lightning_trail, boosted 1 / 1.2 / 1.4).
   // note: the skin's flash is a glow on you; the trail rises in a bolt (its path is surge.ast's bones)
   const COB = { skin: 0x4d59ff, star: 0x8080ff, trail: 0xb6daff };
+  const COB_ON = new Set(['Cast on Block', 'Cast on Charm Use', 'Cast on Shock', 'Curse on Block', "Thundergod's Wrath"]);
   function cobOn() {
     const c = V(pp.x, 1.2, pp.z);
     fx.flash(pp, COB.skin, 8, .3, 5); fx.glow(c, 1.6, COB.skin, .35, 2.5);
@@ -1362,7 +1363,7 @@ export function initScene(el, api) {
         if (Math.random() * 100 < (sheet().trigRefund || 0)) T.energy += T.need / 2;   // the tree's half of it refunded
         const at = { x: p.x, z: p.z };
         say(t('{0} triggers {1}', T.label, base(j).label), T.el);
-        if (k === 'Cast on Block') cobTrig(); else fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
+        if (COB_ON.has(k)) cobTrig(); else fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
         later(.12, () => use(j, { at, src: 'meta', rand: T.rand }));
       } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
     }
@@ -3433,7 +3434,7 @@ export function initScene(el, api) {
           ['eshit', 100 / st.barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit], ['miniondeath', 1e4 / st['cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%']]]) if (v) per[ev] = v;
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
-        const tj = T.per ? trigOf(T) : -1; if (tj >= 0) gainEnergy(T, 0, tj);   // its maximum from the start (the buff shows its Energy as a % of it)
+        if (T.per) { const tj = trigOf(T); if (tj >= 0) gainEnergy(T, 0, tj); }   // its maximum from the start (the buff shows its Energy as a % of it)
       }
       else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : k === 'Cackling Companions' ? { look: hyenaLook(S) } : {}));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
@@ -3441,7 +3442,7 @@ export function initScene(el, api) {
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       if (SILENT.has(k)) return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       if (k === 'Blasphemy') { const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), 0x1f2bff, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove()); fx.pillar(pp, .6, 2.6, 0x1f2bff, .5, 2); }   // its symbol (BLAS)
-      else if (k === 'Cast on Block') cobOn();
+      else if (COB_ON.has(k)) cobOn();
       else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
     },
