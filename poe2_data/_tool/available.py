@@ -468,7 +468,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     # the gem's other parts with damage of their own (Earthshatter's spike, Forge Hammer's fissures): every stat of the
     # part and its multiplier per level, as the skill's (stat_levels)
     parts = {ss_tab[i]['Id']: {'constant': c, 'levels': lv} for i in more_sets for c, lv in [stat_levels([], [i])]
-             if any('_base_multiplier' in x or 'wild_beast_damage_+%_final' in x or any(k.startswith('spell_minimum_base_') for k in x) for x in lv.values())}   # an attack's multiplier or a spell's own damage (Volcano's projectiles); Savage Fury's frenzy
+             if any('_base_multiplier' in x or 'wild_beast_damage_+%_final' in x or any(k.startswith('spell_minimum_base_') or k.endswith('_damage_to_deal_per_minute') for k in x) for x in lv.values())}   # an attack's multiplier or a spell's own damage (Volcano's projectiles); Savage Fury's frenzy
     # the secondary radius of a part without damage of its own, as the skill's (Detonating Arrow's explosion: the arrow's damage)
     R2 = 'active_skill_base_secondary_area_of_effect_radius'
     for i in more_sets:

@@ -43485,6 +43485,135 @@
        "spell_maximum_base_cold_damage": 23263
       }
      }
+    },
+    "BitterDeadRuneAuraPlayer": {
+     "constant": {
+      "base_skill_effect_duration": 10000,
+      "bitter_dead_action_speed_+%_final_for_rune": -20,
+      "active_skill_base_area_of_effect_radius": 15
+     },
+     "levels": {
+      "1": {
+       "base_cold_damage_to_deal_per_minute": 389
+      },
+      "2": {
+       "base_cold_damage_to_deal_per_minute": 525
+      },
+      "3": {
+       "base_cold_damage_to_deal_per_minute": 718
+      },
+      "4": {
+       "base_cold_damage_to_deal_per_minute": 939
+      },
+      "5": {
+       "base_cold_damage_to_deal_per_minute": 1188
+      },
+      "6": {
+       "base_cold_damage_to_deal_per_minute": 1472
+      },
+      "7": {
+       "base_cold_damage_to_deal_per_minute": 1794
+      },
+      "8": {
+       "base_cold_damage_to_deal_per_minute": 2159
+      },
+      "9": {
+       "base_cold_damage_to_deal_per_minute": 2573
+      },
+      "10": {
+       "base_cold_damage_to_deal_per_minute": 3042
+      },
+      "11": {
+       "base_cold_damage_to_deal_per_minute": 3576
+      },
+      "12": {
+       "base_cold_damage_to_deal_per_minute": 4182
+      },
+      "13": {
+       "base_cold_damage_to_deal_per_minute": 4870
+      },
+      "14": {
+       "base_cold_damage_to_deal_per_minute": 5654
+      },
+      "15": {
+       "base_cold_damage_to_deal_per_minute": 6545
+      },
+      "16": {
+       "base_cold_damage_to_deal_per_minute": 7561
+      },
+      "17": {
+       "base_cold_damage_to_deal_per_minute": 8720
+      },
+      "18": {
+       "base_cold_damage_to_deal_per_minute": 10043
+      },
+      "19": {
+       "base_cold_damage_to_deal_per_minute": 11554
+      },
+      "20": {
+       "base_cold_damage_to_deal_per_minute": 13282
+      },
+      "21": {
+       "base_cold_damage_to_deal_per_minute": 15261
+      },
+      "22": {
+       "base_cold_damage_to_deal_per_minute": 17529
+      },
+      "23": {
+       "base_cold_damage_to_deal_per_minute": 20131
+      },
+      "24": {
+       "base_cold_damage_to_deal_per_minute": 23121
+      },
+      "25": {
+       "base_cold_damage_to_deal_per_minute": 26559
+      },
+      "26": {
+       "base_cold_damage_to_deal_per_minute": 30517
+      },
+      "27": {
+       "base_cold_damage_to_deal_per_minute": 35081
+      },
+      "28": {
+       "base_cold_damage_to_deal_per_minute": 40349
+      },
+      "29": {
+       "base_cold_damage_to_deal_per_minute": 46437
+      },
+      "30": {
+       "base_cold_damage_to_deal_per_minute": 53482
+      },
+      "31": {
+       "base_cold_damage_to_deal_per_minute": 61645
+      },
+      "32": {
+       "base_cold_damage_to_deal_per_minute": 71116
+      },
+      "33": {
+       "base_cold_damage_to_deal_per_minute": 82120
+      },
+      "34": {
+       "base_cold_damage_to_deal_per_minute": 94921
+      },
+      "35": {
+       "base_cold_damage_to_deal_per_minute": 109834
+      },
+      "36": {
+       "base_cold_damage_to_deal_per_minute": 127232
+      },
+      "37": {
+       "base_cold_damage_to_deal_per_minute": 147557
+      },
+      "38": {
+       "base_cold_damage_to_deal_per_minute": 171336
+      },
+      "39": {
+       "base_cold_damage_to_deal_per_minute": 199197
+      },
+      "40": {
+       "base_cold_damage_to_deal_per_minute": 231886
+      }
+     }
     }
    },
    "meta_support": null
@@ -63351,6 +63480,135 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": null,
+   "parts": {
+    "EssenceDrainDotPlayer": {
+     "constant": {
+      "base_skill_effect_duration": 4000
+     },
+     "levels": {
+      "1": {
+       "base_chaos_damage_to_deal_per_minute": 550
+      },
+      "2": {
+       "base_chaos_damage_to_deal_per_minute": 800
+      },
+      "3": {
+       "base_chaos_damage_to_deal_per_minute": 1158
+      },
+      "4": {
+       "base_chaos_damage_to_deal_per_minute": 1568
+      },
+      "5": {
+       "base_chaos_damage_to_deal_per_minute": 2036
+      },
+      "6": {
+       "base_chaos_damage_to_deal_per_minute": 2571
+      },
+      "7": {
+       "base_chaos_damage_to_deal_per_minute": 3182
+      },
+      "8": {
+       "base_chaos_damage_to_deal_per_minute": 3880
+      },
+      "9": {
+       "base_chaos_damage_to_deal_per_minute": 4678
+      },
+      "10": {
+       "base_chaos_damage_to_deal_per_minute": 5591
+      },
+      "11": {
+       "base_chaos_damage_to_deal_per_minute": 6635
+      },
+      "12": {
+       "base_chaos_damage_to_deal_per_minute": 7831
+      },
+      "13": {
+       "base_chaos_damage_to_deal_per_minute": 9202
+      },
+      "14": {
+       "base_chaos_damage_to_deal_per_minute": 10774
+      },
+      "15": {
+       "base_chaos_damage_to_deal_per_minute": 12579
+      },
+      "16": {
+       "base_chaos_damage_to_deal_per_minute": 14653
+      },
+      "17": {
+       "base_chaos_damage_to_deal_per_minute": 17038
+      },
+      "18": {
+       "base_chaos_damage_to_deal_per_minute": 19786
+      },
+      "19": {
+       "base_chaos_damage_to_deal_per_minute": 22953
+      },
+      "20": {
+       "base_chaos_damage_to_deal_per_minute": 26609
+      },
+      "21": {
+       "base_chaos_damage_to_deal_per_minute": 30833
+      },
+      "22": {
+       "base_chaos_damage_to_deal_per_minute": 35720
+      },
+      "23": {
+       "base_chaos_damage_to_deal_per_minute": 41382
+      },
+      "24": {
+       "base_chaos_damage_to_deal_per_minute": 47949
+      },
+      "25": {
+       "base_chaos_damage_to_deal_per_minute": 55576
+      },
+      "26": {
+       "base_chaos_damage_to_deal_per_minute": 64447
+      },
+      "27": {
+       "base_chaos_damage_to_deal_per_minute": 74777
+      },
+      "28": {
+       "base_chaos_damage_to_deal_per_minute": 86824
+      },
+      "29": {
+       "base_chaos_damage_to_deal_per_minute": 100894
+      },
+      "30": {
+       "base_chaos_damage_to_deal_per_minute": 117349
+      },
+      "31": {
+       "base_chaos_damage_to_deal_per_minute": 136623
+      },
+      "32": {
+       "base_chaos_damage_to_deal_per_minute": 159231
+      },
+      "33": {
+       "base_chaos_damage_to_deal_per_minute": 185790
+      },
+      "34": {
+       "base_chaos_damage_to_deal_per_minute": 217040
+      },
+      "35": {
+       "base_chaos_damage_to_deal_per_minute": 253865
+      },
+      "36": {
+       "base_chaos_damage_to_deal_per_minute": 297328
+      },
+      "37": {
+       "base_chaos_damage_to_deal_per_minute": 348709
+      },
+      "38": {
+       "base_chaos_damage_to_deal_per_minute": 409547
+      },
+      "39": {
+       "base_chaos_damage_to_deal_per_minute": 481700
+      },
+      "40": {
+       "base_chaos_damage_to_deal_per_minute": 567414
+      }
+     }
+    }
+   },
    "meta_support": null
   },
   "Controlled Destruction": {
@@ -97214,6 +97472,178 @@
    "part": {
     "poison_vine_arrow_vine_stored_poison_damage_+%_final": -50
    },
+   "parts": {
+    "VineArrowFlowerPlayer": {
+     "constant": {
+      "active_skill_base_area_of_effect_radius": 24,
+      "active_skill_base_secondary_area_of_effect_radius": 48,
+      "active_skill_base_slow_debuff_movement_speed_+%_final": -40,
+      "poison_vine_arrow_vine_stored_poison_damage_+%_final": -50
+     },
+     "levels": {
+      "1": {
+       "base_chaos_damage_to_deal_per_minute": 337,
+       "poison_vine_arrow_visual_max_poison": 3367
+      },
+      "2": {
+       "base_chaos_damage_to_deal_per_minute": 490,
+       "poison_vine_arrow_visual_max_poison": 4896
+      },
+      "3": {
+       "base_chaos_damage_to_deal_per_minute": 709,
+       "poison_vine_arrow_visual_max_poison": 7086
+      },
+      "4": {
+       "base_chaos_damage_to_deal_per_minute": 959,
+       "poison_vine_arrow_visual_max_poison": 9592
+      },
+      "5": {
+       "base_chaos_damage_to_deal_per_minute": 1246,
+       "poison_vine_arrow_visual_max_poison": 12456
+      },
+      "6": {
+       "base_chaos_damage_to_deal_per_minute": 1573,
+       "poison_vine_arrow_visual_max_poison": 15728
+      },
+      "7": {
+       "base_chaos_damage_to_deal_per_minute": 1947,
+       "poison_vine_arrow_visual_max_poison": 19466
+      },
+      "8": {
+       "base_chaos_damage_to_deal_per_minute": 2374,
+       "poison_vine_arrow_visual_max_poison": 23737
+      },
+      "9": {
+       "base_chaos_damage_to_deal_per_minute": 2862,
+       "poison_vine_arrow_visual_max_poison": 28620
+      },
+      "10": {
+       "base_chaos_damage_to_deal_per_minute": 3420,
+       "poison_vine_arrow_visual_max_poison": 34204
+      },
+      "11": {
+       "base_chaos_damage_to_deal_per_minute": 4059,
+       "poison_vine_arrow_visual_max_poison": 40593
+      },
+      "12": {
+       "base_chaos_damage_to_deal_per_minute": 4791,
+       "poison_vine_arrow_visual_max_poison": 47910
+      },
+      "13": {
+       "base_chaos_damage_to_deal_per_minute": 5629,
+       "poison_vine_arrow_visual_max_poison": 56295
+      },
+      "14": {
+       "base_chaos_damage_to_deal_per_minute": 6591,
+       "poison_vine_arrow_visual_max_poison": 65912
+      },
+      "15": {
+       "base_chaos_damage_to_deal_per_minute": 7695,
+       "poison_vine_arrow_visual_max_poison": 76952
+      },
+      "16": {
+       "base_chaos_damage_to_deal_per_minute": 8964,
+       "poison_vine_arrow_visual_max_poison": 89640
+      },
+      "17": {
+       "base_chaos_damage_to_deal_per_minute": 10423,
+       "poison_vine_arrow_visual_max_poison": 104235
+      },
+      "18": {
+       "base_chaos_damage_to_deal_per_minute": 12104,
+       "poison_vine_arrow_visual_max_poison": 121042
+      },
+      "19": {
+       "base_chaos_damage_to_deal_per_minute": 14042,
+       "poison_vine_arrow_visual_max_poison": 140418
+      },
+      "20": {
+       "base_chaos_damage_to_deal_per_minute": 16278,
+       "poison_vine_arrow_visual_max_poison": 162782
+      },
+      "21": {
+       "base_chaos_damage_to_deal_per_minute": 18862,
+       "poison_vine_arrow_visual_max_poison": 188624
+      },
+      "22": {
+       "base_chaos_damage_to_deal_per_minute": 21852,
+       "poison_vine_arrow_visual_max_poison": 218524
+      },
+      "23": {
+       "base_chaos_damage_to_deal_per_minute": 25316,
+       "poison_vine_arrow_visual_max_poison": 253160
+      },
+      "24": {
+       "base_chaos_damage_to_deal_per_minute": 29333,
+       "poison_vine_arrow_visual_max_poison": 293335
+      },
+      "25": {
+       "base_chaos_damage_to_deal_per_minute": 34000,
+       "poison_vine_arrow_visual_max_poison": 339995
+      },
+      "26": {
+       "base_chaos_damage_to_deal_per_minute": 39426,
+       "poison_vine_arrow_visual_max_poison": 394261
+      },
+      "27": {
+       "base_chaos_damage_to_deal_per_minute": 45746,
+       "poison_vine_arrow_visual_max_poison": 457458
+      },
+      "28": {
+       "base_chaos_damage_to_deal_per_minute": 53116,
+       "poison_vine_arrow_visual_max_poison": 531160
+      },
+      "29": {
+       "base_chaos_damage_to_deal_per_minute": 61723,
+       "poison_vine_arrow_visual_max_poison": 617233
+      },
+      "30": {
+       "base_chaos_damage_to_deal_per_minute": 71790,
+       "poison_vine_arrow_visual_max_poison": 717901
+      },
+      "31": {
+       "base_chaos_damage_to_deal_per_minute": 83581,
+       "poison_vine_arrow_visual_max_poison": 835809
+      },
+      "32": {
+       "base_chaos_damage_to_deal_per_minute": 97412,
+       "poison_vine_arrow_visual_max_poison": 974117
+      },
+      "33": {
+       "base_chaos_damage_to_deal_per_minute": 113660,
+       "poison_vine_arrow_visual_max_poison": 1136599
+      },
+      "34": {
+       "base_chaos_damage_to_deal_per_minute": 132777,
+       "poison_vine_arrow_visual_max_poison": 1327773
+      },
+      "35": {
+       "base_chaos_damage_to_deal_per_minute": 155306,
+       "poison_vine_arrow_visual_max_poison": 1553056
+      },
+      "36": {
+       "base_chaos_damage_to_deal_per_minute": 181895,
+       "poison_vine_arrow_visual_max_poison": 1818951
+      },
+      "37": {
+       "base_chaos_damage_to_deal_per_minute": 213328,
+       "poison_vine_arrow_visual_max_poison": 2133279
+      },
+      "38": {
+       "base_chaos_damage_to_deal_per_minute": 250546,
+       "poison_vine_arrow_visual_max_poison": 2505462
+      },
+      "39": {
+       "base_chaos_damage_to_deal_per_minute": 294687,
+       "poison_vine_arrow_visual_max_poison": 2946869
+      },
+      "40": {
+       "base_chaos_damage_to_deal_per_minute": 347124,
+       "poison_vine_arrow_visual_max_poison": 3471238
+      }
+     }
+    }
+   },
    "meta_support": null
   },
   "Rhoa Mount": {
@@ -115612,6 +116042,177 @@
    "weapons": [
     "Bows"
    ],
+   "parts": {
+    "TornadoShotNovaPlayer": {
+     "constant": {
+      "base_number_of_projectiles": 3,
+      "tornado_shot_projectile_range": 60,
+      "base_skill_effect_duration": 15000
+     },
+     "levels": {
+      "1": {
+       "tornado_shot_projectile_damage_+%_final": -60,
+       "base_physical_damage_to_deal_per_minute": 259
+      },
+      "2": {
+       "tornado_shot_projectile_damage_+%_final": -59,
+       "base_physical_damage_to_deal_per_minute": 377
+      },
+      "3": {
+       "tornado_shot_projectile_damage_+%_final": -58,
+       "base_physical_damage_to_deal_per_minute": 545
+      },
+      "4": {
+       "tornado_shot_projectile_damage_+%_final": -57,
+       "base_physical_damage_to_deal_per_minute": 738
+      },
+      "5": {
+       "tornado_shot_projectile_damage_+%_final": -56,
+       "base_physical_damage_to_deal_per_minute": 958
+      },
+      "6": {
+       "tornado_shot_projectile_damage_+%_final": -55,
+       "base_physical_damage_to_deal_per_minute": 1210
+      },
+      "7": {
+       "tornado_shot_projectile_damage_+%_final": -54,
+       "base_physical_damage_to_deal_per_minute": 1497
+      },
+      "8": {
+       "tornado_shot_projectile_damage_+%_final": -53,
+       "base_physical_damage_to_deal_per_minute": 1826
+      },
+      "9": {
+       "tornado_shot_projectile_damage_+%_final": -52,
+       "base_physical_damage_to_deal_per_minute": 2202
+      },
+      "10": {
+       "tornado_shot_projectile_damage_+%_final": -51,
+       "base_physical_damage_to_deal_per_minute": 2631
+      },
+      "11": {
+       "tornado_shot_projectile_damage_+%_final": -50,
+       "base_physical_damage_to_deal_per_minute": 3123
+      },
+      "12": {
+       "tornado_shot_projectile_damage_+%_final": -49,
+       "base_physical_damage_to_deal_per_minute": 3685
+      },
+      "13": {
+       "tornado_shot_projectile_damage_+%_final": -48,
+       "base_physical_damage_to_deal_per_minute": 4330
+      },
+      "14": {
+       "tornado_shot_projectile_damage_+%_final": -47,
+       "base_physical_damage_to_deal_per_minute": 5070
+      },
+      "15": {
+       "tornado_shot_projectile_damage_+%_final": -46,
+       "base_physical_damage_to_deal_per_minute": 5919
+      },
+      "16": {
+       "tornado_shot_projectile_damage_+%_final": -45,
+       "base_physical_damage_to_deal_per_minute": 6895
+      },
+      "17": {
+       "tornado_shot_projectile_damage_+%_final": -44,
+       "base_physical_damage_to_deal_per_minute": 8018
+      },
+      "18": {
+       "tornado_shot_projectile_damage_+%_final": -43,
+       "base_physical_damage_to_deal_per_minute": 9311
+      },
+      "19": {
+       "tornado_shot_projectile_damage_+%_final": -42,
+       "base_physical_damage_to_deal_per_minute": 10801
+      },
+      "20": {
+       "tornado_shot_projectile_damage_+%_final": -41,
+       "base_physical_damage_to_deal_per_minute": 12522
+      },
+      "21": {
+       "tornado_shot_projectile_damage_+%_final": -40,
+       "base_physical_damage_to_deal_per_minute": 14510
+      },
+      "22": {
+       "tornado_shot_projectile_damage_+%_final": -39,
+       "base_physical_damage_to_deal_per_minute": 16810
+      },
+      "23": {
+       "tornado_shot_projectile_damage_+%_final": -38,
+       "base_physical_damage_to_deal_per_minute": 19474
+      },
+      "24": {
+       "tornado_shot_projectile_damage_+%_final": -37,
+       "base_physical_damage_to_deal_per_minute": 22564
+      },
+      "25": {
+       "tornado_shot_projectile_damage_+%_final": -36,
+       "base_physical_damage_to_deal_per_minute": 26153
+      },
+      "26": {
+       "tornado_shot_projectile_damage_+%_final": -35,
+       "base_physical_damage_to_deal_per_minute": 30328
+      },
+      "27": {
+       "tornado_shot_projectile_damage_+%_final": -34,
+       "base_physical_damage_to_deal_per_minute": 35189
+      },
+      "28": {
+       "tornado_shot_projectile_damage_+%_final": -33,
+       "base_physical_damage_to_deal_per_minute": 40858
+      },
+      "29": {
+       "tornado_shot_projectile_damage_+%_final": -32,
+       "base_physical_damage_to_deal_per_minute": 47479
+      },
+      "30": {
+       "tornado_shot_projectile_damage_+%_final": -31,
+       "base_physical_damage_to_deal_per_minute": 55223
+      },
+      "31": {
+       "tornado_shot_projectile_damage_+%_final": -30,
+       "base_physical_damage_to_deal_per_minute": 64293
+      },
+      "32": {
+       "tornado_shot_projectile_damage_+%_final": -29,
+       "base_physical_damage_to_deal_per_minute": 74932
+      },
+      "33": {
+       "tornado_shot_projectile_damage_+%_final": -28,
+       "base_physical_damage_to_deal_per_minute": 87431
+      },
+      "34": {
+       "tornado_shot_projectile_damage_+%_final": -27,
+       "base_physical_damage_to_deal_per_minute": 102136
+      },
+      "35": {
+       "tornado_shot_projectile_damage_+%_final": -26,
+       "base_physical_damage_to_deal_per_minute": 119466
+      },
+      "36": {
+       "tornado_shot_projectile_damage_+%_final": -25,
+       "base_physical_damage_to_deal_per_minute": 139919
+      },
+      "37": {
+       "tornado_shot_projectile_damage_+%_final": -24,
+       "base_physical_damage_to_deal_per_minute": 164098
+      },
+      "38": {
+       "tornado_shot_projectile_damage_+%_final": -23,
+       "base_physical_damage_to_deal_per_minute": 192728
+      },
+      "39": {
+       "tornado_shot_projectile_damage_+%_final": -22,
+       "base_physical_damage_to_deal_per_minute": 226682
+      },
+      "40": {
+       "tornado_shot_projectile_damage_+%_final": -21,
+       "base_physical_damage_to_deal_per_minute": 267018
+      }
+     }
+    }
+   },
    "meta_support": null
   },
   "Charge Regulation": {

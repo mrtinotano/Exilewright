@@ -15,6 +15,8 @@ _sk = json.load(open(os.path.join(ROOT, 'available', 'skills.json'), encoding='u
 paths |= set(_sk.get('charge_icons', {}).values()) | {x['icon'] for x in _sk.get('infusions', {}).values()} | set(_sk.get('ailment_icons', {}).values()) | {_sk['move_icon'], _sk['archon_nature_icon']}   # the simulator's buffs and debuffs
 paths |= {f'art/textures/interface/2d/2dart/uiimages/ingame/hud/4k/orb_ward{k}.dds' for k in ('bg', 'fill')}   # the simulator's life orb: the rune of your Runic Ward over it, empty and lit
 paths.add('art/particles/fxlib/pbr/bark_clr.dds')   # the simulator's Barkskin: the bark over you
+paths.add('art/models/effects/supports/runicsupports/markofrepulsion/tex/maskedrunerarepower.dds')   # the simulator's Bitter Dead: the rune its cores leave
+paths.add('art/microtransactions/misc/uniques/endurfaeddr/tex/kalguuran_runetile.dds')   # and the rune tile under its cores
 paths |= {c['img'] for c in json.load(open(os.path.join(ROOT, 'available', 'currency.json'), encoding='utf8'))['currency'].values()}   # trade prices
 tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), encoding='utf8'))
 ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))

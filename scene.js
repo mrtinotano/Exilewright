@@ -4029,20 +4029,48 @@ export function initScene(el, api) {
     for (const d of inside(S.at, S.A).filter(d => d.curse && d.curse.s <= d.curse.full / 2).slice(0, st.hexblast_maximum_number_of_explosions)) { d.curse = d.hexes?.pop() || null; boom({ x: d.pos.x, z: d.pos.z }, r, S); }
   };
   // Volatile / Bitter Dead: consumes its corpses (up to its number) where you aim, each a core for its duration that seeks
-  // the nearest enemy, its aura part hitting those around it (its Ignite / Chill), and explodes at its end (its explosion
-  // part). note: the core's speed and how often its aura hits are not in the data: 3 m/s, every 0.5 s
+  // the nearest enemy, its aura part chilling (Bitter) or igniting (Volatile) those around it - the aura deals no damage,
+  // its hit only the size of that ailment - and explodes at its end (its explosion part). Bitter Dead's explosion leaves a
+  // rune (its rune part) that deals its cold damage over time to the enemies on it for its duration.
+  // note: the core's speed, how often its aura reaches and the rune's tick are not in the data: 3 m/s, 0.5 s, 0.25 s; the
+  // rune's less action speed (bitter_dead_action_speed_+%_final_for_rune) is not simulated
+  // Bitter Dead's look (Metadata/Effects/Spells/supports/RunicSupports/BitterDead): a pale blue sphere wreathed in blue
+  // flames over a rune tile, a blue flash with snow, and the rune glyph (MaskedRuneRarePower) glowing on the ground
+  const BD = { core: 0xa8d4ff, flame: 0x6be0ff, deep: 0x268fed, ring: 0x48beff, snow: 0xdfeeff };
+  const bdTex = (k, f) => fx.T[k] ||= Object.assign(new THREE.TextureLoader().load(`poe2_data/available/img/art/${f}.webp`), { colorSpace: THREE.SRGBColorSpace });
   K.volatile = S => {
-    const ks = Object.keys(S.dmg.parts || {}), X = partOf(S, ks.find(k => /Explosion/.test(k))), U = partOf(S, ks.find(k => /Aura/.test(k)));
+    const ks = Object.keys(S.dmg.parts || {}), X = partOf(S, ks.find(k => /Explosion/.test(k))), U = partOf(S, ks.find(k => /ChillAura|IgniteAura/.test(k))), R = partOf(S, ks.find(k => /RuneAura/.test(k)));
     const list = corpses(S.at, Math.max(S.A, SIM.snap)).slice(0, S.dmg.stats.volatile_dead_base_number_of_corpses_to_consume);
     if (!list.length) return toast(t('{0} needs a corpse: kill an enemy or press C', S.label));
+    const bitter = !!R, ail = U && (U.el === 'cold' ? 'chill' : 'ignite');
+    // the aura: only its ailment, by its hit's size
+    const UA = U && { ...U, dmg: { ...U.dmg, ail: { ...U.dmg.ail, never: Object.fromEntries(Object.keys(U.dmg.ail.never).map(k => [k, k !== ail])) } } };
+    if (bitter) { fx.decal(S.at, S.A, 'patch', BD.snow, { a: .35, k: 1 }).remove(); bdTex('bitterRune', 'models/effects/supports/runicsupports/markofrepulsion/tex/maskedrunerarepower'); bdTex('bitterTile', 'microtransactions/misc/uniques/endurfaeddr/tex/kalguuran_runetile'); }
     for (const d of list) {
-      eat(d, S.el); const m = fx.orb(S.el, .3); m.position.set(d.pos.x, 1, d.pos.z); let tk = 0;
+      eat(d, bitter ? BD.deep : S.el); const m = fx.orb(bitter ? BD.core : S.el, .3); m.position.set(d.pos.x, 1, d.pos.z); let tk = 0;
+      const tile = bitter && fx.decal(m.position, .9, 'bitterTile', BD.flame, { a: .7, spin: .6 });
+      if (bitter) { m.userData.core.material.color.set(BD.core); m.userData.glow.material.color.set(BD.deep); m.userData.glow.scale.setScalar(1.3); }   // pale blue, not white-hot
       thing(m, durOf(S), { name: S.name,
         tick(dt) {
           const p = m.position, e = near(p, 15); if (e) { const k = dist(e.pos, p); if (k > .5) { p.x += (e.pos.x - p.x) / k * 3 * dt; p.z += (e.pos.z - p.z) / k * 3 * dt; } }
-          if ((tk -= dt) <= 0 && U) { tk = .5; fx.ring(p, .2, U.A, S.el, .3, { a: .4 }); area(p, U.A, U); }
+          if (tile) { tile.move(p); fx.emit(2, { p: { x: p.x, y: .85, z: p.z }, r: .22, v: .2, up: 1.4, life: .45, size: .24, grow: .3, c: BD.flame, c2: BD.deep, k: 1.6, drag: 2 }); }
+          if ((tk -= dt) <= 0 && UA) { tk = .5; fx.ring(p, .2, U.A, bitter ? BD.ring : S.el, .3, { a: .4 });
+            for (const d of inside(p, U.A)) { const [lo, hi] = U.dmg.hits[U.el] || [0, 0]; afflict(d, UA, { [U.el]: rnd(lo, hi) }); } }
         },
-        end: () => X && boom({ x: m.position.x, z: m.position.z }, X.A, X) });
+        end() {
+          const c = { x: m.position.x, z: m.position.z }; tile?.remove();
+          if (bitter) { fx.flash(c, BD.ring, 10, .25, 6); fx.ring(c, .3, X?.A || 2, BD.ring, .4, { a: .8 }); fx.disc(c, X?.A || 2, BD.deep, .3, { a: .45 });
+            fx.emit(40, { p: { x: c.x, y: 1, z: c.z }, r: .4, v: 4, up: 2, life: .9, size: .14, c: BD.snow, c2: BD.flame, g: 4, drag: 1 }); }
+          if (X) bitter ? area(c, X.A, X) : boom(c, X.A, X);   // Bitter Dead: its own look above, not the generic cold blast
+          if (R) { const g = fx.decal(c, R.A, 'bitterRune', BD.flame, { a: .9, k: 1.6, pulse: 3 }); let rt = 0;
+            const rg = new THREE.Group(); rg.position.set(c.x, 0, c.z);
+            thing(rg, durOf(R), { name: R.name,
+              tick(dt) {
+                fx.emit(1, { p: { x: c.x, y: .05, z: c.z }, r: R.A * .8, v: .05, up: 1.2, life: .9, size: .18, grow: .5, c: BD.flame, k: 1.2, drag: .5 });
+                if ((rt -= dt) <= 0) { rt = .25; for (const d of inside(c, R.A)) dot(d, { ...R, P: { ...R.P, dur: .3 } }); }
+              },
+              end: () => g.remove() }); }
+        } });
     }
   };
   // Grim Pillars: its pillars of ice erupt in a ring around you (its area), each hitting the enemies at it (its secondary
