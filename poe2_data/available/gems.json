@@ -5118,6 +5118,15 @@
     "NOT",
     "AND",
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "HasReservation",
+    "TotemCastsWhenNotDetached",
+    "TotemCastsAlone",
+    "Aura",
+    "AuraAffectsEnemies",
+    "CanHaveBlessing",
+    "Triggered"
    ]
   },
   "specific": 63
@@ -12522,7 +12531,8 @@
    ],
    "exclude": [
     "InbuiltTrigger"
-   ]
+   ],
+   "adds": []
   },
   "specific": 221
  },
@@ -13543,6 +13553,10 @@
     "Meta",
     "InbuiltTrigger",
     "Shapeshift"
+   ],
+   "adds": [
+    "Triggered",
+    "UsableWhileShapeshifted"
    ]
   },
   "specific": 225
@@ -13614,6 +13628,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   },
   "specific": 215
@@ -13679,6 +13696,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   },
   "specific": 1
@@ -13855,6 +13875,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   },
   "specific": 67
@@ -13921,6 +13944,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   },
   "specific": 2
@@ -14251,6 +14277,11 @@
     "SupportedByAncestralWarriorTotem",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByTotem",
+    "UsedByProxy",
+    "SupportedByAncestralWarriorTotem"
    ]
   },
   "specific": 21
@@ -14330,6 +14361,11 @@
     "SupportedBySpellTotem",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByTotem",
+    "UsedByProxy",
+    "SupportedBySpellTotem"
    ]
   },
   "specific": 226
@@ -20002,6 +20038,9 @@
    "exclude": [
     "CreatesMinion",
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   },
   "specific": 69
@@ -25095,6 +25134,11 @@
     "SupportedByHollowForm",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByClone",
+    "UsedByProxy",
+    "SupportedByHollowForm"
    ]
   }
  },
@@ -25274,6 +25318,11 @@
     "SupportedByMirageDeadeye",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByClone",
+    "UsedByProxy",
+    "SupportedByMirageDeadeye"
    ]
   }
  },
@@ -25392,7 +25441,8 @@
    "require": [
     "Mark"
    ],
-   "exclude": []
+   "exclude": [],
+   "adds": []
   }
  },
  {
@@ -25460,6 +25510,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   }
  },
@@ -29917,7 +29970,8 @@
     "Mark",
     "OR"
    ],
-   "exclude": []
+   "exclude": [],
+   "adds": []
   },
   "specific": 62
  },
@@ -30045,6 +30099,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   },
   "specific": 72
@@ -31798,6 +31855,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   },
   "specific": 9
@@ -32385,6 +32445,11 @@
     "SupportedByMirageArcher",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByClone",
+    "UsedByProxy",
+    "SupportedByMirageArcher"
    ]
   },
   "specific": 213
@@ -32501,6 +32566,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   }
  },
@@ -44420,6 +44488,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   }
  },
@@ -44717,6 +44788,9 @@
    ],
    "exclude": [
     "InbuiltTrigger"
+   ],
+   "adds": [
+    "Triggered"
    ]
   }
  },
@@ -48316,6 +48390,11 @@
     "SupportedByMortarTotem",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByTotem",
+    "UsedByProxy",
+    "SupportedByMortarTotem"
    ]
   },
   "specific": 212
@@ -48658,6 +48737,9 @@
     "InbuiltTrigger",
     "Persistent",
     "UsedByProxy"
+   ],
+   "adds": [
+    "Triggered"
    ]
   }
  },
@@ -50381,6 +50463,11 @@
     "SupportedByFeralInvocation",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByClone",
+    "UsedByProxy",
+    "SupportedByFeralInvocation"
    ]
   },
   "specific": 243
@@ -54488,6 +54575,11 @@
     "SupportedByAnimusSplinters",
     "NOT",
     "AND"
+   ],
+   "adds": [
+    "UsedByClone",
+    "UsedByProxy",
+    "SupportedByAnimusSplinters"
    ]
   }
  },

@@ -3,7 +3,7 @@
 // what the calculation (calc.js) says is best, so they only see what the planner calculates: a passive or support
 // whose effect is conditional or not modelled counts as nothing.
 // No DOM here: optview.js is the screen, app.js owns the build.
-import { skill, character, attributes, supportKnown } from './calc.js';
+import { skill, character, attributes, supportKnown, metaAdds } from './calc.js';
 import { typical, hitChanceExact, playerTakes, K, TYPES } from './enemies.js';
 import { SK } from './skilldata.js';
 import { GEM, SUPPORTS, colour, canSupport } from './skills.js';
@@ -174,7 +174,7 @@ export async function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets
   const f = names => score(key, b, sum, { ...g, supports: names });
   const base = f([]);
   if (base == null) return { error: skill({ ...g, supports: [] }, b, sum).reason || 'This skill does not deal direct damage' };
-  const types = new Set(G.types || []);
+  const types = new Set([...G.types || [], ...metaAdds(b, g)]);   // in a meta gem, also the types it gives the skill
   const fit = SUPPORTS.filter(s => canSupport(s, types) && (lineage || !s.lineage) && (limited || !limitsUse(s.name)));
   const known = fit.filter(s => supportKnown(s.name));
   let at = performance.now();

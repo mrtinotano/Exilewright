@@ -66,6 +66,11 @@ export const usedBy = (b, i) => { const g = b.gems?.[i]; if (!g) return null;
   if ('meta' in g) return g.meta && metasFor(b, g).find(m => m.name === g.meta) || null;
   const m = i > 0 && b.gems[i - 1];
   return m && String(m.supports || []) === String(g.supports || []) && metasFor(b, g).includes(m) ? m : null; };
+// the types skill g gets from the meta gem it sits in (gems.json holds.adds: Mortar Cannon's grenade is UsedByTotem and
+// UsedByProxy), which keep out the supports that exclude them (Atziri's Impatience, Zerphi's Infamy: skills you use
+// yourself). g may be a copy with other supports (the Optimizer's): the build's gem of that name then
+export const metaAdds = (b, g) => { const gi = (b?.gems || []).indexOf(g);
+  return b?.gems && GEM[usedBy(b, gi >= 0 ? gi : b.gems.findIndex(x => x.name === g?.name))?.name]?.holds?.adds || []; };
 // a gem used by hand: not a persistent skill (auras, heralds, persistent buffs and minions, Cast on X: on while their
 // spirit is reserved) nor one placed in a meta gem (Mortar Cannon's grenade: the meta gem uses it)
 export const byHand = (b, i) => { const g = b.gems?.[i]; return !!g && !(GEM[g.name]?.types || []).includes('Persistent') && !usedBy(b, i); };
@@ -1255,8 +1260,10 @@ export function skill(g, b, treeGear) {
   const d = SK.skills[g.name] || {}, G = GEM[g.name] || (d.triggered_by ? d : {}), own = G.tags || [];   // a support's triggered skill: its own types
   // a meta gem's supports are for the skills it uses (Mortar Cannon's, for its Cluster Grenade): not for the gem itself,
   // as the game's details window shows (Mortar Cannon with Multishot II: 1 s, not 1.25 s), unless they can support the
-  // gem too (Boundless Energy, Energy Capacitor, Fluke: its Energy and what it triggers)
-  const { sum, fin, mods, finals, twice = new Set(), own: supOwn = {} } = withSupports(own.includes('meta') ? { ...g, supports: (g.supports || []).filter(n => GEM[n] && canSupport(GEM[n], new Set(G.types || []))) } : g, treeGear, b?.wset);
+  // gem too (Boundless Energy, Energy Capacitor, Fluke: its Energy and what it triggers). A skill in a meta gem: those
+  // that can support it with the types the meta gem gives it (metaAdds), as the Skills tab's picker lets you choose
+  const adds = own.includes('meta') ? [] : metaAdds(b, g), fits = adds.length && new Set([...G.types || [], ...adds, ...(g.supports || []).flatMap(n => GEM[n]?.adds || [])]);
+  const { sum, fin, mods, finals, twice = new Set(), own: supOwn = {} } = withSupports(own.includes('meta') || fits ? { ...g, supports: (g.supports || []).filter(n => GEM[n] && canSupport(GEM[n], fits || new Set(G.types || []))) } : g, treeGear, b?.wset);
   const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)

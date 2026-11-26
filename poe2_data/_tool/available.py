@@ -199,7 +199,9 @@ for i, g in enumerate(skill_gems):
         # part (GemEffects.AdditionalGrantedEffects named Support...) can support, as a support gem's require / exclude
         part = next((grants[x] for x in gem_effects[g['GemEffects'][0]]['AdditionalGrantedEffects'] if grants[x]['Id'].startswith('Support')), None)
         if 'meta' in tags and part:
-            gems[-1]['holds'] = {'require': types(part['AllowedActiveSkillTypes']), 'exclude': types(part['ExcludedActiveSkillTypes'])}
+            # adds: the types the skills in it get (Mortar Cannon's: UsedByTotem, UsedByProxy), which keep out the supports
+            # that exclude them (Atziri's Impatience, Zerphi's Infamy: skills you use yourself)
+            gems[-1]['holds'] = {'require': types(part['AllowedActiveSkillTypes']), 'exclude': types(part['ExcludedActiveSkillTypes']), 'adds': types(part['AddedActiveSkillTypes'])}
 # Prism of Belief's "+# to Level of all <skill> Skills": the skill by unique_jewel_specific_skill_level_+_skill
 # (SkillGemsForUniqueStat.Index -> its skill gems)
 for x in load('SkillGemsForUniqueStat'):

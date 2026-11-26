@@ -115,7 +115,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
       const sups = g.supports.map(n => n && GEM[n]);
       if (!holder) sups.forEach(s => s && colour(s) && used[colour(s)]++);
       const own = held[0] || g;   // a meta gem's supports are for the skill in it: its types say which fit
-      const types = new Set([...(GEM[own.name].types || []), ...sups.flatMap(s => s?.adds || [])]);
+      const types = new Set([...(GEM[own.name].types || []), ...(held[0] ? GEM[g.name].holds?.adds || [] : []), ...sups.flatMap(s => s?.adds || [])]);   // and those the meta gem gives it
       // a skill put in a meta gem (Mortar Cannon's Cluster Grenade): the meta gem's sockets and supports are its own
       // Bind Spectre: the monster whose spirit it holds (the game's: bound from a corpse, the gem then "Spectre: <monster>")
       const spec = g.name === 'Bind Spectre' || g.spectre ? `<label class="smeta">${t('Its monster')} <input list="spectreNames" data-gi="${gi}" data-k="spectre" value="${esc(spLabel(enemy(g.spectre)))}" placeholder="${t('Search enemy…')}"></label>` : '';
