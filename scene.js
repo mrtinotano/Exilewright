@@ -4287,7 +4287,7 @@ export function initScene(el, api) {
   // (Lightning Color 0.039 / 0.056 / 0.18), 20 embers for 0.6-2.6 s and debris for 1-3 s (0.71 / 1.23 / 2), 16 puffs of smoke
   // for 1-2 s, its glyph rising for 1 s (0.12 / 0.49 / 0.99) and a crack left for 7.5-12.5 s.
   // note: where in the cone each rune lands is not in the data: spread evenly over it
-  const RUNE = { wave: 0x002eff, glyph: 0x2b5cff, patch: 0x3380ff, flash: 0x5cb8ff, sphere: 0x3082ff, bolt: 0x3750ff, ember: 0x5a9dff, rise: 0x1f7eff, smoke: 0x2c2c2c };
+  const RUNE = { wave: 0x002eff, glyph: 0x2b5cff, flash: 0x5cb8ff, sphere: 0x3082ff, bolt: 0x3750ff, ember: 0x5a9dff, rise: 0x1f7eff, smoke: 0x2c2c2c };
   function runeBoom(p, R) {
     const c = { x: p.x, y: .4, z: p.z };
     fx.flash(c, RUNE.flash, 10, .2, R * 3); fx.glow(c, R * 1.2, RUNE.sphere, .35, 2.6); fx.bolt(V(p.x + rnd(-.3, .3), 7, p.z + rnd(-.3, .3)), V(p.x, 0, p.z), RUNE.bolt, .3, .06);
