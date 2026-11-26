@@ -1462,12 +1462,72 @@ export function initScene(el, api) {
   // Azmerian Swarms: killing an enemy with an Elemental Ailment (its chance), or hitting a Rare or Unique one with one (its
   // chance), summons a Swarm for its duration, up to its most; their hits deal their more damage per type of Elemental
   // Ailment on the target
+  // Its look (fluttermoth: swarm_start / swarm_idle / attack_hit / debuff .pet, Wisp_Colour.fxgraph): each swarm a cloud
+  // of 33 to 44 dark moths (BlackMoth, lit in its wisp colour) round a glowing core with flares (1 / 0.85 / 0.79 to
+  // 1 / 0.22 / 0.07) and sparks, the wisp colour one of the shader's four (0.12 / 0.52 / 1, 1 / 1 / 0.14, 0.85 / 0.15 / 1,
+  // 1 / 0.38 / 0.15); summoned in a surge, its hit a flash on the enemy with 3 to 6 moths and sparks, and an enemy with
+  // Faerie Fire wears 44 to 56 moths round its chest and head. note: the shader picks the colour at random by area, one
+  // per swarm here (the Faerie Fire's: the swarm's that inflicted it last)
+  const MOTH = { wing: 0x3f2928, wisps: [0x1f85ff, 0xffff24, 0xd926ff, 0xff6126], flareA: 0xffd9c9, flareB: 0xff3812 };
+  const moths = (() => {
+    const N = 900, g = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, .03, -.1, 0, .05, -.08, 0, -.02, 0, 0, .03, .1, 0, .05, .08, 0, -.02,
+      0, 0, 0, -.07, 0, -.02, -.035, 0, -.08, 0, 0, 0, .07, 0, -.02, .035, 0, -.08], 3));   // fore and hind wings
+    const m = new THREE.InstancedMesh(g, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), N), W = new THREE.Color(MOTH.wing);
+    const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), E = new THREE.Euler(), P = new THREE.Vector3(), S1 = new THREE.Vector3(), clouds = new Set();
+    m.count = 0; m.frustumCulled = false; scene.add(m);
+    return {
+      add(o) { o.c = W.clone().lerp(new THREE.Color(o.col), .3); o.seed = Array.from({ length: o.n }, () => [rnd(TAU), rnd(-1, 1), rnd(.6, 1.6) * (Math.random() < .5 ? 1 : -1), rnd(.35, 1), rnd(TAU)]); clouds.add(o); return o; },
+      update() {
+        let i = 0;
+        for (const o of clouds) {
+          if (o.done()) { clouds.delete(o); continue; }
+          const c = o.at(), k = o.grow ? Math.min(1, (time - o.from) / o.grow) : 1;
+          for (const [a, y, w, l, f] of o.seed) {
+            if (i >= N) break;
+            const ang = a + time * w * 2, rr = o.r * l * k;
+            P.set(c.x + Math.cos(ang) * rr, c.y + y * o.r * .6 * k + Math.sin(time * 3 + f) * .07, c.z + Math.sin(ang) * rr);
+            Q.setFromEuler(E.set(Math.sin(time * 2 + f) * .4, -ang - Math.sign(w) * Math.PI / 2, 0, 'YXZ'));
+            m.setMatrixAt(i, M.compose(P, Q, S1.set((.2 + .8 * Math.abs(Math.cos(time * 26 + f))) * .75, .75, .75)));   // wings beating
+            m.setColorAt(i++, o.c);
+          }
+        }
+        m.count = i; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true;
+      } };
+  })();
+  function mothLook(col) {
+    let cloud;
+    return {
+      start(f, p) {
+        f.group.children.forEach(c => { c.visible = false; });
+        fx.glow({ x: p.x, y: 1, z: p.z }, 1.8, col, .45, 2.2); later(.2, () => fx.glow({ x: p.x, y: 1, z: p.z }, 1, MOTH.flareA, .3, 2.4));
+        fx.emit(20, { p: { x: p.x, y: 1, z: p.z }, r: .2, v: 2.2, life: .45, size: .07, c: col, c2: 'white', k: 2.2, drag: 2.5 });
+      },
+      tick(dt, e) {
+        const c = { x: e.pos.x, y: 1, z: e.pos.z };
+        cloud ||= moths.add({ n: 33 + Math.floor(rnd(12)), r: .6, col, from: time, grow: .4, at: () => ({ x: e.pos.x, y: 1, z: e.pos.z }), done: () => e.dead });
+        if (Math.random() < dt * 10) fx.glow(c, rnd(.35, .55), col, .18, 2.2);
+        if (Math.random() < dt * 5) fx.emit(1, { p: c, r: .25, v: .3, life: 1, size: .07, c: MOTH.flareA, c2: MOTH.flareB, k: 2.2, drag: 1 });
+        if (Math.random() < dt * 6) fx.emit(1, { p: c, r: .5, v: .2, up: .3, life: .8, size: .05, c: col, c2: 'white', k: 2.4, drag: 1 });
+      },
+      hit(e, d) {
+        const q = chest(d), end = time + .7;
+        d.ffCol = col; fx.glow(q, 1.1, MOTH.flareB, .25, 2.4); fx.glow(q, .6, MOTH.flareA, .15, 2.6);
+        fx.emit(10, { p: q, r: .2, v: 2, life: .4, size: .06, c: col, c2: 'white', k: 2.4, drag: 2 });
+        moths.add({ n: 3 + Math.floor(rnd(4)), r: .5, col, from: time, grow: .5, at: () => q, done: () => time > end });
+      } };
+  }
+  const ffs = new Map();
+  function faerieLook() {
+    for (const d of dummies) if (!ffs.has(d) && !d.dead && d.ff?.some(u => u > time))
+      ffs.set(d, moths.add({ n: 44 + Math.floor(rnd(13)), r: .45 * (d.sc || 1), col: d.ffCol || MOTH.wisps[3], at: () => ({ x: d.pos.x, y: 1.45 * (d.sc || 1), z: d.pos.z }),
+        done: () => { const x = d.dead || !dummies.includes(d) || !d.ff?.some(u => u > time); if (x) ffs.delete(d); return x; } }));
+  }
   function swarm(d, slain) {
     const W = onS('Azmerian Swarms'), st = W?.dmg?.stats; if (!st || !EL_AIL.some(a => d.st[a] > 0)) return;
     const pc = slain ? st['skill_grants_%_chance_to_summon_azmerian_swarm_on_kill_affected_by_elemental_ailment'] : POWER[d.stat.rarity] >= POWER.rare ? st['skill_grants_%_chance_to_summon_azmerian_swarm_on_hitting_unique_or_rare_enemy_affected_by_elemental_ailment'] : 0;
     if (!(Math.random() * 100 < pc)) return;
     limit(o => o.kind === W.name, st.max_azmerian_swarms);
-    minion(W, around(d.pos, 1), durOf(W), { kind: W.name, more: e => 1 + EL_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
+    minion(W, around(d.pos, 1), durOf(W), { kind: W.name, look: mothLook(MOTH.wisps[Math.floor(rnd(4))]), more: e => 1 + EL_AIL.filter(a => e.st[a] > 0).length * st['minion_damage_+%_final_per_different_elemental_ailment_on_target'] / 100 });
   }
   // Moment of Vulnerability: its hit on an enemy Primed for Stun, Electrocution or Freeze (keywords.json: its share of the
   // bar by rarity) leaves a visage of it there for as long as that immobilisation would last; its share of the damage
@@ -2544,11 +2604,11 @@ export function initScene(el, api) {
     const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, comp = !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), MS = real ? { ...S, src: 'minionHit', comp } : { ...S, src: 'minion', mult: .5 * S.mult, comp }, ranged = o.spirit ? o.spirit === 'caster' : S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
     const SP = o.spirit && spectre(f, o.spirit, p, o.from);
-    if (!SP) { fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el }); }
+    if (o.look) o.look.start(f, p); else if (!SP) { fx.ring(p, .2, 1, S.el, .4); fx.emit(14, { p: { x: p.x, y: .2, z: p.z }, r: .4, v: .6, up: 2.5, life: .6, size: .2, c: S.el }); }
     let wait = rnd(.3, 1), sw = 0;
     const e = { pos: f.group.position, fig: f, r: .3, dead: false, keep: life === Infinity, s: 0, minion: true, kind: o.kind, ofS: S.name, undead: !!S.dmg?.minionUndead, rhoa: S.name === 'Rhoa Mount', companion: !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), skeleton: !!S.g && !!api.info(S.g).gem?.types?.includes('CreatesSkeletonMinion'),
       update(dt) {
-        e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2; SP?.tick(dt, e);
+        e.s += dt; wait -= dt; sw = Math.max(0, sw - dt * 4); f.arm.rotation.x = -1 - Math.sin(sw * Math.PI) * 1.2; SP?.tick(dt, e); o.look?.tick(dt, e);
         if (e.s >= life) { e.dead = true; return; }
         if (e.rhoa && me.mounted) { e.pos.x = pp.x; e.pos.z = pp.z; f.group.rotation.y = facing; return; }   // ridden: under you, no attacks
         if (e.regen) { const q = e.segs[0]; if (q.life > 0) q.life = Math.min(q.max, q.life + q.max * e.regen / 6000 * dt); }
@@ -2584,7 +2644,7 @@ export function initScene(el, api) {
           if (SP) SP.blow(e, d, MX, k);
           else if (ranged) shoot(MX, e.pos, (d.pos.x - e.pos.x) / k, (d.pos.z - e.pos.z) / k, { speed: 14, range: 13 });
           else if (o.chains) chain(V(e.pos.x, 1, e.pos.z), d, MX, o.chains);
-          else { fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
+          else { if (o.look) o.look.hit(e, d); else fx.sector(e.pos, d.pos.x - e.pos.x, d.pos.z - e.pos.z, 1.3, .8, S.el, .16, { a: .7 }); hit(d, o.more ? { ...MX, mult: MX.mult * o.more(d) } : MX); }
           if (o.attacks && --o.attacks <= 0) e.dead = true;
         }
       },
@@ -3090,11 +3150,11 @@ export function initScene(el, api) {
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action) for (let i = 0; i < (k === 'Rhoa Mount' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      if (k === 'Attrition') return;   // always on while equipped, nothing of it seen: only its more damage
+      if (k === 'Attrition' || k === 'Azmerian Swarms') return;   // always on while equipped, nothing of them seen on you
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       say(t('{0} on', S.label), S.el);
     },
@@ -4139,7 +4199,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -6736,7 +6796,7 @@ export function initScene(el, api) {
       KA.walked = 0;   // a Volcanic Step: a wave of fire on the ground from your feet, flames rising (hires_shockwave, fire_flare .mat)
       const c = { x: pp.x, z: pp.z }, R = KA.S.A; fx.ring(c, .3, R, 'fire', .4, { a: .7 }); fx.emit(30, { p: { x: c.x, y: .15, z: c.z }, r: .3, v: R * 2.2, flat: true, life: .4, size: .22, c: 'fire', c2: 'ember', drag: 1.5 });
       fx.emit(14, { p: { x: c.x, y: .1, z: c.z }, r: .4, up: 2.4, v: .8, life: .45, size: .3, c: 'fire', c2: 'ember', k: 1.8, drag: 1.5 }); area(c, R, KA.S, { soft: true }); }
-    kaomLook(dt); arcticLook(dt); rain.update(); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
+    kaomLook(dt); arcticLook(dt); rain.update(); faerieLook(); moths.update(); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
     // camera and cursor
