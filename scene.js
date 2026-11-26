@@ -2492,7 +2492,22 @@ export function initScene(el, api) {
   function surgeBlast(S, s, p) {
     const D = granted(s.name, S.g?.level); if (!D) return;
     const B = asTrig(S, { ...D, id: s.name }), id = Object.keys(D.parts || {}).find(k => k.toLowerCase().includes(s.el)), X = id ? { ...partOf(B, id), A: B.A } : B;
-    fx.ring(p, .2, X.A, s.el, .3); boom(p, X.A, X);
+    if (s.el === 'chaos') { chaosBurst(p, X.A); area(p, X.A, X); } else { fx.ring(p, .2, X.A, s.el, .3); boom(p, X.A, X); }
+  }
+  // Chaotic Surge's look (instilling_chaos: ChaosInfusionProjectile infusion_CHAOS.epk on the projectile, ChaosInfusionExplosion
+  // spear_discharge chaos_AoE.ao where it ends): the projectile trails violet strings for 0.35-1.2 s and a ribbon for 0.4-0.55 s
+  // (strings_CHAOS 1.7 / 1.05 / 7, quickRibbon_CHAOS 2.25 / 1.2 / 8, their colour look-ups' tops); its burst (aoe_chaos.pet)
+  // a flash and a push wave for 0.2 s (impactFlash_Chaos 0.21 / 0.13 / 0.79, windPushWave_Chaos 0.1 / 0.05 / 0.49), streaks
+  // for 0.25 s (0.26 / 0.2 / 1), a ring for 0.5 s (Vibrance 0.76 / 0.65 / 1), flames for 0.3-0.4 s (0.16 / 0.08 / 0.71), a dark
+  // sphere for 0.35 s and 64 embers for 0.5-1.5 s. note: the embers' colour is their texture's: the ring's here
+  const CSURGE = { flash: 0x442aff, wave: 0x341aff, streak: 0x4233ff, ring: 0xc2a6ff, flame: 0x391dff, string: 0x3e26ff, ribbon: 0x4826ff };
+  function chaosBurst(p, R) {
+    const c = { x: p.x, y: .6, z: p.z };
+    fx.flash(c, CSURGE.flash, 10, .2, 5); fx.glow(c, R * 1.2, CSURGE.flash, .2, 2.5); fx.ring(p, .2, R, CSURGE.wave, .2, { a: .6 });
+    fx.ring(p, .3, R * .9, CSURGE.ring, .5, { a: .8, y: .3 }); fx.glow(c, R * .6, 0x05020c, .35, 1);   // its dark sphere
+    fx.emit(10, { p: c, r: .2, v: R * 4, up: .3, life: .25, size: .12, c: CSURGE.streak, k: 2.4, drag: 3 });   // its streaks
+    fx.emit(8, { p: c, r: R * .3, v: .6, up: 1.2, life: .35, size: .45, grow: 1.6, c: CSURGE.flame, k: 2.2, drag: 1 });
+    fx.emit(64, { p: c, r: R * .3, v: R * 1.5, up: 1.5, life: 1, size: .05, c: CSURGE.ring, k: 2.4, g: 2, drag: 1.5 });
   }
   // Elemental Expression (the Invoker's): a melee critical hit triggers it, within its cooldown: a fiery explosion at the
   // enemy, a bolt of lightning chaining from it or a wave of icy projectiles toward it, each as likely as your Strength,
@@ -2812,6 +2827,7 @@ export function initScene(el, api) {
         }
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
+        if (surged.some(s => s.el === 'chaos')) { fx.emit(1, { p: m.position, r: .06, v: .2, life: .8, size: .05, c: CSURGE.string, k: 2.4 }); fx.emit(1, { p: m.position, r: .02, v: .05, life: .47, size: .1, c: CSURGE.ribbon, k: 2.2 }); }   // Chaotic Surge's
         if (CB) { fx.trail(m.position, CBOLT.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: .45, size: .05, c: CBOLT.ember, k: 2.4 }); }
         else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
         if (slow) {
