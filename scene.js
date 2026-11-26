@@ -5567,7 +5567,7 @@ export function initScene(el, api) {
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; if (UD.overEnc) me.overEnc = { n: (time < me.overEnc?.until ? me.overEnc.n : 0) + 1, until: time + 4 };   /* Ab Aeterno: Overencumbered for 4 seconds (its text), stacking */ facing = Math.atan2(dx, dz); charge = held = goal = null;
     if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06;
       // Black Powder Blitz: a leap (its timeline lands at 0.52 s; note: its height, 1 m, is the scene's), the round's blast
-      const BX = DR.name === 'Black Powder Blitz'; if (BX) { Object.assign(move, { dur: .52, h: 1, leap: true, powder: true }); me.powderGlow = time + BP.glowFor; fx.emit(8, { p: { x: pp.x, y: 1.2, z: pp.z }, r: .3, v: .4, up: .8, life: 1, size: .6, grow: 1.5, c: 0x343839, smoke: true, a: .45 }); }
+      const BX = DR.name === 'Black Powder Blitz'; if (BX) { Object.assign(move, { dur: .52, h: 1, powder: true }); me.powderGlow = time + BP.glowFor; fx.emit(8, { p: { x: pp.x, y: 1.2, z: pp.z }, r: .3, v: .4, up: .8, life: 1, size: .6, grow: 1.5, c: 0x343839, smoke: true, a: .45 }); }
       if (Object.keys(DR.dmg.hits).length) { if (BX) { powderBlast(move.from, DR.A); area(move.from, DR.A, { ...DR, mult: 1 }); } else boom(move.from, DR.A, { ...DR, mult: 1 }); } }
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE, null, L);
@@ -7092,7 +7092,7 @@ export function initScene(el, api) {
     if (moving && !move && (powderStep -= dt) <= 0 && onS('Black Powder Blitz')) { powderStep = .3; const p = { x: pp.x, y: .05, z: pp.z };
       fx.emit(6, { p, r: .1, v: 1.5, up: 1.2, life: .3, size: .06, c: BP.spark, c2: BP.ember, k: 2.5, g: 6, drag: 1.5 }); fx.emit(2, { p, r: .1, v: .4, up: .2, life: .6, size: .3, grow: 1.5, c: BP.smoke, smoke: true, a: .35 }); }
     player.update(dt, { moving: moving && !move, speed: spd(), hold: !!held, charge: charge ? Math.min(1, charge.s / (base(charge.i)?.P.perfect ? 1 : 1.6)) : null,
-      roll: move?.roll && !move.leap ? move.k : null, leap: move && (move.leap || !move.roll && move.h) ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
+      roll: move?.roll && !move.powder ? move.k : null, leap: move && (move.powder || !move.roll && move.h) ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
     reticle(); arena.update(dt, pp); fx.update(dt);
     if (toastT > 0 && (toastT -= dt) <= 0) toastEl.classList.remove('on');
     if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); api.onLive?.(live()); player.setLook(api.look?.()); }   // the build's weapon in the figure's hands
