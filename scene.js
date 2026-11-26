@@ -3092,7 +3092,9 @@ export function initScene(el, api) {
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); say(t('{0} on', S.label), S.el);
+      if (k === 'Attrition') { me.skin = { at: time, hex: ATTR.skin, dur: .7 }; fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.6, ATTR.flare, .35, 2.2); fx.emit(18, { p: { x: pp.x, y: 1.1, z: pp.z }, r: .3, h: .8, v: 1.6, up: .6, life: .6, size: .06, c: ATTR.string, c2: 'white', k: 2.4, drag: 2 }); }
+      else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
+      say(t('{0} on', S.label), S.el);
     },
     // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
     // (its more hit damage, less damage taken and more movement speed) and two more
@@ -3952,8 +3954,32 @@ export function initScene(el, api) {
   // Attrition: while it is on, every second a Rare or Unique enemy has ever spent in your Presence is a stack, up to its
   // most; your hits deal its more damage per stack to it, and from its stacks on they have Culling Strike against it
   const attr = () => onS('Attrition')?.dmg.stats;
+  // Its look (reservation_attrition: tracker_RARE / tracker_UNIQUE; AttritionActivation): turned on, the reservations'
+  // holy surge on you (activate_holy: a warm flare 1 / 0.71 / 0.45, golden sparks 1 / 0.57 / 0.18, your skin lit
+  // 1 / 0.66 / 0.35), nothing on you after; a dagger over a Rare enemy in gold (rareDagger 1 / 0.77 / 0.2), over a Unique
+  // in orange (uniqueDagger 1 / 0.38 / 0.15), appearing in a flash with glints, ribbons and sparks round its blade.
+  // note: when it shows is not in the data (its appearing plays the skill's OnAct sound): from the stacks that give
+  // Culling Strike against the enemy here
+  const ATTR = { rare: { blade: 0xffc433, glint: 0xff9b33, spark: 0xffad33 }, unique: { blade: 0xff6126, glint: 0xff4219, spark: 0xff571a }, flare: 0xffb573, string: 0xff912d, skin: 0xffa859 };
+  const daggers = new Map();
+  function dagger(c) {
+    const g = new THREE.Group(), m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: .6, metalness: .6, roughness: .3 });
+    const add = (geo, y) => { const o = new THREE.Mesh(geo, m); o.position.y = y; g.add(o); return o; };
+    add(new THREE.ConeGeometry(.06, .5, 4), -.25).rotation.x = Math.PI; add(new THREE.BoxGeometry(.24, .04, .05), 0); add(new THREE.CylinderGeometry(.025, .025, .16, 6), .1);
+    g.scale.setScalar(1.4); scene.add(g); return g;
+  }
+  function daggerLook(dt, st) {
+    for (const [d, g] of daggers) if (!st || d.dead || !dummies.includes(d)) { g.parent?.remove(g); daggers.delete(d); }
+    if (st) for (const d of dummies) if (!d.dead && d.attr >= st.skill_attrition_culling_strike_at_x_or_more_stacks && ATTR[d.stat.rarity]) {
+      const L = ATTR[d.stat.rarity], o = over(d), q = { x: o.x, y: o.y - .25, z: o.z }; let g = daggers.get(d);
+      if (!g) { daggers.set(d, g = dagger(L.blade)); fx.glow(q, 1.2, L.glint, .3, 2.5); fx.emit(12, { p: q, r: .1, v: 1.4, life: .5, size: .06, c: L.spark, c2: 'white', k: 2.2, drag: 2 }); }
+      g.position.set(q.x, q.y + Math.sin(time * 2) * .05, q.z); g.rotation.y += dt;
+      if (Math.random() < dt * 6) fx.emit(1, { p: q, r: .05, h: .3, up: .3, v: .1, life: .7, size: .06, c: L.spark, c2: 'white', k: 2, drag: 1 });
+      if (Math.random() < dt * 1.5) fx.glow(q, .4, L.glint, .25, 2);
+    }
+  }
   function attrition(dt) {
-    const st = attr(), VK = sheet().vile; if (st || VK) for (const d of inside(pp, sheet().overgrow.r)) if (['rare', 'unique'].includes(d.stat.rarity)) {
+    const st = attr(), VK = sheet().vile; daggerLook(dt, st); if (st || VK) for (const d of inside(pp, sheet().overgrow.r)) if (['rare', 'unique'].includes(d.stat.rarity)) {
       if (st) d.attr = Math.min(st.skill_attrition_presence_max_seconds, (d.attr || 0) + dt);
       if (VK) d.vile = (d.vile || 0) + dt;   // The Vile Knight: every second ever in your Presence
     }
@@ -4135,7 +4161,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
