@@ -176,7 +176,7 @@ export function reservation(g, sum = {}, b, life = false, maxLife) {
   const PG = sum['buff_skills_spirit_reservation_efficiency_+%_per_100_maximum_life'], perLife = PG && b && GEM[g.name]?.tags?.includes('buff') ? PG * Math.floor((maxLife ?? character(b, sum).life ?? 0) / 100) : 0;
   const eff = perLife + (st[id] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   // Skeletal Warrior: its first minions reserve no Spirit. note: the planner has no number of minions per gem; those first ones
-  const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : g.spectre ? spectreSpirit(g.spectre, st._spirit || 0) : st._spirit || 0) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
+  const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : spectreSpirit(g.spectre, st._spirit || 0)) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
   const AC = (g.supports || []).includes("Atziri's Communion") && SK.skills["Atziri's Communion"].constant.skill_reserves_X_life_permyriad_per_spirit_instead_of_spirit;
   if (life || AC) return life && AC ? own * AC / 100 : 0;
@@ -1760,7 +1760,7 @@ export function skill(g, b, treeGear) {
   const djinn = x => { const id = SK.minions[x?.name]?.[0]; return /Djinn$/.test(id || '') && enemy(id) || null; };   // by its monster (not Supporting Fire's artillery, the other undamageable Commanded minion)
   const host = !djinn(g) && GEM[g.name]?.types?.includes('CommandsMinions') && (b.gems || []).find(x => djinn(x)?.skills?.some(k => monSkill(k)?.name === g.name)) || null;
   const DJ = djinn(host || g), ckey = DJ && (host ? DJ.skills.find(k => monSkill(k)?.name === g.name) : DJ.skills[0]);
-  const mid = host ? DJ.id : g.spectre && spectreOf(g.spectre)?.id || SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
+  const mid = host ? DJ.id : spectreOf(g.spectre)?.id || SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
   // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
   // speed, area, resistances). note: their movement speed is not counted (minions move at their monster's speed here)
   const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;

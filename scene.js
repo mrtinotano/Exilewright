@@ -2696,8 +2696,8 @@ export function initScene(el, api) {
     // a Spectre (Bind Spectre's monster, chosen in the Skills tab: the gem becomes "Spectre: <monster>"): a pale blue
     // see-through ghost of it (necromancer_spectre/raiseSpectre_Skin: spectreSkin_01 0.45 / 0.84 / 1, spectre()) trailing
     // ghost ribbons, summoned in a ring of ribbons and fading in (MainSkinFADE), its hits and life its monster's at the
-    // gem's level (calc.js minionOf). note: its ghost is a humanoid (the scene's monsters are training dummies); its
-    // monster's skills past its first and its warp to you (spectre_warping) are not simulated
+    // gem's level (calc.js minionOf), using each of its monster's skills (spectre().blow). note: its ghost is a humanoid
+    // (the scene's monsters are training dummies); its warp to you (spectre_warping) is not simulated
     if (S.name === 'Spectre: {0}') o = { ...o, spirit: 'bound' };
     const f = makeMinion(fx, S.el), real = !!S.dmg?.minion && Object.keys(S.dmg.hits).length > 0, comp = !!S.g && !!api.info(S.g).gem?.types?.includes('Companion'), MS = real ? { ...S, src: 'minionHit', comp } : { ...S, src: 'minion', mult: .5 * S.mult, comp }, ranged = o.spirit ? o.spirit === 'caster' : S.P.ranged;
     f.group.position.set(p.x, 0, p.z); scene.add(f.group); if (S.dmg?.minion?.gigantic) f.group.scale.multiplyScalar(1.2);
