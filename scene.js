@@ -3254,7 +3254,8 @@ export function initScene(el, api) {
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk' || k === 'Spectre: {0}') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
-      if (k === 'Blasphemy') blasSurge(S); else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
+      if (k === 'Blasphemy') { const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), 0x1f2bff, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove()); fx.pillar(pp, .6, 2.6, 0x1f2bff, .5, 2); }   // its symbol (BLAS)
+      else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
     },
     // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
@@ -5546,12 +5547,8 @@ export function initScene(el, api) {
   // note: Elemental Weakness's ring is three colours by a mask in the game (1.25 / 0.25 / 0.025, 0.1 / 0.25 / 1,
   // 0.35 / 0.45 / 1): one, their mean, here; a curse without its own ring (Repulsion) shows its area's outline
   const BLAS = { 'Temporal Chains': ['temporalchains', 0xc42bff], Enfeeble: ['enfeeble', 0xe3ff5c], Despair: ['despair', 0x8040ff],
-    'Elemental Weakness': ['eleweak', 0xd678ff], Vulnerability: ['vulnerability', 0xff3333], surge: 0x1f2bff };
+    'Elemental Weakness': ['eleweak', 0xd678ff], Vulnerability: ['vulnerability', 0xff3333] };
   const blasRing = S => { const c = BLAS[S.name]; return c ? fx.decal(pp, S.A, artTex('blas_' + c[0], `particles/supports/blasphemy/textures/runes/${c[0]}_aura_dxt1`), c[1], { a: .8, k: 1.4, spin: .2 }) : fx.decal(pp, S.A, 'outline', S.el, { a: .45, rot: 0 }); };
-  function blasSurge(S) {
-    const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), BLAS.surge, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove());
-    fx.pillar(pp, .6, 2.6, BLAS.surge, .5, 2);
-  }
   // Black Powder Blitz's look (Shankgonne: Metadata/Effects/misc/Uniques/boots/shankgonne, its dodge timeline
   // shankgonnedodge.atl): the round's blast where you leave (cannon_fire: a flash, a ring of smoke, sparks, embers, debris,
   // a scorch), smoke and fire trailing your foot through the leap, the cannon leg glowing for 3.9 s, and sparks with a
@@ -6765,11 +6762,11 @@ export function initScene(el, api) {
     // Blasphemy: while it is on, the curses socketed in it curse the enemies within their own area around you, at its less
     // effect. note: its own radius in the data (1 m) is not used: the curse's
     called();
-    const BL = onS('Blasphemy'), blOn = new Set(); me.blas ||= {};
+    const BL = onS('Blasphemy'), BK = BL && 1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100, blOn = new Set(); me.blas ||= {};
     if (BL) api.build().gems.forEach((g, i) => {
       const S = g.meta === 'Blasphemy' && base(i), C = S?.dmg?.curse; if (!S) return;
       blOn.add(S.name); const R = me.blas[S.name] ||= blasRing(S); R.move(pp); R.set(S.A);
-      for (const d of inside(pp, S.A)) if (!(C?.maxLevel && d.level > C.maxLevel)) { d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * (1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100) * d.stat.curseEffect }; hexMe(S.name, C, .2, 1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100); }
+      for (const d of inside(pp, S.A)) if (!(C?.maxLevel && d.level > C.maxLevel)) { d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * BK * d.stat.curseEffect }; hexMe(S.name, C, .2, BK); }
     });
     for (const k in me.blas) if (!blOn.has(k)) { me.blas[k].remove(); delete me.blas[k]; }
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
