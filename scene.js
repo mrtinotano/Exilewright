@@ -1024,12 +1024,12 @@ export function initScene(el, api) {
     const GS = !/minion/.test(S.src || '') && S.dmg?.sum, GK = GS && (a === 'freeze' ? GS.create_chilling_ground_on_freeze && 'chilled' : a === 'shock' && Math.random() * 100 < (GS['chance_%_to_create_shocking_ground_on_shock'] || 0) && 'shocked');
     if (GK && S.src !== 'ground') ground(GK, { x: d.pos.x, z: d.pos.z }, SIM.area, GROUND_TIME[GK], { ...S, src: 'ground' });   // not again from its own ground
     siphon(a, d); if (!S.src) glory(d, a === 'stun' ? 'heavy_stun' : a); if (a === 'stun') houndBlow(d, true);
-    // Combat Frenzy: a frenzy charge on freezing, electrocuting or pinning an enemy, once every its cooldown
     // Martial Artist's Mountain's Teachings: its Surpassing chance per enemy Power on Immobilising (freeze, heavy stun,
     // electrocute, pin), up to its most, for its duration
     const MT = !S.src && ['freeze', 'stun', 'electrocute', 'pin'].includes(a) && sheet().mountain;
     if (MT) { const n = MT.chance * pow(d) / 100, got = Math.floor(n) + (Math.random() < n % 1 ? 1 : 0);
       if (got) { me.mount = Math.min(MT.max, (time < me.mountUntil ? me.mount : 0) + got); me.mountUntil = time + MT.dur; } }
+    // Combat Frenzy: a frenzy charge on freezing, electrocuting or pinning an enemy, once every its cooldown
     const CF = ['freeze', 'electrocute', 'pin'].includes(a) && onS('Combat Frenzy');
     if (CF && time - (me.cfAt ?? -99) >= CF.dmg.stats.skill_combat_frenzy_x_ms_cooldown / 1000) { me.cfAt = time; gainCharge('frenzy', CF.label); }
     // Breachlord's Rift: freezing or electrocuting breaks its share of the enemy's armour (the tree: pinning, heavy stunning)
@@ -1360,8 +1360,8 @@ export function initScene(el, api) {
     'Cast on Critical': ['INT', 'chaos'], 'Cast on Dodge': ['DEX', 'chaos'], 'Cast on Elemental Ailment': ['elemental', 'fire'], 'Cast on Minion Death': ['necro', 'necro'],
     'Barrier Invocation': ['eshield', 'chaos'], 'Elemental Invocation': ['elemental', 'chaos'], "Reaper's Invocation": ['STR', 'chaos'], Spellslinger: ['eshield', 'chaos'] };
   // other persistent skills with an activation of this family and nothing else: Charge Regulation (charge_mastery_activation:
-  // activate_silver.epk, activationSilver_skin 1.23 / 1.33 / 2)
-  const ACTIVATE = { 'Charge Regulation': 'silver' };
+  // activate_silver.epk, activationSilver_skin 1.23 / 1.33 / 2), Combat Frenzy (combat_frenzy_activation: activate_DEX.epk)
+  const ACTIVATE = { 'Charge Regulation': 'silver', 'Combat Frenzy': 'DEX' };
   function metaOn(k) {
     const a = CAST_ON[k]?.[0] || ACTIVATE[k], col = SKIN[a], c = V(pp.x, 1.2, pp.z);
     fx.flash(pp, col, 8, .3, 5); fx.glow(c, 1.6, col, .35, 2.5);
@@ -1390,7 +1390,7 @@ export function initScene(el, api) {
           energyOf(T, trigsOf(T)); }
         else { if (!js.length || ++T.energy < T.need) continue; T.energy = 0; js = js.slice(0, 1); }
         metaFire(T, js, p);
-      } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
+      }
     }
   }
   // Culling Strike: a skill that culls (its description), or any of yours with Culling Strike (Rare and Unique enemies);
@@ -4606,7 +4606,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
