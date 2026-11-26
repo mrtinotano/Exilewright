@@ -4063,8 +4063,7 @@ export function initScene(el, api) {
             fx.emit(40, { p: { x: c.x, y: 1, z: c.z }, r: .4, v: 4, up: 2, life: .9, size: .14, c: BD.snow, c2: BD.flame, g: 4, drag: 1 }); }
           if (X) bitter ? area(c, X.A, X) : boom(c, X.A, X);   // Bitter Dead: its own look above, not the generic cold blast
           if (R) { const g = fx.decal(c, R.A, 'bitterRune', BD.flame, { a: .9, k: 1.6, pulse: 3 }); let rt = 0;
-            const rg = new THREE.Group(); rg.position.set(c.x, 0, c.z);
-            thing(rg, durOf(R), { name: R.name,
+            thing(holder(c), durOf(R), { name: R.name,
               tick(dt) {
                 fx.emit(1, { p: { x: c.x, y: .05, z: c.z }, r: R.A * .8, v: .05, up: 1.2, life: .9, size: .18, grow: .5, c: BD.flame, k: 1.2, drag: .5 });
                 if ((rt -= dt) <= 0) { rt = .25; for (const d of inside(c, R.A)) dot(d, { ...R, P: { ...R.P, dur: .3 } }); }
