@@ -124,6 +124,7 @@ export function createFx(scene) {
   const T = textures();
   const PLANE = new THREE.PlaneGeometry(2, 2).rotateX(-Math.PI / 2), QUAD = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   const BALL = new THREE.IcosahedronGeometry(1, 2), TUBE = new THREE.CylinderGeometry(1, 1, 1, 14, 1, true).translate(0, .5, 0);
+  const SPIKE = new THREE.ConeGeometry(1, 1, 5).translate(0, .5, 0);
   const SHAFT = new THREE.CylinderGeometry(.018, .018, .9, 5).rotateX(Math.PI / 2), UP = new THREE.Vector3(0, 1, 0), tv = new THREE.Vector3();
   // a flask's glass (a round body, a neck) and the iron band at its neck
   const FLASK = new THREE.LatheGeometry([[0, -.13], [.08, -.12], [.125, -.06], [.13, 0], [.115, .06], [.06, .1], [.04, .13], [.04, .2], [.05, .21], [0, .21]].map(([x, y]) => new THREE.Vector2(x, y)), 14);
@@ -200,6 +201,26 @@ export function createFx(scene) {
       const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: T.glow, color: color(c, k), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false }));
       s.position.set(p.x, p.y ?? 1, p.z); s.scale.setScalar(size);
       return add(s, dur, t => { s.material.opacity = 1 - t; s.scale.setScalar(size * (1 + t * .6)); });
+    },
+    // spikes bursting out of the ground around p within r, leaning outwards, that stand for `dur` seconds and sink.
+    // o: { n, h (height), w (base radius), c, dark (a solid, lit material instead of a glowing one), glow (its emissive
+    // colour), dur, inner (share of r left free in the middle) }
+    spikes(p, r, o = {}) {
+      const n = o.n ?? Math.round(6 + r * 4), dur = o.dur ?? 1.2, y = p.y || 0, g = new THREE.Group();
+      const mat = o.dark ? new THREE.MeshStandardMaterial({ color: hex(o.c), roughness: .35, metalness: .15, emissive: hex(o.glow ?? 0), emissiveIntensity: o.glow ? .5 : 0, transparent: true })
+        : glowMat(o.c, o.k ?? 1.6, .95);
+      for (let i = 0; i < n; i++) {
+        const a = rnd(TAU), d = r * Math.sqrt(rnd(o.inner ?? .15, 1)), tilt = rnd(.2, .6) * (d / r), m = new THREE.Mesh(SPIKE, mat);
+        m.position.set(p.x + Math.cos(a) * d, y, p.z + Math.sin(a) * d); m.castShadow = !!o.dark;
+        m.quaternion.setFromUnitVectors(UP, tv.set(Math.sin(tilt) * Math.cos(a), Math.cos(tilt), Math.sin(tilt) * Math.sin(a)));
+        m.userData.h = (o.h ?? r * .7) * rnd(.6, 1.15); m.userData.w = (o.w ?? .09) * rnd(.7, 1.3); m.userData.at = rnd(0, .08);   // each a moment apart
+        m.scale.set(.001, .001, .001); g.add(m);
+      }
+      return add(g, dur, k => {
+        const t = k * dur, sink = k > .8 ? (k - .8) / .2 : 0;
+        for (const m of g.children) { const u = m.userData, s = Math.max(.001, ease(Math.min(1, Math.max(0, t - u.at) / .1))); m.scale.set(u.w * s, u.h * s, u.w * s); m.position.y = y - u.h * sink; }
+        mat.opacity = 1 - sink * .6;
+      });
     },
     pillar(p, r, h, c, dur = .25, k = 3) {
       const m = new THREE.Mesh(TUBE, glowMat(c, k, .9)); m.position.set(p.x, 0, p.z); m.scale.set(r, h, r);

@@ -1439,6 +1439,28 @@ export function initScene(el, api) {
     fx.disc(c, R * .9, BH.splat, 3.9, { dark: true, a: .9, tex: 'patch', hold: .7, y: .03 });
     shake = Math.max(shake, Math.min(.5, R * .09));   // as an explosion's
   }
+  // Bone Blast: its circle of ritual inscriptions lasts its duration, then bone spikes erupt from the enemies in it, a
+  // hit each. Its look (BoneBlastIndicator: wand_boneblast boneBlast_Zone; BoneBlastExplode: boneBlast.epk): green runes
+  // for its duration (boneBlast_Runes 1.2 / 3 / 1.7) with dark wisps rising (prepare_boneBlast darkness); as it ends a green
+  // wave rising for 0.6 s (boneBlast_apply waveUp 1.2 / 4 / 1.86) and on each enemy its skin glowing green (boneBlast_Glow_Skin
+  // 1.8 / 3 / 2.15), bone spikes pinning it for 1 s (pinSpikes boneHinder: bone lit green 1 / 2 / 1.29), blood gushing and
+  // embers for 1.5-4 s. note: the runes are the scene's rune texture (the game draws its own), the spikes' number and the
+  // bone's and embers' colours are the scene's; the dark wave and its blood ribbons (10 s) are not drawn
+  const BBL = { rune: 0x66ff91, wave: 0x4dff77, skin: 0x99ffb7, glow: 0x80ffa4, bone: 0xe6d6b0, dark: 0x020604, blood: 0x5a0006 };
+  function boneBlast(S) {
+    const c = S.at, R = S.A, D = S.P.dur || 1, dec = fx.decal(c, R, 'rune', BBL.rune, { a: .85, k: 1.6, spin: .4 });
+    fx.emit(6, { p: c, r: R * .6, v: .2, up: .6, life: 1, size: .5, grow: 2, c: BBL.dark, smoke: true, a: .6, drag: 1 });
+    later(D, () => {
+      dec.remove(); fx.pillar(c, R, 1.6, BBL.wave, .6, .7);
+      for (const d of inside(c, R)) {
+        const p = { x: d.pos.x, z: d.pos.z };
+        fx.glow({ x: p.x, y: 1.1, z: p.z }, .9, BBL.skin, .5, 1.4); fx.spikes(p, .45, { n: 6, h: 1.5, w: .09, c: BBL.bone, dark: true, glow: BBL.glow, dur: 1, inner: 0 });
+        fx.emit(8, { p: { x: p.x, y: 1, z: p.z }, r: .2, v: 1.5, up: 2, life: 1, size: .1, c: BBL.blood, smoke: true, a: .9, g: 10, drag: .4 });
+        fx.emit(10, { p: { x: p.x, y: .8, z: p.z }, r: .4, h: .8, v: .4, up: .5, life: 2.7, size: .05, c: BBL.glow, k: 1.6, drag: 1 });
+        hit(d, S);
+      }
+    });
+  }
   function bloodHunt(S, d) {
     const st = S.dmg.stats, X = partOf(S, 'BloodHuntExplosionPlayer'), xs = X?.dmg.stats, n = d.blood || 0;
     if (!X || n < st.blood_hunt_X_blood_loss_consumed_to_explode) return;
@@ -3694,6 +3716,7 @@ export function initScene(el, api) {
         off: () => out.remove() });
     },
     zone(S) {
+      if (S.name === 'Bone Blast') return boneBlast(S);
       const P = S.P, R = S.A, dur = P.plant && P.dur || Math.min(P.dur || SIM.groundTime, 12); let c = S.at;   // a plant lasts its own duration (Nature's Archon's 200% more)
       // Spearfield: its spears burst out of the ground in front of you across its area, up to its most (the oldest give
       // way); each stays its duration or explodes when an enemy touches it, hitting around it (its secondary radius) with
