@@ -1391,12 +1391,34 @@ export function initScene(el, api) {
   // Blood Hunt: its hit on an enemy with at least its Blood Loss (keywords.json BloodLoss: the physical damage over time
   // it has taken) consumes it and its bleeding in a blood explosion (its part), the area larger by its % per its amount
   // consumed, up to 500%, and the enemies in it losing its % of that Blood Loss as life
+  // Blood Hunt's look: its spear's trail (MeleeTrails BloodHuntTrail: spear_bloodhunt bloodHunt_Slash, dark red 0.3 / 0 / 0
+  // with a red edge 2 / 0.38 / 0.25), its hit (PunctureOnHitEffect: spear_dash hit_stab, a red spike and flash for 0.2 s,
+  // 1 / 0.51 / 0.2 at its core, and 8 embers for 0.5-1 s) and its blood explosion (PunctureWave: bloodHunt_SpearField):
+  // spears of blood bursting out for 0.75-1 s (BH_spearProxy, up to 4 / 0.62 / 0.4), a dark ring for 1 s, a dark red
+  // blast for 0.62 s (windUp_Blast 0.26 / 0 / 0), 64 grey smoke puffs round it for 2.5-3 s and 48 splats of blood
+  // for 3.75-4 s (bloodSplat 0.12 / 0 / 0). note: the number of spears is the scene's; its wind wave and blur are not drawn
+  const BH = { trail: 0x4d0000, edge: 0xff3120, spike: 0xff8233, ember: 0x7d0404, spear: 0xff2819, ring: 0x2a0505, blast: 0x410000, smoke: 0x1f1f1f, splat: 0x3a0000 };
+  function bhStab(d, dx, dz) {
+    const a = { x: pp.x, z: pp.z }, b = { x: d.pos.x + dx * .3, z: d.pos.z + dz * .3 }, at = { x: d.pos.x, y: 1.1, z: d.pos.z };
+    fx.strip(a, b, .35, BH.trail, .3, { dark: true, a: .8, y: 1 }); fx.strip(a, b, .08, BH.edge, .25, { y: 1.01 });
+    fx.flash(d.pos, BH.spike, 8, .2, 4); fx.glow(at, 1.2, BH.spike, .2, 3);
+    fx.emit(8, { p: at, r: .2, v: 3, life: .75, size: .07, c: BH.spike, c2: BH.ember, k: 2, drag: 1 });
+  }
+  function bhBlast(c, R) {
+    const at = { x: c.x, y: .3, z: c.z };
+    fx.ring(c, .2, R, BH.ring, 1, { a: .8 }); fx.ball(at, R * .6, BH.blast, .62, 1.4);
+    for (let i = 0; i < 12; i++) { const a = i / 12 * TAU + rnd(-.2, .2), l = R * rnd(.6, 1), q = { x: c.x + Math.sin(a) * l, z: c.z + Math.cos(a) * l }; fx.strip(c, q, .24, BH.ember, .9, { dark: true, a: .9 }); fx.strip(c, q, .05, BH.spear, .6, { a: .5, k: 1.2, y: .07 }); }
+    fx.emit(64, { p: at, r: R * .3, v: R * 1.2, up: .3, life: 2.75, size: .6, grow: 2, c: BH.smoke, smoke: true, a: .45, drag: 1.5 });
+    fx.emit(48, { p: at, r: .2, v: R * 1.8, up: 3, life: 1.2, size: .12, c: BH.splat, smoke: true, a: .95, g: 12, drag: .3 });
+    fx.disc(c, R * .9, BH.splat, 3.9, { dark: true, a: .9, tex: 'patch', hold: .7, y: .03 });
+    shake = Math.max(shake, Math.min(.5, R * .09));   // as an explosion's
+  }
   function bloodHunt(S, d) {
     const st = S.dmg.stats, X = partOf(S, 'BloodHuntExplosionPlayer'), xs = X?.dmg.stats, n = d.blood || 0;
     if (!X || n < st.blood_hunt_X_blood_loss_consumed_to_explode) return;
     d.blood = 0; clear(d, 'bleed'); delete d.burn.bleed;
     const c = { x: d.pos.x, z: d.pos.z }, R = X.A * Math.sqrt(1 + Math.min(500, xs['blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%'] * Math.floor(n / xs['blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final'])) / 100);
-    fx.explode(V(c.x, .8, c.z), R, 'blood'); boom(c, R, { ...X, mult: S.mult });
+    bhBlast(c, R); area(c, R, { ...X, mult: S.mult });
     for (const e of inside(c, R)) damage(e, n * xs['blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss'] / 100, X, false, true);
   }
   // Wing Blast, Boneshatter: its hit Heavy Stuns an enemy Primed for it (keywords.json PrimedStun), which releases its
@@ -3524,7 +3546,7 @@ export function initScene(el, api) {
           fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
@@ -5932,8 +5954,8 @@ export function initScene(el, api) {
     if ((st.bleed > 0 || pd) && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if ((st.chill > 0 || frozen) && Math.random() < dt * 6) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
     if (xd && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
-    const top = d === topD, sig = top ? 'top' : Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : '');
-    if (sig !== d.sig) { d.sig = sig; f.draw(top ? {} : { life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null }); }
+    const top = d === topD, sig = top ? 'top' : Math.ceil(d.life / d.max * 48) + ':' + (d.maxEs ? Math.ceil(d.es / d.maxEs * 48) : '') + ':' + Math.ceil((d.blood || 0) / d.max * 48);
+    if (sig !== d.sig) { d.sig = sig; f.draw(top ? {} : { life: d.life / d.max, es: d.maxEs ? d.es / d.maxEs : null, loss: (d.blood || 0) / d.max }); }
   }
 
   // ---------- the enemies attack: the chosen attack at their level against your defences (enemies.js)
@@ -5971,7 +5993,7 @@ export function initScene(el, api) {
     if (d.st.expo > 0 && d.expo) st.push(d.expo.els.length === 1 && ['fire', 'cold', 'lightning'].includes(d.expo.els[0]) ? 'expo_' + d.expo.els[0] : 'expo');
     if (d.st.armour > 0) st.push('armour'); else if (d.cut > 0) st.push('armourBreak');
     const icons = st.map(a => api.ailmentIcon?.(a)).filter(Boolean).map(s => `<img src="${esc(s)}">`).join('');
-    put(tgtEl, `<div style="color:${RARE[d.stat.rarity] || RARE.normal}">${esc(d.mon.name)}</div><div class="s-tbar"><i style="width:${p(d.life, d.max)}%"></i>${d.maxEs > 0 ? `<u style="width:${p(d.es, d.maxEs)}%"></u>` : ''}<span>${short(Math.ceil(d.life + d.es))}/${short(d.max + d.maxEs)}</span></div>${icons ? `<div class="s-ticons">${icons}</div>` : ''}<small>${t('Lv. {0}', d.level)}</small>`);
+    put(tgtEl, `<div style="color:${RARE[d.stat.rarity] || RARE.normal}">${esc(d.mon.name)}</div><div class="s-tbar"><i style="width:${p(d.life, d.max)}%"></i>${d.blood > 0 ? `<b style="left:${p(d.life, d.max)}%;width:${p(Math.min(d.blood, d.max - d.life), d.max)}%"></b>` : ''}${d.maxEs > 0 ? `<u style="width:${p(d.es, d.maxEs)}%"></u>` : ''}<span>${short(Math.ceil(d.life + d.es))}/${short(d.max + d.maxEs)}</span></div>${icons ? `<div class="s-ticons">${icons}</div>` : ''}<small>${t('Lv. {0}', d.level)}</small>`);
   }
   // Infernalist's Pyromantic Pact: a mana cost adds its share as Infernal Flame instead (up to your maximum mana); at the
   // most you take its share of your maximum life and energy shield as fire damage and lose its share of the Flame

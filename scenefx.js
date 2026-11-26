@@ -569,8 +569,8 @@ function lifePlate(g, y, w) {
   plate.position.y = y; plate.scale.set(w, w * H / W, 1); plate.renderOrder = 25; g.add(plate);
   return {
     plate,
-    // life / es = fractions left (null hides the bar)
-    draw({ life = null, es = null }) {
+    // life / es = fractions left (null hides the bar); loss = its Blood Loss, a fraction of its life
+    draw({ life = null, es = null, loss = 0 }) {
       const c = cv.getContext('2d'); c.clearRect(0, 0, W, H);
       const bar = (y, h, k, col) => {
         c.fillStyle = 'rgba(0,0,0,.78)'; c.fillRect(68, y, 120, h); c.fillStyle = col; c.fillRect(69, y + 1, 118 * Math.max(0, Math.min(1, k)), h - 2);
@@ -578,6 +578,7 @@ function lifePlate(g, y, w) {
       };
       if (es != null) bar(52, 6, es, '#5aa8e8');   // a small bar with no name, as the game's
       if (life != null) bar(59, 9, life, life > .35 ? '#b8281e' : '#e06a20');
+      if (life != null && loss > 0) { const x0 = 69 + 118 * Math.max(0, Math.min(1, life)), w = Math.min(187 - x0, 118 * loss); c.fillStyle = '#4a0610'; c.fillRect(x0, 60, w, 7); c.fillStyle = '#ff2a30'; c.fillRect(x0 + w - 2, 59, 2, 9); }   // its Blood Loss after its life, a red tick at its end, as the game's
       tx.needsUpdate = true;
     },
     dispose() { plate.material.dispose(); tx.dispose(); },
