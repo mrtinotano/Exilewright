@@ -3230,7 +3230,7 @@ export function initScene(el, api) {
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, kaomLook)
+      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       say(t('{0} on', S.label), S.el);
     },
@@ -4275,7 +4275,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -4731,11 +4731,27 @@ export function initScene(el, api) {
       T.rdy = rdy;
     }
   }
+  // Berserk's look (berserk_reservation has none: Rage's look while you are berserking, BuffVisualsArtVariations rage ->
+  // rage_berserk_override, reservation_bloodrage/rage_override.epk): while it is on and you have Rage, a red glow over you
+  // (rage_buff_pass 1 / 0.08 / 0.02 x25 through caustic noise), red ribbons off your upper body (rage_buff.pet: rage_ribbons
+  // 1 / 0.05 / 0.02), orange embers off your body (bloodRage_Xtra: rage_XTRA_R 1 / 0.32 / 0.1) and ribbons of blood
+  // (bloodRage_Blood: bloodRibbons_R, its subsurface 0.23 / 0 / 0). note: Rage's own look without Berserk is not drawn yet
+  const BERSERK = { skin: 0xff1405, ribbon: 0xff0d05, ember: 0xff501a, blood: 0x3b0000 };
+  function berserkLook() {
+    const rg = tog.Berserk && me.rage > 0 ? Math.min(1, me.rage / Math.max(1, rageMax())) : 0; if (!rg) return 0;
+    const at = y => ({ x: pp.x, y, z: pp.z });
+    if (Math.random() < .15 + .3 * rg) fx.emit(1, { p: at(rnd(1.2, 1.6)), r: .3, v: .2, up: .8, life: 1.6, size: .1, grow: 1.4, c: BERSERK.ribbon, c2: BERSERK.skin, k: 1.8, drag: 1 });
+    if (Math.random() < .3 + .6 * rg) fx.emit(1, { p: at(rnd(.3, 1.7)), r: .3, v: .3, up: .5, life: 2, size: .05, c: BERSERK.ember, c2: 'white', k: 2.4, drag: 1.5 });
+    if (Math.random() < .25 * rg) fx.emit(1, { p: at(rnd(.8, 1.6)), r: .3, v: .4, up: .6, life: 1.2, size: .1, c: BERSERK.blood, smoke: true, a: .9, g: 5 });
+    return (.2 + .2 * rg) * (.8 + .2 * Math.sin(time * 9));
+  }
   const WARD = 0x125eff, WG = new THREE.Color();
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
+    const bz = berserkLook();
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
+    else if (bz) { w = bz; WG.set(BERSERK.skin); }   // Berserk: red over you while you have Rage
     orbiters();
     const BR = empower.find(e => e.type === 'repeat' && e.name === 'Barrage');   // Barrage Empowering: your weapon glows
     if (BR) { const H = hand(), c = BR.charged ? BARRAGE.charged : BARRAGE.core; fx.emit(2, { p: H, r: .15, v: .2, up: .15, life: .4, size: .13, c, c2: 'white', k: 2.4, drag: 1 }); if (Math.random() < .25) fx.glow(H, .7, c, .2, 2); }
