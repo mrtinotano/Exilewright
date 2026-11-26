@@ -4512,17 +4512,18 @@ export function initScene(el, api) {
     }
     const fx0 = Math.sin(facing), fz = Math.cos(facing);
     for (const m of bst) {
-      const o = m.userData.o, x = pp.x + fz * o.x + fx0 * o.z, z = pp.z - fx0 * o.x + fz * o.z, fresh = time - m.userData.at < .02;
+      const o = m.userData.o, x = pp.x + fz * o.x + fx0 * o.z, z = pp.z - fx0 * o.x + fz * o.z;
       m.position.set(x, o.y, z); m.lookAt(x + fx0, o.y, z + fz); m.material.emissiveIntensity = Math.max(.3, 1.5 * (1 - (time - m.userData.at) / .5));
-      if (fresh) fx.emit(5, { p: m.position, r: .3, v: .3, up: .4, life: 2.7, size: .05, c: BST.ember, k: 1.8, drag: 1 });
+      if (time - m.userData.at < .02) fx.emit(5, { p: m.position, r: .3, v: .3, up: .4, life: 2.7, size: .05, c: BST.ember, k: 1.8, drag: 1 });
     }
+    return n;
   }
   K.bonestorm = S => {
     const st = S.dmg.stats, X = partOf(S, 'BonestormExplosionPlayer') || S, xs = X.dmg?.stats || {};
-    const n = Math.min(st.base_number_of_allowed_bone_storm_projectiles || 1, Math.max(1, Math.floor((S.held || 0) / SIM.channelTick)));
+    const n = bstGrow(S, Math.max(S.held || 0, SIM.channelTick));
     const r = S.spent ? (X.A + (xs['bone_spear_power_charged_aoe_+'] || 0) / 10) * Math.sqrt(1 + (S.spent - 1) * (xs['bone_spear_power_charged_aoe_+%_final_per_additional_power_charge'] || 0) / 100) : X.A;
     const foes = nearest(S.at, n, d => dist(d.pos, S.at) <= (st.bone_spear_target_rectangle_length || 0) / 10);
-    bstGrow(S, Math.max(S.held || 0, SIM.channelTick)); const sp = bst.splice(0); for (const m of sp.splice(n)) fx.drop(m);
+    const sp = bst.splice(0); for (const m of sp.splice(n)) fx.drop(m);
     for (let k = 0; k < n; k++) later(k * .04, () => {
       const d = foes[k % (foes.length || 1)], q = d && !d.dead ? { x: d.pos.x, z: d.pos.z } : around(S.at, 1);
       const m = sp[k], from = m.position.clone(), to = V(q.x, .3, q.z);
