@@ -2894,15 +2894,24 @@ export function initScene(el, api) {
   // Briarpatch: while on, stores its permyriad of the physical attack damage you deal, up to its most; a spell you cast
   // spends it on its Thorny Ground at the spell's target (its area, duration and limit), once per its creation delay,
   // hitting the enemies that move in it for the stored damage. note: how often it hits is not in its data (the scene's half second)
+  // Its look (create_briarpatch: briarpatchWave; grd_briarpatch01): a dark wave spreading for 1.3 s (blackBG_Wave
+  // 0.028 / 0.035 / 0), a blur ring for 0.6 s and yellow-green spores for 0.35-2 s (waveSpores 3.72 / 5 / 1.36); its
+  // ground mud (groundZone_thorns_01: mud_01) bristling with thorny vines (briarpatchGRD_01 thorns, 0.85 / 0.45 / 0.28
+  // through its look-up, from 0.04 / 0.06 / 0.02 at their roots). note: the vines are cones of one brown between those,
+  // their number, the mud's round edge and how much darker it is drawn (the game's lit by the scene) are the scene's
+  const BRI = { wave: 0x070900, spore: 0xbeff45, thorn: 0x6b4630, mud: 0x707070 };
   function briarStore(n) { const st = onS('Briarpatch')?.dmg.stats; if (st) me.briar = Math.min(st.briarpatch_maximum_stored_physical_damage, (me.briar || 0) + n * st.briarpatch_stores_permyriad_of_physical_damage_dealt / 1e4); }
   function briar(by) {
     const S = onS('Briarpatch'), st = S?.dmg.stats, n = me.briar || 0; if (!st || !n || time < me.briarAt) return;
     me.briar = 0; me.briarAt = time + st.briarpatch_ground_creation_delay_ms / 1000; limit(o => o.briar, st.base_briarpatch_ground_limit, S);
-    const c = { ...by.at }, X = { ...S, el: 'physical', els: ['physical'], dmg: { ...S.dmg, hits: { physical: [n, n] } } }, dec = fx.decal(c, S.A, 'patch', 'dust', { a: .45, k: 1 });
+    const c = { ...by.at }, X = { ...S, el: 'physical', els: ['physical'], dmg: { ...S.dmg, hits: { physical: [n, n] } } }, dec = fx.decal(c, S.A, artTex('mud', 'particles/fxlib/pbr/mud_01_clr'), BRI.mud, { a: .9, dark: true });
+    fx.disc(c, S.A, BRI.wave, 1.3, { dark: true, a: .8 }); fx.ring(c, .2, S.A, BRI.spore, .6, { a: .35 });
+    fx.emit(30, { p: { x: c.x, y: .2, z: c.z }, r: S.A * .7, v: .6, up: .8, life: 1.2, size: .06, c: BRI.spore, k: 2, drag: 1 });
+    fx.spikes(c, S.A, { n: Math.round(14 + S.A * 12), h: .6, w: .035, c: BRI.thorn, dark: true, dur: durOf(S), inner: 0 });
     let tk = 0; say(S.label, 'dust');
     thing(holder(c), durOf(S), { briar: 1, off: () => dec.remove(), tick(dt) {
       if ((tk -= dt) > 0) return; tk = .5;
-      for (const d of inside(c, S.A)) { const moved = d.bp && dist(d.bp, d.pos) > .05; d.bp = { x: d.pos.x, z: d.pos.z }; if (moved) hit(d, X); }
+      for (const d of inside(c, S.A)) { const moved = d.bp && dist(d.bp, d.pos) > .05; d.bp = { x: d.pos.x, z: d.pos.z }; if (moved) { hit(d, X); fx.emit(5, { p: { x: d.pos.x, y: .3, z: d.pos.z }, r: .2, v: 1.5, up: 1, life: .5, size: .05, c: BRI.thorn, g: 6 }); } }
     } });
   }
   // Pain Offering: skewers your nearest minion on a bone spike; the minions within its area attack and cast faster and
