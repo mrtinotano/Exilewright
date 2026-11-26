@@ -603,7 +603,10 @@ save('skills.json', {'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # t
                                    for e in ('fire', 'cold', 'lightning', 'verisium') for k in [next(i for i, r in enumerate(buff_defs) if r['Id'] == e + '_infusion')]},
                      # the icons of the ailments on you; frozen and electrocuted have none in BuffVisuals: the game's StatusFrozen /
                      # StatusElectrocuted art (no table names them; the PoE2 Wiki's status icons are the same)
-                     'ailment_icons': {**{a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('maim', 'maim'))},
+                     # (and on an enemy, under its bar: Armour Break building up and Fully Broken Armour, Blinded, an Exposure)
+                     'ailment_icons': {**{a: _buff_icon[b] for a, b in (('ignite', 'ignited'), ('chill', 'chilled'), ('shock', 'shocked'), ('poison', 'poison'), ('bleed', 'bleeding'), ('maim', 'maim'),
+                                       ('armour', 'broken_armour_debuff'), ('armourBreak', 'armour_break_tracker'), ('blind', 'blinded'), ('expo_fire', 'exposure_fire'), ('expo_cold', 'exposure_cold'),
+                                       ('expo_lightning', 'exposure_lightning'), ('expo', 'exposure_elemental'))},
                                        'freeze': 'Art/2DArt/BuffIcons/StatusFrozen.dds', 'electrocute': 'Art/2DArt/BuffIcons/StatusElectrocuted.dds'}, 'monster_stats': monster_stats, 'minion_level': minion_level, 'minion_stats': minion_stats, 'minion_intrinsic': minion_intrinsic, 'archon_nature': archon_nature, 'archon_time': archon_time, 'archon_nature_icon': _buff_icon['archon_nature'], 'character_stats': char_stats, 'quest_rewards': quest_rewards, 'resistance_penalty': res_penalty, 'attribute_text': attr_text, 'player_base_speed': base_speed, 'support_capacity_per_attribute': capacity_per, 'max_support_sockets': max_sockets, 'lesser_shrines': lesser_shrines, 'skills': skills})
 
 # --- stat texts for stats used by passives, item mods and skills; app formats them.

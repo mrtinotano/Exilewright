@@ -66,6 +66,13 @@
   "poison": "Art/2DArt/SkillIcons/iconpoisoned.dds",
   "bleed": "Art/2DArt/BuffIcons/buffbleed.dds",
   "maim": "Art/2DArt/BuffIcons/MaimBuff.dds",
+  "armour": "Art/2DArt/BuffIcons/ArmourBreak2BuffIcon.dds",
+  "armourBreak": "Art/2DArt/BuffIcons/ArmourBreak1BuffIcon.dds",
+  "blind": "Art/2DArt/BuffIcons/buffblinded.dds",
+  "expo_fire": "Art/2DArt/BuffIcons/resistfire.dds",
+  "expo_cold": "Art/2DArt/BuffIcons/resistcold.dds",
+  "expo_lightning": "Art/2DArt/BuffIcons/resistlightning.dds",
+  "expo": "Art/2DArt/BuffIcons/GenericElementalExposure.dds",
   "freeze": "Art/2DArt/BuffIcons/StatusFrozen.dds",
   "electrocute": "Art/2DArt/BuffIcons/StatusElectrocuted.dds"
  },

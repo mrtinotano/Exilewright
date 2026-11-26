@@ -2724,6 +2724,19 @@ export function initScene(el, api) {
     for (const d of dummies) if (!d.dead && segDist(d.pos, f.a, f.b) <= f.r + SIM.body) hit(d, f.S, { mult: f.mult, noPay: true });
     for (const g of fissures) if (g !== f && time >= g.next && crosses(f, g)) later(.05, () => aftershock(g));
   }
+  // Armour Breaker's look (heavy_strike_02: heavy_strike_SB, SWING_2H, HIT, grdPoof .pet): orange energy shaking on your
+  // weapon as you swing (vibrationEnergy 1 / 0.53 / 0.2, its shine 1 / 0.69 / 0.35), an orange arc on the swing
+  // (coneImpactSwing 1 / 0.55 / 0.25), and on the hit a flash burst (1 / 0.4 / 0.2), orange spikes shattering out of it
+  // (spikeShatter 1 / 0.38 / 0.08), a shockwave ring and a puff of dust blown along the ground
+  const BREAK = { energy: 0xff8733, shine: 0xffb059, swing: 0xff8c40, flash: 0xff6633, spike: 0xff6114 };
+  function breakLook(d, dx, dz) {
+    const H = hand(), q = V(d.pos.x, 1, d.pos.z);
+    fx.glow(H, .9, BREAK.energy, .25, 2.2); fx.emit(6, { p: H, r: .08, v: .8, life: .25, size: .07, c: BREAK.shine, k: 2, drag: 2 });
+    fx.arc(pp, dx, dz, 2, .95, BREAK.swing);
+    fx.glow(q, 1.6, BREAK.flash, .2, 2.4); fx.ring(d.pos, .2, 1.4, BREAK.flash, .3, { a: .7 });
+    for (let i = 0; i < 10; i++) { const a = rnd(TAU); fx.streak(q.clone(), V(q.x + Math.cos(a) * 1.2, q.y + rnd(-.4, .6), q.z + Math.sin(a) * 1.2), BREAK.spike, .18, .025, .6); }
+    fx.emit(10, { p: { x: d.pos.x, y: .15, z: d.pos.z }, dir: V(dx * 3, .3, dz * 3), r: .3, v: 1.5, life: .7, size: .4, grow: 1.8, c: 'dust', smoke: true, a: .4, drag: 1.5 });
+  }
   function slash(S, dx, dz, r = 2, half = .95) {
     fx.arc(pp, dx, dz, r, half, S.el); fx.sector(pp, dx, dz, r, half, S.el, .2, { a: .25, grow: true });
     fx.emit(8, { p: { x: pp.x + dx, y: 1.1, z: pp.z + dz }, dir: V(dx * 4, 0, dz * 4), v: 2, life: .25, size: .16, c: S.el, c2: 'white', drag: 2 });
@@ -3255,7 +3268,7 @@ export function initScene(el, api) {
           fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); slash(S, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); slash(S, dx / l, dz / l); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
@@ -5540,7 +5553,13 @@ export function initScene(el, api) {
     const d = topD = boss || (hover && !hover.dead ? hover : lastHit && !lastHit.dead ? lastHit : null);
     tgtEl.hidden = !d; if (!d) return;
     const p = (a, b) => (b > 0 ? clamp(a / b, 0, 1) * 100 : 0).toFixed(1);
-    put(tgtEl, `<div style="color:${RARE[d.stat.rarity] || RARE.normal}">${esc(d.mon.name)}</div><div class="s-tbar"><i style="width:${p(d.life, d.max)}%"></i>${d.maxEs > 0 ? `<u style="width:${p(d.es, d.maxEs)}%"></u>` : ''}<span>${short(Math.ceil(d.life + d.es))}/${short(d.max + d.maxEs)}</span></div><small>${t('Lv. {0}', d.level)}</small>`);
+    // its states as the game's icons under its bar (BuffDefinitions' icons, skills.json ailment_icons): its ailments, an
+    // Exposure, its Armour Break building up or its armour Fully Broken
+    const st = ['ignite', 'chill', 'freeze', 'shock', 'electrocute', 'poison', 'bleed', 'maim', 'blind'].filter(a => d.st[a] > 0);
+    if (d.st.expo > 0 && d.expo) st.push(d.expo.els.length === 1 && ['fire', 'cold', 'lightning'].includes(d.expo.els[0]) ? 'expo_' + d.expo.els[0] : 'expo');
+    if (d.st.armour > 0) st.push('armour'); else if (d.cut > 0) st.push('armourBreak');
+    const icons = st.map(a => api.ailmentIcon?.(a)).filter(Boolean).map(s => `<img src="${esc(s)}">`).join('');
+    put(tgtEl, `<div style="color:${RARE[d.stat.rarity] || RARE.normal}">${esc(d.mon.name)}</div><div class="s-tbar"><i style="width:${p(d.life, d.max)}%"></i>${d.maxEs > 0 ? `<u style="width:${p(d.es, d.maxEs)}%"></u>` : ''}<span>${short(Math.ceil(d.life + d.es))}/${short(d.max + d.maxEs)}</span></div>${icons ? `<div class="s-ticons">${icons}</div>` : ''}<small>${t('Lv. {0}', d.level)}</small>`);
   }
   // Infernalist's Pyromantic Pact: a mana cost adds its share as Infernal Flame instead (up to your maximum mana); at the
   // most you take its share of your maximum life and energy shield as fire damage and lose its share of the Flame
