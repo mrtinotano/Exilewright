@@ -1354,13 +1354,16 @@ export function initScene(el, api) {
   // surge's trail rising round you (lightning_trail boosted 1 / 1.2 / 1.4; chaos_trail the chaos theme's 0.63 / 0.38 / 1;
   // fire_trail boosted 1.4 / 1.2 / 1 with flames for 0.25-0.35 s; necro_trail 0.7 / 1 / 0.73).
   // note: the skin's flash is a glow on you; the trail rises in a bolt (its path is surge.ast's bones)
-  const SKIN = { lightning: 0x4d59ff, INT: 0x0e1fff, DEX: 0x32ff26, STR: 0xff2020, elemental: 0xa180ff, necro: 0xadff99, eshield: 0x59abff, fire: 0xff7426, cold: 0x73abff };
+  const SKIN = { silver: 0x9daaff, lightning: 0x4d59ff, INT: 0x0e1fff, DEX: 0x32ff26, STR: 0xff2020, elemental: 0xa180ff, necro: 0xadff99, eshield: 0x59abff, fire: 0xff7426, cold: 0x73abff };
   const SURGE = { lightning: 0xb6daff, chaos: 0xa262ff, fire: 0xffccaa, necro: 0xb3ffba }, STAR = 0x8080ff;
   const CAST_ON = { 'Cast on Block': ['lightning', 'lightning'], 'Cast on Charm Use': ['lightning', 'lightning'], "Thundergod's Wrath": ['lightning', 'lightning'],
     'Cast on Critical': ['INT', 'chaos'], 'Cast on Dodge': ['DEX', 'chaos'], 'Cast on Elemental Ailment': ['elemental', 'fire'], 'Cast on Minion Death': ['necro', 'necro'],
     'Barrier Invocation': ['eshield', 'chaos'], 'Elemental Invocation': ['elemental', 'chaos'], "Reaper's Invocation": ['STR', 'chaos'], Spellslinger: ['eshield', 'chaos'] };
+  // other persistent skills with an activation of this family and nothing else: Charge Regulation (charge_mastery_activation:
+  // activate_silver.epk, activationSilver_skin 1.23 / 1.33 / 2)
+  const ACTIVATE = { 'Charge Regulation': 'silver' };
   function metaOn(k) {
-    const a = CAST_ON[k][0], col = SKIN[a], c = V(pp.x, 1.2, pp.z);
+    const a = CAST_ON[k]?.[0] || ACTIVATE[k], col = SKIN[a], c = V(pp.x, 1.2, pp.z);
     fx.flash(pp, col, 8, .3, 5); fx.glow(c, 1.6, col, .35, 2.5);
     fx.emit(24, { p: c, r: .35, h: 1, v: 1.6, life: .75, size: .05, c: col, c2: 'white', k: 2.4, drag: 2 });   // its strings
     if (a === 'lightning') for (let j = 0; j < 16; j++) { const q = rnd(TAU); fx.bolt(c, V(c.x + Math.cos(q) * 1.3, c.y + rnd(-.7, .9), c.z + Math.sin(q) * 1.3), col, rnd(.09, .45), .03); }
@@ -3487,7 +3490,7 @@ export function initScene(el, api) {
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       if (SILENT.has(k)) return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       if (k === 'Blasphemy') { const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), 0x1f2bff, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove()); fx.pillar(pp, .6, 2.6, 0x1f2bff, .5, 2); }   // its symbol (BLAS)
-      else if (CAST_ON[k]) metaOn(k);
+      else if (CAST_ON[k] || ACTIVATE[k]) metaOn(k);
       else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
     },
@@ -4589,7 +4592,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
