@@ -1331,6 +1331,25 @@ export function initScene(el, api) {
     if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need))); say(t('{0} triggers {1}', T.label, base(j).label), T.el);
     for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }));
   }
+  // Cast on Block's look (cast_on_block: CastOnBlockActivation activate_lightning.epk; CastOnBlockTriggerEffect
+  // crit_activate.ao, CastOnBlockSurgeEffect lightning_surge.ao): turned on, your skin flashes lightning blue
+  // (activationLightning_skin 0.75 / 0.87 / 2.5) with a lens flare, strings of lightning for 0.12-0.75 s and 16 bolts out
+  // of your chest for 0.09-0.45 s; as it triggers, a star flare for 0.2 s and a ring for 0.35 s (trigger_activate:
+  // crit_star, crit_ring, boosted 1 / 1 / 2) and a lightning trail rising round you (lightning_trail, boosted 1 / 1.2 / 1.4).
+  // note: the skin's flash is a glow on you; the trail rises in a bolt (its path is surge.ast's bones)
+  const COB = { skin: 0x4d59ff, star: 0x8080ff, trail: 0xb6daff };
+  function cobOn() {
+    const c = V(pp.x, 1.2, pp.z);
+    fx.flash(pp, COB.skin, 8, .3, 5); fx.glow(c, 1.6, COB.skin, .35, 2.5);
+    for (let k = 0; k < 16; k++) { const a = rnd(TAU); fx.bolt(c, V(c.x + Math.cos(a) * 1.3, c.y + rnd(-.7, .9), c.z + Math.sin(a) * 1.3), COB.skin, rnd(.09, .45), .03); }
+    fx.emit(24, { p: c, r: .35, h: 1, v: 1.6, life: .75, size: .05, c: COB.trail, k: 2.4, drag: 2 });   // its strings
+  }
+  function cobTrig() {
+    const c = { x: pp.x, y: 1.3, z: pp.z };
+    fx.glow(c, 1.4, COB.star, .2, 3); fx.ring(pp, .2, 1.1, COB.star, .35, { a: .7, y: 1.3 });
+    fx.bolt(V(pp.x + .45, 0, pp.z), V(pp.x - .2, 2.4, pp.z + .2), COB.trail, .3, .035);
+    fx.emit(10, { p: { x: pp.x, y: .2, z: pp.z }, r: .5, v: .2, up: 4, life: .4, size: .05, c: COB.trail, k: 2.4, drag: 1 });
+  }
   function event(type, p, S, d, n) {   // n: how much of it, where the gain is not per the enemy's Power
     if (S.src === 'meta') return;
     for (const k in tog) {
@@ -1343,7 +1362,7 @@ export function initScene(el, api) {
         if (Math.random() * 100 < (sheet().trigRefund || 0)) T.energy += T.need / 2;   // the tree's half of it refunded
         const at = { x: p.x, z: p.z };
         say(t('{0} triggers {1}', T.label, base(j).label), T.el);
-        fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
+        if (k === 'Cast on Block') cobTrig(); else fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
         later(.12, () => use(j, { at, src: 'meta', rand: T.rand }));
       } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
     }
@@ -3421,6 +3440,7 @@ export function initScene(el, api) {
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       if (SILENT.has(k)) return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       if (k === 'Blasphemy') { const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), 0x1f2bff, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove()); fx.pillar(pp, .6, 2.6, 0x1f2bff, .5, 2); }   // its symbol (BLAS)
+      else if (k === 'Cast on Block') cobOn();
       else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
     },
