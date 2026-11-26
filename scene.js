@@ -3294,15 +3294,15 @@ export function initScene(el, api) {
       const n = S.one ? 1 : (sh(S).projectiles || 1) + (time < me.fervour ? 1 : 0), o = S.origin || pp, dx = S.at.x - o.x, dz = S.at.z - o.z;
       if (n > 1) { for (let k = 0; k < n; k++) { const a = (k - (n - 1) / 2) * .13, cs = Math.cos(a), sn = Math.sin(a); K.grenade({ ...S, one: true, at: { x: o.x + dx * cs + dz * sn, z: o.z + dz * cs - dx * sn } }); } return; }
       const P = S.P, c = S.at;
-      const CG0 = S.dmg?.parts?.ClusterGrenadeMiniPlayer;
-      lob(CG0 ? clusterShell(.11) : fx.orb(S.el, .11), S.origin ? V(S.origin.x, 1.5, S.origin.z) : hand(), V(c.x, .15, c.z), .55, 2.6, () => {
+      const CL = partOf(S, 'ClusterGrenadeMiniPlayer');
+      lob(CL ? clusterShell(.11) : fx.orb(S.el, .11), S.origin ? V(S.origin.x, 1.5, S.origin.z) : hand(), V(c.x, .15, c.z), .55, 2.6, () => {
         if (P.ground === 'oil' || P.ground === 'gas') {   // bursts where it lands and leaves its ground: no fuse
           fx.explode(c, S.A, S.el, { soft: true });
           for (const d of inside(c, S.A)) { if (P.ground === 'oil') expo(d, ELEM, expoMag(S)); else inflict(d, 'poison', S); d.wob = .6; }
           ground(P.ground, c, S.A, P.dur, S);
           return;
         }
-        const CL = partOf(S, 'ClusterGrenadeMiniPlayer'), m = CL ? clusterShell(.12) : fx.orb(S.el, .12); m.position.set(c.x, .15, c.z);
+        const m = CL ? clusterShell(.12) : fx.orb(S.el, .12); m.position.set(c.x, .15, c.z);
         const blow = (e, again) => {
           if (!again && Math.random() * 100 < (S.dmg?.sum?.['grenade_skill_%_chance_to_explode_twice'] || 0)) later(.3, () => blow(e, true));   // the tree's second activation
           const X = { ...S, self: e };
@@ -3312,7 +3312,7 @@ export function initScene(el, api) {
           tick(dt, e) { if (CL) return clusterFuse(m, dt); m.userData.glow.scale.setScalar(.7 + Math.sin(e.s * (6 + e.s * 9)) ** 2 * 1.3); },
           touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; say(t('{0} detonates {1}', by.label, S.label), 'fire'); later(.06, () => blow(this)); } },
           end: e => blow(e) });
-      }, { spin: true, trail: CG0 ? CGR.ember : S.el });
+      }, { spin: true, trail: CL ? CGR.ember : S.el });
     },
     orb(S) {
       const P = S.P, c = S.at, R = S.A, dur = P.detonates ? sh(S).detonate || SIM.orbFuse : P.dur || SIM.lifetime;
