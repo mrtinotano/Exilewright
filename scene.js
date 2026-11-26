@@ -2466,6 +2466,48 @@ export function initScene(el, api) {
     for (let i = 0; i < 12; i++) { const a = rnd(TAU), l = rnd(.6, 1.3); fx.streak(V(q.x, q.y, q.z), V(q.x + Math.cos(a) * l, q.y + rnd(-.5, .9), q.z + Math.sin(a) * l), APR.shatter, rnd(.15, .25), rnd(.02, .04), rnd(.5, 1)); }
     fx.emit(14, { p: q, r: .3, v: 1.2, up: .4, life: 1.2, size: .07, c: APR.shard, c2: 'white', k: 2, drag: 1.5 });
   }
+  // Ball Lightning's look (lightning_balllightning: ball_lightning.pet, ballLightning_Beam.pet, ballLightning_Trail.trl,
+  // infusion_FIRE*.pet): a white-hot core in a violet-blue glow (core 0.2 / 0.3 / 1, center 0.2 / 0.28 / 1) wrapped in
+  // arcs crackling over its sphere (lightningSphere 0.25 / 0.33 / 1, ribbonBolt 0.14 / 0.18 / 1, bolt ribbons 0.08 / 0.12
+  // / 1), a blue trail behind it (0.28 / 0.35 / 1); at each of its hits a beam to every enemy in its area (3D_LightningBeam
+  // 0.17 / 0.25 / 1). With a Fire Infusion consumed: a charge of flames and sparks at your hand (aoeFlash 1 / 0.47 / 0.16,
+  // charge flames 1 / 0.53 / 0.29, sparks 1 / 0.29 / 0.07), orange fire ribbons round the ball (1 / 0.55 / 0.23) and where
+  // it ends a fiery blast: a ring (aoeRingBG 1 / 0.65 / 0.24), a wave of fire (1 / 0.51 / 0.31), sparks (1 / 0.28 / 0.08),
+  // a flash (stunOomph 1 / 0.45 / 0.1) and a gust (windPushWave 1 / 0.33 / 0.1)
+  const BALL = { core: 0xdde4ff, glow: 0x3347ff, sphere: 0x4054ff, arc: 0x242eff, deep: 0x141eff, trail: 0x4759ff, beam: 0x2b3fff,
+    flash: 0xff7729, flame: 0xff874a, spark: 0xff4a11, ribbon: 0xff8c3a, ring: 0xffa53c, wave: 0xff814f, oomph: 0xff731a, gust: 0xff541a };
+  function ballOrb(m) {
+    m.userData.core.material.color.copy(fx.color(BALL.core, 2.6)); m.userData.core.scale.setScalar(.24);
+    m.userData.glow.material.color.copy(fx.color(BALL.glow, 1.1)); m.userData.glow.scale.setScalar(2.4);
+  }
+  function ballTrail(m, fi) {
+    const p = m.position, r = .6;
+    m.userData.glow.scale.setScalar(rnd(2.2, 2.6));
+    for (let i = 0; i < 4; i++) {   // arcs over its sphere
+      const a = rnd(TAU), b = rnd(TAU), q = new THREE.Vector3(p.x + Math.cos(a) * Math.cos(b) * r, p.y + Math.sin(b) * r, p.z + Math.sin(a) * Math.cos(b) * r);
+      fx.bolt(p.clone(), q, i % 2 ? BALL.arc : BALL.sphere, .1, .04, .22);
+    }
+    if (Math.random() < .25) { const a = rnd(TAU), l = rnd(.7, 1.1); fx.bolt(p.clone(), new THREE.Vector3(p.x + Math.cos(a) * l, p.y + rnd(-.5, .3), p.z + Math.sin(a) * l), BALL.deep, .1, .02, .3); }
+    fx.emit(2, { p, r: .15, v: .3, life: .35, size: .16, c: BALL.trail, c2: BALL.core, k: 2.4, drag: 2 });
+    if (fi) fx.emit(2, { p, r: .35, v: .8, up: .6, life: .4, size: .26, c: BALL.ribbon, c2: 'ember', k: 1.8, drag: 2 });
+  }
+  function ballZap(p, R) {
+    for (const d of inside(p, R)) { const q = chest(d); fx.bolt(p.clone(), q, BALL.beam, .16, .05, .3); fx.bolt(p.clone(), q, BALL.core, .1, .02, .3); fx.glow(q, .8, BALL.sphere, .14, 2.6); }
+  }
+  function ballCharge() {
+    const H = hand();
+    fx.glow(H, 1.4, BALL.flash, .25, 2.6);
+    fx.emit(10, { p: H, r: .15, v: .8, up: .8, life: .4, size: .24, c: BALL.flame, c2: 'ember', k: 1.8, drag: 2 });
+    fx.emit(12, { p: H, r: .1, v: 3, life: .35, size: .06, c: BALL.spark, c2: 'white', k: 2.4, drag: 2.5 });
+  }
+  function ballBlast(p, R) {
+    const q = { x: p.x, y: .5, z: p.z };
+    fx.glow(q, R * 1.6, BALL.oomph, .35, 1.6);
+    fx.ring(p, .3, R, BALL.ring, .5, { k: 2.4 }); fx.ring(p, .2, R * 1.2, BALL.gust, .4, { a: .5 });
+    fx.emit(28, { p: { x: p.x, y: .3, z: p.z }, r: R * .4, v: R * 1.6, flat: true, up: .8, life: .6, size: .45, grow: 1.5, c: BALL.wave, c2: 'ember', k: 1.6, drag: 2 });
+    fx.emit(36, { p: q, r: R * .3, v: R * 2.5, up: 2, life: .5, size: .08, c: BALL.spark, c2: 'white', k: 2.4, drag: 2, g: 5 });
+    shake = Math.max(shake, Math.min(.5, R * .09));
+  }
   function shoot(S, from, dx, dz, o = {}) {
     // Shockchain Arrow homes in on enemies with a lightning ailment: a fresh arrow flies at the nearest such one ahead within
     // its range. ponytail: aimed when fired, the game's turn rate is in none of the data; steer per frame if it ever is
@@ -2474,7 +2516,7 @@ export function initScene(el, api) {
     if (HM) { const l = dist(HM.pos, from) || 1; dx = (HM.pos.x - from.x) / l; dz = (HM.pos.z - from.z) / l; }
     const G = S.G, P = S.P, speed = o.speed || G.speed || SIM.projSpeed, slow = !o.speed && (speed < 5.5 || P.spiral || P.wind);
     const cr = Math.max(.15, G.collision || 0), m = P.attack && !P.wind ? fx.arrow(S.el) : fx.orb(S.el, slow ? .26 : .14);
-    let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0, spd = speed * (o.speed ? 1 : S.dmg?.projSpeed || 1), burn = 0;
+    let left = o.range || (G.speed ? G.range : SIM.projRange), pulse = .2, cur = S, a0 = Math.atan2(dx, dz), trail = 0, spd = speed * (o.speed ? 1 : S.dmg?.projSpeed || 1), burn = 0, spd0 = spd;
     // Ball Lightning: its hits on the enemies around it at its frequency; with a Fire Infusion consumed it slows down over
     // time, leaves Ignited Ground at its interval and explodes where it ends (its infused parts)
     const bst = S.dmg?.stats || {}, every = bst.ball_lightning_base_hit_frequency_ms / 1000, fi = S.infs?.includes('fire') && bst.ball_lightning_infused_acceleration != null;
@@ -2485,6 +2527,7 @@ export function initScene(el, api) {
     const EW = P.spiral && !o.shard && bst['eye_of_winter_first_hit_damage_+%_final'] != null, EN = EW ? sh(S).projectiles || bst.base_number_of_projectiles : 0, gap = EW && left / EN;
     let shot = 0, shardT = 0; if (EW) cur = { ...S, first: new Set() };
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
+    if (every) { ballOrb(m); if (fi && !S.src) ballCharge(); }
     const AP = S.name === 'Armour Piercing Rounds'; if (AP) { tint(m, APR.trail); m.children[1].material.color.copy(fx.color(APR.head, 1.5)); m.children[1].scale.setScalar(.3); if (!o.forked && !o.split && !o.back) aprMuzzle(dx, dz); }
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
@@ -2533,7 +2576,7 @@ export function initScene(el, api) {
       update(dt) {
         if (P.wander) { a0 += rnd(-1, 1) * 9 * dt; dx = Math.sin(a0); dz = Math.cos(a0); m.rotation.y = a0; }
         if (fi) spd = Math.max(.3, spd * (1 + bst.ball_lightning_infused_acceleration / 100 * dt));
-        let stepLeft = Math.min(left, spd * dt); left -= stepLeft; trail += stepLeft; shardT += stepLeft;
+        let stepLeft = Math.min(left, spd * dt); left -= fi ? Math.min(left, spd0 * dt) : stepLeft; trail += stepLeft; shardT += stepLeft;   // note: slowed by its Fire Infusion it still dissipates when it would have flown its range (its lifetime is not in the data; the game's video shows it so)
         while (stepLeft > 0 && !q.dead) {
           const s = Math.min(.3, stepLeft); stepLeft -= s; m.position.x += dx * s; m.position.z += dz * s;
           if (!cur.fired) for (const w of objs) if (w.wall && w.fire && !w.dead && segDist(m.position, w.a, w.b) < .45) {   // through a wall of fire
@@ -2568,14 +2611,14 @@ export function initScene(el, api) {
         }
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
-        if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else fx.trail(m.position, cur.el, slow);
+        if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
-          if (S.R && (pulse -= dt) <= 0) { pulse = every || .35; fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: every ? 1 : .5 }); }
+          if (S.R && (pulse -= dt) <= 0) { pulse = every || .35; if (every) ballZap(m.position, S.R); else fx.ring(m.position, .2, S.R, cur.el, .3, { a: .6 }); area(m.position, S.R, cur, { mult: every ? 1 : .5 }); }
           if (BG && (burn -= dt) <= 0) { burn = bst.ball_lightning_infused_burning_ground_interval_ms / 1000; ground('burning', m.position, radOf(BG, 'tertiary'), BG.dmg.shape?.duration || 4, BG); }
         }
-        if (left <= 0) { end(null); caltrops(S, m.position); if (BX) boom({ x: m.position.x, z: m.position.z }, radOf(BX), BX); }
+        if (left <= 0) { end(null); caltrops(S, m.position); if (BX) { const p = { x: m.position.x, z: m.position.z }; ballBlast(p, radOf(BX)); area(p, radOf(BX), BX); } }
       },
       remove() { fx.drop(m); } };
     objs.push(q); return q;

@@ -130,7 +130,8 @@ export function profile(gem, d = {}) {
     : !radius && (tag('buff') || has('EmpowersOtherSkill', 'ModifiesNextSkill', 'Instant', 'Guard', 'CommandsMinions', 'Offering')) ? 'buff'
     : 'area');
 
-  const ground = has('CreatesGroundEffect', 'CausesBurning')
+  // Ball Lightning's ground is its Fire Infusion's Ignited Ground only (its own part, in the scene)
+  const ground = name !== 'Ball Lightning' && has('CreatesGroundEffect', 'CausesBurning')
     ? (/Oil/.test(name) ? 'oil' : G.has('chaos') && G.has('fire') ? 'gas' : G.has('fire') ? 'burning' : G.has('cold') ? 'chilled'
       : G.has('lightning') ? 'shocked' : G.has('chaos') ? 'caustic' : attack || G.has('physical') ? 'jagged' : 'consecrated')
     : null;
