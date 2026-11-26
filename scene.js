@@ -1474,11 +1474,28 @@ export function initScene(el, api) {
   // shockwave (its part; more from a Unique enemy); Wing Blast's has its chance to grant you a Power Charge.
   // note: Wing Blast's knockback and leap back are not simulated
   const SHOCKWAVE = { 'Wing Blast': ['WingBlastStunExplosionPlayer', 'wing_blast_shockwave_damage_+%_final_if_created_from_unique'], Boneshatter: ['BoneshatterShockwavePlayer', 'boneshatter_damage_+%_final_if_created_from_unique'] };
+  // Boneshatter's look: its weapon surging with warm energy as it strikes (heavy_strike_SB: heavy_strike_charge
+  // vibrationEnergy 15 / 8 / 3, 0.4 s); its shockwave (TraumaStrikeShockwave: supports/aftershock physical_aftershock) a
+  // pale ring for 0.35 s (emissive 15 / 10.7 / 8.8), a warm burst for 0.3 s (45 / 25.3 / 16.9), a blur for 0.5 s and
+  // 32 puffs of grey dust for 1.5-2.5 s (0.5 / 0.48 / 0.47). note: the shards thrown out along the ring are the scene's
+  const BSH = { surge: 0xff8833, ring: 0xffb596, oomph: 0xff8f60, dust: 0x807c79 };
+  function bsSurge(d) {
+    const at = { x: d.pos.x, y: 1.1, z: d.pos.z };
+    fx.glow(at, 1, BSH.surge, .4, 2.5); fx.emit(10, { p: at, r: .15, v: 2.5, life: .4, size: .08, c: BSH.surge, c2: BSH.ring, k: 2.2, drag: 2 });
+  }
+  function bsBlast(c, R) {
+    const at = { x: c.x, y: .5, z: c.z };
+    fx.ring(c, .3, R, BSH.ring, .35, { k: 3 }); fx.flash(c, BSH.oomph, 10, .3, 5); fx.glow(at, R * 1.1, BSH.oomph, .3, 3); fx.ball(at, R * .45, BSH.ring, .5, 1.2);
+    for (let k = 0; k < 24; k++) { const a = k / 24 * TAU + rnd(.15), r0 = R * rnd(.2, .45), r1 = R * rnd(.75, 1.05); fx.strip({ x: c.x + Math.sin(a) * r0, z: c.z + Math.cos(a) * r0 }, { x: c.x + Math.sin(a) * r1, z: c.z + Math.cos(a) * r1 }, .07, BSH.ring, .35, { y: .1 }); }
+    fx.emit(32, { p: at, r: R * .5, v: R * .8, up: .6, life: 2, size: .6, grow: 2.2, c: BSH.dust, smoke: true, a: .5, drag: 1.2 });
+    fx.emit(20, { p: at, r: .3, v: R * 3, up: 2, life: .6, size: .1, c: 0xe8dcc4, g: 8, drag: .8 });   // bone splinters
+    shake = Math.max(shake, Math.min(.5, R * .09));
+  }
   function wingBlast(S, d) {
     if ((d.bar.stun || 0) < PRIMED[d.stat.rarity]) return;
     const [id, uq] = SHOCKWAVE[S.name], st = S.dmg.stats, X = partOf(S, id), c = { x: d.pos.x, z: d.pos.z };
     d.bar.stun = 0; d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, 'stun', S, 1, null, { dur: DUR.stun });
-    if (X) { fx.ring(c, .3, X.A, 'white', .35); boom(c, X.A, { ...X, mult: S.mult * uniqueMore(d, X.dmg.stats[uq]), src: 'shockwave' }); }
+    if (X) { const Y = { ...X, mult: S.mult * uniqueMore(d, X.dmg.stats[uq]), src: 'shockwave' }; if (S.name === 'Boneshatter') { bsBlast(c, X.A); area(c, X.A, Y); } else { fx.ring(c, .3, X.A, 'white', .35); boom(c, X.A, Y); } }
     if (Math.random() * 100 < st['wing_blast_chance_to_gain_power_charge_on_stun_%']) gainCharge('power', S.label);
   }
   // Repulsion: its curse inflicts its Fragility; a hit of yours on the cursed enemy removes it for an explosion there
@@ -3610,7 +3627,7 @@ export function initScene(el, api) {
           fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Boneshatter') bsSurge(d); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
