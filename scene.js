@@ -5486,7 +5486,7 @@ export function initScene(el, api) {
       if (S.dmg?.sum?.gain_X_tasalios_perfection_on_perfect_timing) S.mult *= 1 + TASALIO.more * (me.tasalio || 0) / 100;
       if (P.spell && S.dmg?.sum?.gain_X_wildshard_stacks_on_cast) me.wildshard = (me.wildshard || 0) + S.dmg.sum.gain_X_wildshard_stacks_on_cast;   // Sione's Temper
       facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); goal = null; walk = false;
-      if (!auto) { player.act(clipOf(P, S.kind, player.family()), S.dmg?.speed > 0 ? 1 / S.dmg.speed : SIM.castTime); player.setColor(S.el); }   // what you use yourself is what the figure plays
+      if (!auto) { const T = S.dmg?.speed > 0 ? 1 / S.dmg.speed : SIM.castTime; me.actEnd = time + T; player.act(clipOf(P, S.kind, player.family()), T); player.setColor(S.el); }   // what you use yourself is what the figure plays
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
       // Triskelion Cascade, Barrage: their share of the empowered skill's use time added to their last use's cooldown (up to its most)
@@ -6039,7 +6039,7 @@ export function initScene(el, api) {
     const DR = ['Blink', 'Black Powder Blitz'].map(onS).find(X => X && sh(X).travel && !(time < me.leapAt?.[X.name]));
     const UD = sheet().uDef || {}, L = DR ? sh(DR).travel : 3.6 + (UD.rollDist || 0) + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
     if (UD.rollGuard && me.maxE > me.es) guardFor((me.maxE - me.es) * UD.rollGuard / 100, 4);   // Decree of Flight
-    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; if (UD.overEnc) me.overEnc = { n: (time < me.overEnc?.until ? me.overEnc.n : 0) + 1, until: time + 4 };   /* Ab Aeterno: Overencumbered for 4 seconds (its text), stacking */ facing = Math.atan2(dx, dz); charge = held = goal = null;
+    move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.actEnd = 0;   /* a roll ends the action */ me.sprint = null; if (UD.overEnc) me.overEnc = { n: (time < me.overEnc?.until ? me.overEnc.n : 0) + 1, until: time + 4 };   /* Ab Aeterno: Overencumbered for 4 seconds (its text), stacking */ facing = Math.atan2(dx, dz); charge = held = goal = null;
     if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06;
       // Black Powder Blitz: a leap (its timeline lands at 0.52 s; note: its height, 1 m, is the scene's), the round's blast
       const BX = DR.name === 'Black Powder Blitz'; if (BX) { Object.assign(move, { dur: .52, h: 1, powder: true }); me.powderGlow = time + BP.glowFor; fx.emit(8, { p: { x: pp.x, y: 1.2, z: pp.z }, r: .3, v: .4, up: .8, life: 1, size: .6, grow: 1.5, c: 0x343839, smoke: true, a: .45 }); }
@@ -6171,7 +6171,9 @@ export function initScene(el, api) {
     const pen = -P * (1 + ((A.inc || 0) + (S.els?.includes('fire') ? A.fire || 0 : 0) + (S.els?.includes('cold') ? A.cold || 0 : 0) + (S.kind === 'shield' ? A.shield || 0 : 0)) / 100) * more;
     return Math.max(0, 1 - pen / 100);
   }
-  const acting = () => time - castAt <= .3;   // still performing the last skill (the scene's action time)
+  // still performing the last skill: its use time (else the scene's action time); one without a movement speed while
+  // performing it (movement_speed_+%_final_while_performing_action) roots you meanwhile (me.act null)
+  const acting = () => time - castAt <= .3 || time < (me.actEnd ?? 0);
   let spdC = { at: -9, v: 0 };
   const spd = () => { if (time - spdC.at > .5) spdC = { at: time, v: api.playerSpeed(banner('movement_speed_+%') + (onsl() ? ONSLAUGHT.move : 0)
     + (sheet().moveWhile || []).reduce((t, w) => t + (!w.cv || meIs[w.cv]?.() ? w.val : 0), 0) + (me.tail || 0) * TAILWIND.move + (openWeak(topD) ? sheet().weakness.move : 0) + charges.frenzy * sheet().movePerFrenzy + (me.gamble || 0)) }; return spdC.v; };   // the tree's while you are in a state (calc.js MOVE_WHILE); Darkray Vectors: per Frenzy Charge
@@ -7499,7 +7501,7 @@ export function initScene(el, api) {
       if (!acting() || me.act != null) { const v = spd() * slowed() * maimed() * (acting() ? me.act : 1) * dt; pp.x += steer.x * v; pp.z += steer.z * v; moving = true; if (time - castAt > .45) facing = Math.atan2(steer.x, steer.z); }
     } else if (goal && !charge && !stuck()) {   // to the point clicked, following the cursor while the button is held
       if (walk) goal = { x: cursor.x, z: cursor.z };
-      const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * maimed() * (acting() ? me.act ?? 1 : 1) * dt);
+      const mx = goal.x - pp.x, mz = goal.z - pp.z, l = Math.hypot(mx, mz), v = Math.min(l, spd() * slowed() * maimed() * (acting() ? me.act ?? 0 : 1) * dt);
       if (l > .15) { pp.x += mx / l * v; pp.z += mz / l * v; moving = true; if (time - castAt > .45) facing = Math.atan2(mx, mz); } else if (!walk) goal = null;
     }
     const far = Math.hypot(pp.x, pp.z); if (far > ROOM) { pp.x *= ROOM / far; pp.z *= ROOM / far; }   // the room's wall
