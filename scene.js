@@ -2448,6 +2448,7 @@ export function initScene(el, api) {
   // rearms: the tree's chance), for dur s;
   // o.early: its damage +% final if set off within its first 0.5 s (Brambleslam's, "when not killed by self")
   // o.reach: how near an enemy sets it off (else its area); o.delay: it goes off that long after (Conductive Runes);
+  // o.set(p): as it is set off; o.boom(p): its own explosion's look;
   // o.more(t): its damage multiplier t s after arming (Ice Shards); o.mesh: what stands there; o.then(p): after it goes off
   function hazardAt(X, p, dur, o = {}) {
     const arm = o.arm || 0, hold = Math.max(arm, X.dmg?.sum?.hazards_cant_trigger_x_seconds_after_creation || 0), c = o.c || 'dust', reach = o.reach || X.A, g = holder(p);   // Controlled Hazard: not set off before its seconds
@@ -2456,7 +2457,9 @@ export function initScene(el, api) {
       tick() {
         if (e.set || e.s < hold || !dummies.some(d => !d.dead && dist(d.pos, p) <= reach + SIM.body)) return;
         const S2 = { ...X, haz: true, mult: X.mult * (e.s < .5 && o.early ? 1 + o.early / 100 : 1) * (o.more?.(e.s - arm) ?? 1) }; e.set = true; me.hazTrig = [...(me.hazTrig || []).filter(t => time - t <= RECENT), time];   // the Hazards triggered recently
-        later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; for (const d of inside(p, X.A)) d.hazAt = time; area(p, X.A, S2); o.then?.(p); fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
+        o.set?.(p);
+        later(o.delay || 0, () => { if (Math.random() * 100 < (X.dmg?.sum?.['hazard_rearm_%_chance'] || 0)) e.set = false; else e.dead = true; for (const d of inside(p, X.A)) d.hazAt = time; area(p, X.A, S2); o.then?.(p);
+          if (o.boom) o.boom(p); else fx.emit(10, { p: { x: p.x, y: .2, z: p.z }, r: X.A, v: 1.5, up: 1, life: .3, size: .1, c, c2: 'white' }); });
       },
       off: () => decal.remove() });
   }
@@ -4274,14 +4277,35 @@ export function initScene(el, api) {
       vortex(S, { x: pp.x, z: pp.z }, S.A, e.dur - e.s, { speed: st.archon_chayula_storm_movement_speed / 10, every: st.archon_of_chayula_tornado_attack_interval_ms / 1000, mult: 1, seek: S.G?.radius2 || 9, look: CHAYULA });
     } });
   };
-  // Conductive Runes: its Runes in a cone in front of you up to its limit, each arming after its time and going off its
-  // activation time after an enemy steps on it (its secondary radius), exploding in its area
+  // Conductive Runes: its Runes in a cone in front of you (its cone angle, out to its placing set's radius, which your
+  // area grows as the explosion's) up to its limit, each arming after its time and going off its activation time after
+  // an enemy steps on it (its secondary radius), exploding in its area.
+  // Its look (rune_hazard: hazard_trap.ao, hazard_explosion.ao, hazard_wave.ao): a blue wave over the cone as you cast for
+  // 1.3-1.5 s (hazard_wave_decal 0 / 0.18 / 1), each rune its glyph on a stone patch (hazard_trap_rune 0.17 / 0.36 / 1,
+  // decal 0.2 / 0.5 / 1); stepped on, a priming wave for 0.4 s and embers; its explosion a flash for 0.2 s (0.36 / 0.72 /
+  // 0.99), a sphere for 0.35 s (0.19 / 0.51 / 1), lightning dropping on it for 0.1-0.5 s and three rings for 0.35-0.4 s
+  // (Lightning Color 0.039 / 0.056 / 0.18), 20 embers for 0.6-2.6 s and debris for 1-3 s (0.71 / 1.23 / 2), 16 puffs of smoke
+  // for 1-2 s, its glyph rising for 1 s (0.12 / 0.49 / 0.99) and a crack left for 7.5-12.5 s.
+  // note: where in the cone each rune lands is not in the data: spread evenly over it
+  const RUNE = { wave: 0x002eff, glyph: 0x2b5cff, patch: 0x3380ff, flash: 0x5cb8ff, sphere: 0x3082ff, bolt: 0x3750ff, ember: 0x5a9dff, rise: 0x1f7eff, smoke: 0x2c2c2c };
+  function runeBoom(p, R) {
+    const c = { x: p.x, y: .4, z: p.z };
+    fx.flash(c, RUNE.flash, 10, .2, R * 3); fx.glow(c, R * 1.2, RUNE.sphere, .35, 2.6); fx.bolt(V(p.x + rnd(-.3, .3), 7, p.z + rnd(-.3, .3)), V(p.x, 0, p.z), RUNE.bolt, .3, .06);
+    for (let k = 0; k < 3; k++) fx.ring(p, .1, R * (.7 + k * .15), RUNE.bolt, .35 + k * .025, { a: .8, y: .1 + k * .1 });
+    fx.emit(20, { p: c, r: .2, v: R * 2, up: 2, life: 1.6, size: .05, c: RUNE.ember, k: 2.4, g: 3, drag: 1.5 }); fx.emit(8, { p: c, r: .2, v: R * 2.5, up: 3, life: 2, size: .08, c: RUNE.ember, g: 9, drag: .5 });   // its embers and debris
+    fx.emit(16, { p: { x: p.x, y: .2, z: p.z }, r: R * .4, v: .6, up: .8, life: 1.5, size: .5, grow: 1.8, c: RUNE.smoke, smoke: true, a: .35, drag: 1 });
+    fx.disc(p, R * .5, RUNE.rise, 1, { y: .5, a: .8 }); fx.disc(p, R * .6, 0x060608, 10, { dark: true, a: .5, hold: .8 });   // its glyph rising, its crack
+  }
   K.runes = S => {
     const st = S.dmg?.stats || {}, n = st.rune_hazard_number_of_runes_to_create || 1, half = (st.rune_hazard_cone_angle || 60) / 2 * Math.PI / 180, a0 = Math.atan2(S.dx, S.dz);
+    const PR = (st._placement_radius || 0) / (st.active_skill_base_area_of_effect_radius || 1) * S.A || SIM.castRange * .6;   // its placing radius grown as its area is
+    fx.sector(pp, S.dx, S.dz, PR, half, RUNE.wave, 1.4, { a: .5, grow: true });
     for (let k = 0; k < n; k++) {
       limit(o => o.hazard && o.name === S.name, st.rune_hazard_base_number_of_runes_allowed, S);
-      const a = a0 + rnd(-half, half), r = rnd(1, SIM.castRange * .6), p = { x: pp.x + Math.sin(a) * r, z: pp.z + Math.cos(a) * r };
-      hazardAt(S, p, durOf(S), { arm: st.rune_hazard_arming_time_ms / 1000, delay: st.rune_hazard_detonate_time_ms / 1000, reach: S.G?.radius2, c: 'lightning' });
+      const a = a0 + rnd(-half, half), r = PR * Math.sqrt(Math.random()), p = { x: pp.x + Math.sin(a) * r, z: pp.z + Math.cos(a) * r };
+      hazardAt(S, p, durOf(S), { arm: st.rune_hazard_arming_time_ms / 1000, delay: st.rune_hazard_detonate_time_ms / 1000, reach: S.G?.radius2, c: RUNE.glyph,
+        set: q => { fx.ring(q, .1, .6, RUNE.glyph, .4, { a: .8 }); fx.emit(6, { p: { x: q.x, y: .2, z: q.z }, r: .2, v: .3, up: 1, life: 1, size: .05, c: RUNE.ember, k: 2.4 }); },   // primed
+        boom: q => runeBoom(q, S.A) });
     }
   };
   // Rolling Magma: a ball of magma lobbed at the target (within its least and most distance) that hits its area where it

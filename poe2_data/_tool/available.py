@@ -453,6 +453,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     sets = [i for x in effects for i in [x['StatSet']] + ([j for j in x['AdditionalStatSets'] if not idle(j)][:1] if idle(x['StatSet']) else [])]
     implicit = {sid(a) for i in sets for a in ss_tab[i]['ImplicitStats']}
     const, levels = stat_levels(effects, sets)
+    # ...the idle set's own radius, which the damaging one's covers: where the skill places what it makes (Conductive Runes' cone)
+    own = dict(zip(map(sid, ss_tab[sets[0]]['ConstantStats']), ss_tab[sets[0]]['ConstantStatsValues'])).get('active_skill_base_area_of_effect_radius')
+    if idle(sets[0]) and own and own != const.get('active_skill_base_area_of_effect_radius'):
+        const['_placement_radius'] = own
     rad = lambda area: {lvl: st.get(area, const.get(area)) for lvl, st in levels.items() if area in st or area in const} or None
     radius = rad('active_skill_base_area_of_effect_radius')
     # what the gem's other parts say (its second hit, the explosion, the empowered use...): only the rules the 3D scene

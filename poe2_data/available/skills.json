@@ -45593,7 +45593,8 @@
     "dps_display_statset_index": 1,
     "active_skill_base_physical_damage_%_to_convert_to_lightning": 100,
     "_attack_crit": 700,
-    "active_skill_electrocutes_as_though_dealt_damage_+%_final": 50
+    "active_skill_electrocutes_as_though_dealt_damage_+%_final": 50,
+    "_placement_radius": 85
    },
    "levels": {
     "1": {
@@ -127981,7 +127982,8 @@
     "elemental_sundering_number_of_explosion_allowed": 20,
     "active_skill_base_physical_damage_%_to_convert_to_cold": 100,
     "elemental_sundering_damage_+%_final_if_created_from_unique": 50,
-    "active_skill_attack_speed_+%_final": -45
+    "active_skill_attack_speed_+%_final": -45,
+    "_placement_radius": 50
    },
    "levels": {
     "1": {
@@ -135790,7 +135792,8 @@
     "toxic_pustule_max_burst_damage_+%_final_from_stored_poison": 300,
     "toxic_pustule_max_additional_burst_base_radius_+": 15,
     "_cooldown_ms": 11000,
-    "_stored_uses": 1
+    "_stored_uses": 1,
+    "_placement_radius": 30
    },
    "levels": {
     "1": {
