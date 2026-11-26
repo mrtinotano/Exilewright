@@ -4325,7 +4325,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -5539,6 +5539,22 @@ export function initScene(el, api) {
     castAt = time; later(S.dmg?.speed ? 1 / S.dmg.speed : 1, () => { if (tog[S.name] && sheet().mountOk) { me.mounted = true; say(t('{0}: mounted', S.label), 'gold'); } });
   }
   const OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty's Owl Feathers (step, roll)
+  // Black Powder Blitz's look (Shankgonne: Metadata/Effects/misc/Uniques/boots/shankgonne, its dodge timeline
+  // shankgonnedodge.atl): the round's blast where you leave (cannon_fire: a flash, a ring of smoke, sparks, embers, debris,
+  // a scorch), smoke and fire trailing your foot through the leap, the cannon leg glowing for 3.9 s, and sparks with a
+  // puff of smoke at your footsteps (cannon_ball_footsteps, canon_spark)
+  const BP = { flash: 0xffb08a, spark: 0xff4714, ember: 0xff874a, fire: 0xffa370, glow: 0xff5e1f, smoke: 0x2c2c2c, trail: 0x070605, wave: 0xff3810, debris: 0x3a3028, scorch: 0x140c08, glowFor: 3.93 };
+  function powderBlast(c, R) {
+    fx.flash(c, BP.flash, 30, .25, 8); fx.ring(c, .3, R, BP.wave, .45, { a: .6 });
+    const at = { x: c.x, y: .3, z: c.z };
+    fx.emit(30, { p: at, r: .3, v: R * 4, up: 2.5, life: .5, size: .1, c: BP.spark, c2: BP.ember, g: 6, drag: 1.5, k: 2.5 });
+    fx.emit(14, { p: at, r: .4, v: 2, up: 4, life: 1.2, size: .08, c: BP.ember, g: 4, drag: .8 });
+    fx.emit(10, { p: at, r: .3, v: 3, up: 4, life: .9, size: .1, c: BP.debris, smoke: true, a: .9, g: 12 });
+    fx.emit(12, { p: { x: c.x, y: .2, z: c.z }, r: R * .6, v: R * 1.5, up: .6, life: 1.4, size: 1, grow: 2, c: BP.smoke, smoke: true, a: .5, drag: 1.5 });
+    const sc = fx.decal(c, R * .8, 'cracks', BP.scorch, { dark: true, a: .7 }); later(2, () => sc.remove());
+    shake = Math.max(shake, Math.min(.5, R * .09));
+  }
+  let powderStep = 0;
   function roll() {
     if (move || rollCd > 0 || stuck() || sheet().unwavering) return;   // Unwavering Stance: cannot Dodge Roll or Sprint
     const fx0 = cursor.x - pp.x, fz0 = cursor.z - pp.z, l = Math.hypot(fx0, fz0);
@@ -5549,7 +5565,10 @@ export function initScene(el, api) {
     const UD = sheet().uDef || {}, L = DR ? sh(DR).travel : 3.6 + (UD.rollDist || 0) + (meIs.Surrounded() ? sheet().rollSurr || 0 : 0) + (time - (me.rollAt ?? -99) <= RECENT ? UD.rollAgain || 0 : UD.rollFresh || 0);   // the tree's more while Surrounded; Lioneye's Glare
     if (UD.rollGuard && me.maxE > me.es) guardFor((me.maxE - me.es) * UD.rollGuard / 100, 4);   // Decree of Flight
     move = { from: { x: pp.x, z: pp.z }, to: { x: pp.x + dx * L, z: pp.z + dz * L }, k: 0, dur: .3 / (1 + (UD.rollSpeed || 0) / 100), h: .25, roll: true }; rollCd = .7; me.rollAt = time; me.sprint = null; if (UD.overEnc) me.overEnc = { n: (time < me.overEnc?.until ? me.overEnc.n : 0) + 1, until: time + 4 };   /* Ab Aeterno: Overencumbered for 4 seconds (its text), stacking */ facing = Math.atan2(dx, dz); charge = held = goal = null;
-    if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06; if (Object.keys(DR.dmg.hits).length) boom(move.from, DR.A, { ...DR, mult: 1 }); }
+    if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06;
+      // Black Powder Blitz: a leap (its timeline lands at 0.52 s; note: its height, 1 m, is the scene's), the round's blast
+      const BX = DR.name === 'Black Powder Blitz'; if (BX) { Object.assign(move, { dur: .52, h: 1, leap: true, powder: true }); me.powderGlow = time + BP.glowFor; fx.emit(8, { p: { x: pp.x, y: 1.2, z: pp.z }, r: .3, v: .4, up: .8, life: 1, size: .6, grow: 1.5, c: 0x343839, smoke: true, a: .45 }); }
+      if (Object.keys(DR.dmg.hits).length) { if (BX) { powderBlast(move.from, DR.A); area(move.from, DR.A, { ...DR, mult: 1 }); } else boom(move.from, DR.A, { ...DR, mult: 1 }); } }
     fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
     event('dodge', near(pp, 30)?.pos || pp, NONE, null, L);
     for (const k in clips) { const X = onS(k), n = X?.dmg?.sum?.crossbow_load_x_bolts_on_dodge; if (n && X.dmg.clip) clips[k] = Math.min(X.dmg.clip.bolts, clips[k] + n); }   // Ratha's Assault: bolts loaded when you Dodge
@@ -6974,6 +6993,10 @@ export function initScene(el, api) {
       // Trail of Caltrops: its caltrops (its projectiles) within its secondary radius of you, for its duration
       while (m.drops?.[0] <= m.k) { m.drops.shift(); const S = m.TC; for (let k = 0; k < (sh(S).projectiles || S.dmg.stats.base_number_of_projectiles || 1); k++) hazardAt(S, around(pp, radOf(S)), durOf(S)); }
       pp.x = m.from.x + (m.to.x - m.from.x) * m.k; pp.z = m.from.z + (m.to.z - m.from.z) * m.k; pp.y = Math.sin(m.k * Math.PI) * m.h;
+      if (m.powder) {   // the trail off your foot: dark smoke and fire
+        fx.emit(2, { p: { x: pp.x, y: pp.y + .3, z: pp.z }, r: .08, v: .2, up: .3, life: .7, size: .35, grow: 1.6, c: BP.trail, smoke: true, a: .6 });
+        fx.emit(2, { p: { x: pp.x, y: pp.y + .3, z: pp.z }, r: .06, v: .3, up: .4, life: .25, size: .22, c: BP.fire, c2: BP.glow, k: 1.8, drag: 2 });
+      }
       if (m.S) {
         fx.emit(2, { p: { x: pp.x, y: pp.y + .8, z: pp.z }, r: .3, v: .5, life: .35, size: .3, c: m.S.el, c2: 'white' });
         if (m.jag && (m.step -= dt) <= 0) { m.step = .06; ground('jagged', pp, m.S.A, m.jag, m.S); }   // Stampede's footsteps (note: their spacing is the scene's)
@@ -7064,8 +7087,12 @@ export function initScene(el, api) {
     fissures = fissures.filter(f => f.end > time);
     for (let i = buffs.length - 1; i >= 0; i--) if ((buffs[i].s -= dt * (1 + (sheet().buffTime || 0) / 100)) <= 0) buffs.splice(i, 1);   // the tree's Buff Expiry Rate
 
+    // Shankgonne: the cannon leg glowing after its shot; sparks and smoke at your footsteps (note: one each 0.3 s walking)
+    if (time < me.powderGlow) fx.emit(1, { p: { x: pp.x, y: pp.y + .35, z: pp.z }, r: .05, v: .1, up: .3, life: .25, size: .18, c: BP.glow, k: 1.5 });
+    if (moving && !move && (powderStep -= dt) <= 0 && onS('Black Powder Blitz')) { powderStep = .3; const p = { x: pp.x, y: .05, z: pp.z };
+      fx.emit(6, { p, r: .1, v: 1.5, up: 1.2, life: .3, size: .06, c: BP.spark, c2: BP.ember, k: 2.5, g: 6, drag: 1.5 }); fx.emit(2, { p, r: .1, v: .4, up: .2, life: .6, size: .3, grow: 1.5, c: BP.smoke, smoke: true, a: .35 }); }
     player.update(dt, { moving: moving && !move, speed: spd(), hold: !!held, charge: charge ? Math.min(1, charge.s / (base(charge.i)?.P.perfect ? 1 : 1.6)) : null,
-      roll: move?.roll ? move.k : null, leap: move && !move.roll && move.h ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
+      roll: move?.roll && !move.leap ? move.k : null, leap: move && (move.leap || !move.roll && move.h) ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
     reticle(); arena.update(dt, pp); fx.update(dt);
     if (toastT > 0 && (toastT -= dt) <= 0) toastEl.classList.remove('on');
     if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); api.onLive?.(live()); player.setLook(api.look?.()); }   // the build's weapon in the figure's hands
