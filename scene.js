@@ -1447,6 +1447,7 @@ export function initScene(el, api) {
   // embers for 1.5-4 s. note: the runes are the scene's rune texture (the game draws its own), the spikes' number and the
   // bone's and embers' colours are the scene's; the dark wave and its blood ribbons (10 s) are not drawn
   const BBL = { rune: 0x66ff91, wave: 0x4dff77, skin: 0x99ffb7, glow: 0x80ffa4, bone: 0xe6d6b0, dark: 0x020604, blood: 0x5a0006 };
+  const BONE = { bone: 0xd8ccb0, glow: 0x7affb8, blood: 0x5a0006 };   // the necromancer's bone (bone_ringwall_02 boneStake01, its green 0.6 / 1.25 / 0.9)
   function boneBlast(S) {
     const c = S.at, R = S.A, D = S.P.dur || 1, dec = fx.decal(c, R, 'rune', BBL.rune, { a: .85, k: 1.6, spin: .4 });
     fx.emit(6, { p: c, r: R * .6, v: .2, up: .6, life: 1, size: .5, grow: 2, c: BBL.dark, smoke: true, a: .6, drag: 1 });
@@ -3470,17 +3471,32 @@ export function initScene(el, api) {
       // Bone Cage: its ring of bone spikes around you (up to its rings, a new one ends the last) for its duration; a spike an
       // enemy touches breaks (its chance: 100%), hitting and Pinning the enemies within its secondary radius
       // note: its spikes stand side by side around the ring, their number the scene's (the data gives none)
+      // Its look (RingOfBoneSpike: bone_ringwall_02 boneRing_Spike_01, its mainSpike01 and xtraSpike): a bundle of bone stakes
+      // on each stretch of the ring (bone 0.3 / 0.24 / 0.11) lit green as they emerge (boneStake01 0.6 / 1.25 / 0.9), with
+      // necromantic embers for 1.5-4 s; a spike that breaks stabs (RingOfBoneSpikeExplosion: spear_wall spear_explode, dust)
+      // and pins the enemies it hits (ring_of_bone_pinned: bonePin.epk pinSpikes, bone spikes in their body for 2-3 s and
+      // blood splashing for 1.5-2 s). note: the stakes in a bundle (spread along its stretch), their sizes and how the green fades are the scene's
       const BC = S.dmg?.stats?.ring_of_bone_maximum_number_of_rings;
       if (BC) {
-        const r = radOf(S), n = Math.max(3, Math.round(Math.PI * R / r)), g = holder(c), mat = new THREE.MeshStandardMaterial({ color: 0xd8d0b8, roughness: .7, flatShading: true });
+        const r = radOf(S), n = Math.max(3, Math.round(Math.PI * R / r)), g = holder(c), mat = new THREE.MeshStandardMaterial({ color: BONE.bone, roughness: .6, flatShading: true, emissive: BONE.glow, emissiveIntensity: 1 });
         limit(o => o.cage && o.name === S.name, BC, S);
         const spikes = Array.from({ length: n }, (_, k) => {
-          const a = k * TAU / n, m = new THREE.Mesh(EARTH.spike, mat); m.position.set(Math.sin(a) * R, .45, Math.cos(a) * R); m.scale.set(.5, .6, .5); m.castShadow = true; g.add(m);
-          return { m, p: { x: c.x + Math.sin(a) * R, z: c.z + Math.cos(a) * R } };
+          const a = k * TAU / n, m = new THREE.Group(), p = { x: c.x + Math.sin(a) * R, z: c.z + Math.cos(a) * R };
+          m.position.set(Math.sin(a) * R, 0, Math.cos(a) * R); m.rotation.y = a; m.scale.setScalar(.01); g.add(m);
+          for (let j = 0, w = TAU * R / n, nj = Math.max(4, Math.round(w / .18)); j < nj; j++) { const s = new THREE.Mesh(EARTH.spike, mat); s.position.set((j / (nj - 1) - .5) * w + rnd(-.05, .05), .4, rnd(-.12, .12));   // the stakes spread along its stretch of the ring
+            s.rotation.set(rnd(-.35, .35), 0, rnd(-.35, .35)); s.scale.setScalar(j ? rnd(.25, .4) : .5); s.castShadow = true; m.add(s); }
+          fx.emit(3, { p: { x: p.x, y: .4, z: p.z }, r: .25, h: .5, v: .3, up: .5, life: 2.7, size: .05, c: BONE.glow, k: 1.6, drag: 1 });
+          return { m, p };
         });
-        pop(c, R, 'dust');
         const e = thing(g, durOf(S), { name: S.name, cage: true,
-          tick() { for (const k of spikes) if (k.m.visible && inside(k.p, .2).length) { k.m.visible = false; pop(k.p, r, 'dust'); area(k.p, r, { ...S, self: e }); } } });
+          tick(dt, e) {
+            const k = Math.max(.01, ease(Math.min(1, e.s / .2))); for (const s of spikes) s.m.scale.setScalar(k); mat.emissiveIntensity = .25 + .75 * Math.max(0, 1 - e.s / .75);
+            for (const s of spikes) if (s.m.visible && inside(s.p, .2).length) {
+              s.m.visible = false; pop(s.p, r, 'dust'); fx.spikes(s.p, .35, { n: 5, h: 1, w: .07, c: BONE.bone, dark: true, glow: BONE.glow, dur: .5 });
+              for (const d of inside(s.p, r)) { const q = { x: d.pos.x, y: .7, z: d.pos.z }; fx.spikes(q, .3, { n: 4, h: .6, w: .05, c: BONE.bone, dark: true, dur: 2.5, inner: 0 }); fx.emit(6, { p: q, r: .2, v: 1.2, up: 1.5, life: 1.7, size: .08, c: BONE.blood, smoke: true, a: .9, g: 10, drag: .4 }); }
+              area(s.p, r, { ...S, self: e });
+            }
+          } });
         return;
       }
       const ES = S.dmg?.stats?.elemental_sundering_number_of_explosion_allowed;
