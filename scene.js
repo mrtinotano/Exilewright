@@ -5211,8 +5211,8 @@ export function initScene(el, api) {
     const a0 = Math.atan2(dz, dx);
     fx.sector(p, dx, dz, R, half, CSTAFF.trail, .5, { grow: true, a: .35 });
     for (let k = 1; k <= 4; k++) later(k * .075, () => {
-      fx.arc(p, dx, dz, R * k / 4, half, CSTAFF.blade);
-      for (let i = -2; i <= 2; i++) { const q = a0 + half * i / 2, r = R * k / 4, c = { x: p.x + Math.cos(q) * r, y: 1, z: p.z + Math.sin(q) * r };
+      const r = R * k / 4; fx.arc(p, dx, dz, r, half, CSTAFF.blade);
+      for (let i = -2; i <= 2; i++) { const q = a0 + half * i / 2, c = { x: p.x + Math.cos(q) * r, y: 1, z: p.z + Math.sin(q) * r };
         fx.emit(2, { p: c, r: .2, v: .8, life: rnd(.2, .4), size: .06, c: CSTAFF.bolt, c2: CSTAFF.blade, k: 3, g: 4 });
         fx.emit(3, { p: c, r: .3, v: .4, up: .6, life: rnd(1, 2.5), size: .04, c: CSTAFF.blade, k: 2.4, g: 1, drag: 1.2 }); }
     });
