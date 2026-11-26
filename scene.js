@@ -4342,7 +4342,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -5556,6 +5556,18 @@ export function initScene(el, api) {
     castAt = time; later(S.dmg?.speed ? 1 / S.dmg.speed : 1, () => { if (tog[S.name] && sheet().mountOk) { me.mounted = true; say(t('{0}: mounted', S.label), 'gold'); } });
   }
   const OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty's Owl Feathers (step, roll)
+  // Blink's look (MiscEffectPacks BlinkTeleportCharacterEffect: reservation_blink dodge_blink.epk, on you where you vanish and
+  // where you appear): a blue flash at your core for 0.1 s (blinkCore_Flash, its colour 1.6 / 5.07 / 10), blue sparks off
+  // your body for 0.5-1 s (chronoSparks 7.2 / 9.53 / 38), your body lit blue as it warps (warpSkin 0.89 / 3.85 / 8) and a
+  // light shake (coreFX). note: its shimmer of the air (blinkSoundBoom) is not drawn
+  const BLK = { flash: 0x2981ff, spark: 0x3040ff, skin: 0x1c7aff };
+  function blinkFx(a, b) {
+    for (const p of [a, b]) {
+      fx.flash(p, BLK.flash, 8, .12, 5); fx.glow({ x: p.x, y: 1.1, z: p.z }, 1.4, BLK.skin, .25, 2.5);
+      fx.emit(6, { p: { x: p.x, y: .3, z: p.z }, r: .3, h: 1.4, v: 1.2, up: .4, life: .75, size: .08, c: BLK.spark, c2: BLK.flash, k: 2, drag: 1 });
+    }
+    shake = Math.max(shake, .15);
+  }
   // Blasphemy's look (Metadata/Effects/Spells/supports/blasphemy, art/particles/supports/blasphemy): each curse in it a
   // ring of its own runes on the ground round you, as wide as its area, in its colour (its aura_<curse> mat's albedo),
   // turning slowly; turned on, its symbol (blasphemy_BC1, its base rune colour 0.7 / 1 / 6) surges round you.
@@ -5593,8 +5605,9 @@ export function initScene(el, api) {
     if (DR) { (me.leapAt ||= {})[DR.name] = time + (DR.dmg.cooldown || 0) / 1000; if (DR.P.spell) move.dur = .06;
       // Black Powder Blitz: a leap (its timeline lands at 0.52 s; note: its height, 1 m, is the scene's), the round's blast
       const BX = DR.name === 'Black Powder Blitz'; if (BX) { Object.assign(move, { dur: .52, h: 1, powder: true }); me.powderGlow = time + BP.glowFor; fx.emit(8, { p: { x: pp.x, y: 1.2, z: pp.z }, r: .3, v: .4, up: .8, life: 1, size: .6, grow: 1.5, c: 0x343839, smoke: true, a: .45 }); }
+      if (DR.name === 'Blink') { move.blink = true; blinkFx(move.from, move.to); }   // a teleport: no roll
       if (Object.keys(DR.dmg.hits).length) { if (BX) { powderBlast(move.from, DR.A); area(move.from, DR.A, { ...DR, mult: 1 }); } else boom(move.from, DR.A, { ...DR, mult: 1 }); } }
-    fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });
+    if (DR?.name !== 'Blink') fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1, up: .6, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .35 });   // a teleport kicks up no dust
     event('dodge', near(pp, 30)?.pos || pp, NONE, null, L);
     for (const k in clips) { const X = onS(k), n = X?.dmg?.sum?.crossbow_load_x_bolts_on_dodge; if (n && X.dmg.clip) clips[k] = Math.min(X.dmg.clip.bolts, clips[k] + n); }   // Ratha's Assault: bolts loaded when you Dodge
     const LI = onS('Lingering Illusion'); if (LI) illusion(LI, { x: pp.x, z: pp.z });
@@ -7119,7 +7132,7 @@ export function initScene(el, api) {
     if (moving && !move && (powderStep -= dt) <= 0 && onS('Black Powder Blitz')) { powderStep = .3; const p = { x: pp.x, y: .05, z: pp.z };
       fx.emit(6, { p, r: .1, v: 1.5, up: 1.2, life: .3, size: .06, c: BP.spark, c2: BP.ember, k: 2.5, g: 6, drag: 1.5 }); fx.emit(2, { p, r: .1, v: .4, up: .2, life: .6, size: .3, grow: 1.5, c: BP.smoke, smoke: true, a: .35 }); }
     player.update(dt, { moving: moving && !move, speed: spd(), hold: !!held, charge: charge ? Math.min(1, charge.s / (base(charge.i)?.P.perfect ? 1 : 1.6)) : null,
-      roll: move?.roll && !move.powder ? move.k : null, leap: move && (move.powder || !move.roll && move.h) ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
+      roll: move?.roll && !move.powder && !move.blink ? move.k : null, leap: move && (move.powder || !move.roll && move.h) ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
     reticle(); arena.update(dt, pp); fx.update(dt);
     if (toastT > 0 && (toastT -= dt) <= 0) toastEl.classList.remove('on');
     if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); api.onLive?.(live()); player.setLook(api.look?.()); }   // the build's weapon in the figure's hands
