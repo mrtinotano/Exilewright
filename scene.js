@@ -3072,6 +3072,44 @@ export function initScene(el, api) {
   // an Ice Crystal's life: its skill's (Frost Wall, Grim Pillars, Frozen Locus), increased and more (Icicle, Glacier)
   const crystalLife = S => (S.dmg?.stats?.frost_wall_maximum_life || 0) * (1 + ((S.dmg?.sum?.['ice_crystal_maximum_life_+%'] || 0) + (S.dmg?.sum?.['ice_crystal_maximum_life_+%_per_5%_cold_resistance'] || 0) * Math.floor((sheet().res?.cold?.capped || 0) / 5)) / 100)   // Eventide Petals: per 5% cold resistance
     * Object.entries(S.dmg?.finals || {}).reduce((m, [k, x]) => k.endsWith('ice_crystal_maximum_life_+%_final') ? m * (1 + x / 100) : m, 1);
+  // Comet's look (comet: comet_meteor ice_Comet.ao and comet_impact impactAoE.ao; with a Fire Infusion consumed, their
+  // _Infusion ones): a chunk of ice shards falls through its fall time (contact at 0.47 s of its animation) with a trail
+  // (cometTrail vibrance 0.38 / 0.53 / 1.02), a helix (emissive 8.55 / 13.2 / 25) and sparks (boost 1 / 1.1 / 2); where it
+  // lands, a flash for 0.22 s (0.5 / 3 / 12), spikes for 0.32 s (0.85 / 1.25 / 2), an instant ring for 0.22 s (0.77 / 0.9 / 1),
+  // a wave for 0.55 s (0.5 / 0.73 / 1), sparks for 0.85-1.5 s (2 / 5 / 12), 64 puffs of grey smoke for 4 s (0.225 / 0.23 /
+  // 0.248), ice shards, snow for 3.75-6.25 s (0.875 / 0.93 / 1), its crater for 3 s and its frost for 8 s (ice_blast 0.8 /
+  // 0.92 / 1), the screen shaking for 1.25 s. Infused: fire ribbons round the chunk for 0.55 s (5 / 2.75 / 1.13); where it
+  // lands a core for 0.65 s (1 / 0.69 / 0.54), fire tufts for 0.65-1 s (1 / 0.53 / 0.29), burning ground for 1-4 s
+  // (grd_fire 1 / 0.23 / 0.07) and embers for 2.4-3.6 s.
+  // note: its path (fallingRIG.ast) is a slanted drop; the shards are a burst. Its jump back when targeting within its
+  // range_backflip_conditional_distance is not simulated: the distance is its animation's
+  const COMET = { body: 0xbfe8ff, helix: 0x5786ff, trail: 0x5f84ff, spark: 0x808cff, flash: 0x0b40ff, spike: 0x6ca0ff, ring: 0xc4e6ff, wave: 0x80b9ff, hot: 0x2a6aff,
+    smoke: 0x393b3f, snow: 0xdfedff, frost: 0xcceaff, ribbon: 0xff8c3a, core: 0xffb08a, tuft: 0xff874a, burn: 0xff3b12 };
+  function comet(c, R, S, delay, inf) {
+    const m = new THREE.Mesh(new THREE.IcosahedronGeometry(.75, 0), new THREE.MeshStandardMaterial({ color: COMET.body, emissive: COMET.helix, emissiveIntensity: .5, roughness: .1, flatShading: true }));
+    m.scale.set(1, 1.4, 1); m.rotation.z = -2.53;   // its chunk's tilt (cometchunk offset)
+    const fly = Math.min(.47, delay), from = V(c.x + 4, 14, c.z - 3);
+    later(delay - fly, () => {
+      const e = lob(m, from, V(c.x, .3, c.z), fly, 0, () => cometHit(c, R, S, inf)), up = e.update;
+      e.update = dt => { up(dt); const q = m.position; fx.trail(q, COMET.trail, true); fx.emit(3, { p: q, r: .3, v: 2, life: .37, size: .07, c: COMET.spark, k: 2.4, drag: 2 });
+        fx.emit(1, { p: q, r: .4, v: .6, life: .5, size: .3, c: COMET.helix, k: 2, drag: 1 });   // its helix
+        if (inf) fx.emit(2, { p: q, r: .35, v: .8, life: .45, size: .25, c: COMET.ribbon, k: 2.2, drag: 1 }); };   // its fire ribbons
+    });
+  }
+  function cometHit(c, R, S, inf) {
+    const p = { x: c.x, y: .4, z: c.z };
+    fx.flash(p, COMET.flash, 12, .22, R * 1.5); fx.glow(p, R * 1.1, COMET.spike, .32, 2.6); fx.ring(c, .2, R, COMET.ring, .22, { a: .9 }); fx.ring(c, .3, R * 1.15, COMET.wave, .55, { a: .6, y: .3 });
+    fx.shards(c, R * .8); fx.emit(30, { p, r: .3, v: R * 4, up: 2, life: 1.2, size: .06, c: COMET.hot, k: 2.4, g: 4, drag: 2.5 });   // its sparks
+    fx.emit(64, { p: { x: c.x, y: .2, z: c.z }, r: R * .5, v: R * .8, up: .5, life: 4, size: .8, grow: 2, c: COMET.smoke, smoke: true, a: .35, drag: 1.5 });
+    fx.emit(40, { p: { x: c.x, y: 1.5, z: c.z }, r: R * .8, v: .3, up: .2, life: 5, size: .05, c: COMET.snow, k: 2, g: .3, drag: 1 });   // its snow
+    fx.disc(c, R * .45, 0x080a0e, 3, { dark: true, a: .7, hold: .7 }); fx.disc(c, R, COMET.frost, 8, { a: .3, hold: .8, k: 1, tex: 'soft' });   // its crater and frost
+    if (inf) {
+      fx.glow(p, R * .9, COMET.core, .65, 2.6); fx.emit(10, { p, r: R * .4, v: 1, up: 1.4, life: .9, size: .5, grow: 1.6, c: COMET.tuft, k: 2.2, drag: 1 });
+      fx.emit(16, { p: { x: c.x, y: .1, z: c.z }, r: R * .7, v: .2, up: .8, life: 2.5, size: .35, c: COMET.burn, k: 2.2, drag: 1 });   // its burning ground
+      fx.emit(24, { p, r: R * .5, v: 3, up: 3, life: 3, size: .05, c: COMET.tuft, k: 2.4, g: 3, drag: 1.5 });   // its embers
+    }
+    area(c, R, S); shake = Math.max(shake, .5);
+  }
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const full = life;
     const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
@@ -4027,9 +4065,10 @@ export function initScene(el, api) {
       if (P.ground) ground(P.ground, c, R, Math.min(P.dur || GROUND_TIME[P.ground] || SIM.groundTime, 10), S);
     },
     meteor(S) {
-      const X = S.infs?.includes('fire') && infPart(S, 'fire'); if (X) S = X;   // Comet: a devastating blast of ice and fire
+      const CM = S.name === 'Comet', X = S.infs?.includes('fire') && infPart(S, 'fire'); if (X) S = X;   // Comet: a devastating blast of ice and fire
       const P = S.P, R = S.A, fall = S.dmg?.stats?.comet_fall_time_ms, delay = fall ? fall / 1000 : P.delay ?? (P.dur && P.dur <= 4 ? P.dur : SIM.meteor);
       const d = P.attack ? near(S.at, SIM.snap) : null, c = d ? { x: d.pos.x, z: d.pos.z } : S.at;
+      if (CM) return comet(c, R, S, delay, !!X);
       fx.telegraph(c, R, S.el, delay);
       // Skyfall: where it lands, its Temporary Minions (more with a Verisium Infusion consumed: its infused part's),
       // up to its limit, for its duration
