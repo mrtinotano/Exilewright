@@ -2843,8 +2843,8 @@ export function initScene(el, api) {
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
         if (surged.some(s => s.el === 'chaos')) { fx.emit(1, { p: m.position, r: .06, v: .2, life: .8, size: .05, c: CSURGE.string, k: 2.4 }); fx.emit(1, { p: m.position, r: .02, v: .05, life: .47, size: .1, c: CSURGE.ribbon, k: 2.2 }); }   // Chaotic Surge's
-        if (CO) { fx.trail(m.position, CO.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: .62, size: .05, c: CO.ember, k: 2.4 }); }
-        else if (CB) { fx.trail(m.position, CBOLT.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: .45, size: .05, c: CBOLT.ember, k: 2.4 }); }
+        const TB = CO || (CB && CBOLT);
+        if (TB) { fx.trail(m.position, TB.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: CO ? .62 : .45, size: .05, c: TB.ember, k: 2.4 }); }
         else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
