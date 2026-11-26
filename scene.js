@@ -3254,7 +3254,7 @@ export function initScene(el, api) {
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk' || k === 'Spectre: {0}') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
-      fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
+      if (k === 'Blasphemy') blasSurge(S); else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
     },
     // Raise Zombie: for its duration, up to its limit; without a corpse it consumes a Power Charge for an Empowered Zombie
@@ -4037,7 +4037,8 @@ export function initScene(el, api) {
   // Bitter Dead's look (Metadata/Effects/Spells/supports/RunicSupports/BitterDead): a pale blue sphere wreathed in blue
   // flames over a rune tile, a blue flash with snow, and the rune glyph (MaskedRuneRarePower) glowing on the ground
   const BD = { core: 0xa8d4ff, flame: 0x6be0ff, deep: 0x268fed, ring: 0x48beff, snow: 0xdfeeff };
-  const bdTex = (k, f) => fx.T[k] ||= Object.assign(new THREE.TextureLoader().load(`poe2_data/available/img/art/${f}.webp`), { colorSpace: THREE.SRGBColorSpace });
+  // a texture of the game (poe2_data/available/img/art) as fx texture k, loaded once; its name for fx.decal
+  const artTex = (k, f) => (fx.T[k] ||= Object.assign(new THREE.TextureLoader().load(`poe2_data/available/img/art/${f}.webp`), { colorSpace: THREE.SRGBColorSpace }), k);
   K.volatile = S => {
     const ks = Object.keys(S.dmg.parts || {}), X = partOf(S, ks.find(k => /Explosion/.test(k))), U = partOf(S, ks.find(k => /ChillAura|IgniteAura/.test(k))), R = partOf(S, ks.find(k => /RuneAura/.test(k)));
     const list = corpses(S.at, Math.max(S.A, SIM.snap)).slice(0, S.dmg.stats.volatile_dead_base_number_of_corpses_to_consume);
@@ -4045,7 +4046,7 @@ export function initScene(el, api) {
     const bitter = !!R, ail = U && (U.el === 'cold' ? 'chill' : 'ignite');
     // the aura: only its ailment, by its hit's size
     const UA = U && { ...U, dmg: { ...U.dmg, ail: { ...U.dmg.ail, never: Object.fromEntries(Object.keys(U.dmg.ail.never).map(k => [k, k !== ail])) } } };
-    if (bitter) { fx.decal(S.at, S.A, 'patch', BD.snow, { a: .35, k: 1 }).remove(); bdTex('bitterRune', 'models/effects/supports/runicsupports/markofrepulsion/tex/maskedrunerarepower'); bdTex('bitterTile', 'microtransactions/misc/uniques/endurfaeddr/tex/kalguuran_runetile'); }
+    if (bitter) { fx.decal(S.at, S.A, 'patch', BD.snow, { a: .35, k: 1 }).remove(); artTex('bitterRune', 'models/effects/supports/runicsupports/markofrepulsion/tex/maskedrunerarepower'); artTex('bitterTile', 'microtransactions/misc/uniques/endurfaeddr/tex/kalguuran_runetile'); }
     for (const d of list) {
       eat(d, bitter ? BD.deep : S.el); const m = fx.orb(bitter ? BD.core : S.el, .3); m.position.set(d.pos.x, 1, d.pos.z); let tk = 0;
       const tile = bitter && fx.decal(m.position, .9, 'bitterTile', BD.flame, { a: .7, spin: .6 });
@@ -4325,7 +4326,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -5539,6 +5540,18 @@ export function initScene(el, api) {
     castAt = time; later(S.dmg?.speed ? 1 / S.dmg.speed : 1, () => { if (tog[S.name] && sheet().mountOk) { me.mounted = true; say(t('{0}: mounted', S.label), 'gold'); } });
   }
   const OWL = { every: 4, max: 3, proj: 2 };   // Primal Bounty's Owl Feathers (step, roll)
+  // Blasphemy's look (Metadata/Effects/Spells/supports/blasphemy, art/particles/supports/blasphemy): each curse in it a
+  // ring of its own runes on the ground round you, as wide as its area, in its colour (its aura_<curse> mat's albedo),
+  // turning slowly; turned on, its symbol (blasphemy_BC1, its base rune colour 0.7 / 1 / 6) surges round you.
+  // note: Elemental Weakness's ring is three colours by a mask in the game (1.25 / 0.25 / 0.025, 0.1 / 0.25 / 1,
+  // 0.35 / 0.45 / 1): one, their mean, here; a curse without its own ring (Repulsion) shows its area's outline
+  const BLAS = { 'Temporal Chains': ['temporalchains', 0xc42bff], Enfeeble: ['enfeeble', 0xe3ff5c], Despair: ['despair', 0x8040ff],
+    'Elemental Weakness': ['eleweak', 0xd678ff], Vulnerability: ['vulnerability', 0xff3333], surge: 0x1f2bff };
+  const blasRing = S => { const c = BLAS[S.name]; return c ? fx.decal(pp, S.A, artTex('blas_' + c[0], `particles/supports/blasphemy/textures/runes/${c[0]}_aura_dxt1`), c[1], { a: .8, k: 1.4, spin: .2 }) : fx.decal(pp, S.A, 'outline', S.el, { a: .45, rot: 0 }); };
+  function blasSurge(S) {
+    const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), BLAS.surge, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove());
+    fx.pillar(pp, .6, 2.6, BLAS.surge, .5, 2);
+  }
   // Black Powder Blitz's look (Shankgonne: Metadata/Effects/misc/Uniques/boots/shankgonne, its dodge timeline
   // shankgonnedodge.atl): the round's blast where you leave (cannon_fire: a flash, a ring of smoke, sparks, embers, debris,
   // a scorch), smoke and fire trailing your foot through the leap, the cannon leg glowing for 3.9 s, and sparks with a
@@ -6752,11 +6765,13 @@ export function initScene(el, api) {
     // Blasphemy: while it is on, the curses socketed in it curse the enemies within their own area around you, at its less
     // effect. note: its own radius in the data (1 m) is not used: the curse's
     called();
-    const BL = onS('Blasphemy');
+    const BL = onS('Blasphemy'), blOn = new Set(); me.blas ||= {};
     if (BL) api.build().gems.forEach((g, i) => {
       const S = g.meta === 'Blasphemy' && base(i), C = S?.dmg?.curse; if (!S) return;
-      for (const d of inside(pp, S.A)) if (!(d.level > C?.maxLevel)) { d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * (1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100) * d.stat.curseEffect }; hexMe(S.name, C, .2, 1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100); }
+      blOn.add(S.name); const R = me.blas[S.name] ||= blasRing(S); R.move(pp); R.set(S.A);
+      for (const d of inside(pp, S.A)) if (!(C?.maxLevel && d.level > C.maxLevel)) { d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * (1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100) * d.stat.curseEffect }; hexMe(S.name, C, .2, 1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100); }
     });
+    for (const k in me.blas) if (!blOn.has(k)) { me.blas[k].remove(); delete me.blas[k]; }
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
     const HK = 'support_mothers_declaration_intimidate_enemies_when_they_enter_your_presence_base_duration_ms', HD = Object.keys(tog).map(onS).find(S => S?.dmg?.sum?.[HK]);
     // the tree's Debilitate and Blind (Bastion of Light) in front of your raised Shield, each within its metres

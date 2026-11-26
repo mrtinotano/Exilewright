@@ -17,6 +17,9 @@ paths |= {f'art/textures/interface/2d/2dart/uiimages/ingame/hud/4k/orb_ward{k}.d
 paths.add('art/particles/fxlib/pbr/bark_clr.dds')   # the simulator's Barkskin: the bark over you
 paths.add('art/models/effects/supports/runicsupports/markofrepulsion/tex/maskedrunerarepower.dds')   # the simulator's Bitter Dead: the rune its cores leave
 paths.add('art/microtransactions/misc/uniques/endurfaeddr/tex/kalguuran_runetile.dds')   # and the rune tile under its cores
+# the simulator's Blasphemy: each live curse's ring of runes round you, and its symbol when turned on
+paths.update(f'art/particles/supports/blasphemy/textures/runes/{c}_aura_dxt1.dds' for c in ('temporalchains', 'enfeeble', 'despair', 'eleweak', 'vulnerability'))
+paths.add('art/particles/supports/blasphemy/textures/blasphemy_bc1.dds')
 paths |= {c['img'] for c in json.load(open(os.path.join(ROOT, 'available', 'currency.json'), encoding='utf8'))['currency'].values()}   # trade prices
 tree = json.load(open(os.path.join(ROOT, 'available', 'passive_tree.json'), encoding='utf8'))
 ascs = json.load(open(os.path.join(ROOT, 'available', 'ascendancies.json'), encoding='utf8'))
