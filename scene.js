@@ -4715,20 +4715,17 @@ export function initScene(el, api) {
     for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; fx.emit(1, { p: { x: H.x + Math.cos(a) * .2, y: H.y + Math.sin(a) * .2, z: H.z }, dir: V(-Math.sin(a) * 2, Math.cos(a) * 2, 0), life: .3, size: .16, c: BARRAGE.ribbon, k: 2.2, drag: 2 }); }
   }
   // an Invocation's look (BuffVisualOrbs InvocationOrbiterBarrier: reservation_invocations/invocationOrbiter_ES.ao on you):
-  // a star circling you with a trail of sparks while it gains Energy (orbiter_ES: orbitStar_ES_R 0.18 / 0.5 / 1, x2.05;
-  // sparksStar_ES_R 0.15 / 0.49 / 1); once it has the Energy to trigger, a flare with streaks (orbiterFlareUp_ES: starFlareUp_ES_R 0.15 / 0.49 / 1, x3) and a ring pulsing at
-  // the star (orbiterReady_Idle_ES: starRing_ES_R 0.15 / 0.49 / 1, every 0.5 s); turned off, a ring where it was
-  // (orbiterEnd_ES). note: the radius, height and speed of its orbit are the simulator's (the game's are in its rig's animation)
-  const ORBITER = { 'Barrier Invocation': { star: 0x2e81ff, spark: 0x267dff } };
-  function orbiters() {
+  // a circle of sparkles round your waist, none at 0% of its Energy and more the fuller it is (orbiter_ES: its star circling
+  // you fast leaving sparksStar_ES_R 0.15 / 0.49 / 1, 0.85 s each, the star orbitStar_ES_R 0.18 / 0.5 / 1); turned off,
+  // it fades in a ring (orbiterEnd_ES: starRing_ES_R). note: the circle's radius and height and how many sparkles it has full are the simulator's
+  const ORBITER = { 'Barrier Invocation': { star: 0x2e81ff, spark: 0x267dff } }, ORB_R = .85, ORB_Y = 1;
+  function orbiters(dt) {
     for (const k in tog) {
       const T = tog[k], O = T.cap && ORBITER[k]; if (!O) continue;
-      const a = time * 2.2, q = T.orb = { x: pp.x + Math.cos(a) * .8, y: 1.7 + Math.sin(a * 2) * .08, z: pp.z + Math.sin(a) * .8 }, rdy = T.need > 0 && T.energy >= T.need;
-      fx.emit(1, { p: q, life: .1, size: rdy ? .26 : .16, c: O.star, c2: 'white', k: 4 });
-      if (Math.random() < (rdy ? .9 : .45)) fx.emit(1, { p: q, r: .03, v: .25, life: .85, size: .05, c: O.spark, c2: 'white', k: 2.6, drag: 2 });
-      if (rdy && !T.rdy) { fx.glow(q, 1.1, O.star, .35, 3); fx.ring(q, .1, .7, O.spark, .35, { y: q.y }); for (const [x, y] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) fx.streak(V(q.x, q.y, q.z), V(q.x + x * 1.4, q.y + y * 1.4, q.z), O.star, .35, .03, 1.4); }   // its flare's streaks (starFlareUp_ES: glow_flarestreak)
-      if (rdy && time - (T.ringAt ?? -9) >= .5) { T.ringAt = time; fx.ring(q, .05, .35, O.spark, .5, { y: q.y, a: .7 }); }
-      T.rdy = rdy;
+      const fill = Math.min(1, T.energy / T.cap); T.orb = { x: pp.x, y: ORB_Y, z: pp.z };
+      for (let n = fill * 420 * dt; n > 0; n--) if (n >= 1 || Math.random() < n) {
+        const a = rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * ORB_R, y: ORB_Y + rnd(-.04, .04), z: pp.z + Math.sin(a) * ORB_R }, v: .03, up: .08, life: .85, size: rnd(.05, .09), c: Math.random() < .3 ? O.star : O.spark, c2: 'white', k: 3.4, drag: 2 });
+      }
     }
   }
   // Berserk's look (berserk_reservation has none: Rage's look while you are berserking, BuffVisualsArtVariations rage ->
@@ -4752,7 +4749,7 @@ export function initScene(el, api) {
     const bz = berserkLook();
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
     else if (bz) { w = bz; WG.set(BERSERK.skin); }   // Berserk: red over you while you have Rage
-    orbiters();
+    orbiters(dt);
     const BR = empower.find(e => e.type === 'repeat' && e.name === 'Barrage');   // Barrage Empowering: your weapon glows
     if (BR) { const H = hand(), c = BR.charged ? BARRAGE.charged : BARRAGE.core; fx.emit(2, { p: H, r: .15, v: .2, up: .15, life: .4, size: .13, c, c2: 'white', k: 2.4, drag: 1 }); if (Math.random() < .25) fx.glow(H, .7, c, .2, 2); }
     const howl = empower.some(e => e.type === 'cold');   // Arctic Howl Empowering your attacks
@@ -4840,7 +4837,7 @@ export function initScene(el, api) {
   }
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => { const by = {}; for (const o of objs) if (o.banner && !o.dead && (dist(o.c, pp) <= o.R ? (o.inAt = time, true) : time - (o.inAt ?? -99) <= (sheet().bannerLinger || 0)) && o.banner[k]) by[o.name] = o.name in by ? Math.max(by[o.name], o.banner[k]) : o.banner[k]; return Object.values(by).reduce((n, x) => n + x, 0); };   // the same Banner twice (Tactician's any number) does not add up
-  function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); if (T.orb && ORBITER[k]) fx.ring(T.orb, .1, .6, ORBITER[k].spark, .5, { y: T.orb.y }); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
+  function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); if (T.orb && ORBITER[k]) fx.ring(T.orb, ORB_R, ORB_R * 1.3, ORBITER[k].spark, .5, { y: T.orb.y }); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
 
   // ---------- using a skill
   // what a use costs: mana (a channel's for one tick, or `held` s), and life
