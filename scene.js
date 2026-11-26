@@ -3419,7 +3419,7 @@ export function initScene(el, api) {
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk' || k === 'Cackling Companions' || k === 'Spectre: {0}') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
+      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk' || k === 'Cackling Companions' || k === 'Called Shots' || k === 'Spectre: {0}') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       if (k === 'Blasphemy') { const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), 0x1f2bff, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove()); fx.pillar(pp, .6, 2.6, 0x1f2bff, .5, 2); }   // its symbol (BLAS)
       else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
@@ -4522,7 +4522,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
