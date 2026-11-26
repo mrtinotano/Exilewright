@@ -1611,19 +1611,18 @@ export function initScene(el, api) {
   // note: its size is not in the data (1.6 m long here)
   const PACK = { fur: 0x756e6c, light: 0xb0a9a5, spirit: 0x5c99ff, wispA: 0x1299ff, wispB: 0x144acc, smoke: 0x3078ff };
   const wolfGlb = fetch('wolf.glb').then(r => r.arrayBuffer()), gltfL = import('three/addons/loaders/GLTFLoader.js').then(m => new m.GLTFLoader());
-  function wolfLook() {
+  const packIn = p => { fx.emit(24, { p: { x: p.x, y: .4, z: p.z }, r: .6, v: .6, up: 1.2, life: .9, size: .5, grow: 1.6, c: PACK.smoke, smoke: true, a: .5, drag: 1 }); fx.glow({ x: p.x, y: .6, z: p.z }, 1.6, PACK.spirit, .4, 2); };
+  function wolfLook(P = PACK, len = 1.6, summon = packIn) {   // P: its colours (wisps only with P.wispA), len: its length in metres
     let mx, acts, cur, last, bite = 0;
     const play = n => { if (!acts || cur === n) return; acts[n].reset().fadeIn(.15).play(); acts[cur]?.fadeOut(.15); cur = n; };
     return {
       start(f, p) {
-        f.group.children.forEach(c => { c.visible = false; });
-        fx.emit(24, { p: { x: p.x, y: .4, z: p.z }, r: .6, v: .6, up: 1.2, life: .9, size: .5, grow: 1.6, c: PACK.smoke, smoke: true, a: .5, drag: 1 });
-        fx.glow({ x: p.x, y: .6, z: p.z }, 1.6, PACK.spirit, .4, 2);
+        f.group.children.forEach(c => { c.visible = false; }); summon(p);
         Promise.all([wolfGlb, gltfL]).then(([buf, L]) => L.parse(buf.slice(0), '', g => {
           const m = g.scene;
-          m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; if (/^Main/.test(o.material.name)) { o.material = o.material.clone(); o.material.color.set(o.material.name === 'Main_Light' ? PACK.light : PACK.fur); o.material.emissive.set(PACK.spirit); o.material.emissiveIntensity = .06; } } });
+          m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; if (/^Main/.test(o.material.name)) { o.material = o.material.clone(); o.material.color.set(o.material.name === 'Main_Light' ? P.light : P.fur); o.material.emissive.set(P.spirit); o.material.emissiveIntensity = .06; } } });
           const bb = () => { const b = new THREE.Box3(); m.updateMatrixWorld(true); m.traverse(o => o.isBone && b.expandByPoint(o.getWorldPosition(V()))); return b; };   // by its bones (a skinned mesh's own box is not where it is drawn)
-          const b = bb(); m.scale.multiplyScalar(1.6 / Math.max(b.max.x - b.min.x, b.max.z - b.min.z)); m.position.y = -bb().min.y; f.group.add(m);
+          const b = bb(); m.scale.multiplyScalar(len / Math.max(b.max.x - b.min.x, b.max.z - b.min.z)); m.position.y = -bb().min.y; f.group.add(m);
           mx = new THREE.AnimationMixer(m); acts = Object.fromEntries(['Idle', 'Walk', 'Gallop', 'Attack'].map(n => [n, mx.clipAction(g.animations.find(a => a.name === n))]));
           acts.Attack.setLoop(THREE.LoopOnce); play('Idle');
         }));
@@ -1632,10 +1631,36 @@ export function initScene(el, api) {
         mx?.update(dt);
         const v = last ? dist(e.pos, last) / dt : 0; last = { x: e.pos.x, z: e.pos.z };
         if (time > bite) play(v > 3 ? 'Gallop' : v > .3 ? 'Walk' : 'Idle');
-        if (Math.random() < dt * 14) fx.emit(1, { p: { x: e.pos.x, y: rnd(.35, .85), z: e.pos.z }, r: .45, v: .15, up: .5, life: .9, size: .07, c: PACK.wispA, c2: PACK.wispB, k: 2.2, drag: 1 });
-        if (Math.random() < dt * 8) fx.emit(1, { p: { x: e.pos.x, y: .06, z: e.pos.z }, r: .4, v: .1, up: .3, life: .6, size: .18, grow: 1.5, c: PACK.wispA, smoke: true, a: .45, drag: 1 });
+        if (P.wispA && Math.random() < dt * 14) fx.emit(1, { p: { x: e.pos.x, y: rnd(.35, .85), z: e.pos.z }, r: .45, v: .15, up: .5, life: .9, size: .07, c: P.wispA, c2: P.wispB, k: 2.2, drag: 1 });
+        if (P.wispA && Math.random() < dt * 8) fx.emit(1, { p: { x: e.pos.x, y: .06, z: e.pos.z }, r: .4, v: .1, up: .3, life: .6, size: .18, grow: 1.5, c: P.wispA, smoke: true, a: .45, drag: 1 });
       },
       hit() { bite = time + .55; if (cur !== 'Attack') acts?.[cur]?.fadeOut(.1); cur = null; play('Attack'); } };
+  }
+  // Cackling Companions' look (HyenaCompanionPlayerSummoned: HyenaArmour.sm, HyenaMonster .mat; HandoftheClan spawn.ao,
+  // monster_spawn_IN_smoke.pet; wolfhowl.ao decoytotem_midline.pet): a hyena in its fur's light grey (the lightest 5% of
+  // its texture, 124 / 112 / 107: its mean 64 / 54 / 52 is the ground's), 1 m long (its mesh is 197 units long, the
+  // Azmerian Wolf's 317), emerging in near-black smoke (0.009 / 0.01 / 0.013) with grey
+  // dust (0.22) and debris; 0.81 s in it whoops (its emerge whoop event), Hindering the enemies near it (keywords.json
+  // Hinder), and its howl's ring grows for 0.5 s from 0.93 s (ring.mat: tan 0.61 / 0.4 / 0.25, its highlight
+  // 1.9 / 0.56 / 0.19), 1100 units across: 2.8 m round at the wolf's scale. Its bite Maims 25% of the time
+  // (HyenaCompanionMelee maim_on_hit_%). The hyena is the scene's wolf (wolf.glb, Quaternius CC0) in its colour.
+  // note: the whoop Hinders within its howl's ring (the data gives no radius); its belly is its fur's colour too
+  const HYE = { fur: 0x7c706b, light: 0x7c706b, spirit: 0, smoke: 0x030304, dust: 0x707070, ring: 0x9b6540, hi: 0xff4b19, R: 2.8 };
+  function hyenaLook(S) {
+    const MC = monSkill('HyenaCompanionMelee')?.sets[0].const['maim_on_hit_%'] || 0;
+    const L = wolfLook(HYE, 1, p => {
+      fx.emit(18, { p: { x: p.x, y: .3, z: p.z }, r: .5, v: .5, up: 1, life: 1, size: .45, grow: 1.6, c: HYE.smoke, smoke: true, a: .8, drag: 1 });
+      fx.ring(p, .2, 1, HYE.dust, .5, { a: .5 }); fx.emit(12, { p: { x: p.x, y: .1, z: p.z }, r: .5, v: .8, up: .3, life: 1, size: .35, grow: 1.5, c: HYE.dust, smoke: true, a: .45, drag: 1.5 });
+      fx.emit(25, { p: { x: p.x, y: .1, z: p.z }, r: .4, v: 2, up: 2.5, life: .9, size: .05, c: HYE.dust, g: 10, drag: .5 });   // its debris
+    });
+    let whoop = 0;
+    return { ...L,
+      tick(dt, e) {
+        L.tick(dt, e);
+        if (whoop === 0 && e.s >= .81) { whoop = 1; for (const d of inside(e.pos, HYE.R)) d.slows.push({ until: time + HINDER.time * (sheet().hinderTime || 1), pct: -HINDER.slow * slowK(S) }); }
+        if (whoop === 1 && e.s >= .93) { whoop = 2; fx.ring(e.pos, .2, HYE.R, HYE.ring, .5, { a: .45, y: .5 }); fx.ring(e.pos, .1, HYE.R * .8, HYE.hi, .5, { a: .25, y: .5 }); }
+      },
+      hit(e, d) { L.hit(e, d); if (Math.random() * 100 < MC) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); } };
   }
   const ffs = new Map();
   function faerieLook() {
@@ -3390,11 +3415,11 @@ export function initScene(el, api) {
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : {}));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : k === 'Cackling Companions' ? { look: hyenaLook(S) } : {}));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk' || k === 'Spectre: {0}') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
+      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf' || k === 'Barkskin' || k === 'Berserk' || k === 'Cackling Companions' || k === 'Spectre: {0}') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       if (k === 'Blasphemy') { const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), 0x1f2bff, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove()); fx.pillar(pp, .6, 2.6, 0x1f2bff, .5, 2); }   // its symbol (BLAS)
       else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
@@ -4497,7 +4522,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Cackling Companions']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
