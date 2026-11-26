@@ -1447,7 +1447,7 @@ export function initScene(el, api) {
   // embers for 1.5-4 s. note: the runes are the scene's rune texture (the game draws its own), the spikes' number and the
   // bone's and embers' colours are the scene's; the dark wave and its blood ribbons (10 s) are not drawn
   const BBL = { rune: 0x66ff91, wave: 0x4dff77, skin: 0x99ffb7, glow: 0x80ffa4, bone: 0xe6d6b0, dark: 0x020604, blood: 0x5a0006 };
-  const BONE = { bone: 0xd8ccb0, glow: 0x7affb8, blood: 0x5a0006 };   // the necromancer's bone (bone_ringwall_02 boneStake01, its green 0.6 / 1.25 / 0.9)
+  const BONE = { bone: 0xd8ccb0, glow: 0x7affb8 };   // the necromancer's bone (bone_ringwall_02 boneStake01, its green 0.6 / 1.25 / 0.9)
   function boneBlast(S) {
     const c = S.at, R = S.A, D = S.P.dur || 1, dec = fx.decal(c, R, 'rune', BBL.rune, { a: .85, k: 1.6, spin: .4 });
     fx.emit(6, { p: c, r: R * .6, v: .2, up: .6, life: 1, size: .5, grow: 2, c: BBL.dark, smoke: true, a: .6, drag: 1 });
@@ -3490,10 +3490,10 @@ export function initScene(el, api) {
         });
         const e = thing(g, durOf(S), { name: S.name, cage: true,
           tick(dt, e) {
-            const k = Math.max(.01, ease(Math.min(1, e.s / .2))); for (const s of spikes) s.m.scale.setScalar(k); mat.emissiveIntensity = .25 + .75 * Math.max(0, 1 - e.s / .75);
-            for (const s of spikes) if (s.m.visible && inside(s.p, .2).length) {
+            const k = Math.max(.01, ease(Math.min(1, e.s / .2))); mat.emissiveIntensity = .25 + .75 * Math.max(0, 1 - e.s / .75);
+            for (const s of spikes) if (s.m.scale.setScalar(k), s.m.visible && inside(s.p, .2).length) {
               s.m.visible = false; pop(s.p, r, 'dust'); fx.spikes(s.p, .35, { n: 5, h: 1, w: .07, c: BONE.bone, dark: true, glow: BONE.glow, dur: .5 });
-              for (const d of inside(s.p, r)) { const q = { x: d.pos.x, y: .7, z: d.pos.z }; fx.spikes(q, .3, { n: 4, h: .6, w: .05, c: BONE.bone, dark: true, dur: 2.5, inner: 0 }); fx.emit(6, { p: q, r: .2, v: 1.2, up: 1.5, life: 1.7, size: .08, c: BONE.blood, smoke: true, a: .9, g: 10, drag: .4 }); }
+              for (const d of inside(s.p, r)) { const q = { x: d.pos.x, y: .7, z: d.pos.z }; fx.spikes(q, .3, { n: 4, h: .6, w: .05, c: BONE.bone, dark: true, dur: 2.5, inner: 0 }); fx.emit(6, { p: q, r: .2, v: 1.2, up: 1.5, life: 1.7, size: .08, c: BBL.blood, smoke: true, a: .9, g: 10, drag: .4 }); }
               area(s.p, r, { ...S, self: e });
             }
           } });
