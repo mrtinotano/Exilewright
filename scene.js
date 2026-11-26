@@ -1516,6 +1516,39 @@ export function initScene(el, api) {
         moths.add({ n: 3 + Math.floor(rnd(4)), r: .5, col, from: time, grow: .5, at: () => q, done: () => time > end });
       } };
   }
+  // Azmerian Wolf's look (packleader: PackleaderWolf .mat, skin_01.epk, primalwisps_body_01 / wolfwispy_paws / spawnin
+  // .pet): a grey wolf (its fur's colour 0.46 / 0.43 / 0.42) lit by its spirit's blue (custom_lookupcolor up to
+  // 0.36 / 0.6 / 1), blue wisps drifting off its body and paws (0.07 / 0.6 / 1 to 0.08 / 0.29 / 0.8), summoned in blue
+  // smoke (0.19 / 0.47 / 1). The wolf is Quaternius' (wolf.glb, CC0) with its walk, gallop and bite.
+  // note: its size is not in the data (1.6 m long here)
+  const PACK = { fur: 0x756e6c, light: 0xb0a9a5, spirit: 0x5c99ff, wispA: 0x1299ff, wispB: 0x144acc, smoke: 0x3078ff };
+  const wolfGlb = fetch('wolf.glb').then(r => r.arrayBuffer()), gltfL = import('three/addons/loaders/GLTFLoader.js').then(m => new m.GLTFLoader());
+  function wolfLook() {
+    let mx, acts, cur, last, bite = 0;
+    const play = n => { if (!acts || cur === n) return; acts[n].reset().fadeIn(.15).play(); acts[cur]?.fadeOut(.15); cur = n; };
+    return {
+      start(f, p) {
+        f.group.children.forEach(c => { c.visible = false; });
+        fx.emit(24, { p: { x: p.x, y: .4, z: p.z }, r: .6, v: .6, up: 1.2, life: .9, size: .5, grow: 1.6, c: PACK.smoke, smoke: true, a: .5, drag: 1 });
+        fx.glow({ x: p.x, y: .6, z: p.z }, 1.6, PACK.spirit, .4, 2);
+        Promise.all([wolfGlb, gltfL]).then(([buf, L]) => L.parse(buf.slice(0), '', g => {
+          const m = g.scene;
+          m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; if (/^Main/.test(o.material.name)) { o.material = o.material.clone(); o.material.color.set(o.material.name === 'Main_Light' ? PACK.light : PACK.fur); o.material.emissive.set(PACK.spirit); o.material.emissiveIntensity = .06; } } });
+          const bb = () => { const b = new THREE.Box3(); m.updateMatrixWorld(true); m.traverse(o => o.isBone && b.expandByPoint(o.getWorldPosition(V()))); return b; };   // by its bones (a skinned mesh's own box is not where it is drawn)
+          const b = bb(); m.scale.multiplyScalar(1.6 / Math.max(b.max.x - b.min.x, b.max.z - b.min.z)); m.position.y = -bb().min.y; f.group.add(m);
+          mx = new THREE.AnimationMixer(m); acts = Object.fromEntries(['Idle', 'Walk', 'Gallop', 'Attack'].map(n => [n, mx.clipAction(g.animations.find(a => a.name === n))]));
+          acts.Attack.setLoop(THREE.LoopOnce); play('Idle');
+        }));
+      },
+      tick(dt, e) {
+        mx?.update(dt);
+        const v = last ? dist(e.pos, last) / dt : 0; last = { x: e.pos.x, z: e.pos.z };
+        if (time > bite) play(v > 3 ? 'Gallop' : v > .3 ? 'Walk' : 'Idle');
+        if (Math.random() < dt * 14) fx.emit(1, { p: { x: e.pos.x, y: rnd(.35, .85), z: e.pos.z }, r: .45, v: .15, up: .5, life: .9, size: .07, c: PACK.wispA, c2: PACK.wispB, k: 2.2, drag: 1 });
+        if (Math.random() < dt * 8) fx.emit(1, { p: { x: e.pos.x, y: .06, z: e.pos.z }, r: .4, v: .1, up: .3, life: .6, size: .18, grow: 1.5, c: PACK.wispA, smoke: true, a: .45, drag: 1 });
+      },
+      hit() { bite = time + .55; if (cur !== 'Attack') acts?.[cur]?.fadeOut(.1); cur = null; play('Attack'); } };
+  }
   const ffs = new Map();
   function faerieLook() {
     for (const d of dummies) if (!ffs.has(d) && !d.dead && d.ff?.some(u => u > time))
@@ -3150,11 +3183,11 @@ export function initScene(el, api) {
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : {}));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
-      if (k === 'Attrition' || k === 'Azmerian Swarms') return;   // always on while equipped, nothing of them seen on you
+      if (k === 'Attrition' || k === 'Azmerian Swarms' || k === 'Azmerian Wolf') return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook)
       fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2);
       say(t('{0} on', S.label), S.el);
     },

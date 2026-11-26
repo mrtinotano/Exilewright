@@ -12,7 +12,7 @@ import sys
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import PyInstaller.__main__
-data = ['index.html', 'LICENSE', 'mannequin.glb', 'moves.json', 'three', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
+data = ['index.html', 'LICENSE', 'mannequin.glb', 'wolf.glb', 'moves.json', 'three', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
 PyInstaller.__main__.run(['serve.py', '--name', 'Exilewright', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', 'icon.ico',
                           *[f'--add-data={d}{os.pathsep}{d if os.path.isdir(d) else "."}' for d in data]])
 app = os.path.join('dist', 'Exilewright')
