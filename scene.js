@@ -1080,7 +1080,8 @@ export function initScene(el, api) {
     const live = Object.entries(me.hexes || {}).filter(([n, h]) => n !== name && time < h.until), lim = live.filter(([, h]) => !h.free);
     me.hexes = Object.fromEntries([...live.filter(([, h]) => h.free), ...free || sheet().curseIgnore ? lim : lim.slice(-((sheet().curseLimit || 1) - 1) || Infinity), [name, { until: time + s * R.time, C, k: (C.effect ?? 1) * x * R.effect, free }]]);
   };
-  // the Consecrated Ground you stand on, if any (Gifts from Above: you have it around you while stationary)
+  // the Consecrated Ground you stand on, if any (Gifts from Above: you have it around you while stationary. note: its
+  // radius is not in the data: it is under you alone)
   const holyAt = () => grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r) || sheet().holyStill && !walk && !move && {};
   const hexN = () => Object.values(me.hexes || {}).filter(h => time < h.until).length;
   const uncurse = () => { const k = Object.keys(me.hexes || {}).find(n => time < me.hexes[n].until); if (k) { delete me.hexes[k]; fx.ring(pp, .2, 1.2, 'gold', .35); } };   // one of the curses on you
@@ -7331,7 +7332,6 @@ export function initScene(el, api) {
     const SP = me.spectral; if (SP && time - SP.at >= SP.wait) { me.spectral = null; for (let k = 0; k < SP.n; k++) later(k * SP.every, () => { const X = { ...SP.S, spent: 0 }; aim(X, near(pp, 15)?.pos ?? { x: pp.x + SP.S.dx, z: pp.z + SP.S.dz }); K.projectile(X); }); }   // Spectral Volley
     const LR = banner('life_regeneration_per_minute'); if (LR) me.life = gain(me.life, me.maxL, LR / 60 * dt);
     // Consecrated Ground: on it you regenerate 5% of your maximum life a second (keywords.json), more by its effect (Consecrate)
-    // Gifts from Above: you have it around you while stationary (note: its radius is not in the data: it is under you alone)
     const CG = holyAt();
     if (CG) me.life = gain(me.life, me.maxL, me.maxL * .05 * (1 + (CG.S?.dmg?.stats?.['consecrated_ground_effect_+%'] || 0) / 100) * dt);
     // Gloomform: a Smoke Cloud of its radius around you while stationary; the enemies standing in it are Blinded (KeywordPopups SmokeCloud)
