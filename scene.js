@@ -4714,11 +4714,29 @@ export function initScene(el, api) {
     fx.emit(10, { p: H, r: .08, v: 3, life: .3, size: .07, c: BARRAGE.spark, c2: 'white', k: 2.6, drag: 3 });
     for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; fx.emit(1, { p: { x: H.x + Math.cos(a) * .2, y: H.y + Math.sin(a) * .2, z: H.z }, dir: V(-Math.sin(a) * 2, Math.cos(a) * 2, 0), life: .3, size: .16, c: BARRAGE.ribbon, k: 2.2, drag: 2 }); }
   }
+  // an Invocation's look (BuffVisualOrbs InvocationOrbiterBarrier: reservation_invocations/invocationOrbiter_ES.ao on you):
+  // a star circling you with a trail of sparks while it gains Energy (orbiter_ES: orbitStar_ES_R 0.18 / 0.5 / 1, x2.05;
+  // sparksStar_ES_R 0.15 / 0.49 / 1); once it has the Energy to trigger, a flare with streaks (orbiterFlareUp_ES: starFlareUp_ES_R 0.15 / 0.49 / 1, x3) and a ring pulsing at
+  // the star (orbiterReady_Idle_ES: starRing_ES_R 0.15 / 0.49 / 1, every 0.5 s); turned off, a ring where it was
+  // (orbiterEnd_ES). note: the radius, height and speed of its orbit are the simulator's (the game's are in its rig's animation)
+  const ORBITER = { 'Barrier Invocation': { star: 0x2e81ff, spark: 0x267dff } };
+  function orbiters() {
+    for (const k in tog) {
+      const T = tog[k], O = T.cap && ORBITER[k]; if (!O) continue;
+      const a = time * 2.2, q = T.orb = { x: pp.x + Math.cos(a) * .8, y: 1.7 + Math.sin(a * 2) * .08, z: pp.z + Math.sin(a) * .8 }, rdy = T.need > 0 && T.energy >= T.need;
+      fx.emit(1, { p: q, life: .1, size: rdy ? .26 : .16, c: O.star, c2: 'white', k: 4 });
+      if (Math.random() < (rdy ? .9 : .45)) fx.emit(1, { p: q, r: .03, v: .25, life: .85, size: .05, c: O.spark, c2: 'white', k: 2.6, drag: 2 });
+      if (rdy && !T.rdy) { fx.glow(q, 1.1, O.star, .35, 3); fx.ring(q, .1, .7, O.spark, .35, { y: q.y }); for (const [x, y] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) fx.streak(V(q.x, q.y, q.z), V(q.x + x * 1.4, q.y + y * 1.4, q.z), O.star, .35, .03, 1.4); }   // its flare's streaks (starFlareUp_ES: glow_flarestreak)
+      if (rdy && time - (T.ringAt ?? -9) >= .5) { T.ringAt = time; fx.ring(q, .05, .35, O.spark, .5, { y: q.y, a: .7 }); }
+      T.rdy = rdy;
+    }
+  }
   const WARD = 0x125eff, WG = new THREE.Color();
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
+    orbiters();
     const BR = empower.find(e => e.type === 'repeat' && e.name === 'Barrage');   // Barrage Empowering: your weapon glows
     if (BR) { const H = hand(), c = BR.charged ? BARRAGE.charged : BARRAGE.core; fx.emit(2, { p: H, r: .15, v: .2, up: .15, life: .4, size: .13, c, c2: 'white', k: 2.4, drag: 1 }); if (Math.random() < .25) fx.glow(H, .7, c, .2, 2); }
     const howl = empower.some(e => e.type === 'cold');   // Arctic Howl Empowering your attacks
@@ -4806,7 +4824,7 @@ export function initScene(el, api) {
   }
   // what the Banners you stand in grant: their buff's stat, summed
   const banner = k => { const by = {}; for (const o of objs) if (o.banner && !o.dead && (dist(o.c, pp) <= o.R ? (o.inAt = time, true) : time - (o.inAt ?? -99) <= (sheet().bannerLinger || 0)) && o.banner[k]) by[o.name] = o.name in by ? Math.max(by[o.name], o.banner[k]) : o.banner[k]; return Object.values(by).reduce((n, x) => n + x, 0); };   // the same Banner twice (Tactician's any number) does not add up
-  function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
+  function untoggle(k) { const T = tog[k]; if (!T) return; T.decal?.remove(); if (T.orb && ORBITER[k]) fx.ring(T.orb, .1, .6, ORBITER[k].spark, .5, { y: T.orb.y }); T.objs.forEach(o => { o.dead = true; }); delete tog[k]; }
 
   // ---------- using a skill
   // what a use costs: mana (a channel's for one tick, or `held` s), and life
