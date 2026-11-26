@@ -1731,6 +1731,19 @@ export function initScene(el, api) {
       }
     }
   }
+  // Bleeding Concoction's flask (MiscProjectileMod BleedingConcoctionProjectile: ascendancy_classes/pathfinder flask_blood_proj,
+  // a mana flask tinted red 1 / 0 / 0, trailing blood) bursting into blood (FlaskExplodePhys: explosion_blood.pet): a red
+  // core ring for 0.65 s, a sphere of blood for 0.75 s, blood splashing up in ribbons for 0.5-1.5 s and sprayed out for
+  // 2-2.5 s, and its stain on the ground for 4.5-7.5 s
+  const BLD = { flask: 0xd0000a, core: 0xff1010, blood: 0x8a0008, dark: 0x4a0004, stain: 0x5a0006 };
+  function bloodBurst(c, R) {
+    fx.flash(c, BLD.core, 6, .2, 5); fx.ring(c, .2, R, BLD.core, .65, { a: .8 }); fx.ball({ x: c.x, y: .3, z: c.z }, R * .5, BLD.dark, .75, 1.4);
+    const at = { x: c.x, y: .3, z: c.z };
+    fx.emit(40, { p: at, r: .2, v: R * 1.5, up: 5, life: 1.5, size: .2, c: BLD.blood, smoke: true, a: .95, g: 12, drag: .3 });   // the splash
+    fx.emit(Math.min(120, 30 + R * R * 8), { p: at, r: .2, v: R * 2.2, up: 3, life: 2.2, size: .08, c: BLD.blood, c2: BLD.dark, k: 1.2, g: 9, drag: .3 });   // the spray
+    fx.disc(c, R * .9, BLD.stain, 6, { dark: true, a: .9, tex: 'patch', hold: .7, y: .03 });
+    shake = Math.max(shake, Math.min(.5, R * .09));
+  }
   // Acidic Concoction: its flask Consumes the Poisons of each enemy it hits, which bursts there (its secondary radius,
   // more area per Poison consumed): the enemies in the burst lose its % of the expected remaining damage of the
   // strongest Poison consumed (its description: Life lost, not a hit). note: the tree's increased area is not on the burst
@@ -3003,7 +3016,8 @@ export function initScene(el, api) {
       // a Concoction's projectiles (Multishot) each a flask of its own, landing apart in a fan as a grenade's (note: the spread is the scene's)
       const fn = FT && !S.one ? sh(S).projectiles || 1 : 1;
       if (fn > 1) { const o = pp, dx = c.x - o.x, dz = c.z - o.z; for (let k = 0; k < fn; k++) { const a = (k - (fn - 1) / 2) * .25, cs = Math.cos(a), sn = Math.sin(a); K.rain({ ...S, one: true, at: { x: o.x + dx * cs + dz * sn, z: o.z + dz * cs - dx * sn } }); } return; }
-      const shot = land => lob(FT ? fx.flask(FT === 4 ? 'acid' : S.el) : P.attack ? fx.arrow(S.el) : fx.orb(S.el, .13), h, V(c.x, .1, c.z), .42, 3.2, land, FT ? { spin: true, drip: FT === 4 ? 'acid' : S.el } : { trail: S.el });
+      const FC = FT === 4 ? 'acid' : FT === 3 ? BLD.flask : S.el;   // Bleeding Concoction (type 3): its red flask
+      const shot = land => lob(FT ? fx.flask(FC) : P.attack ? fx.arrow(S.el) : fx.orb(S.el, .13), h, V(c.x, .1, c.z), .42, 3.2, land, FT ? { spin: true, drip: FC } : { trail: S.el });
       // Tornado Shot: its shot's hit (PoB2's main part) and its tornado (its own part) where it lands
       // note: its secondary radius taken as the tornado's
       const TX = partOf(S, 'Tornado');
@@ -3046,6 +3060,7 @@ export function initScene(el, api) {
       }
       shot(() => {
         if (FT === 4) { fx.acid(c, R); shake = Math.max(shake, Math.min(.5, R * .09)); area(c, R, S); return acidBurst(S, c, R); }
+        if (FT === 3) { bloodBurst(c, R); return area(c, R, S); }
         if (P.plant && P.dur) return K.zone({ ...S, at: c });
         boom(c, R, S); if (P.ground) ground(P.ground, c, R, P.dur, S);
         // Explosive Concoction: its smaller flasks (its part, its number) thrown at the Ignited enemies nearest the explosion
