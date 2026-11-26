@@ -1231,7 +1231,7 @@ export function initScene(el, api) {
     if (brk > 0 && d.stat.armour > 0 && !(d.st.armour > 0) && !(d.riven?.until > time)) {
       if (!S.src && Math.random() * 100 < (S.dmg.onHit?.breakEndurance || 0)) chargeBy('endurance', S);   // Armour Break II, Break Endurance
       d.cut = (d.cut || 0) + rb;
-      if (d.cut >= d.stat.armour) { d.cut = d.over = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000, S); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
+      if (d.cut >= d.stat.armour) { if (S.name === 'Armour Piercing Rounds') aprShatter(d); d.cut = d.over = 0; d.brokenX = A.brokenEff || 1; inflict(d, 'armour', S, 1, raw, { dur: BROKEN.time * (A.brokenTime || 1) }); scavenge(d); daze(d, S.dmg.sum?.support_daze_break_duration_ms / 1000, S); if (A.maimOnBreak) inflict(d, 'maim', S, 1, null, { dur: MAIM.time }); }
     }
   }
   // freeze, heavy stun, electrocute and pin bars: buildup as a % of the enemy's poise; after one fills, it is harder to fill
@@ -2298,6 +2298,31 @@ export function initScene(el, api) {
         frag(to, X.A, Math.max(0, st.base_skill_detonation_time / 1000 - .3), q => boom(q, X.A, X, { noPay: true })));
     }
   }
+  // Armour Piercing Rounds' look (crossbow_armour_piercing: muzzle_rapid, rapid_shot, rapid_trail, rapid_impact and
+  // rapid_pierce, riven_debuff): a pale blue flash at the crossbow's muzzle with an orange-red ring and pale sparks
+  // (MF_rapidFlash 0.75 / 0.81 / 1, MF_rapidRing 1 / 0.36 / 0.21), each bolt a pale blue head (0.56 / 0.72 / 1) trailing a
+  // thin red-orange streak (rapid_trail 1 / 0.41 / 0.28, boosted red); where it hits an orange flash (1 / 0.47 / 0.37),
+  // orange embers and glinting steel pieces flung out (steelPieces), a pale blue flash when it pierces (1.12 / 1.23 / 1.5);
+  // the armour it Fully Breaks shatters in a golden burst with floating shards (riven_shatter 1 / 0.58 / 0.15,
+  // riven_floating_shards 1 / 0.88 / 0.79 by 1 / 0.63 / 0.25)
+  const APR = { muzzle: 0xbfcfff, ring: 0xff5c36, head: 0xabdcff, trail: 0xff3e24, flash: 0xff784f, ember: 0xff825c, steel: 0xff4d1f, pierce: 0x9fbfff, shatter: 0xff9426, shard: 0xff8c33 };
+  function aprMuzzle(dx, dz) {
+    const H = hand(), q = { x: H.x + dx * .3, y: H.y, z: H.z + dz * .3 };
+    fx.glow(q, .3, APR.muzzle, .08, 1.5); fx.glow(q, .45, APR.ring, .1, 1.6);
+    fx.emit(5, { p: q, dir: V(dx * 4, .3, dz * 4), r: .05, v: 1.5, life: .18, size: .05, c: APR.muzzle, c2: 'white', k: 2.5, drag: 3 });
+  }
+  function aprHit(p, through) {
+    const q = { x: p.x, y: 1.05, z: p.z };
+    fx.glow(q, .7, through ? APR.pierce : APR.flash, .12, 2.5);
+    fx.emit(6, { p: q, r: .1, v: 3, up: .6, life: .3, size: .06, c: APR.ember, c2: 'white', k: 2.4, drag: 2, g: 4 });
+    fx.emit(4, { p: q, r: .1, v: 2.4, up: 1, life: .45, size: .05, c: APR.steel, c2: 'white', k: 1.8, g: 9 });
+  }
+  function aprShatter(d) {
+    const q = { x: d.pos.x, y: 1.1, z: d.pos.z };
+    fx.glow(q, 2.4, APR.shatter, .35, 3);
+    for (let i = 0; i < 12; i++) { const a = rnd(TAU), l = rnd(.6, 1.3); fx.streak(V(q.x, q.y, q.z), V(q.x + Math.cos(a) * l, q.y + rnd(-.5, .9), q.z + Math.sin(a) * l), APR.shatter, rnd(.15, .25), rnd(.02, .04), rnd(.5, 1)); }
+    fx.emit(14, { p: q, r: .3, v: 1.2, up: .4, life: 1.2, size: .07, c: APR.shard, c2: 'white', k: 2, drag: 1.5 });
+  }
   function shoot(S, from, dx, dz, o = {}) {
     // Shockchain Arrow homes in on enemies with a lightning ailment: a fresh arrow flies at the nearest such one ahead within
     // its range. ponytail: aimed when fired, the game's turn rate is in none of the data; steer per frame if it ever is
@@ -2317,6 +2342,7 @@ export function initScene(el, api) {
     const EW = P.spiral && !o.shard && bst['eye_of_winter_first_hit_damage_+%_final'] != null, EN = EW ? sh(S).projectiles || bst.base_number_of_projectiles : 0, gap = EW && left / EN;
     let shot = 0, shardT = 0; if (EW) cur = { ...S, first: new Set() };
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
+    const AP = S.name === 'Armour Piercing Rounds'; if (AP) { tint(m, APR.trail); m.children[1].material.color.copy(fx.color(APR.head, 1.5)); m.children[1].scale.setScalar(.3); if (!o.forked && !o.split && !o.back) aprMuzzle(dx, dz); }
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
     // Ulaman's Vision: each projectile you fire does one of these at random: Fork once more (0), Chain once more (1), Chain
@@ -2379,7 +2405,7 @@ export function initScene(el, api) {
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           if (FR) for (const w of objs) if (w.ice && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.touch(cur);
           for (const d of dummies) if (!EW && UL !== 3 && !d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
-            seen.add(d); shrapnel(cur, d); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
+            seen.add(d); shrapnel(cur, d); if (AP) aprHit(m.position, pierced < pierceN); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
             const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
             if (N) {
@@ -2399,7 +2425,7 @@ export function initScene(el, api) {
         }
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
-        fx.trail(m.position, cur.el, slow);
+        if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else fx.trail(m.position, cur.el, slow);
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
@@ -2754,7 +2780,7 @@ export function initScene(el, api) {
       const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0) + moreProj(S), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       const CB = partOf(S, 'CoilingBoltsChaosPlayer'); if (CB) shoot(CB, S.from, Math.sin(a0 + spread), Math.cos(a0 + spread));   // Coiling Bolts: its Chaos projectile, fired with its Physical one
-      fx.glow(h, .9, S.el, .2);
+      if (S.name !== 'Armour Piercing Rounds') fx.glow(h, .9, S.el, .2);   // its own muzzle flash (aprMuzzle)
     },
     chain(S) {
       const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand(), n = (sh(S).chains || 0) + (S.addChains || 0);   // Arc's chains from a Lightning Infusion
