@@ -485,6 +485,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
     q = next((quality_tab[i] for i in [fx['GrantedEffect'], *fx['AdditionalGrantedEffects'][:1]] if i in quality_tab), {})
     acts = [active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None]
+    prev = skills.get(g['name'])   # one name for several gems (Axe Slash: one hand axes, two axes, two hand axes)
     skills[g['name']] = {
         **{k: {sid(a): v for a, v in zip(q[s], q[s + 'ValuesPermille'] if k == 'quality' else q['AltStatValuesPermille'])}
            for k, s in (('quality', 'Stats'), ('alt_quality', 'AltStats')) if q.get(s)},
@@ -510,6 +511,8 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         **({'meta_skill': m} if (m := {ge_tab[x]['Id']: dict(zip(('constant', 'levels'), stat_levels([ge_tab[x]], [ge_tab[x]['StatSet']])))
                                       for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].endswith('SpawnPlayer')}) else {}),
     }
+    if prev and prev.get('weapons') and skills[g['name']]['weapons']:   # each one's weapons, not only the last one's
+        skills[g['name']]['weapons'] = list(dict.fromkeys(prev['weapons'] + skills[g['name']]['weapons']))
     totem = next((art_variety[k[10:]] for k in implicit | set(const) if k.startswith('totem_has_') and k[10:] in art_variety), None) \
         or next((totem_variety[a['SkillTotemId']] for a in acts if a.get('SkillTotemId') in totem_variety), None)
     if totem and 'is_totem' in implicit:   # the totem's life: a monster of its level times its variety's multiplier
@@ -1169,6 +1172,7 @@ assert skills['Mortar Cannon']['meta_support']['support_grenade_ballista_attack_
 assert skills['Mortar Cannon']['totem'] == {'life_mult': 1, 'ballista': True, 'armour': 100} and skills['Shockwave Totem']['totem']['armour'] == 0 and skills['Ancestral Warrior Totem']['totem'] == {'life_mult': 1, 'ballista': False, 'armour': 0} and minion_level[17] == 36, 'SkillTotemVariations / MinionGemLevelScaling'
 assert any('Berserk' in d.get('skill', ()) and 'skill_base_rage_effect_+%_to_apply' in d['stats'] for d in kept), 'ActiveSkills.StatDescription'
 assert skills['Rolling Slam']['weapons'] == ['One Hand Maces', 'Two Hand Maces'] and not skills['Fireball']['weapons'], 'ActiveSkillWeaponRequirement'
+assert {'One Hand Axes', 'Two Hand Axes'} <= set(skills['Axe Slash']['weapons']), 'Axe Slash: the weapons of all its gems'
 assert len(monsters) > 1000 and any(m.get('areas') for m in monsters) and any(s.get('proj_speed') for s in map(monster_skill, ge_tab[:2000]))
 assert skills['Orb of Storms']['levels'][20]['_cost'] == {'Mana': 129} and skills['Runic Tempering']['levels'][20]['_cost'] == {'ManaPerSecond': 19.6}, 'GrantedEffectsPerLevel.CostAmounts'
 assert any(s.get('constant', {}).get('_cost_multiplier') == 120 or any(L.get('_cost_multiplier') == 120 for L in s.get('levels', {}).values()) for s in skills.values()) and '_cost_multiplier' not in str(skills['Mortar Cannon']), 'GrantedEffectsPerLevel.CostMultiplier'

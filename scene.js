@@ -2813,6 +2813,8 @@ export function initScene(el, api) {
     for (let i = 0; i < 10; i++) { const a = rnd(TAU); fx.streak(q.clone(), V(q.x + Math.cos(a) * 1.2, q.y + rnd(-.4, .6), q.z + Math.sin(a) * 1.2), BREAK.spike, .18, .025, .6); }
     fx.emit(10, { p: { x: d.pos.x, y: .15, z: d.pos.z }, dir: V(dx * 3, .3, dz * 3), r: .3, v: 1.5, life: .7, size: .4, grow: 1.8, c: 'dust', smoke: true, a: .4, drag: 1.5 });
   }
+  // (Axe Slash, the axes' default attack: none of this, as the game's: its default_attack melee trails are empty and the
+  // axes have none of their own, only the swing and the hit)
   function slash(S, dx, dz, r = 2, half = .95) {
     fx.arc(pp, dx, dz, r, half, S.el); fx.sector(pp, dx, dz, r, half, S.el, .2, { a: .25, grow: true });
     fx.emit(8, { p: { x: pp.x + dx, y: 1.1, z: pp.z + dz }, dir: V(dx * 4, 0, dz * 4), v: 2, life: .25, size: .16, c: S.el, c2: 'white', drag: 2 });
@@ -3347,7 +3349,7 @@ export function initScene(el, api) {
           fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); slash(S, dx / l, dz / l); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };

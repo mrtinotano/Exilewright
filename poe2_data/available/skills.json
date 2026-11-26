@@ -13670,6 +13670,7 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": [
+    "One Hand Swords",
     "Two Hand Swords"
    ],
    "meta_support": null
@@ -13806,6 +13807,7 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": [
+    "One Hand Axes",
     "Two Hand Axes"
    ],
    "meta_support": null
@@ -13942,6 +13944,7 @@
    "duration_ms": null,
    "projectile_collision": null,
    "weapons": [
+    "One Hand Maces",
     "Two Hand Maces"
    ],
    "meta_support": null
