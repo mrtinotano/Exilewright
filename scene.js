@@ -4044,7 +4044,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -5627,9 +5627,38 @@ export function initScene(el, api) {
     const st = S.dmg.stats; me.wind = 0;
     boom({ x: pp.x, z: pp.z }, S.A * Math.sqrt(1 + st['wind_dancer_area_of_effect_+%_final_per_stage'] * n / 100), { ...S, mult: S.mult * (1 + st['wind_dancer_damage_+%_final_per_stage'] * n / 100) });
   }
+  // Its look (cold_arcticarmour: arcticBarrier.pet, armorSurge.ao): a ring of small glassy ice shards around you at
+  // chest height (its wispy ring's radius 0.9 m and height 1.25 m), fuller with each stage (the barrier's 512 shards at
+  // its most; note: how many each stage shows is not in the data, an even share here), frost powder drifting off it (0.94 / 0.96 / 1) and a wispy ring of mist round you (0.85 / 0.9 / 1, its glow
+  // 0.49 / 0.72 / 1); a stage lost sends its shards falling to the ground (FallingState) with a glow where you were hit
+  // (HitGlow) and a surge of two trails to the attacker (surgeTrail 0.59 / 0.62 / 0.71), bursting in ice on it
+  const ARCTIC = { shard: 0xd8e2ea, powder: 0xeff5ff, wisp: 0xd9e6ff, glow: 0x7db8ff, trail: 0x979eb5 };
+  const shell = (() => {
+    const g = new THREE.Group(), N = 512, m = new THREE.InstancedMesh(new THREE.TetrahedronGeometry(.022, 0).scale(1, 1.4, .6),
+      new THREE.MeshStandardMaterial({ color: ARCTIC.shard, emissive: ARCTIC.glow, emissiveIntensity: .25, roughness: .05, metalness: .2, transparent: true, opacity: .55, depthWrite: false }), N);
+    const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), P = new THREE.Vector3(), E = new THREE.Euler(), S1 = new THREE.Vector3(1, 1, 1);
+    for (let i = 0; i < N; i++) {   // scattered through a ring round you, each turned any way (i / N round it: an even fill)
+      const a = i * 2.39996 + rnd(.3), r = .9 + rnd(-.22, .22) * (1 - Math.abs(rnd(-1, 1)) * .5);
+      P.set(Math.cos(a) * r, 1.1 + rnd(-.3, .3) * (1 - Math.abs(r - .9) / .3), Math.sin(a) * r);
+      m.setMatrixAt(i, M.compose(P, Q.setFromEuler(E.set(rnd(TAU), rnd(TAU), rnd(TAU))), S1.setScalar(rnd(.6, 1.4))));
+    }
+    m.count = 0; m.frustumCulled = false; g.add(m); scene.add(g); return { g, m, N };
+  })();
+  function arcticLook(dt) {
+    const AA = arcticS()?.dmg.stats, n = AA ? Math.floor(me.arctic) : 0, k = n ? Math.round(shell.N * n / AA.maximum_number_of_arctic_armour_stationary_stacks) : 0;
+    shell.m.count = k; shell.g.visible = !!AA; if (!AA) return;
+    shell.g.position.set(pp.x, 0, pp.z); shell.g.rotation.y += dt * .25;
+    if (k && Math.random() < .4 + k / 300) { const a = rnd(TAU), y = rnd(.85, 1.35); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .9, y, z: pp.z + Math.sin(a) * .9 }, r: .15, v: .1, up: -.05, life: 1.8, size: .05, c: ARCTIC.powder, k: .9, drag: 1 }); }   // the powder glinting in the ring
+    if (Math.random() < .5) { const a = time * 1.3 + rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .9, y: rnd(.5, 1.25), z: pp.z + Math.sin(a) * .9 }, dir: V(-Math.sin(a) * .5, .05, Math.cos(a) * .5), life: 1, size: .45, grow: 1.4, c: ARCTIC.wisp, c2: ARCTIC.wisp, k: .22, drag: .5 }); }
+  }
   function arctic(d) {
     const S = arcticS(), n = Math.floor(me.arctic); if (!S || !n || d.dead) return;
-    const st = S.dmg.stats; me.arctic--; fx.ring(pp, .2, 1.6, 'cold', .35);
+    const st = S.dmg.stats; me.arctic--;
+    const lost = Math.min(40, Math.round(shell.N / st.maximum_number_of_arctic_armour_stationary_stacks));
+    for (let i = 0; i < lost; i++) { const a = rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .9, y: rnd(.85, 1.35), z: pp.z + Math.sin(a) * .9 }, r: .15, v: 1, up: .5, life: .8, size: .04, c: ARCTIC.shard, c2: 'white', k: 1.1, g: 9 }); }   // its shards falling out of the ring
+    fx.glow({ x: pp.x + (d.pos.x - pp.x) * .2, y: 1.2, z: pp.z + (d.pos.z - pp.z) * .2 }, 1, ARCTIC.glow, .25, 1.3);
+    for (const s of [-1, 1]) { const o = V(-(d.pos.z - pp.z), 0, d.pos.x - pp.x).setLength(.25 * s); fx.bolt(V(pp.x + o.x, 1.2, pp.z + o.z), V(d.pos.x, 1, d.pos.z), ARCTIC.trail, .3, .025, .2); }
+    fx.emit(10, { p: { x: d.pos.x, y: 1, z: d.pos.z }, r: .3, v: 2.5, up: 1, life: .5, size: .12, c: ARCTIC.shard, c2: 'white', k: 2, g: 6 });
     hit(d, { ...S, dmg: { ...S.dmg, hits: { cold: [st.arctic_armour_minimum_added_cold_damage_per_stack * n, st.arctic_armour_maximum_added_cold_damage_per_stack * n] } } }, { noPay: true });
   }
   // Runic Tempering: channelled, a Runic Plate each use time up to its most; while you have plates, a hit you take is
@@ -6577,7 +6606,7 @@ export function initScene(el, api) {
       KA.walked = 0;   // a Volcanic Step: a wave of fire on the ground from your feet, flames rising (hires_shockwave, fire_flare .mat)
       const c = { x: pp.x, z: pp.z }, R = KA.S.A; fx.ring(c, .3, R, 'fire', .4, { a: .7 }); fx.emit(30, { p: { x: c.x, y: .15, z: c.z }, r: .3, v: R * 2.2, flat: true, life: .4, size: .22, c: 'fire', c2: 'ember', drag: 1.5 });
       fx.emit(14, { p: { x: c.x, y: .1, z: c.z }, r: .4, up: 2.4, v: .8, life: .45, size: .3, c: 'fire', c2: 'ember', k: 1.8, drag: 1.5 }); area(c, R, KA.S, { soft: true }); }
-    kaomLook(dt); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
+    kaomLook(dt); arcticLook(dt); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
     // camera and cursor
