@@ -2458,11 +2458,11 @@ export function initScene(el, api) {
   // scene's in the mean colour of its texture (116 / 101 / 79 sRGB), where each hop lands too
   const FEN = { skin: 0x74654f, eye: 0xc8d850, ring: 0xb0ff33, nova: 0xebff7a, splash: 0x9e8e1f, blood: 0x5a0006 }, TOAD = new THREE.SphereGeometry(1, 12, 8);
   function fenToad(T, p) {
-    const g = holder(p), skin = new THREE.MeshStandardMaterial({ color: FEN.skin, roughness: .7, emissive: FEN.nova, emissiveIntensity: 0 }), at = { x: p.x, z: p.z };
+    const g = holder(p), skin = new THREE.MeshStandardMaterial({ color: FEN.skin, roughness: .7, emissive: FEN.nova, emissiveIntensity: 0 });
     const body = new THREE.Mesh(TOAD, skin); body.scale.set(.2, .13, .25); body.position.y = .13; body.castShadow = true; g.add(body);
     for (const s of [-1, 1]) { const e = new THREE.Mesh(TOAD, new THREE.MeshStandardMaterial({ color: FEN.eye, roughness: .3 })); e.scale.setScalar(.045); e.position.set(s * .09, .22, .14); g.add(e); }
     fx.emit(8, { p: { x: p.x, y: .1, z: p.z }, r: .2, v: .8, up: 1.2, life: .6, size: .08, c: FEN.splash, smoke: true, a: .8, g: 8 });   // it emerges (frog_splash)
-    let from = at, to = at, t0 = 0;
+    let from = p, to = p, t0 = 0;
     for (const h of [.79, 1.25, 1.8]) later(h, () => { from = { x: g.position.x, z: g.position.z }; to = around(from, .7); t0 = time; g.rotation.y = Math.atan2(to.x - from.x, to.z - from.z); });
     thing(g, 2.1, { tick(dt, e) {
       const k = Math.min(1, (time - t0) / .35); g.position.set(from.x + (to.x - from.x) * k, Math.sin(k * Math.PI) * .35, from.z + (to.z - from.z) * k);
