@@ -3294,24 +3294,25 @@ export function initScene(el, api) {
       const n = S.one ? 1 : (sh(S).projectiles || 1) + (time < me.fervour ? 1 : 0), o = S.origin || pp, dx = S.at.x - o.x, dz = S.at.z - o.z;
       if (n > 1) { for (let k = 0; k < n; k++) { const a = (k - (n - 1) / 2) * .13, cs = Math.cos(a), sn = Math.sin(a); K.grenade({ ...S, one: true, at: { x: o.x + dx * cs + dz * sn, z: o.z + dz * cs - dx * sn } }); } return; }
       const P = S.P, c = S.at;
-      lob(fx.orb(S.el, .11), S.origin ? V(S.origin.x, 1.5, S.origin.z) : hand(), V(c.x, .15, c.z), .55, 2.6, () => {
+      const CG0 = S.dmg?.parts?.ClusterGrenadeMiniPlayer;
+      lob(CG0 ? clusterShell(.11) : fx.orb(S.el, .11), S.origin ? V(S.origin.x, 1.5, S.origin.z) : hand(), V(c.x, .15, c.z), .55, 2.6, () => {
         if (P.ground === 'oil' || P.ground === 'gas') {   // bursts where it lands and leaves its ground: no fuse
           fx.explode(c, S.A, S.el, { soft: true });
           for (const d of inside(c, S.A)) { if (P.ground === 'oil') expo(d, ELEM, expoMag(S)); else inflict(d, 'poison', S); d.wob = .6; }
           ground(P.ground, c, S.A, P.dur, S);
           return;
         }
-        const m = fx.orb(S.el, .12); m.position.set(c.x, .15, c.z);
+        const CL = partOf(S, 'ClusterGrenadeMiniPlayer'), m = CL ? clusterShell(.12) : fx.orb(S.el, .12); m.position.set(c.x, .15, c.z);
         const blow = (e, again) => {
           if (!again && Math.random() * 100 < (S.dmg?.sum?.['grenade_skill_%_chance_to_explode_twice'] || 0)) later(.3, () => blow(e, true));   // the tree's second activation
-          const X = { ...S, self: e }; boom(c, S.A, X);
-          for (let i = 0; i < (P.cluster || 0); i++) later(.22 + i * .08, () => { const a = rnd(TAU), r = rnd(.4, .9) * S.A; boom({ x: c.x + Math.cos(a) * r, z: c.z + Math.sin(a) * r }, S.A * .45, X, { soft: true, mult: .5, noPay: true }); });
+          const X = { ...S, self: e };
+          if (CL) { clusterMain(c, S.A); area(c, S.A, X); clusterMinis(S, CL, c, e); } else boom(c, S.A, X);
         };
         thing(m, time < me.fervour ? .05 : sh(S).detonate || (/Flash/.test(S.name) ? .7 : SIM.fuse), { r: .25, name: S.name,   // (Explosive Fervour: it explodes where it lands)
-          tick(dt, e) { m.userData.glow.scale.setScalar(.7 + Math.sin(e.s * (6 + e.s * 9)) ** 2 * 1.3); },
+          tick(dt, e) { if (CL) return clusterFuse(m, dt); m.userData.glow.scale.setScalar(.7 + Math.sin(e.s * (6 + e.s * 9)) ** 2 * 1.3); },
           touch(by) { if (by.P.detonator && !this.dead) { this.dead = true; say(t('{0} detonates {1}', by.label, S.label), 'fire'); later(.06, () => blow(this)); } },
           end: e => blow(e) });
-      }, { spin: true, trail: S.el });
+      }, { spin: true, trail: CG0 ? CGR.ember : S.el });
     },
     orb(S) {
       const P = S.P, c = S.at, R = S.A, dur = P.detonates ? sh(S).detonate || SIM.orbFuse : P.dur || SIM.lifetime;
@@ -5197,6 +5198,51 @@ export function initScene(el, api) {
     const st = S.dmg.stats, n = S.spent, dur = n * st.elemental_power_buff_duration_per_power_charge_ms / 1000;
     me.pinn = { until: time + dur, more: n * st['elemental_power_elemental_damage_+%_final_per_power_charge'] }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: dur });
   };
+  // Cluster Grenade (crossbow_cluster_grenade): its grenade lands and burns its fuse (grenade_match.pet: sparks for
+  // 0.12-0.45 s; grenade_cluster.mat Vibrance 4 / 2.6 / 2), then explodes (main_explode.pet: a fireball for 0.35 s,
+  // emissive 24 / 13.92 / 9.6; a ring for 0.2 s, 1 / 0.58 / 0.4; 256 sparks for 0.1-0.3 s; 64 shards for 0.75-1.25 s, hot
+  // (1 / 0.34 / 0.2) then grey (0.2 / 0.2 / 0.22); 64 embers for 1-2 s, 1 / 0.37 / 0.1) and throws its mini grenades
+  // (ClusterGrenadeMiniPlayer: its number, its radius, its detonation time, its damage), each a hot shell
+  // (secondary_shell 1 / 0.44 / 0.2) that explodes (secondary_explode.pet: a fireball for 0.25 s, 24 / 6.29 / 2.4; a flash
+  // for 0.1 s, 1 / 0.71 / 0.5; 32 flames for 0.25-0.4 s, 1 / 0.53 / 0.29; 16 dark smoke puffs for 0.5-1.5 s; 128 sparks,
+  // 64 embers for 1.5-4 s and a scorch for 4 s). note: the sparks' colour is their texture's, the embers' here
+  const CGR = { body: 0xffa680, ember: 0xff5e1a, ball: 0xffb999, ring: 0xff9466, hot: 0xff5733, shard: 0x323437, shell: 0xff7033, mball: 0xff4319, flash: 0xffb580, flame: 0xff874a, smoke: 0x080606, scorch: 0x0a0605 };
+  const clusterShell = r => { const m = fx.orb(CGR.body, r); m.userData.core.material.color.set(CGR.shell); return m; };
+  const clusterFuse = (m, dt) => { if (Math.random() < dt * 60) fx.emit(1, { p: { x: m.position.x, y: m.position.y + .12, z: m.position.z }, r: .03, v: .8, up: 1, life: rnd(.12, .45), size: .04, c: CGR.ember, c2: CGR.flash, k: 2.6, g: 3 }); };
+  function clusterMain(c, R) {
+    const q = { x: c.x, y: .5, z: c.z };
+    fx.ball(q, R * .8, CGR.ball, .35, 3); fx.flash(c, CGR.ball, 30 + R * 22, .3, 8 + R * 3); fx.ring(c, .2, R, CGR.ring, .2, { a: .8 });
+    fx.emit(80, { p: q, r: .2, v: R * 5, up: 2, life: .2, size: .05, c: CGR.flash, c2: CGR.ember, k: 2.8, drag: 2.5 });   // its sparks
+    fx.emit(64, { p: q, r: .2, v: R * 2.2, up: 4, life: 1, size: .07, c: CGR.hot, c2: CGR.shard, g: 9, drag: .6 });   // its shards
+    fx.emit(64, { p: q, r: R * .3, v: R * 1.2, up: 2, life: 1.5, size: .04, c: CGR.ember, k: 2.4, g: 1, drag: 1.2 });
+    shake = Math.max(shake, Math.min(.5, R * .09));
+  }
+  function clusterMini(c, R) {
+    const q = { x: c.x, y: .35, z: c.z };
+    fx.ball(q, R * .8, CGR.mball, .25, 3); fx.flash(c, CGR.flash, 12 + R * 10, .1, 4 + R * 2); fx.ring(c, .15, R, CGR.ring, .2, { a: .7 });
+    fx.emit(10, { p: q, r: R * .3, v: .6, up: 1.5, life: .33, size: .3, grow: 1.6, c: CGR.flame, k: 2.2, drag: 1 });
+    fx.emit(40, { p: q, r: .1, v: R * 5, up: 2, life: .2, size: .04, c: CGR.flash, c2: CGR.ember, k: 2.8, drag: 2.5 });
+    fx.emit(16, { p: q, r: R * .4, v: .4, up: .8, life: 1, size: .55, grow: 2, c: CGR.smoke, smoke: true, a: .7, drag: 1 });
+    fx.emit(24, { p: q, r: R * .4, v: R, up: 1.5, life: 2.7, size: .035, c: CGR.ember, k: 2.4, g: 1, drag: 1.5 });
+    fx.disc(c, R, CGR.scorch, 4, { dark: true, a: .75, hold: .6, y: .03 });
+  }
+  // its mini grenades (the gem: "a ring of mini Grenades that explode when they come to a stop"): their number, radius
+  // and detonation time from their part (the radius with the build's area modifiers as the grenade's own); thrown out in
+  // a ring, each its angle off by up to its angle variance (70 degrees) and as far as the grenade's secondary radius plus
+  // up to its distance variance, at its speed (ClusterGrenadeMini 600), slowing evenly to a stop where it explodes, or
+  // at its detonation time if that comes first. note: the variance and the speed read in centimetres (3 m, 6 m/s), as the
+  // tutorial video shows them landing 2-6.5 m out and bursting 1-2.25 s after the grenade; it bounces once on its way
+  function clusterMinis(S, CL, c, e) {
+    const st = CL.dmg.stats, k = S.A / (S.dmg.stats.active_skill_base_area_of_effect_radius / 10), A = CL.A * k, R2 = radOf(S) * k, n = st.base_number_of_projectiles;
+    const fuse = st.base_skill_detonation_time / 1000 * (sh(S).detonate || 2) / (S.dmg.stats.base_skill_detonation_time / 1000), X = { ...CL, A, self: e };
+    const a0 = rnd(TAU), v = 6;
+    for (let i = 0; i < n; i++) {
+      const a = a0 + i * TAU / n + rnd(-.5, .5) * st.projectile_angle_variance * Math.PI / 180, r = R2 + rnd(st.projectile_distance_variance / 100);
+      const at = f => V(c.x + Math.cos(a) * r * f, .08, c.z + Math.sin(a) * r * f), T = Math.min(fuse, 2 * r / v), q = at(1);   // evenly slowing: 3/4 of the way in the first half
+      const done = () => { clusterMini(q, A); area(q, A, X); };
+      lob(clusterShell(.06), V(c.x, .5, c.z), at(.75), T / 2, .9, () => lob(clusterShell(.06), at(.75), q, T / 2, .25, done, { spin: true }), { spin: true });
+    }
+  }
   // Charged Staff: consumes all power charges for stacks, up to your maximum power charges; using it again while it lasts
   // adds to its stacks and duration (its duration per charge with the build's skill effect duration)
   const cstaff = S => S.P.attack && S.kind !== 'cstaff' && !S.src && time < me.cstaff?.until && me.cstaff;   // not its own use

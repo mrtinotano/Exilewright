@@ -76,7 +76,6 @@ const NAMED = {
   'Volatile Dead': { kind: 'volatile' }, 'Bitter Dead': { kind: 'volatile' },
   'Temper Weapon': { kind: 'temper' },
   'Grim Pillars': { kind: 'pillars' }, 'Hollow Form': { kind: 'hollow' }, 'Tempest Bell': { kind: 'tbell' }, 'Explosive Spear': { kind: 'espear' }, 'Stormblast Bolts': { kind: 'stormblast' }, 'Ice Shards': { kind: 'shards' }, 'Encase in Jade': { kind: 'jade' }, 'Wardbound Minions': { kind: 'wardbound', ranged: true }, 'Bonestorm': { kind: 'bonestorm', stages: true }, 'Frozen Locus': { kind: 'pillars' },
-  'Cluster Grenade': { cluster: 4 },
   'Earthquake': { aftershock: true },
   'Volcano': { kind: 'volcano', stages: true, ownStages: true },
   'Snap': { kind: 'snap', consumes: ['freeze', 'shock', 'ignite'] },
