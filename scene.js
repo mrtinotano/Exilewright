@@ -3058,7 +3058,7 @@ export function initScene(el, api) {
         return;
       }
       shot(() => {
-        if (FT) shake = Math.max(shake, Math.min(.5, R * .09));
+        if (FT > 2) shake = Math.max(shake, Math.min(.5, R * .09));   // Bleeding's and Acidic's own bursts (the others' is boom's)
         if (FT === 4) { fx.acid(c, R); area(c, R, S); return acidBurst(S, c, R); }
         if (FT === 3) { bloodBurst(c, R); return area(c, R, S); }
         if (P.plant && P.dur) return K.zone({ ...S, at: c });
