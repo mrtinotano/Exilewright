@@ -738,7 +738,7 @@ export function initScene(el, api) {
     const OX = crit && !S.src && D?.sum?.daze_self_on_critical_hit_for_X_ms; if (OX) { if (!(time < me.dazed)) say(t('Daze'), 'gold'); me.dazed = time + OX / 1000; }   // Overextend: a critical hit Dazes you
     if (crit && d.st.ignite > 0 && Math.random() * 100 < (D?.sum?.['refresh_ignite_duration_on_critical_strike_chance_%'] || 0)) d.st.ignite = Math.max(d.st.ignite, d.full?.ignite ?? DUR.ignite);   // Eternal Flame III: a critical hit refreshes its Ignite
     if (P.dotHit) dot(d, S);
-    event('hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src) { if (P.melee) expression(d, S); if (P.spell) storm(d, S, raw); } }
+    event('hit', d.pos, S, d); if (P.melee) event('melee_hit', d.pos, S, d); if (crit) { event('crit', d.pos, S, d); if (!S.src) { if (P.melee) expression(d, S); if (P.spell) storm(d, S, raw); } }
     return true;
   }
   // The supports' bonuses that count only under a condition (calc.js when, PoB2's tags), checked on this hit: the
@@ -1309,62 +1309,84 @@ export function initScene(el, api) {
     if (P.els.length) return [...new Set(P.els.flatMap(e => e === 'cold' ? ['freeze'] : AILMENT[e] ? [AILMENT[e]] : []))];
     return ['hit'];
   }
-  // the skill a meta gem triggers: the build's first triggerable spell (Feral Invocation: a Shapeshifting attack)
-  const trigOf = T => api.build().gems.findIndex((g, j) => { const b = g.name !== T.name && base(j); return b && !NOHIT.has(b.kind) && (T.manaPer ? b.P.attack && api.info(g).gem?.types?.includes('Shapeshift') : b.P.triggerable && b.P.spell); });
+  // the skills a meta gem triggers: the spells put in it (Feral Invocation: its Shapeshifting attacks; Thundergod's Wrath: its
+  // Lightning spells, the only ones it takes)
+  const trigsOf = T => api.build().gems.flatMap((g, j) => { const b = api.usedBy(j) === T.g && base(j); return b && !NOHIT.has(b.kind) && (T.manaPer ? b.P.attack && api.info(g).gem?.types?.includes('Shapeshift') : b.P.triggerable && b.P.spell) ? [j] : []; });
   // Energy (keywords.json): a meta gem with its gains in the data (Cast on X, Invocations) gains its centienergy per Power (per block: Cast on Block)
   // of the enemy (Feral Invocation: per its mana spent), more by its increased energy; its maximum is 1 per its ms of the
-  // triggered skill's use time, at which it triggers it. An Invocation stores up to its maximum and triggers when used, as
+  // triggered skill's use time, at which it triggers it. note: each spell put in it fills its own Energy to its own maximum
+  // (keywords.json: "its own Energy count"); the buff shows the first one's. An Invocation stores up to its maximum and triggers when used, as
   // many times as its energy covers. Modifiers to its total use time count as though double (keywords.json Energy): the
   // whole of them, increased and more together, against its base cast time
   const spendRage = n => { me.rage -= n; (me.rageSpent ||= []).push([time, n]);   // what was spent Recently: Primal Hunger
     const DP = sheet().prowess; if (DP) for (me.dpRage = (me.dpRage || 0) + n; me.dpRage >= DP; me.dpRage -= DP) me.dp = [...prowess(), time + 10].slice(-3); };   // Amor Mandragora: Druidic Prowess per X Rage spent (KeywordPopups' text: 10 s each, up to 3)
   const prowess = () => (me.dp || []).filter(u => u > time);   // Druidic Prowess: 10% increased skill speed and 3 Rage on spell hits a stack (its keyword's text)
-  function gainEnergy(T, n, j) {
+  function gainEnergy(T, n) {   // the spells it triggers
     if (T.cap && sheet().ritual) return;   // Ritual Cadence: an Invocation gains no Energy, it triggers on its own (the frame loop)
-    const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, sp = u ? (b ? b * Math.max(.1, 2 * u / b - 1) : u) : 1 / SIM.castTime;   // its use time, not its cooldown
-    T.need = 1000 / sp / T.perMs;
-    T.energy = Math.min(T.cap || T.need, T.energy + n * T.more * (1 + ((me.mana >= me.maxM ? sheet().energyFullMana || 0 : 0) + (meIs.CritRecently() ? sheet().energyCrit || 0 : 0)) / 100));   // Idle Hands: more on full mana; Evocational Practitioner: after a Critical Hit
+    const js = trigsOf(T), x = n * T.more * (1 + ((me.mana >= me.maxM ? sheet().energyFullMana || 0 : 0) + (meIs.CritRecently() ? sheet().energyCrit || 0 : 0)) / 100);   // Idle Hands: more on full mana; Evocational Practitioner: after a Critical Hit
+    for (const j of js) {
+      const D = base(j).dmg, b = D?.castTime && 1000 / D.castTime, u = D?.useTime ? 1 / D.useTime : D?.speed, a = D?.addT || 0, u0 = u && a ? 1 / (1 / u - a) : u,   // its use time, not its cooldown; its added total time (Comet's) apart
+        ms = u0 ? 1000 * ((b ? 1 / (b * Math.max(.1, 2 * u0 / b - 1)) : 1 / u0) + 2 * a) : 1000 * SIM.castTime;
+      T.N[j] = ms / T.perMs; T.E[j] = Math.min(T.cap || T.N[j], (T.E[j] || 0) + x);
+    }
+    return energyOf(T, js);
   }
+  const energyOf = (T, js) => { T.energy = T.E[js[0]] || 0; T.need = T.N[js[0]] || 0; return js; };
   function invoke(T) {
-    const j = trigOf(T); let n = 0;
-    while (j >= 0 && T.energy >= T.need) { T.energy -= T.need * (Math.random() * 100 < (sheet().invokeHalf || 0) ? .5 : 1); n++; }   // the tree's chance a spell costs half
-    if (!n) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need))); say(t('{0} triggers {1}', T.label, base(j).label), T.el);
-    for (let k = 0; k < n; k++) later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }));
+    const js = trigsOf(T), go = [];
+    for (const j of js) while (T.E[j] >= T.N[j]) { T.E[j] -= T.N[j] * (Math.random() * 100 < (sheet().invokeHalf || 0) ? .5 : 1); go.push(j); }   // the tree's chance a spell costs half
+    energyOf(T, js);
+    if (!go.length) return toast(t('{0} needs {1} Energy', T.label, Math.ceil(T.need)));
+    say(t('{0} triggers {1}', T.label, [...new Set(go)].map(j => base(j).label).join(', ')), T.el); if (CAST_ON[T.name]) metaTrig(T.name);
+    go.forEach((j, k) => later(.12 + k * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand })));
   }
-  // The lightning Cast on X's look, the same in each one's art (Cast on Block's cast_on_block: CastOnBlockActivation
-  // activate_lightning.epk, CastOnBlockTriggerEffect crit_activate.ao, CastOnBlockSurgeEffect lightning_surge.ao): turned
-  // on, your skin flashes lightning blue (activationLightning_skin 0.75 / 0.87 / 2.5) with a lens flare, strings of lightning for 0.12-0.75 s and 16 bolts out
-  // of your chest for 0.09-0.45 s; as it triggers, a star flare for 0.2 s and a ring for 0.35 s (trigger_activate:
-  // crit_star, crit_ring, boosted 1 / 1 / 2) and a lightning trail rising round you (lightning_trail, boosted 1 / 1.2 / 1.4).
+  // The Cast on X family's look (each one's SkillArtVariations: activate_<kind>.epk as it is turned on, crit_activate.ao
+  // and <kind>_surge.ao as it triggers): turned on, your skin flashes in its activation's colour (activation<kind>_skin,
+  // its colour look-up's top: lightning 0.75 / 0.87 / 2.5, INT 0.17 / 0.36 / 3, DEX 0.39 / 2 / 0.3, STR 2 / 0.25 / 0.25,
+  // elemental 1.26 / 1 / 2, necro 1.36 / 2 / 1.2, energy shield 0.7 / 1.34 / 2) with a lens flare and strings for
+  // 0.12-0.75 s; lightning's core adds 16 bolts out of your chest for 0.09-0.45 s, elemental's 4 flames for 0.25-0.65 s
+  // (activationFire 2 / 0.91 / 0.3) and 6 cold shards for 0.45-1.1 s (activationCold 0.9 / 1.34 / 2). As it triggers, a
+  // star flare for 0.2 s and a ring for 0.35 s (trigger_activate: crit_star, crit_ring, boosted 1 / 1 / 2) and its
+  // surge's trail rising round you (lightning_trail boosted 1 / 1.2 / 1.4; chaos_trail the chaos theme's 0.63 / 0.38 / 1;
+  // fire_trail boosted 1.4 / 1.2 / 1 with flames for 0.25-0.35 s; necro_trail 0.7 / 1 / 0.73).
   // note: the skin's flash is a glow on you; the trail rises in a bolt (its path is surge.ast's bones)
-  const COB = { skin: 0x4d59ff, star: 0x8080ff, trail: 0xb6daff };
-  const COB_ON = new Set(['Cast on Block', 'Cast on Charm Use', 'Cast on Shock', 'Curse on Block', "Thundergod's Wrath"]);
-  function cobOn() {
-    const c = V(pp.x, 1.2, pp.z);
-    fx.flash(pp, COB.skin, 8, .3, 5); fx.glow(c, 1.6, COB.skin, .35, 2.5);
-    for (let k = 0; k < 16; k++) { const a = rnd(TAU); fx.bolt(c, V(c.x + Math.cos(a) * 1.3, c.y + rnd(-.7, .9), c.z + Math.sin(a) * 1.3), COB.skin, rnd(.09, .45), .03); }
-    fx.emit(24, { p: c, r: .35, h: 1, v: 1.6, life: .75, size: .05, c: COB.trail, k: 2.4, drag: 2 });   // its strings
+  const SKIN = { lightning: 0x4d59ff, INT: 0x0e1fff, DEX: 0x32ff26, STR: 0xff2020, elemental: 0xa180ff, necro: 0xadff99, eshield: 0x59abff, fire: 0xff7426, cold: 0x73abff };
+  const SURGE = { lightning: 0xb6daff, chaos: 0xa262ff, fire: 0xffccaa, necro: 0xb3ffba }, STAR = 0x8080ff;
+  const CAST_ON = { 'Cast on Block': ['lightning', 'lightning'], 'Cast on Charm Use': ['lightning', 'lightning'], "Thundergod's Wrath": ['lightning', 'lightning'],
+    'Cast on Critical': ['INT', 'chaos'], 'Cast on Dodge': ['DEX', 'chaos'], 'Cast on Elemental Ailment': ['elemental', 'fire'], 'Cast on Minion Death': ['necro', 'necro'],
+    'Barrier Invocation': ['eshield', 'chaos'], 'Elemental Invocation': ['elemental', 'chaos'], "Reaper's Invocation": ['STR', 'chaos'], Spellslinger: ['eshield', 'chaos'] };
+  function metaOn(k) {
+    const a = CAST_ON[k][0], col = SKIN[a], c = V(pp.x, 1.2, pp.z);
+    fx.flash(pp, col, 8, .3, 5); fx.glow(c, 1.6, col, .35, 2.5);
+    fx.emit(24, { p: c, r: .35, h: 1, v: 1.6, life: .75, size: .05, c: col, c2: 'white', k: 2.4, drag: 2 });   // its strings
+    if (a === 'lightning') for (let j = 0; j < 16; j++) { const q = rnd(TAU); fx.bolt(c, V(c.x + Math.cos(q) * 1.3, c.y + rnd(-.7, .9), c.z + Math.sin(q) * 1.3), col, rnd(.09, .45), .03); }
+    if (a === 'elemental') {
+      fx.emit(4, { p: c, r: .3, v: 1.2, up: 1, life: .65, size: .35, grow: 1.6, c: SKIN.fire, k: 2.2, drag: 2 });
+      fx.emit(6, { p: c, r: .3, v: 2, up: .5, life: 1.1, size: .08, c: SKIN.cold, k: 2.2, g: 4, drag: 1 });
+    }
   }
-  function cobTrig() {
-    const c = { x: pp.x, y: 1.3, z: pp.z };
-    fx.glow(c, 1.4, COB.star, .2, 3); fx.ring(pp, .2, 1.1, COB.star, .35, { a: .7, y: 1.3 });
-    fx.bolt(V(pp.x + .45, 0, pp.z), V(pp.x - .2, 2.4, pp.z + .2), COB.trail, .3, .035);
-    fx.emit(10, { p: { x: pp.x, y: .2, z: pp.z }, r: .5, v: .2, up: 4, life: .4, size: .05, c: COB.trail, k: 2.4, drag: 1 });
+  function metaTrig(k) {
+    const s = CAST_ON[k][1], col = SURGE[s], c = { x: pp.x, y: 1.3, z: pp.z };
+    fx.glow(c, 1.4, STAR, .2, 3); fx.ring(pp, .2, 1.1, STAR, .35, { a: .7, y: 1.3 });
+    fx.bolt(V(pp.x + .45, 0, pp.z), V(pp.x - .2, 2.4, pp.z + .2), col, .3, .035, s === 'lightning' ? .32 : .08);
+    fx.emit(10, { p: { x: pp.x, y: .2, z: pp.z }, r: .5, v: .2, up: 4, life: .4, size: .05, c: col, k: 2.4, drag: 1 });
+    if (s === 'fire') fx.emit(8, { p: { x: pp.x, y: .5, z: pp.z }, r: .4, v: .4, up: 2, life: .35, size: .25, grow: 1.5, c: col, k: 2, drag: 1 });   // its flames
   }
   function event(type, p, S, d, n) {   // n: how much of it, where the gain is not per the enemy's Power
     if (S.src === 'meta') return;
     for (const k in tog) {
       const T = tog[k];
       if (T.kind === 'meta' && (T.per ? T.per[type] : T.wants.includes(type))) {
-        const j = trigOf(T);
-        if (j < 0) continue;
-        if (T.per) { gainEnergy(T, T.per[type] / 100 * (n ?? pow(d)) * (1 + (S.dmg?.stats?.['active_skill_energy_generated_+%_final'] || 0) / 100), j);   /* the skill's own less Energy generated (Flame Wall, Incinerate) */ if (T.cap || T.energy < T.need) continue; T.energy -= T.need; }
-        else { if (++T.energy < T.need) continue; T.energy = 0; }
-        if (Math.random() * 100 < (sheet().trigRefund || 0)) T.energy += T.need / 2;   // the tree's half of it refunded
+        let js = trigsOf(T);
+        if (T.per) { gainEnergy(T, T.per[type] / 100 * (n ?? pow(d)) * (1 + (S.dmg?.stats?.['active_skill_energy_generated_+%_final'] || 0) / 100));   /* the skill's own less Energy generated (Flame Wall, Incinerate) */ if (T.cap) continue; js = js.filter(j => T.E[j] >= T.N[j]); }
+        else { if (!js.length || ++T.energy < T.need) continue; T.energy = 0; js = js.slice(0, 1); }
+        if (!js.length) continue;
+        for (const j of js) if (T.per) T.E[j] -= T.N[j] * (Math.random() * 100 < (sheet().trigRefund || 0) ? .5 : 1);   // the tree's half of it refunded
+        if (T.per) energyOf(T, trigsOf(T));
         const at = { x: p.x, z: p.z };
-        say(t('{0} triggers {1}', T.label, base(j).label), T.el);
-        if (COB_ON.has(k)) cobTrig(); else fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
-        later(.12, () => use(j, { at, src: 'meta', rand: T.rand }));
+        say(t('{0} triggers {1}', T.label, js.map(j => base(j).label).join(', ')), T.el);
+        if (CAST_ON[k]) metaTrig(k); else fx.glow({ x: pp.x, y: 2.2, z: pp.z }, 1.4, T.el, .4);
+        js.forEach((j, q) => later(.12 + q * .25, () => use(j, { at, src: 'meta', rand: T.rand })));
       } else if (T.kind === 'aura' && T.P.gain && ['freeze', 'shock', 'ignite', 'armour'].includes(type) && time - T.last > 1.2) { T.last = time; gainCharge(T.P.gain, T.label); }
     }
   }
@@ -1788,7 +1810,7 @@ export function initScene(el, api) {
       if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
     }
     if (S.P.gain && !S.P.corpse && !S.src && !KG.length && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);   // not on top of its own (Killing Palm's)
-    event('kill', p, S);
+    event('kill', p, S); if (S?.P?.melee && !dot) event('melee_kill', p, S, d);   // Reaper's Invocation: per its Power
     if (!S?.src) remnantOn('kill', d);
     if (S?.mantra) { const M = S.mantra, n = Math.min(10, (time < me.purple?.until ? me.purple.n : 0) + 1); me.purple = { n, pct: M.flame, until: time + M.flameFor }; setBuff({ label: t('Purple Flame of Chayula'), name: 'purple', c: css('chaos'), s: M.flameFor }); }   // up to 10 (keywords.json)
     const RP = !S?.src && S?.P?.melee && d.st.bleed > 0 && S.dmg?.sum?.['create_life_remnant_on_melee_kill_bleeding_enemy_%'];
@@ -2923,7 +2945,7 @@ export function initScene(el, api) {
       },
       remove() {
         if (SP) fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .4, v: 1.2, up: 1.5, life: .7, size: .16, c: SPECTRE, k: 1.4, drag: 1 }); else fx.emit(16, { p: { x: e.pos.x, y: .8, z: e.pos.z }, r: .3, v: 1.5, up: 1, life: .6, size: .14, c: 0xd8d0b8, g: 8, k: 1 }); SP?.off(); f.dispose();
-        if (!e.keep || e.slain) event('miniondeath', e.pos, MS, null, 1);
+        if (e.keep && e.slain) event('miniondeath', e.pos, MS, null, 1);   // Cast on Minion Death: a Persistent Minion killed (its text)
         if (e.keep && e.slain) fallen(S, e);
         if (e.slain) { me.minionDiedAt = time; const H = sheet().uDef?.minionDeath; if (H) hurt(H, 0, 'physical'); }   /* Heartbound Loop: physical damage taken on Minion death */   // the tree's "if one of your Minions has died Recently"
         // Deathmarch: on death it heals the allied minions within its radius for its % of its life (their ailments: minions have none here)
@@ -3423,7 +3445,7 @@ export function initScene(el, api) {
       if (tog[k] && k === 'Rhoa Mount') return mount(S);   // Rhoa Mount: used again, you mount or dismount it
       if (tog[k] && k === 'Savage Fury' && me.wild > 0) return frenzy(S);   // Savage Fury: used with Fury, its frenzy
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
-      const T = tog[k] = { name: k, kind: S.kind, P: S.P, label: S.label, el: S.el, energy: 0, need: 0, last: -9, R: 0, objs: [] };
+      const T = tog[k] = { name: k, kind: S.kind, P: S.P, g: S.g, label: S.label, el: S.el, energy: 0, need: 0, E: {}, N: {}, last: -9, R: 0, objs: [] };
       if (S.kind === 'meta') {
         T.wants = metaWants(S.P); T.need = T.wants[0] === 'hit' ? SIM.energy * 3 : SIM.energy;
         const st = gst(S), su = S.dmg?.sum || {}, per = Object.fromEntries(Object.entries(st).flatMap(([k, v]) => { const m = k.match(/_gain_X_centienergy(?:_per_monster_power)?_on_(\w+)$/); return m ? [[m[1], v]] : []; }));
@@ -3434,7 +3456,8 @@ export function initScene(el, api) {
           ['eshit', 100 / st.barrier_invocation_gain_1_energy_per_X_energy_shield_damage_taken_when_hit], ['miniondeath', 1e4 / st['cast_on_minion_death_gain_1_energy_per_X_minion_relative_defensiveness_%']]]) if (v) per[ev] = v;
         if (st['support_randomise_higher_damage_+%_final'] != null) T.rand = st;
         if (Object.keys(per).length || st.feral_invocation_gain_1_energy_per_X_mana_spent) Object.assign(T, { per, perMs: st.generic_ongoing_trigger_1_maximum_energy_per_Xms_total_cast_time || 10, more: (1 + ((S.dmg?.stats?.['energy_generated_+%'] || 0) + (su['energy_generated_+%'] || 0)) / 100) * (1 + (st['ascendancy_energy_generated_+%_final'] || 0) / 100) * (sheet().energyX2 ? 2 : 1),   /* Invoker: more */ cap: (st.generic_ongoing_trigger_maximum_energy || 0) * (1 + ((sheet().invokeMax || 0) + (su['skill_maximum_energy_+%'] || 0)) / 100), manaPer: st.feral_invocation_gain_1_energy_per_X_mana_spent });
-        if (T.per) { const tj = trigOf(T); if (tj >= 0) gainEnergy(T, 0, tj); }   // its maximum from the start (the buff shows its Energy as a % of it)
+        if (per.hit && st.cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit) { per.melee_hit = per.hit; delete per.hit; }   // Thundergod's Wrath: on Melee Hit (its text)
+        if (T.per) gainEnergy(T, 0);   // its maximum from the start (the buff shows its Energy as a % of it)
       }
       else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : k === 'Cackling Companions' ? { look: hyenaLook(S) } : {}));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
@@ -3442,7 +3465,7 @@ export function initScene(el, api) {
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
       if (SILENT.has(k)) return;   // always on while equipped, nothing of them seen on you (the wolf: its own summoning, wolfLook; Barkskin: its bark, Berserk: its Rage, kaomLook)
       if (k === 'Blasphemy') { const d = fx.decal(pp, Math.max(S.A, 1.5), artTex('blasSymbol', 'particles/supports/blasphemy/textures/blasphemy_bc1'), 0x1f2bff, { a: .9, k: 1.8, spin: .8 }); later(.8, () => d.remove()); fx.pillar(pp, .6, 2.6, 0x1f2bff, .5, 2); }   // its symbol (BLAS)
-      else if (COB_ON.has(k)) cobOn();
+      else if (CAST_ON[k]) metaOn(k);
       else { fx.ring(pp, .3, 2, S.el, .5); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       say(t('{0} on', S.label), S.el);
     },
@@ -5515,7 +5538,7 @@ export function initScene(el, api) {
       const flaskUse = (n, k, per) => { const f = flasks()[n], U = S.dmg?.sum || {}; if (!f || !U[k]) return 0; const c = Math.floor(Math.min(flaskLeft(n), f.max * U[k] / 100)); me.fl[n] -= c; return c * (U[per] || 0); };
       S.concoct = flaskUse(0, 'consume_%_of_maximum_life_flask_charges_on_skill_use', 'support_concoct_bleed_effect_+%_final_per_life_flask_charge_consumed');
       S.ambrosia = flaskUse(1, 'consume_%_of_maximum_mana_flask_charges_on_skill_use', 'gain_%_damage_as_lighting_per_mana_flask_charge_consumed');
-      if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k], j = T.manaPer ? trigOf(T) : -1; if (j >= 0) gainEnergy(T, cost / T.manaPer, j); } }   // Feral Invocation
+      if (cost > 0) { fuelUp(S, cost); for (const k in tog) { const T = tog[k]; if (T.manaPer) gainEnergy(T, cost / T.manaPer); } }   // Feral Invocation
     }
     // Extraction, Sacrificial Offering, Guatelitzi's Ablation: their share of your life Sacrificed on use (not damage, and
     // never below 1: keywords.json Sacrifice). note: of maximum life, as the Lich's and the uniques' Sacrifices here
@@ -7389,8 +7412,8 @@ export function initScene(el, api) {
       const T = tog[k]; T.decal?.move(pp);
       // Ritual Cadence: an Invocation triggers its spell every 2 seconds (its Energy no longer does). note: its invoked
       // spells' 50% less Energy is not played: with no Energy gained there is none to spend
-      if (T.cap && sheet().ritual && time - T.last >= 2) { const j = trigOf(T); T.last = time;
-        if (j >= 0) { say(t('{0} triggers {1}', T.label, base(j).label), T.el); later(.12, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand })); } }
+      if (T.cap && sheet().ritual && time - T.last >= 2) { const js = trigsOf(T); T.last = time;
+        if (js.length) { say(t('{0} triggers {1}', T.label, js.map(j => base(j).label).join(', ')), T.el); js.forEach((j, q) => later(.12 + q * .25, () => use(j, { at: near(pp, 30)?.pos || { x: pp.x, z: pp.z }, src: 'meta', rand: T.rand }))); } }
       if (T.kind === 'herald' && Math.random() < dt * 14) { const a = time * 3 + rnd(TAU); fx.emit(1, { p: { x: pp.x + Math.cos(a) * .8, y: rnd(.2, 1.8), z: pp.z + Math.sin(a) * .8 }, v: .1, up: .8, life: .6, size: .16, c: T.el }); }
       if (T.kind === 'field') for (const d of dummies) if (!d.dead && dist(d.pos, pp) <= T.R + SIM.body) d.flash = Math.max(d.flash, .06);
     }

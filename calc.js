@@ -1506,7 +1506,7 @@ export function skill(g, b, treeGear) {
   else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd * metaCast;
   if (byTotem && out.speed) out.speed *= 1 + v(sum, 'ascendency_tactician_totem_skill_speed_+%_final') / 100;   // Tactician's Cannons, Ready!: more skill speed of totems' skills
   // "+X seconds to Total Attack / Cast Time" (Leap Slam, Rolling Slam, Comet): added to the use time whatever the speed (PoB2's TotalAttackTime)
-  const addT = v(st, 'total_attack_time_+_ms', 'total_cast_time_+_ms') / 1000; if (addT && out.speed) out.speed = 1 / (1 / out.speed + addT);
+  const addT = v(st, 'total_attack_time_+_ms', 'total_cast_time_+_ms') / 1000; if (addT && out.speed) { out.speed = 1 / (1 / out.speed + addT); out.addT = addT; }   // addT: Energy counts it double (scene.js)
   // crossbow: the clip's bolts (gem + Double Barrel's), fired then reloaded, as PoB2's CalcOffence: the weapon's reload time
   // over (1 + increased reload and attack speed) x the "more" ones; bolts a shot keeps (Ammo Conservation) stretch the clip
   const bolts = attack && w?.reload && v(st, 'base_number_of_crossbow_bolts') + v(sum, 'support_double_barrel_number_of_crossbow_bolts_+');
