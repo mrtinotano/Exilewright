@@ -2548,6 +2548,10 @@ export function initScene(el, api) {
   // orange embers and glinting steel pieces flung out (steelPieces), a pale blue flash when it pierces (1.12 / 1.23 / 1.5);
   // the armour it Fully Breaks shatters in a golden burst with floating shards (riven_shatter 1 / 0.58 / 0.15,
   // riven_floating_shards 1 / 0.88 / 0.79 by 1 / 0.63 / 0.25)
+  // Bow Shot's arrow (default_ranged: DefaultArrow, base_arrow_attack arrow_base): its head glowing warm (basic_arrow_head
+  // up to 1 / 0.61 / 0.25), a pale trail (basic_arrow_trail 0.35 / 0.32 / 0.3), stuck where it hits (arrow_base_stuck);
+  // its shaft the mean colour of its texture (basearrow_clr: 87 / 79 / 72)
+  const BOW = { shaft: 0x574f48, head: 0xff9c40, trail: 0x8f8780 };
   const APR = { muzzle: 0xbfcfff, ring: 0xff5c36, head: 0xabdcff, trail: 0xff3e24, flash: 0xff784f, ember: 0xff825c, steel: 0xff4d1f, pierce: 0x9fbfff, shatter: 0xff9426, shard: 0xff8c33 };
   function aprMuzzle(dx, dz) {
     const H = hand(), q = { x: H.x + dx * .3, y: H.y, z: H.z + dz * .3 };
@@ -2628,6 +2632,7 @@ export function initScene(el, api) {
     let shot = 0, shardT = 0; if (EW) cur = { ...S, first: new Set() };
     m.position.set(from.x, 1.1, from.z); m.rotation.y = a0; scene.add(m);
     if (every) { ballOrb(m); if (fi && !S.src) ballCharge(); }
+    const BW = S.name === 'Bow Shot'; if (BW) { m.children[0].material.color.copy(fx.color(BOW.shaft, 1)); m.children[1].material.color.copy(fx.color(BOW.head, 1.2)); m.children[1].scale.setScalar(.3); }
     const AP = S.name === 'Armour Piercing Rounds'; if (AP) { tint(m, APR.trail); m.children[1].material.color.copy(fx.color(APR.head, 1.5)); m.children[1].scale.setScalar(.3); if (!o.forked && !o.split && !o.back) aprMuzzle(dx, dz); }
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
@@ -2649,7 +2654,7 @@ export function initScene(el, api) {
     const how = x => ({ mult: mult(), went: went(), ...x });   // a hit of this projectile: its damage and how far it has flown
     const mult = () => far() * (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
-      q.dead = true; const p = { x: m.position.x, z: m.position.z }; for (const s of surged) surgeBlast(cur, s, p);
+      q.dead = true; const p = { x: m.position.x, z: m.position.z }; if (BW && hitD) fx.stuck({ ...p, y: 1 }, BOW.shaft); for (const s of surged) surgeBlast(cur, s, p);
       if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
       const RS = cur.P.attack && !o.back && cur.dmg?.sum, DR = RS?.attack_projectiles_return_after_piercing_X_times, IB = brokeP && RS?.arrow_projectiles_return_if_they_have_pierced_a_fully_armour_broken_target; if (DR && pierced >= DR || IB || CG === 2) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Ironbound: so if it pierced a target with fully broken armour. Drillneck: it returns to you after piercing that many times
       const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur.name, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
@@ -2711,7 +2716,7 @@ export function initScene(el, api) {
         }
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
-        if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
+        if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
@@ -3091,7 +3096,7 @@ export function initScene(el, api) {
       const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0) + moreProj(S), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       const CB = partOf(S, 'CoilingBoltsChaosPlayer'); if (CB) shoot(CB, S.from, Math.sin(a0 + spread), Math.cos(a0 + spread));   // Coiling Bolts: its Chaos projectile, fired with its Physical one
-      if (S.name !== 'Armour Piercing Rounds') fx.glow(h, .9, S.el, .2);   // its own muzzle flash (aprMuzzle)
+      if (S.name !== 'Armour Piercing Rounds' && S.name !== 'Bow Shot') fx.glow(h, .9, S.el, .2);   // its own muzzle flash (aprMuzzle); Bow Shot's arrow has none (arrow_base)
     },
     chain(S) {
       const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand(), n = (sh(S).chains || 0) + (S.addChains || 0);   // Arc's chains from a Lightning Infusion

@@ -247,8 +247,8 @@ export function createFx(scene) {
     // an arrow left stuck in the ground at p for a moment, leaning as a rain's fall (Rain of Arrows' video)
     stuck(p, c) {
       const m = fx.arrow(c), dx = 1.5, dz = -1, l = Math.hypot(dx, dz);
-      m.position.set(p.x + dx / l * .25, .3, p.z + dz / l * .25); m.lookAt(p.x - dx / l * .6, -.5, p.z - dz / l * .6); m.children[1].visible = false;   // no glow at a buried tip
-      emit(3, { p: { x: p.x, y: .05, z: p.z }, r: .1, v: .4, up: .6, life: .6, size: .35, grow: 1.8, c: 'dust', smoke: true, a: .35 });
+      const y = p.y || 0; m.position.set(p.x + dx / l * .25, y + .3, p.z + dz / l * .25); m.lookAt(p.x - dx / l * .6, y - .5, p.z - dz / l * .6); m.children[1].visible = false;   // no glow at a buried tip
+      if (!y) emit(3, { p: { x: p.x, y: .05, z: p.z }, r: .1, v: .4, up: .6, life: .6, size: .35, grow: 1.8, c: 'dust', smoke: true, a: .35 });
       return add(m, 1.2, k => { if (k >= 1) drop(m); else m.children.forEach(x => { x.material.transparent = true; x.material.opacity = Math.min(1, (1 - k) / .3); }); });
     },
     // circular sector from p towards angle `ang` (radians on the ground plane), half-angle `half`
