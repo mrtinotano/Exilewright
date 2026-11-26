@@ -2665,6 +2665,17 @@ export function initScene(el, api) {
   // ribbon (chaosbolt_main.trl, main_trail.mat: Vibrance 0.77 / 0.56 / 1.25) and purple embers (chaosbolt.pet,
   // chaos_embers_R.mat: Vibrance 1.04 / 0.75 / 1.5) for 0.2-0.7 s; its impact is a sound only (no effect of its own)
   const CBOLT = { trail: 0x9e73ff, ember: 0xb07fff };
+  // Coiling Bolts' look (coiling_bolts: WitchboltPhysical / WitchboltChaos, CoilOfUndoing ProjPhys.ao / ProjChaos.ao): each
+  // bolt trails its ribbon (physbolt_main.trl, PhysMain_Trail's colour look-up top 1 / 0.92 / 0.7; chaosbolt_main.trl,
+  // ChaosMain_Trail's 1.4 / 0.56 / 2) and embers for 0.5-0.75 s (PhysImpact_Embers 1 / 0.57 / 0.29, ChaosImpact_Embers
+  // 0.59 / 0.21 / 1); each hit a spike for 0.2 s, two loose spirals for 0.2-0.35 s (the physical's 1 / 0.92 / 0.7, the
+  // chaos' 0.77 / 0.56 / 1) and embers for 0.3-0.5 s. note: the spirals as a ring
+  const COIL = { physical: { trail: 0xffebb3, ember: 0xff914a, spiral: 0xffebb3 }, chaos: { trail: 0xb347ff, ember: 0x9636ff, spiral: 0xc48fff } };
+  function coilHit(p, L) {
+    const c = { x: p.x, y: p.y, z: p.z };
+    fx.glow(c, .9, L.spiral, .2, 2.6); fx.ring(c, .1, .6, L.spiral, .3, { a: .8, y: p.y });
+    fx.emit(10, { p: c, r: .1, v: 2, life: .4, size: .05, c: L.ember, k: 2.4, drag: 2 });
+  }
   const APR = { muzzle: 0xbfcfff, ring: 0xff5c36, head: 0xabdcff, trail: 0xff3e24, flash: 0xff784f, ember: 0xff825c, steel: 0xff4d1f, pierce: 0x9fbfff, shatter: 0xff9426, shard: 0xff8c33 };
   function aprMuzzle(dx, dz) {
     const H = hand(), q = { x: H.x + dx * .3, y: H.y, z: H.z + dz * .3 };
@@ -2747,6 +2758,7 @@ export function initScene(el, api) {
     if (every) { ballOrb(m); if (fi && !S.src) ballCharge(); }
     const BW = S.name === 'Bow Shot'; if (BW) { m.children[0].material.color.copy(fx.color(BOW.shaft, 1)); m.children[1].material.color.copy(fx.color(BOW.head, 1.2)); m.children[1].scale.setScalar(.3); }
     const CB = S.name === 'Chaos Bolt'; if (CB) tint(m, CBOLT.trail);
+    const CO = S.name === 'Coiling Bolts' && (S.dmg?.parts ? COIL.physical : COIL.chaos); if (CO) tint(m, CO.trail);   // the skill's own bolt is the physical one, its part the chaos one
     const AP = S.name === 'Armour Piercing Rounds'; if (AP) { tint(m, APR.trail); m.children[1].material.color.copy(fx.color(APR.head, 1.5)); m.children[1].scale.setScalar(.3); if (!o.forked && !o.split && !o.back) aprMuzzle(dx, dz); }
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
@@ -2788,7 +2800,7 @@ export function initScene(el, api) {
         const X = cur.infs?.includes('fire') && infPart(cur, 'fire'), n = X && sh(X).projectiles;   // Fireball: a ring of smaller firebolts
         if (n) for (let k = 0; k < n; k++) shoot({ ...X, aoe: false, P: { ...X.P, explodes: false }, infs: [] }, p, Math.sin(k * TAU / n), Math.cos(k * TAU / n), { range: Math.max(1, (X.G.range || SIM.projRange) + (X.dmg.stats.projectile_maximum_range_override || 0) / 10) });
       }
-      else if (hitD) { hit(hitD, cur, how()); touch(p, .5, cur); if (!CB) fx.flash(m.position, cur.el, 8, .15, 4); darts(cur, hitD); spearBurst(cur, hitD); }
+      else if (hitD) { hit(hitD, cur, how()); touch(p, .5, cur); if (!CB && !CO) fx.flash(m.position, cur.el, 8, .15, 4); darts(cur, hitD); spearBurst(cur, hitD); }
       else fx.emit(6, { p: m.position, v: 1.5, life: .3, size: .14, c: cur.el });
     };
     const q = { pos: m.position, r: cr, dead: false, proj: true, name: S.name,
@@ -2810,7 +2822,7 @@ export function initScene(el, api) {
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           if (FR) for (const w of objs) if (w.ice && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.touch(cur);
           for (const d of dummies) if (!EW && UL !== 3 && !d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
-            seen.add(d); shrapnel(cur, d); if (AP) aprHit(m.position, pierced < pierceN); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
+            seen.add(d); shrapnel(cur, d); if (AP) aprHit(m.position, pierced < pierceN); if (CO) coilHit(m.position, CO); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
             const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
             if (N) {
@@ -2831,7 +2843,8 @@ export function initScene(el, api) {
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
         if (surged.some(s => s.el === 'chaos')) { fx.emit(1, { p: m.position, r: .06, v: .2, life: .8, size: .05, c: CSURGE.string, k: 2.4 }); fx.emit(1, { p: m.position, r: .02, v: .05, life: .47, size: .1, c: CSURGE.ribbon, k: 2.2 }); }   // Chaotic Surge's
-        if (CB) { fx.trail(m.position, CBOLT.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: .45, size: .05, c: CBOLT.ember, k: 2.4 }); }
+        if (CO) { fx.trail(m.position, CO.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: .62, size: .05, c: CO.ember, k: 2.4 }); }
+        else if (CB) { fx.trail(m.position, CBOLT.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: .45, size: .05, c: CBOLT.ember, k: 2.4 }); }
         else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
