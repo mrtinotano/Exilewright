@@ -2862,6 +2862,7 @@ export function initScene(el, api) {
         mesh.position.set(from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k + Math.sin(k * Math.PI) * h, from.z + (to.z - from.z) * k);
         if (o.spin) mesh.rotation.x += dt * 9;
         if (o.aim) mesh.lookAt(from.x + (to.x - from.x) * (k + .01), from.y + (to.y - from.y) * (k + .01) + Math.sin((k + .01) * Math.PI) * h, from.z + (to.z - from.z) * (k + .01));   // pointing the way it flies
+        o.each?.(dt);
         if (o.drip && Math.random() < dt * 40) fx.emit(1, { p: mesh.position, v: .2, life: .7, size: .09, c: o.drip, g: 9 });   // a flask spilling its liquid as it flies (liquid_spill trails)
         if (o.trail) fx.emit(o.big ? 4 : 1, { p: mesh.position, v: .5, life: o.big ? .6 : .3, size: o.big ? .6 : .16, c: o.trail, c2: 'white', drag: 1 });
         if (k >= 1) { e.dead = true; land(); }
@@ -3215,6 +3216,32 @@ export function initScene(el, api) {
     fx.emit(28, { p: { x: p.x, y: .3, z: p.z }, r: R * .4, v: R * 1.6, flat: true, up: .8, life: .6, size: .45, grow: 1.5, c: BALL.wave, c2: 'ember', k: 1.6, drag: 2 });
     fx.emit(36, { p: q, r: R * .3, v: R * 2.5, up: 2, life: .5, size: .08, c: BALL.spark, c2: 'white', k: 2.4, drag: 2, g: 5 });
     shake = Math.max(shake, Math.min(.5, R * .09));
+  }
+  // Electrocuting Arrow's look (bow_electrocuting_rod; its tutorial video). Its arrow glows blue (lightning_arrow_skin:
+  // 0.2 / 0.23 / 1) with bolts of lightning behind it for 0.35-0.65 s (bck_line: 0.03 / 0.04 / 0.15). Its explosion
+  // (rodLodging_AoE): a flash for 0.12 s (0.16 / 0.24 / 1), a ring for 0.25 s from 0.1 s (0.24 / 0.36 / 1), a wave of
+  // wind for 0.28 s from 0.11 s (0.25 / 0.37 / 1), arrows bursting out for 0.2-0.3 s from 0.12 s (0.24 / 0.32 / 1) and a
+  // nova of lightning for 0.09-0.45 s. Its rod stays stuck in the enemy, glowing (rod_mode), lightning streaking along
+  // its body for 0.15-0.55 s (electrocute_bodyline: 0.04 / 0.04 / 0.12). note: its skin's blue glow and its blurs are
+  // left out; the counts, speeds and sizes are the scene's
+  const EAR = { glow: 0x333aff, bolt: 0x3344ff, flash: 0x293dff, ring: 0x3d5cff, wind: 0x405eff, arrow: 0x3d52ff, zap: 0x5555ff };
+  function eaBlast(c, R) {
+    const q = { x: c.x, y: .8, z: c.z };
+    fx.glow(q, R * .8, EAR.flash, .12, 3); fx.flash(q, EAR.flash, 30 + R * 10, .15, 6 + R * 3);
+    later(.1, () => fx.ring(c, .2, R, EAR.ring, .25, { a: .9, y: .5 })); later(.11, () => fx.ring(c, R * .3, R * 1.2, EAR.wind, .28, { a: .4 }));
+    later(.12, () => {
+      for (let i = 0; i < 10; i++) { const a = rnd(TAU); fx.streak(V(q.x, q.y, q.z), V(q.x + Math.cos(a) * R, q.y + rnd(-.3, .4), q.z + Math.sin(a) * R), EAR.arrow, rnd(.2, .3), .03, .5); }
+      for (let i = 0; i < 6; i++) { const a = rnd(TAU); fx.bolt(V(q.x, q.y, q.z), V(q.x + Math.cos(a) * R * .8, rnd(.2, 1.4), q.z + Math.sin(a) * R * .8), EAR.zap, rnd(.09, .45), .03); }
+    });
+  }
+  function eaRods(dt) {
+    for (const d of dummies) {
+      const on = !d.dead && d.erod?.until > time;
+      if (on && !d.erodM) { d.erodM = fx.arrow(EAR.glow); d.erodM.children[1].scale.setScalar(.35); d.fig.group.add(d.erodM); d.erodM.position.set(0, 1.2, 0); d.erodM.rotation.set(-.9, rnd(TAU), 0); }   // in its figure, gone with it
+      if (!d.erodM) continue;
+      if (!on) { fx.drop(d.erodM); d.erodM = null; continue; }
+      if (Math.random() < dt * 10) { const h = rnd(.3, 1.8) * d.sc, a = rnd(TAU); fx.bolt(V(d.pos.x + Math.cos(a) * .25, h, d.pos.z + Math.sin(a) * .25), V(d.pos.x - Math.cos(a) * .25, h + rnd(-.5, .5), d.pos.z - Math.sin(a) * .25), EAR.zap, rnd(.15, .55) * .5, .015, .12); }
+    }
   }
   // Detonating Arrow's look (bow_detonating_arrow; its tutorial video). Channelled, a fire head grows on the arrow's tip
   // (surge_charge: 1.2 / 0.82 / 0.47) with flames from 0.3 s (1.28 / 0.79 / 0.34) and embers from 0.5 s; at its maximum
@@ -3835,6 +3862,12 @@ export function initScene(el, api) {
       const TX = partOf(S, 'Tornado');
       if (TX) return shot(() => { boom(c, R, S); vortex(TX, c, radOf(TX), durOf(TX), { copy: TX.dmg.stats }); });
       if (P.object) return shot(() => rod(S, c));
+      // Electrocuting Arrow: its arrow flies low at its speed, blue with lightning behind it, and explodes as its own (eaBlast)
+      if (S.name === 'Electrocuting Arrow') {
+        const l = Math.max(.1, dist(h, c)), ux = (c.x - h.x) / l, uz = (c.z - h.z) / l, m = fx.arrow(EAR.glow);
+        return lob(m, h, V(c.x, .6, c.z), l / ((S.G?.speed || SIM.projSpeed) * (S.dmg?.projSpeed || 1)), .3, () => { eaBlast(c, R); area(c, R, S); }, { aim: true,
+          each: dt => { if (Math.random() < dt * 30) { const k = rnd(.5, 1.2); fx.bolt(V(m.position.x - ux * k, m.position.y + rnd(-.1, .1), m.position.z - uz * k), m.position.clone(), EAR.bolt, rnd(.18, .32), .02, .15); } } });
+      }
       // Escape Shot: you leap back from your aim its arrow's distance, and the arrow hits where you stood (its area, its
       // Chill and Freeze), its Ice Fragments scattering on from there (iceFrags)
       if (P.jump) {
@@ -5970,7 +6003,7 @@ export function initScene(el, api) {
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
-    const bz = berserkLook(); convLook(dt); palmLook(dt); auraLook(dt);
+    const bz = berserkLook(); convLook(dt); palmLook(dt); auraLook(dt); eaRods(dt);
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
     else if (bz) { w = bz; WG.set(BERSERK.skin); }   // Berserk: red over you while you have Rage
     orbiters(dt);
