@@ -687,12 +687,13 @@ export function makeWings(c) {
 }
 
 // A Banner as the game's (Art/Models/Effects/BannerSkill, 2.2 m): a pole with a crossbar, its 0.74 m pennant hanging
-// from it, quartered in the banner's colours with a trim and a fringe (L: its look, the means of its textures)
+// from it, quartered in the banner's colours with a trim and a fringe (L: its look, the means of its textures), or
+// its own texture (L.img) and height (L.tall)
 export function makeBanner(fx, L) {
   const g = new THREE.Group(), wood = std(L.pole, .85, .2);
   const pole = new THREE.Mesh(new THREE.CylinderGeometry(.035, .045, 2.2, 6), wood); pole.position.y = 1.1;
   const bar = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .86, 6), wood); bar.rotation.z = Math.PI / 2; bar.position.set(0, 2.02, .05);
-  const map = tex(128, 256, (c, w, h) => {
+  const map = L.img || tex(128, 256, (c, w, h) => {
     const cut = h * .72, mid = h * .4;
     c.beginPath(); c.moveTo(0, 0); c.lineTo(w, 0); c.lineTo(w, cut); c.lineTo(w / 2, h * .94); c.lineTo(0, cut); c.closePath(); c.save(); c.clip();
     const q = (x, y, ww, hh, col) => { c.fillStyle = col; c.fillRect(x, y, ww, hh); };
@@ -702,8 +703,8 @@ export function makeBanner(fx, L) {
   });
   const flag = new THREE.Mesh(new THREE.PlaneGeometry(.74, 1.48), new THREE.MeshStandardMaterial({ map, transparent: true, alphaTest: .5, side: THREE.DoubleSide, roughness: .9 }));
   const hang = new THREE.Group(); hang.position.set(0, 2.0, .07); flag.position.y = -.74; hang.add(flag);
-  g.add(pole, bar, hang); shadow(g);
-  return { group: g, hang, dispose() { g.parent?.remove(g); map.dispose(); flag.material.dispose(); } };
+  g.add(pole, bar, hang); shadow(g); g.scale.y = L.tall || 1;
+  return { group: g, hang, dispose() { g.parent?.remove(g); if (!L.img) map.dispose(); flag.material.dispose(); } };
 }
 
 export function makeTotem(fx, c, ballista, up) {   // up: an upward ballista (Artillery Ballista), its bow raised on a round base

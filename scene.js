@@ -4933,9 +4933,12 @@ export function initScene(el, api) {
   // it is placed (unroll_01) in dust and rock debris (placeBanner.pet: 0.14 / 0.11 / 0.07, brightened here as the scene's
   // smoke is unlit; sparks 1 / 0.78 / 0.57), spikes of light at 0.06 s for 0.25 s (placeDefiance_Impact: 0.75 / 0.8 / 1),
   // a shimmering wave for 1 s and its ring for 0.3 s (0.8 / 0.84 / 1); its Aura a pale blue glow over its area (0.7 / 0.8
-  // / 1) and, at its foot, its sign on the ground and sparks for 0.06-0.75 s (0.5 / 0.61 / 1). note: the counts, speeds
-  // and sizes are the scene's
-  const BANNERS = { 'Defiance Banner': { quarters: ['#6b675f', '#272b37'], trim: '#3e3b34', pole: 0x524638, aura: 0xb3ccff, spark: 0x809cff, flash: 0xbfccff, ring: 0xccd6ff } };
+  // / 1) and, at its foot, its sign on the ground and sparks for 0.06-0.75 s (0.5 / 0.61 / 1). Dread Banner (banner_dread.ao,
+  // aura_dread.ao): its own pennant (BannerSkillDread_colour: a gold tower on dark blue), 2.48 m tall to Defiance's 2.18 m
+  // (their bounding boxes); its spikes of light 1 / 0.59 / 0.51, its ring 1 / 0.53 / 0.45, its Aura 1 / 0.59 / 0.5 and its
+  // sparks 1 / 0.51 / 0.4. note: the counts, speeds and sizes are the scene's
+  const BANNERS = { 'Defiance Banner': { quarters: ['#6b675f', '#272b37'], trim: '#3e3b34', pole: 0x524638, aura: 0xb3ccff, spark: 0x809cff, flash: 0xbfccff, ring: 0xccd6ff },
+    'Dread Banner': { img: fx.T[artTex('banner_dread', 'models/effects/bannerskill/bannerskilldread')], tall: 1.14, pole: 0x524638, aura: 0xff9680, spark: 0xff8266, flash: 0xff9582, ring: 0xff8773 } };
   function bannerPlace(c, R, L) {
     const q = { x: c.x, y: .15, z: c.z };
     fx.emit(14, { p: q, r: .3, v: 2, up: .8, life: .9, size: .4, grow: 1.6, c: 0x4a3a24, smoke: true, a: .45, drag: 2 });
@@ -5185,7 +5188,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence', 'Crackling Palm', 'Defiance Banner']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence', 'Crackling Palm', 'Defiance Banner', 'Dread Banner']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
@@ -8039,7 +8042,7 @@ export function initScene(el, api) {
     const FC = banner('flask_charge_per_min') + (onS("Alchemist's Boon")?.dmg.stats.skill_alchemists_boon_generate_x_charges_for_any_flask_per_minute || 0); const GN = sheet().chargeGen || [];
     const RG2 = sheet().griefIgnite; if (RG2 && time - (me.griefAt ?? -9) >= 1) { me.griefAt = time; const X = thornX({ hits: {} }, 'Radiant Grief'); for (const d of inside(pp, sheet().overgrow.r)) inflict(d, 'ignite', X, 1, { fire: RG2 }, {}); }   // Radiant Grief: enemies in your Presence Ignited as though dealt its base fire damage (note: once a second here)
     const FD = shrineOn()?.generate_x_charges_for_any_flask_per_minute || 0;   // a monster's aura draining them
-    flasks().forEach((f, n) => { const g = FC + FD + (GN[n] || 0) + (f?.regen || 0); if (g) me.fl[n] = Math.max(0, Math.min(f.max, flaskLeft(n) + g / 60 * dt)); });   // with the tree's per flask, a flask's own (Sanguis Heroum)
+    flasks().forEach((f, n) => { const g = FC + FD + (GN[n] || 0) + (f?.regen || 0); if (f && g) me.fl[n] = Math.max(0, Math.min(f.max, flaskLeft(n) + g / 60 * dt)); });   // with the tree's per flask, a flask's own (Sanguis Heroum)
     if (GN[2]) charms().forEach((f, n) => { if (f) me.cc[n] = Math.min(f.max, charmLeft(n) + GN[2] / 60 * dt); });   // and per charm
     const WD = onS('Wind Dancer')?.dmg.stats; if (WD) me.wind = Math.min(WD.wind_dancer_maximum_number_of_stages, me.wind + dt * 1000 / WD.wind_dancer_stages_gained_every_x_ms);
     const AA = arcticS()?.dmg.stats; if (AA && time - (me.movedAt ?? -99) > .1) me.arctic = Math.min(AA.maximum_number_of_arctic_armour_stationary_stacks, me.arctic + dt * 1000 / AA.base_active_skill_buff_stack_gain_frequency_ms);
