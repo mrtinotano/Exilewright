@@ -3125,6 +3125,37 @@ export function initScene(el, api) {
     fx.emit(36, { p: q, r: R * .3, v: R * 2.5, up: 2, life: .5, size: .08, c: BALL.spark, c2: 'white', k: 2.4, drag: 2, g: 5 });
     shake = Math.max(shake, Math.min(.5, R * .09));
   }
+  // Detonating Arrow's look (bow_detonating_arrow; its tutorial video). Channelled, a fire head grows on the arrow's tip
+  // (surge_charge: 1.2 / 0.82 / 0.47) with flames from 0.3 s (1.28 / 0.79 / 0.34) and embers from 0.5 s; at its maximum
+  // stages it ignites (surge_ignited): a flash for 0.1-0.15 s (1 / 0.44 / 0.2), its head brighter (3 / 1.59 / 0.9), 3
+  // rings for 0.2-0.31 s (0.5 / 0.41 / 0.28), a cone for 0.48-0.54 s (0.26 / 0.14 / 0.06) and wind for 0.5 s (0.45). Its
+  // arrow's head is its stages' (base 1.2 / 0.82 / 0.47; mid 1.2 / 0.53 / 0.24 with embers; charged 3 / 1.59 / 0.9 with
+  // fire licks, 3 / 1.21 / 0.45), and at its maximum it explodes (explosion.pet): a flash for 0.2 s (6 / 3.9 / 1.2), a
+  // ring of flames for 0.3 s (3 / 1.32 / 0.6), 16 flames for 0.2-0.55 s, a ring from 0.1 s for 0.35 s (0.5 / 0.35 / 0.25)
+  // and embers for 1.5-4 s. note: the mid head from any stage short of the maximum (when the game shows it is not in the
+  // data); its shimmer and the charged arrow's scorched path are left out; the counts, speeds and sizes are the scene's
+  const DARR = { base: { head: 0xffae64 }, mid: { head: 0xff7033, ember: 0xff9e45 }, charged: { head: 0xff874d, ember: 0xff6626, lick: true },
+    flame: 0xff9e45, lit: 0xff7033, ring: 0x806947, cone: 0x42240f, wind: 0x737373, flash: 0xffa633, burst: 0xff7033, wave: 0x80593f };
+  const daTip = () => { const h = hand(); return V(h.x + Math.sin(facing) * .6, h.y, h.z + Math.cos(facing) * .6); };
+  function daCharge(c, k, dt) {
+    const q = daTip();
+    if (Math.random() < dt * 30) fx.emit(1, { p: q, r: .03, v: .1, life: .15, size: .12 + k * .2, c: k >= 1 ? DARR.charged.head : DARR.base.head, c2: 'white', k: 2.4 });
+    if (c.s > .3 && Math.random() < dt * 12) fx.emit(1, { p: q, r: .08, v: .4, up: .6, life: .5, size: .1, c: DARR.flame, k: 2, drag: 1 });
+    if (c.s > .5 && Math.random() < dt * 8) fx.emit(1, { p: q, r: .1, v: .5, up: 1, life: 2, size: .03, c: DARR.flame, c2: 'white', k: 2.4, g: 1, drag: 1 });
+    if (k < 1 || c.lit) return;
+    c.lit = true; fx.glow(q, .9, DARR.lit, .15, 2.6); fx.emit(8, { p: q, r: .1, v: 1.2, up: .5, life: .5, size: .15, c: DARR.flame, k: 2, drag: 1.5 });
+    for (let i = 0; i < 3; i++) later(.03 + i * .04, () => fx.ring(q, .1, .6 + i * .2, DARR.ring, .25, { a: .7, y: q.y }));
+    const to = V(q.x + Math.sin(facing) * 1.2, q.y, q.z + Math.cos(facing) * 1.2); later(.02, () => fx.strip(q, to, .5, DARR.cone, .5, { a: .6, y: q.y }));
+    fx.emit(24, { p: { x: pp.x, y: .1, z: pp.z }, r: .6, v: 2, up: .2, life: .5, size: .3, grow: 1.6, c: DARR.wind, smoke: true, a: .25, drag: 2, flat: true });
+  }
+  function daBlast(c, R) {
+    const q = { x: c.x, y: .8, z: c.z };
+    fx.glow(q, R * .9, DARR.flash, .2, 3); fx.flash(q, DARR.flash, 30 + R * 10, .2, 6 + R * 3); shake = Math.max(shake, Math.min(.5, R * .09));
+    fx.ring(c, .2, R * .8, DARR.burst, .3, { a: .9, y: .6 });
+    fx.emit(16, { p: q, r: .3, v: R * 2, up: 1.5, life: .4, size: .5, grow: 1.5, c: DARR.flame, c2: DARR.burst, k: 2.4, drag: 2.5 });
+    later(.1, () => fx.ring(c, R * .3, R, DARR.wave, .35, { a: .8 }));
+    fx.emit(30, { p: q, r: .3, v: R * 1.5, up: 2, life: 2.8, size: .04, c: DARR.flame, c2: 'white', k: 2.4, g: 2, drag: 1 });
+  }
   function shoot(S, from, dx, dz, o = {}) {
     // Shockchain Arrow homes in on enemies with a lightning ailment: a fresh arrow flies at the nearest such one ahead within
     // its range. ponytail: aimed when fired, the game's turn rate is in none of the data; steer per frame if it ever is
@@ -3147,6 +3178,7 @@ export function initScene(el, api) {
     if (every) { ballOrb(m); if (fi && !S.src) ballCharge(); }
     const BW = S.name === 'Bow Shot'; if (BW) { m.children[0].material.color.copy(fx.color(BOW.shaft, 1)); m.children[1].material.color.copy(fx.color(BOW.head, 1.2)); m.children[1].scale.setScalar(.3); }
     const CB = S.name === 'Chaos Bolt'; if (CB) tint(m, CBOLT.trail);
+    const DA = S.name === 'Detonating Arrow' && DARR[S.detonate ? 'charged' : S.fireGain ? 'mid' : 'base']; if (DA) m.children[1].material.color.copy(fx.color(DA.head, 2));
     const CO = S.name === 'Coiling Bolts' && (S.dmg?.parts ? COIL.physical : COIL.chaos); if (CO) tint(m, CO.trail);   // the skill's own bolt is the physical one, its part the chaos one
     const XS = S.name === 'Crossbow Shot', AP = S.name === 'Armour Piercing Rounds', ROUND = XS ? XBOLT : AP && APR; let xp = XS && m.position.clone();   // a crossbow's bolt: its colours, muzzle and hit
     if (ROUND) { tint(m, ROUND.trail); m.children[1].material.color.copy(fx.color(ROUND.head, 1.5)); m.children[1].scale.setScalar(.3); if (!o.forked && !o.split && !o.back) ROUND.shoot(dx, dz); }
@@ -3171,7 +3203,7 @@ export function initScene(el, api) {
     const mult = () => far() * (pierced ? (1 + (D.pierceMore || 0) / 100) * Math.max(0, 1 + (D.perPierce || 0) * pierced / 100) : 1) * (forked ? 1 + (D.forkMore || 0) / 100 : 1);
     const end = hitD => {
       q.dead = true; const p = { x: m.position.x, z: m.position.z }; if (BW && hitD) fx.stuck({ ...p, y: 1 }, BOW.shaft); for (const s of surged) surgeBlast(cur, s, p);
-      if (cur.detonate) boom(p, cur.detonate, { ...cur, detonate: 0 });   // Detonating Arrow at maximum stages
+      if (cur.detonate) { daBlast(p, cur.detonate); area(p, cur.detonate, { ...cur, detonate: 0 }); }   // Detonating Arrow at maximum stages
       const RS = cur.P.attack && !o.back && cur.dmg?.sum, DR = RS?.attack_projectiles_return_after_piercing_X_times, IB = brokeP && RS?.arrow_projectiles_return_if_they_have_pierced_a_fully_armour_broken_target, RC = !o.back && !o.shard && Math.random() * 100 < (cur.dmg?.stats?.['projectile_return_%_chance'] || 0); if (DR && pierced >= DR || IB || RC || CG === 2) { const l = dist(pp, m.position) || 1; shoot(cur, m.position, (pp.x - m.position.x) / l, (pp.z - m.position.z) / l, { speed, range: l, pierced, back: true }); }   // Ironbound: so if it pierced a target with fully broken armour. Drillneck: it returns to you after piercing that many times
       const SC = hitD && (has(hitD, 'shock') && cur.dmg?.sum?.always_chain_from_shocked_enemies || hitD.curse && flagOf(cur.name, 'always_chain_from_cursed_enemies')) ? 1 : 0;   // Stormchain: it always chains from a Shocked enemy it first hits (once, at least)
       if ((P.chains || cur.addChains || SC || UL === 1 && !P.explodes && !S.aoe) && hitD) {   // an exploding one explodes rather than chains here
@@ -3236,6 +3268,7 @@ export function initScene(el, api) {
         const TB = CO || (CB && CBOLT);
         if (TB) { fx.trail(m.position, TB.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: CO ? .62 : .45, size: .05, c: TB.ember, k: 2.4 }); }
         else if (XS) { fx.strip(xp, m.position, .07, XBOLT.trail, .6, { a: .7, k: 2, y: m.position.y }); xp = m.position.clone(); } else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
+        if (DA?.ember) fx.emit(DA.lick ? 3 : 1, { p: m.position, r: .06, v: .3, life: DA.lick ? .5 : 1.2, size: DA.lick ? .14 : .04, c: DA.ember, c2: 'white', k: 2.4, drag: 1 });
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
@@ -8169,6 +8202,7 @@ export function initScene(el, api) {
       charge.s += dt; castAt = time; me.act = actMove(base(charge.i)); facing = Math.atan2(cursor.x - pp.x, cursor.z - pp.z);
       const b = base(charge.i), h = hand();
       if (b?.name === 'Bonestorm') bstGrow(b, charge.s);
+      else if (b?.name === 'Detonating Arrow') daCharge(charge, Math.min(1, charge.s / 1.6), dt);
       else if (b) fx.emit(2, { p: { x: h.x + rnd(-1, 1), y: h.y + rnd(-.6, .6), z: h.z + rnd(-1, 1) }, dir: V(0, 0, 0), v: .3, life: .3, size: .16 + Math.min(1, charge.s) * .16, c: b.el, c2: 'white' });
     } else if (held && !move && cd <= 0) fire(held.i);
 
