@@ -21,6 +21,7 @@ import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
 import { statLines } from './stats.js';
 import { SK } from './skilldata.js';
+import { onSet } from './calc.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -869,9 +870,9 @@ export function initScene(el, api) {
   // Shrapnel (killed while pinned), Frozen Spite (killed while frozen: ice fragments that land and burst)
   function deathBlast(d, frozen, S) {
     // the triggered skill as calc has it (a base of 100, through the build's modifiers), scaled to that share of life
-    const p = { x: d.pos.x, z: d.pos.z }, blast = (q, key, from) => {
+    const p = { x: d.pos.x, z: d.pos.z }, blast = (q, key, from, once) => {
       const T = from.dmg.trig.find(t => t.stats?.[key]), x = d.max * T.stats[key] / 1e4, X = asTrig(from, T, scale(T.hits, x));
-      boom(q, X.A, X);
+      boom(q, X.A, { ...X, once });
     };
     for (const T of d.ignBy?.dmg?.onKill || []) if (T['corpse_explosion_monster_life_%'] && d.st.ignite > 0 && Math.random() * 100 < (T['chance_to_trigger_fiery_death_on_ignited_enemy_death_%'] ?? 100))
       later(.05, () => blast(p, 'corpse_explosion_monster_life_%', d.ignBy));
@@ -879,9 +880,10 @@ export function initScene(el, api) {
       if (T['support_bone_shrapnel_physical_damage_equal_to_%_monster_life'] && d.st.pin > 0)
         later(.05, () => blast(p, 'support_bone_shrapnel_physical_damage_equal_to_%_monster_life', S));
       const cold = T['support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage'];
+      const once = new Set();
       if (cold && frozen) for (let k = 0; k < (T.base_number_of_projectiles || 1); k++) {
         const a = Math.random() * Math.PI * 2, r = rnd(T.ice_fragment_min_chunk_distance || 0, T.ice_fragment_max_chunk_distance || 0) / 10, q = { x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r };
-        frag(q, (T.active_skill_base_area_of_effect_radius || 10) / 10, (T.base_skill_detonation_time || 0) / 1000, at => blast(at, 'support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage', S));
+        frag(q, (T.active_skill_base_area_of_effect_radius || 10) / 10, (T.base_skill_detonation_time || 0) / 1000, at => blast(at, 'support_frozen_spite_%_enemy_maximum_life_dealt_as_cold_damage', S, once));
       }
     }
   }
@@ -1905,8 +1907,7 @@ export function initScene(el, api) {
     clean(d); d.sig = ''; d.wind = null; d.life = d.es = 0;
     f.ice.visible = f.curse.visible = f.mark.visible = f.rune.visible = f.blood.visible = f.plate.visible = false; f.sack.emissive.setRGB(0, 0, 0);
     if (frozen) {   // frozen enemies shatter: no corpse
-      fx.emit(46, { p: { x: p.x, y: 1, z: p.z }, r: .3, h: 1, v: 5, up: 2, life: .8, size: .2, c: 'ice', c2: 'white', g: 9 });
-      fx.ring(p, .3, 1.8, 'ice', .4); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;
+      fx.shatter(p); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;
     } else if (S && !S.src && !dot && sheet().killDestroys) { pop(p, .8, 'blood'); f.group.visible = false; d.corpse = 0; d.back = SIM.respawn;   // hand wraps: "Enemies killed by your Hits are destroyed": no corpse either
     } else { d.corpse = SIM.corpseTime; d.fall = 0; }
   }
@@ -1974,9 +1975,11 @@ export function initScene(el, api) {
     }
   }
   // Every enemy in a circle, plus whatever lies there and reacts (grenades, crystals, rods, gas, oil).
+  // S.once: the enemies already hit by one of the Ice Fragments made with this one, which only one of can damage
+  // (KeywordPopups IceFragment)
   function area(c, R, S, o = {}) {
     let n = 0;
-    for (const d of dummies) if (!d.dead && dist(d.pos, c) <= R + SIM.body && hit(d, S, o)) n++;
+    for (const d of dummies) if (!d.dead && !S.once?.has(d) && dist(d.pos, c) <= R + SIM.body && hit(d, S, o)) { S.once?.add(d); n++; }
     if (!o.noTouch) touch(c, R, S);
     return n;
   }
@@ -2771,11 +2774,11 @@ export function initScene(el, api) {
     return { ...X, dmg: { ...X.dmg, hits: scale(H, X.dmg.stats._base_multiplier / (S.dmg.stats?._base_multiplier || 10000)) }, els: ['cold'], el: 'cold', ail: ailOf(['cold']) };
   }
   function iceFrags(X, p, a0) {
-    const st = X.dmg.stats, n = st.base_number_of_projectiles, cone = st.ballistic_ice_chunk_cone_angle / 10 * Math.PI / 180;
+    const st = X.dmg.stats, n = st.base_number_of_projectiles, cone = st.ballistic_ice_chunk_cone_angle / 10 * Math.PI / 180, once = new Set();
     for (let k = 0; k < n; k++) {
       const a = a0 + (n > 1 ? k / (n - 1) - .5 : 0) * cone, r = rnd(st.ice_fragment_min_chunk_distance, st.ice_fragment_max_chunk_distance) / 10, to = { x: p.x + Math.sin(a) * r, z: p.z + Math.cos(a) * r };
       lob(fx.orb('cold', .1), new THREE.Vector3(p.x, .8, p.z), new THREE.Vector3(to.x, .1, to.z), .3, .6, () =>
-        frag(to, X.A, Math.max(0, st.base_skill_detonation_time / 1000 - .3), q => boom(q, X.A, X, { noPay: true })));
+        frag(to, X.A, Math.max(0, st.base_skill_detonation_time / 1000 - .3), q => boom(q, X.A, { ...X, once }, { noPay: true })));
     }
   }
   // Armour Piercing Rounds' look (crossbow_armour_piercing: muzzle_rapid, rapid_shot, rapid_trail, rapid_impact and
@@ -5002,23 +5005,39 @@ export function initScene(el, api) {
       fx.pillar(q, r * .4, 2.4, 'poison', .3, 2); later(.2, () => boom(q, r, { ...S, mult: S.mult * (e.more || 1) }, { soft: true }));
     } }));
   };
-  // Cross Slash: two gouges in front of you, each its angle apart across your aim, its length and its secondary width,
-  // each hitting on its own, as you leap back its offset; a Marked enemy hit by both has its Mark activated and takes the
-  // shockwave (its part) after its delay. The Ice Fragments within its search radius are pulled into where the gouges
-  // cross (where you stood) and explode at once. note: the overshoot of their pull is a look the data does not explain
+  // Cross Slash: two gouges, its length long and its width wide, each from its offset to one side of you across your aim to
+  // the other side, its angle apart, crossing at their middles; each hits on its own, as its claws touch the ground
+  // (cross_slash.atl: contact at 0.21 of its 0.75 s), while you leap back (its move: 4.5 m over the use). A Marked enemy hit
+  // by both has its Mark activated and takes the shockwave (its part) after its delay. The Ice Fragments within its search
+  // radius are pulled into where the gouges cross and explode at once. note: the overshoot of their pull is a look the data
+  // does not explain. Its look (claw_slash_01.ao: crossSlash.pet): on each gouge three claw lines glowing for 1 s
+  // (clawSlash_Glow 1 / 0.72 / 0.43), cracks lit orange for 2.5-4 s (clawSlash_Cracks 1 / 0.64 / 0.3), sparks drifting for
+  // 0.75-4 s (clawSlash_Sparks 5 / 3.88 / 2.12) and dust (0.17) for 1-1.5 s; your claws glowing as you strike, here your hands
+  // (onACT_PounceClawGlow 1.25 / 0.93 / 0.5, 0.42 s)
+  const GOUGE = { glow: 0xffb86e, crack: 0xffa34d, spark: 0xffc66c, dust: 0x2b2b2b, claw: 0xffbe66, dark: 0x1c120c };
   K.cross = S => {
-    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, w = radOf(S), a0 = Math.atan2(S.dx, S.dz), half = st.wolf_cross_slash_angle / 2 * Math.PI / 180, X = partOf(S, 'WolfCrossSlashMarkConsumedPlayer'), both = new Map();
-    for (const sgn of [-1, 1]) {
-      const a = a0 + sgn * half, b = { x: c.x + Math.sin(a) * S.A, z: c.z + Math.cos(a) * S.A };
-      fx.strip(c, b, w * 2, S.el, .4, { a: .7 });
-      for (const d of dummies) if (!d.dead && segDist(d.pos, c, b) <= w + SIM.body) { hit(d, S); both.set(d, (both.get(d) || 0) + 1); }
-    }
-    for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { markOff(d); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
-    for (const F of frags.filter(F => dist(F.p, c) <= st.ice_chunk_refire_search_radius / 10)) {
-      frags = frags.filter(f => f !== F); F.dec.remove();
-      lob(fx.orb('cold', .1), new THREE.Vector3(F.p.x, .3, F.p.z), new THREE.Vector3(c.x, .1, c.z), .2, .5, () => { pop(c, F.R, 'ice'); F.go(c); });
-    }
-    const l = st.wolf_cross_slash_offset / 10; move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .2, h: .6, S, seen: new Set() };
+    const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, w = radOf(S), a0 = Math.atan2(S.dx, S.dz), half = st.wolf_cross_slash_angle / 2 * Math.PI / 180, off = st.wolf_cross_slash_offset / 10;
+    const X = partOf(S, 'WolfCrossSlashMarkConsumedPlayer'), both = new Map(), T = S.dmg?.useTime || (S.dmg?.speed ? 1 / S.dmg.speed : SIM.castTime), m = off / Math.tan(half), mid = { x: c.x + S.dx * m, z: c.z + S.dz * m };
+    { const L = V(), R = V(); player.palms(L, R); for (const h of [L, R]) fx.glow(h, .5, GOUGE.claw, .42, 2.6); }
+    later(T * .21 / .75, () => {
+      const pulled = frags.filter(F => dist(F.p, mid) <= st.ice_chunk_refire_search_radius / 10);   // those lying there as it strikes, not those its own kills make
+      for (const sgn of [-1, 1]) {
+        const a = { x: c.x + Math.cos(a0) * off * sgn, z: c.z - Math.sin(a0) * off * sgn }, q = a0 - sgn * half, b = { x: a.x + Math.sin(q) * S.A, z: a.z + Math.cos(q) * S.A };
+        fx.strip(a, b, w * .8, GOUGE.dark, rnd(2.5, 4), { dark: true, a: .55, y: .05 });
+        fx.strip(a, b, w * .5, GOUGE.crack, rnd(2.5, 4), { a: .35, k: 1.4, y: .055 });
+        for (const k of [-1, 0, 1]) { const o = { x: Math.cos(q) * w / 3 * k, z: -Math.sin(q) * w / 3 * k }; fx.strip({ x: a.x + o.x, z: a.z + o.z }, { x: b.x + o.x, z: b.z + o.z }, .12, GOUGE.glow, 1, { a: 1, k: 3, y: .07 }); }
+        for (let k = 0; k < 10; k++) { const f = rnd(0, 1), p = { x: a.x + (b.x - a.x) * f, y: .1, z: a.z + (b.z - a.z) * f };
+          fx.emit(3, { p, r: w / 3, v: 1.2, up: 1.4, life: rnd(.75, 4), size: .05, c: GOUGE.spark, c2: 'white', k: 2.4, drag: 1.5 });
+          fx.emit(1, { p, r: w / 3, v: .3, up: .4, life: rnd(1, 1.5), size: .7, grow: 1.5, c: GOUGE.dust, smoke: true, a: .35, drag: 1 }); }
+        for (const d of dummies) if (!d.dead && segDist(d.pos, a, b) <= w / 2 + SIM.body) { hit(d, S); both.set(d, (both.get(d) || 0) + 1); }
+      }
+      for (const [d, n] of both) if (n === 2 && d.mark && !d.dead) { markOff(d); if (X) later(st.wolf_pounce_mark_shockwave_delay_ms / 1000, () => boom({ x: d.pos.x, z: d.pos.z }, X.A, X)); }
+      for (const F of pulled.filter(F => frags.includes(F))) {
+        frags = frags.filter(f => f !== F); F.dec.remove();
+        lob(fx.orb('cold', .1), new THREE.Vector3(F.p.x, .3, F.p.z), new THREE.Vector3(mid.x, .1, mid.z), .2, .5, () => { pop(mid, F.R, 'ice'); F.go(mid); });
+      }
+    });
+    move = { from: c, to: { x: c.x - S.dx * 4.5, z: c.z - S.dz * 4.5 }, k: 0, dur: T, h: .6, S, seen: new Set() };
   };
   // Unearth: its cone of bone spikes in front of you (its radius, its angle); each corpse in it becomes a Bone Construct
   // for its duration, up to its limit
@@ -5611,7 +5630,10 @@ export function initScene(el, api) {
     for (const d of inside(pp, sheet().overgrow.r)) { const ids = (d.modKey || '').split(',').filter(Boolean); if (ids.length) me.hh.push({ stats: modStats([ids[Math.floor(rnd(ids.length))]]), until: time + T, poppet: true }); }
     shC.at = -99;
   }
+  // the game's weapon swap: Combo is lost (KeywordPopups Combo), not with Martial Master
+  function swap() { const n = api.swapSet(); if (!sheet().comboKeep) me.combo = 0; fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }
   function use(i, o = {}) {
+    if (!o.src && api.swapSet && !onSet(api.build(), api.build().gems[i])) swap();   // a skill of the other weapon set (Used with weapon set) swaps to it, as the game's
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
     if (!auto && stuck()) return false;   // frozen or heavily stunned, you cannot act
@@ -6210,7 +6232,7 @@ export function initScene(el, api) {
       else toast(t('Point at an enemy to turn it into a corpse'));
     }
     else if (c === K.charges) { for (const k in charges) { charges[k] = maxC(k); chargeAt[k] = time; } fx.ring(pp, 1.8, .3, 'gold', .4); say(t('Charges filled'), 'gold'); }
-    else if (c === K.swap && api.swapSet) { const n = api.swapSet(); if (!sheet().comboKeep) me.combo = 0; fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }   // the game's weapon swap: Combo is lost (KeywordPopups Combo), not with Martial Master
+    else if (c === K.swap && api.swapSet) swap();
     else if (c === K.roll) roll();
   });
   const rollHeld = () => keys[settings().keys.roll] || padWas[1];
@@ -6431,6 +6453,7 @@ export function initScene(el, api) {
     let free = sheet().spirit ?? Infinity;
     gems.forEach((g, i) => {
       if (!always(g)) return;
+      if (g.enabled === false || !onSet(api.build(), g)) { untoggle(g.name); return; }   // turned off in the Skills tab, or of the other weapon set
       const r = api.reserve(g), fits = r <= free;
       if (fits) { free -= r; unpaid.delete(g.name); if (!tog[g.name]) { const S = mk(i); if (S) K.toggle(S); } }
       else if (!unpaid.has(g.name)) { unpaid.add(g.name); untoggle(g.name); say(t('{0} stays off: it reserves {1} Spirit and {2} is left', api.info(g).label, r, free), 'dust'); }
