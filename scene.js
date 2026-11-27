@@ -1982,7 +1982,7 @@ export function initScene(el, api) {
   const corpseAt = (p, r) => { let best = null, bd = r; for (const d of dummies) if (d.corpse > 0) { const k = dist(d.pos, p); if (k <= bd) { bd = k; best = d; } } return best; };
   function eat(d, c) {
     d.corpse = 0; d.back = SIM.respawn; d.fig.group.visible = false;
-    fx.emit(26, { p: { x: d.pos.x, y: .4, z: d.pos.z }, r: .5, v: 1.5, up: 3, life: .8, size: .22, c, c2: 'blood' }); fx.ring(d.pos, 1.3, .2, c, .4);
+    if (c) { fx.emit(26, { p: { x: d.pos.x, y: .4, z: d.pos.z }, r: .5, v: 1.5, up: 3, life: .8, size: .22, c, c2: 'blood' }); fx.ring(d.pos, 1.3, .2, c, .4); }   // c: its colour, none for a skill's own look
   }
   // Detonate Dead's look (witch_detonate_dead, necromancer_detonatedead; its tutorial video). Cast, flames at your hand;
   // the corpse swells through its delay (bloatCorpse_Skin_FIRE: Corpse_Bloating, by 0.55 of its size), glowing; then it
@@ -5300,6 +5300,31 @@ export function initScene(el, api) {
     const l = st.leap_maximum_allowed_path_distance / 10;
     move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .3, h: 1.2, S, seen: new Set() };
   };
+  // Devour's look (wyvern_devour; its tutorial video). Its leap (landing_AoE_01 flying_Up_01) raises dust for 1-2 s (0.22)
+  // and 8 puffs of powder for 0.5-3 s (0.51) with a 0.1 s shake; its landing (shockwave_01) dust, 16 puffs, rocks for 4-8 s
+  // and a ring for 0.3 s (0.75 / 0.69 / 0.56) with a 0.3 s shake. Each corpse it devours (bloodChomp_01, corpseDevour)
+  // gushes 32 drops of blood for 2-8 s, spills more from 0.5 s and leaves bones (0.3 / 0.24 / 0.11) and gibs from 0.6 s, when
+  // it is gone; blood drips off your head for 4 s after (bloodStain). note: the wyvern you shift into is not drawn (the
+  // scene has no model of it); the blood is red blood's (Bloodgibs: 0.54 / 0.01 / 0.01; the game's is the monster's
+  // type); the shakes' strength, counts, speeds and sizes are the scene's
+  const DEVOUR = { dust: 0x383838, powder: 0x828282, ring: 0xbfb08f, bone: 0x4d3d1c, blood: 0x8a0303 };
+  function dvDust(p, n, R) {
+    fx.emit(n * 2, { p: { x: p.x, y: .1, z: p.z }, r: R * .5, v: 1.5, up: .3, life: 1.5, size: .5, grow: 1.8, c: DEVOUR.dust, smoke: true, a: .35, drag: 1.5, flat: true });
+    later(.04, () => fx.emit(n, { p: { x: p.x, y: .2, z: p.z }, r: R * .3, v: 1, up: 1, life: 1.75, size: .15, c: DEVOUR.powder, smoke: true, a: .5, g: .5, drag: 1 }));
+  }
+  const dvLeap = () => { dvDust(pp, 8, 1); shake = Math.max(shake, .15); };
+  function dvLand(p, R) {
+    dvDust(p, 16, R); fx.ring(p, .2, R, DEVOUR.ring, .3, { a: .8 }); shake = Math.max(shake, .3);
+    later(.1, () => fx.emit(12, { p: { x: p.x, y: .2, z: p.z }, r: R * .4, v: 2.5, up: 2.5, life: 6, size: .1, c: DEVOUR.dust, smoke: true, a: .9, g: 9, drag: .3 }));
+  }
+  function dvEat(d, corpse) {   // corpse: one it consumes (a culled enemy is left)
+    const q = { x: d.pos.x, y: .4, z: d.pos.z }, f = d.fig;
+    if (corpse) { eat(d); f.group.visible = true; later(.6, () => { if (!d.corpse) f.group.visible = false; }); }
+    fx.emit(32, { p: q, r: .2, v: 2, up: 2, life: 5, size: .07, c: DEVOUR.blood, smoke: true, a: .9, g: 9, drag: .4 });
+    later(.5, () => { fx.emit(12, { p: q, r: .3, v: 1, up: .6, life: 5, size: .09, c: DEVOUR.blood, smoke: true, a: .9, g: 9, drag: .6 }); fx.disc(q, .8, DEVOUR.blood, 8, { dark: true, a: .9, tex: 'patch', hold: .8, y: .02 }); });
+    later(.6, () => fx.emit(10, { p: q, r: .3, v: 1.5, up: 2, life: 5, size: .08, c: DEVOUR.bone, g: 9, drag: .4 }));
+    for (let i = 0; i < 16; i++) later(.6 + i / 4, () => fx.emit(1, { p: { x: pp.x, y: 1.7, z: pp.z }, r: .12, v: .1, life: 1, size: .05, c: DEVOUR.blood, smoke: true, a: .9, g: 9 }));
+  }
   // Devour: a corpse or a Cullable enemy (culled) at the target and up to its number of other corpses within its area
   // there, each restoring its life and granting a Power Charge; one beyond your reach and within its dash range you leap
   // to, hitting its area where you land
@@ -5310,11 +5335,12 @@ export function initScene(el, api) {
     const p = { x: e.pos.x, z: e.pos.z }, l = dist(p, pp), reach = meleeR(S) + SIM.body;
     me.leapK = l <= reach ? 0 : Math.min(1, (l - reach) / (st.base_melee_dash_range / 10));   // the share of its dash range it travels (useTime)
     const eatAll = () => [e, ...corpses(p, S.A).filter(d => d !== e).slice(0, st.wyvern_devour_max_extra_corpses_to_consume)].forEach(d => {
-      if (d.corpse > 0) eat(d, S.el); else if (!cull(d, C)) return;
+      const was = d.corpse > 0; if (!was && !cull(d, C)) return;
+      dvEat(d, was);
       me.life = gain(me.life, me.maxL, st.wyvern_devour_life_restoration); chargeBy('power', S); if (Math.random() * 100 < (st['wyvern_devour_flask_charm_charge_gain_chance_%'] || 0)) killCharges(d);   // its quality: charges as though killing it
     });
     if (l <= reach) eatAll();
-    else if (l <= reach + st.base_melee_dash_range / 10) move = { from: { x: pp.x, z: pp.z }, to: p, k: 0, dur: .35, h: 1.6, S, seen: new Set(), land: at => { boom(at, S.A, S); eatAll(); } };
+    else if (l <= reach + st.base_melee_dash_range / 10) { dvLeap(); move = { from: { x: pp.x, z: pp.z }, to: p, k: 0, dur: .35, h: 1.6, S, seen: new Set(), land: at => { dvLand(at, S.A); area(at, S.A, S); eatAll(); } }; }
   };
   // Thrashing Vines: its growth area at the target (its limit, its duration), a vine crashing in it every its share of the
   // cast time, onto an enemy in it if there is one, hitting its secondary area
