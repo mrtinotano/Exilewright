@@ -5633,7 +5633,7 @@ export function initScene(el, api) {
   // the game's weapon swap: Combo is lost (KeywordPopups Combo), not with Martial Master
   function swap() { const n = api.swapSet(); if (!sheet().comboKeep) me.combo = 0; fx.ring(pp, 1.2, .3, 'gold', .3); say(t('Weapon set {0}', n), 'gold'); }
   function use(i, o = {}) {
-    if (!o.src && api.swapSet && !onSet(api.build(), api.build().gems[i])) swap();   // a skill of the other weapon set (Used with weapon set) swaps to it, as the game's
+    const b = api.build(); if (!o.src && api.swapSet && !onSet(b, b.gems[i])) swap();   // a skill of the other weapon set (Used with weapon set) swaps to it, as the game's
     let S = mk(i); if (!S) return false;
     const P = S.P, auto = !!o.src;
     if (!auto && stuck()) return false;   // frozen or heavily stunned, you cannot act
