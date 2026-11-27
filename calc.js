@@ -188,7 +188,7 @@ export function reservation(g, sum = {}, b, life = false, maxLife) {
   const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';   // with its quality's (Bind Spectre's, Mirage Archer's)
   // Prism Guardian: Buff skills' own per 100 maximum life (maxLife: character() gives it, which asks for this itself)
   const PG = sum['buff_skills_spirit_reservation_efficiency_+%_per_100_maximum_life'], perLife = PG && b && GEM[g.name]?.tags?.includes('buff') ? PG * Math.floor((maxLife ?? character(b, sum).life ?? 0) / 100) : 0;
-  const eff = perLife + (st[id] || 0) + (st['base_reservation_efficiency_+%'] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
+  const eff = perLife + v(st, id, 'base_reservation_efficiency_+%') + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   // Skeletal Warrior: its first minions reserve no Spirit. note: the planner has no number of minions per gem; those first ones
   const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : spectreSpirit(g.spectre, st._spirit || 0)) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
@@ -1832,12 +1832,13 @@ export function skill(g, b, treeGear) {
   // charge for the spell it casts, its totem's life per endurance charge; Pinnacle of Power's more elemental damage
   // per power charge, for every skill. note: Barrage's repeats are for its Empowered attack: the scene's only, as every Empowered bonus
   const PP = (b?.gems || []).find(x => x.name === 'Pinnacle of Power'), EL = { fire: 1, cold: 1, lightning: 1 };
-  for (const [k, c, what, at, G = g, S = st, w] of [['ancestral_cry_duration_+%_final_per_removable_endurance_charge', 'Endurance', 'duration'],
+  const perCharge = (k, c, what, S = st, G = g, w = what === 'damage' ? Object.fromEntries(DMG.map(t => [t, 1])) : 1, at) => S[k] && out.when.push({ stat: k, cond: [{ type: at ? 'MultiplierThreshold' : 'Multiplier', var: c + 'ChargesConsumed', threshold: at }], val: S[k], skill: G.name, what, w });
+  for (const [k, c, what, at] of [['ancestral_cry_duration_+%_final_per_removable_endurance_charge', 'Endurance', 'duration'],
     ['spiral_volley_damage_+%_final_when_frenzy_charges_consumed', 'Frenzy', 'damage', 1], ['spiral_volley_damage_+%_final_per_frenzy_charge_consumed', 'Frenzy', 'damage'],
-    ['spiral_volley_X_chains_per_frenzy_charge_consumed', 'Frenzy', 'chains'], ['rain_of_arrows_projectile_count_multiplier_per_frenzy_charge', 'Frenzy', 'projectiles'], ['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed', 'Endurance', 'totemLife'],
-    ...meta?.name === 'Spell Totem' && byTotem ? [['spell_totem_damage_+%_final_per_power_charge_consumed', 'Power', 'damage', 0, meta, gemStats(meta)]] : [],
-    ...PP && DMG.some(t => EL[t] && out.hits?.[t]) ? [['elemental_power_elemental_damage_+%_final_per_power_charge', 'Power', 'damage', 0, PP, gemStats(PP), EL]] : []])
-    if (S[k]) out.when.push({ stat: k, cond: [{ type: at ? 'MultiplierThreshold' : 'Multiplier', var: c + 'ChargesConsumed', threshold: at || undefined }], val: S[k], skill: G.name, what, w: w || (what === 'damage' ? Object.fromEntries(DMG.map(t => [t, 1])) : 1) });
+    ['spiral_volley_X_chains_per_frenzy_charge_consumed', 'Frenzy', 'chains'], ['rain_of_arrows_projectile_count_multiplier_per_frenzy_charge', 'Frenzy', 'projectiles'], ['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed', 'Endurance', 'totemLife']])
+    perCharge(k, c, what, st, g, undefined, at);
+  if (meta?.name === 'Spell Totem' && byTotem) perCharge('spell_totem_damage_+%_final_per_power_charge_consumed', 'Power', 'damage', gemStats(meta), meta);
+  if (PP && DMG.some(t => EL[t] && out.hits?.[t])) perCharge('elemental_power_elemental_damage_+%_final_per_power_charge', 'Power', 'damage', gemStats(PP), PP, EL);
   // the planner's conditions (b.conds: the states the player says hold, a count for a "per" one): the bonuses of out.when
   // they meet count in the numbers, as the scene's when() does on each hit. One not set counts as not met
   if (b?.conds && out.when.length) {

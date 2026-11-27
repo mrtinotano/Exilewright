@@ -1563,7 +1563,7 @@ export function initScene(el, api) {
   // lightning to up to its most other enemies within its radius of the one hit, each beam chaining its number of times
   function discharge(X, d) {
     const n = X.dmg.stats.voltaic_barrier_trigger_maximum_number_of_extra_targets, seen = new Set([d]);
-    for (const e of nearest(d.pos, n, e => e !== d && dist(e.pos, d.pos) <= X.A)) chain(chest(d), e, { ...X, src: 'discharge' }, X.dmg.shape?.chains ?? X.dmg.stats.number_of_chains ?? 0, seen);
+    for (const e of nearest(d.pos, n, e => e !== d && dist(e.pos, d.pos) <= X.A)) chain(chest(d), e, { ...X, src: 'discharge' }, chainsOf(X), seen);
   }
   // Lunar Blessing: it spends all your Rage, its buff longer by its time per Rage spent, gaining its % of all damage as
   // extra cold. While on, a melee hit of yours calls down Moonbeams (its part) after its delay: the first on the enemy
@@ -1951,6 +1951,7 @@ export function initScene(el, api) {
     fx.emit(10, { p: to, r: .35, v: 2.6, life: .3, size: .12, c: ARC.spark, c2: 'white', k: 3, drag: 2 });
     for (let k = 0; k < 3; k++) later(.08 + k * .1, () => { const a = V(to.x + rnd(-.45, .45), to.y + rnd(-.6, .5), to.z + rnd(-.45, .45)), b = V(to.x + rnd(-.45, .45), to.y + rnd(-.6, .5), to.z + rnd(-.45, .45)); fx.bolt(a, b, ARC.spark, .1, .03, .5); });
   }
+  const chainsOf = X => X.dmg.shape?.chains ?? X.dmg.stats.number_of_chains ?? 0;   // its chains with their modifiers (calc.js shape), else the gem's
   function chain(from, d, S, n, seen = new Set(), mult = 1) {
     const to = chest(d), R = sh(S).chainRange || SIM.chainRange;
     if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
@@ -2537,7 +2538,7 @@ export function initScene(el, api) {
     const a = sheet().attrs || {}, r = Math.random() * ((a.str || 0) + (a.dex || 0) + (a.int || 0)), el = r < a.str ? 'Fire' : r < a.str + a.dex ? 'Lightning' : 'Cold';
     const X = partOf(asTrig(S, { ...D, id: 'Elemental Expression' }), `ElementalExpression${el}Player`); if (!X) return;
     if (el === 'Fire') boom(d.pos, X.A, X);
-    else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, X.dmg.shape?.chains ?? X.dmg.stats.number_of_chains);
+    else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, chainsOf(X));
     else { const a0 = Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), n = X.dmg.stats.base_number_of_projectiles; for (let k = 0; k < n; k++) { const q = a0 + (k - (n - 1) / 2) * .25; shoot(X, pp, Math.sin(q), Math.cos(q)); } }
   }
   // Elemental Storm (the Stormweaver's Tempest Caller): a spell critical hit triggers it, within its cooldown: a stationary
@@ -5404,7 +5405,7 @@ export function initScene(el, api) {
       if (d.dead) { e.dead = true; return; }
       m.position.set(d.pos.x, 2.4, d.pos.z); if ((tk -= dt) > 0) return;
       const q = near(d.pos, radOf(S)); if (!q) return;
-      tk = st.base_galvanic_field_beam_delay_ms / 1000; chain(m.position.clone(), q, { ...S, self: e, src: 'orb' }, S.dmg.shape?.chains ?? st.number_of_chains);
+      tk = st.base_galvanic_field_beam_delay_ms / 1000; chain(m.position.clone(), q, { ...S, self: e, src: 'orb' }, chainsOf(S));
     } });
   }
   // what the Banners you stand in grant: their buff's stat, summed

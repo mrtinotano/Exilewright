@@ -631,10 +631,9 @@ lesser_shrines = [{'id': r['Id'], 'duration': r['Duration'], 'name': buff_defs[t
                   for r in load('Shrines') if r['IsLesserShrine'] for t in [_tmpl[r['Player_ShrineBuffsKey']]]]
 # the stats a gem's quality gives that are modifiers of the kind the tree, gear or a support also give (curse_effect_+%,
 # base_mana_cost_-%, slam_aftershock_chance_%): calc.js counts those with the skill's other modifiers, as a support's
-_support_names = {g['name'] for g in gems if g['kind'] == 'support'}
 _generic = ({sid(m[f'Stat{i}']) for m in mods for i in range(1, 7) if m.get(f'Stat{i}') is not None}
             | {sid(x) for p in passives for x in p['Stats']}
-            | {k for n in _support_names for d in [skills.get(n) or {}] for k in [*d.get('constant', {}), *(k for lv in d.get('levels', {}).values() for k in lv)]})
+            | {k for g in gems if g['kind'] == 'support' for d in [skills.get(g['name']) or {}] for k in [*d.get('constant', {}), *(k for lv in d.get('levels', {}).values() for k in lv)]})
 quality_generic = sorted({k for d in skills.values() for q in ('quality', 'alt_quality') for k in d.get(q, {}) if k in _generic})
 save('skills.json', {'quality_generic': quality_generic, 'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # the bar's Move, on left click by default (the game's icon; no table names it)
                      'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
