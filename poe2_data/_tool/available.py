@@ -99,7 +99,9 @@ lineage_ids = {s['SkillGem'] for s in supports if s['IsLineage']}
 granted_by_passive = {p['GrantedSkill'] for p in load('PassiveSkills') if p['GrantedSkill'] is not None}
 granted_by_mod = {x['Skill'] for x in load('ModGrantedSkills')}
 granted_by_unique = {s for x in load('SkillGemsForUniqueStat') for s in x['SkillGems']}
-weapon_default = {s for x in load('CharacterMeleeSkills') for s in x['SkillGems']}
+# a cannon's own attack is Grenade (its implicit local_crossbow_no_ammo_skills_and_give_alternate_grenade_default_attack)
+GRENADE_STAT = 'local_crossbow_no_ammo_skills_and_give_alternate_grenade_default_attack'
+weapon_default = {s for x in load('CharacterMeleeSkills') for s in x['SkillGems']} | {i for i, g in enumerate(skill_gems) if bases[g['BaseItemType']]['Id'].endswith('/SkillGemPlayerDefaultGrenadeLauncher')}
 
 # what exists in the live patch: GGG's official trade list. Downloaded again on every run so removed gems/uniques/bases
 # drop out after a patch; the cached copy is only used when offline.
@@ -763,6 +765,11 @@ bases, implicit_ids = [], set()
 base_types = load('BaseItemTypes')
 gem_name = lambda sg: base_types[skill_gems[sg]['BaseItemType']]['Name']
 inherent = {x['BaseItemType']: [gem_name(sg) for sg in x['SkillsGranted']] for x in load('ItemInherentSkills') if x['SkillsGranted']}
+# a weapon's own attack, by its class in the main hand with nothing in the other (CharacterMeleeSkills: Mace Strike, a
+# spear's Spear Stab and Spear Throw); a cannon's Grenade instead (GRENADE_STAT)
+own_attack = {classes[wieldable[r['MainHand']]['ItemClass']]['Name']: [gem_name(sg) for sg in r['SkillGems']] for r in load('CharacterMeleeSkills') if r['OffHand'] == 0}
+grenade = [gem_name(i) for i in weapon_default if base_types[skill_gems[i]['BaseItemType']]['Id'].endswith('GrenadeLauncher')]
+attacks_of = lambda b, cls: grenade if any(GRENADE_STAT in (s[0] for s in mod_stats(mods[m])) for m in b['Implicit_Mods']) else own_attack.get(cls)
 for i, b in enumerate(base_types):
     cls = classes[b['ItemClass']]['Name']
     if cls not in SLOT_CLASSES or not ok(b['Name']) or b['ModDomain'] not in (1, 2, 11) or b['Name'] not in trade_types:  # 1 item, 2 flask/charm, 11 jewel
@@ -784,6 +791,7 @@ for i, b in enumerate(base_types):
         'spirit': spirit.get(i),
         **({'req': req[i]} if req.get(i) else {}),
         **({'grants': inherent[i]} if i in inherent else {}),
+        **({'attacks': at} if (at := attacks_of(b, cls)) else {}),
     })
 # bases of one name (a Two-Stone Ring's three pairs of resistances, a Runeforged Grasping Mail's kinds of defence): one is
 # kept, the last of the lowest drop level, with what each other has otherwise in its 'variants', by the game's id

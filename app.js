@@ -590,6 +590,13 @@ const openShare = async (exporting, again) => {
     let upd = false, what = '';
     const put = (o, key) => {
       if (order?.length) inGameOrder(o, order, granted);
+      // the weapons' own attacks first, as in the game's panel: set I's, then set II's (one in both: either set); level 20 (items.js grantedSkills)
+      const own = [];
+      for (const n of [1, 2]) for (const name of baseOf((n === (o.wset === 2 ? 2 : 1) ? o.items : o.swap)?.weapon)?.attacks || []) {
+        const had = own.find(g => g.name === name);
+        if (had) had.wset = ''; else if (!o.gems.some(g => g.name === name)) own.push({ name, level: 20, wset: n, meta: '' });
+      }
+      o.gems = [...own, ...o.gems];
       if (!name) return addBuild(o);
       o.pob = key;
       const id = Object.keys(builds).filter(k => builds[k].pob === key || !builds[k].pob && builds[k].name === o.name).sort((x, y) => y - x)[0];

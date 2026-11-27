@@ -23688,7 +23688,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Ruination Maul",
@@ -23734,7 +23737,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Aegis Quarterstaff",
@@ -23781,7 +23787,10 @@
    "req": {
     "dex": 127,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Fanatic Bow",
@@ -23828,7 +23837,10 @@
    "spirit": null,
    "req": {
     "dex": 163
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Siege Crossbow",
@@ -23877,7 +23889,10 @@
    "req": {
     "str": 89,
     "dex": 89
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Grand Spear",
@@ -23926,7 +23941,11 @@
    "req": {
     "str": 68,
     "dex": 109
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Maji Talisman",
@@ -23974,7 +23993,10 @@
    "req": {
     "str": 100,
     "int": 67
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Strife Pick",
@@ -24021,7 +24043,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Akoyan Club",
@@ -24069,7 +24094,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Fanatic Greathammer",
@@ -24115,7 +24143,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Tawhoan Greatclub",
@@ -24162,7 +24193,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Bolting Quarterstaff",
@@ -24209,7 +24243,10 @@
    "req": {
     "dex": 127,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Dreaming Quarterstaff",
@@ -24255,7 +24292,10 @@
    "req": {
     "dex": 127,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Gemini Bow",
@@ -24302,7 +24342,10 @@
    "spirit": null,
    "req": {
     "dex": 163
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Obliterator Bow",
@@ -24350,7 +24393,10 @@
    "spirit": null,
    "req": {
     "dex": 163
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Gemini Crossbow",
@@ -24399,7 +24445,10 @@
    "req": {
     "str": 89,
     "dex": 89
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Elegant Crossbow",
@@ -24449,7 +24498,10 @@
    "req": {
     "str": 89,
     "dex": 89
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Flying Spear",
@@ -24498,7 +24550,11 @@
    "req": {
     "str": 50,
     "dex": 127
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Akoyan Spear",
@@ -24548,7 +24604,11 @@
     "str": 50,
     "dex": 127,
     "int": 90
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Fungal Talisman",
@@ -24594,7 +24654,10 @@
    "req": {
     "str": 96,
     "int": 70
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Jade Talisman",
@@ -24640,7 +24703,10 @@
    "req": {
     "str": 109,
     "int": 65
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Molten Hammer",
@@ -24687,7 +24753,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Marauding Mace",
@@ -24732,7 +24801,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Ironwood Greathammer",
@@ -24778,7 +24850,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Massive Greathammer",
@@ -24822,7 +24897,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Striking Quarterstaff",
@@ -24869,7 +24947,10 @@
    "req": {
     "dex": 127,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Razor Quarterstaff",
@@ -24914,7 +24995,10 @@
    "req": {
     "dex": 127,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Guardian Bow",
@@ -24961,7 +25045,10 @@
    "spirit": null,
    "req": {
     "dex": 163
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Warmonger Bow",
@@ -25006,7 +25093,10 @@
    "spirit": null,
    "req": {
     "dex": 163
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Flexed Crossbow",
@@ -25055,7 +25145,10 @@
    "req": {
     "str": 89,
     "dex": 89
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Desolate Crossbow",
@@ -25102,7 +25195,10 @@
    "req": {
     "str": 89,
     "dex": 89
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Stalking Spear",
@@ -25151,7 +25247,11 @@
    "req": {
     "str": 50,
     "dex": 127
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Spiked Spear",
@@ -25200,7 +25300,11 @@
    "req": {
     "str": 50,
     "dex": 127
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Fang Talisman",
@@ -25248,7 +25352,10 @@
    "req": {
     "str": 89,
     "int": 68
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Thunder Talisman",
@@ -25296,7 +25403,10 @@
    "req": {
     "str": 102,
     "int": 72
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Permafrost Staff",
@@ -27967,7 +28077,10 @@
    "req": {
     "dex": 127,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Guardian Spear",
@@ -28017,7 +28130,11 @@
    "req": {
     "str": 50,
     "dex": 127
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Alpha Talisman",
@@ -28065,7 +28182,10 @@
    "req": {
     "str": 98,
     "int": 72
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runemastered Enlightened Robe",
@@ -28386,7 +28506,10 @@
    "spirit": null,
    "req": {
     "str": 149
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Sacred Maul",
@@ -28430,7 +28553,10 @@
    "spirit": null,
    "req": {
     "str": 149
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Lunar Quarterstaff",
@@ -28475,7 +28601,10 @@
    "req": {
     "dex": 115,
     "int": 46
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Cavalry Bow",
@@ -28520,7 +28649,10 @@
    "spirit": null,
    "req": {
     "dex": 149
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Engraved Crossbow",
@@ -28567,7 +28699,10 @@
    "req": {
     "str": 82,
     "dex": 82
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Pronged Spear",
@@ -28615,7 +28750,11 @@
    "req": {
     "str": 46,
     "dex": 115
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Ashbark Talisman",
@@ -28663,7 +28802,10 @@
    "req": {
     "str": 94,
     "int": 67
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Reflecting Staff",
@@ -31487,7 +31629,10 @@
    "spirit": null,
    "req": {
     "str": 163
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runemastered Aberrant Sledge",
@@ -31535,6 +31680,9 @@
    "req": {
     "str": 163
    },
+   "attacks": [
+    "Mace Strike"
+   ],
    "variants": {
     "FourTwoHandMaceUnique1VerisiumUnique1": {
      "implicits": [],
@@ -31619,7 +31767,11 @@
    "req": {
     "str": 41,
     "dex": 115
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Wildwood Talisman",
@@ -31665,7 +31817,10 @@
    "req": {
     "str": 98,
     "int": 72
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runemastered Strider Vest",
@@ -32240,7 +32395,10 @@
    "spirit": null,
    "req": {
     "str": 134
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Anvil Maul",
@@ -32286,7 +32444,10 @@
    "spirit": null,
    "req": {
     "str": 134
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Sinister Quarterstaff",
@@ -32331,7 +32492,10 @@
    "req": {
     "dex": 104,
     "int": 41
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Ironwood Shortbow",
@@ -32376,7 +32540,10 @@
    "spirit": null,
    "req": {
     "dex": 134
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Heartwood Shortbow",
@@ -32421,7 +32588,10 @@
    "spirit": null,
    "req": {
     "dex": 134
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Stout Crossbow",
@@ -32468,7 +32638,10 @@
    "req": {
     "str": 74,
     "dex": 74
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Orichalcum Spear",
@@ -32516,7 +32689,11 @@
    "req": {
     "str": 41,
     "dex": 104
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Spiny Talisman",
@@ -32562,7 +32739,10 @@
    "req": {
     "str": 86,
     "int": 65
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Dark Blade",
@@ -32608,7 +32788,10 @@
    "req": {
     "str": 63,
     "dex": 63
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Ultra Greatsword",
@@ -32653,7 +32836,10 @@
    "req": {
     "str": 63,
     "dex": 63
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Dread Hatchet",
@@ -32699,7 +32885,10 @@
    "req": {
     "str": 89,
     "dex": 36
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Vile Greataxe",
@@ -32744,7 +32933,10 @@
    "req": {
     "str": 89,
     "dex": 36
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Torment Club",
@@ -32789,7 +32981,10 @@
    "spirit": null,
    "req": {
     "str": 114
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runemastered Torment Club",
@@ -32836,6 +33031,9 @@
    "req": {
     "str": 124
    },
+   "attacks": [
+    "Mace Strike"
+   ],
    "variants": {
     "FourOneHandMace13VerisiumUnique1": {
      "implicits": [
@@ -32958,7 +33156,10 @@
    "spirit": null,
    "req": {
     "str": 114
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Helix Spear",
@@ -33006,7 +33207,11 @@
    "req": {
     "str": 36,
     "dex": 89
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Cinquedea",
@@ -33052,7 +33257,10 @@
    "req": {
     "dex": 63,
     "int": 63
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Wyrm Quarterstaff",
@@ -33097,7 +33305,10 @@
    "req": {
     "dex": 89,
     "int": 36
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Abyssal Flail",
@@ -33143,7 +33354,10 @@
    "req": {
     "str": 89,
     "int": 36
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Dueling Wand",
@@ -33435,7 +33649,10 @@
    "spirit": null,
    "req": {
     "dex": 114
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Exquisite Vest",
@@ -34720,7 +34937,10 @@
    "spirit": null,
    "req": {
     "str": 114
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Soldier Cuirass",
@@ -37517,6 +37737,9 @@
     "range": 13
    },
    "spirit": null,
+   "attacks": [
+    "Mace Strike"
+   ],
    "variants": {
     "FourOneHandMace14Verisium1": {
      "implicits": [
@@ -37602,7 +37825,10 @@
    "spirit": null,
    "req": {
     "str": 114
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Pointed Maul",
@@ -37650,7 +37876,10 @@
    "spirit": null,
    "req": {
     "str": 114
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runemastered Dyad Crossbow",
@@ -37699,7 +37928,10 @@
    "req": {
     "str": 63,
     "dex": 63
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Runeforged Vicious Talisman",
@@ -37746,7 +37978,10 @@
    "req": {
     "str": 74,
     "int": 52
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Warding Quarterstaff",
@@ -37793,7 +38028,10 @@
    "req": {
     "dex": 127,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runemastered Warding Quarterstaff",
@@ -37842,6 +38080,9 @@
     "dex": 127,
     "int": 50
    },
+   "attacks": [
+    "Quarterstaff Strike"
+   ],
    "variants": {
     "FourQuarterstaffUnique1VerisiumUnique1": {
      "weapon": {
@@ -37910,7 +38151,10 @@
    "req": {
     "str": 114,
     "dex": 63
-   }
+   },
+   "attacks": [
+    "Grenade"
+   ]
   },
   {
    "name": "Runemastered Smuggler Coat",
@@ -39468,7 +39712,10 @@
    "req": {
     "str": 72,
     "int": 51
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Fine Belt",
@@ -39549,7 +39796,10 @@
    "spirit": null,
    "req": {
     "str": 109
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Disintegrating Maul",
@@ -39595,7 +39845,10 @@
    "spirit": null,
    "req": {
     "str": 109
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Guardian Quarterstaff",
@@ -39642,7 +39895,10 @@
    "req": {
     "dex": 85,
     "int": 34
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Militant Bow",
@@ -39687,7 +39943,10 @@
    "spirit": null,
    "req": {
     "dex": 109
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Bleak Crossbow",
@@ -39734,7 +39993,10 @@
    "req": {
     "str": 60,
     "dex": 60
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Massive Spear",
@@ -39783,7 +40045,11 @@
    "req": {
     "str": 40,
     "dex": 80
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Stone Cuirass",
@@ -41037,7 +41303,10 @@
    "spirit": null,
    "req": {
     "str": 104
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Heavy Greathammer",
@@ -41081,7 +41350,10 @@
    "spirit": null,
    "req": {
     "str": 104
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Bladed Quarterstaff",
@@ -41126,7 +41398,10 @@
    "req": {
     "dex": 81,
     "int": 33
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Adherent Bow",
@@ -41173,7 +41448,10 @@
    "spirit": null,
    "req": {
     "dex": 104
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Cannonade Crossbow",
@@ -41222,7 +41500,10 @@
    "req": {
     "str": 58,
     "dex": 58
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Jagged Spear",
@@ -41271,7 +41552,11 @@
    "req": {
     "str": 33,
     "dex": 81
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Fury Talisman",
@@ -41319,7 +41604,10 @@
    "req": {
     "str": 67,
     "int": 48
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Heavy Plate",
@@ -43884,7 +44172,10 @@
    "req": {
     "str": 80,
     "int": 32
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Champion Cuirass",
@@ -44058,7 +44349,10 @@
    "req": {
     "str": 79,
     "dex": 32
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Arcane Dirk",
@@ -44104,7 +44398,10 @@
    "req": {
     "dex": 55,
     "int": 55
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Sanctified Staff",
@@ -44274,7 +44571,10 @@
    "spirit": null,
    "req": {
     "str": 97
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Striking Spear",
@@ -44323,7 +44623,11 @@
    "req": {
     "str": 31,
     "dex": 76
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Array Buckler",
@@ -44487,7 +44791,10 @@
    "req": {
     "str": 63,
     "int": 45
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runemastered Wooden Club",
@@ -44536,7 +44843,10 @@
    "spirit": null,
    "req": {
     "str": 97
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runemastered Felled Greatclub",
@@ -44582,7 +44892,10 @@
    "spirit": null,
    "req": {
     "str": 97
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runemastered Oak Greathammer",
@@ -44630,7 +44943,10 @@
    "spirit": null,
    "req": {
     "str": 97
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runemastered Studded Greatclub",
@@ -44678,7 +44994,10 @@
    "spirit": null,
    "req": {
     "str": 97
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Temple Maul",
@@ -44725,7 +45044,10 @@
    "req": {
     "str": 76,
     "dex": 40
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Leaden Greathammer",
@@ -44772,7 +45094,10 @@
    "req": {
     "str": 60,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Crumbling Maul",
@@ -44820,7 +45145,10 @@
    "spirit": null,
    "req": {
     "str": 97
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runemastered Ironhead Spear",
@@ -44870,7 +45198,11 @@
    "req": {
     "str": 31,
     "dex": 76
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runeforged Forked Spear",
@@ -44920,7 +45252,11 @@
    "req": {
     "str": 31,
     "dex": 76
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runeforged Barbed Spear",
@@ -44972,7 +45308,11 @@
    "req": {
     "str": 31,
     "dex": 76
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runemastered Long Quarterstaff",
@@ -45022,7 +45362,10 @@
    "req": {
     "dex": 76,
     "int": 31
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runemastered Gothic Quarterstaff",
@@ -45072,7 +45415,10 @@
    "req": {
     "dex": 76,
     "int": 31
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runeforged Crude Bow",
@@ -45121,7 +45467,10 @@
    "spirit": null,
    "req": {
     "dex": 97
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Runeforged Shortbow",
@@ -45169,6 +45518,9 @@
    "req": {
     "dex": 68
    },
+   "attacks": [
+    "Bow Shot"
+   ],
    "variants": {
     "FourBowVerisium2b": {
      "img": "Art/2DItems/Weapons/TwoHandWeapons/Bows/Basetypes/Bow03.dds",
@@ -45234,7 +45586,10 @@
    "spirit": null,
    "req": {
     "dex": 97
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Runeforged Dualstring Bow",
@@ -45283,7 +45638,10 @@
    "spirit": null,
    "req": {
     "dex": 97
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Runeforged Zealot Bow",
@@ -45332,7 +45690,10 @@
    "spirit": null,
    "req": {
     "dex": 97
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Runemastered Tense Crossbow",
@@ -45381,7 +45742,10 @@
    "req": {
     "str": 54,
     "dex": 54
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Runemastered Nettle Talisman",
@@ -45428,7 +45792,10 @@
    "req": {
     "str": 63,
     "int": 45
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runemastered Familial Talisman",
@@ -45477,7 +45844,10 @@
    "req": {
     "str": 63,
     "int": 45
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runemastered Vaal Cuirass",
@@ -47299,7 +47669,10 @@
    "req": {
     "str": 53,
     "dex": 53
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Regalia Longsword",
@@ -47344,7 +47717,10 @@
    "req": {
     "str": 53,
     "dex": 53
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Profane Cleaver",
@@ -47390,7 +47766,10 @@
    "req": {
     "str": 75,
     "dex": 30
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Marching Mace",
@@ -47435,7 +47814,10 @@
    "spirit": null,
    "req": {
     "str": 96
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Solemn Maul",
@@ -47479,7 +47861,10 @@
    "spirit": null,
    "req": {
     "str": 96
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Waxing Quarterstaff",
@@ -47524,7 +47909,10 @@
    "req": {
     "dex": 75,
     "int": 30
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Twin Bow",
@@ -47571,7 +47959,10 @@
    "spirit": null,
    "req": {
     "dex": 96
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Twin Crossbow",
@@ -47620,7 +48011,10 @@
    "req": {
     "str": 53,
     "dex": 53
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Branched Spear",
@@ -47668,7 +48062,11 @@
    "req": {
     "str": 30,
     "dex": 75
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Elegant Plate",
@@ -49750,7 +50148,10 @@
    "req": {
     "str": 51,
     "dex": 51
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Flanged Greatblade",
@@ -49795,7 +50196,10 @@
    "req": {
     "str": 51,
     "dex": 51
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Battle Axe",
@@ -49841,7 +50245,10 @@
    "req": {
     "str": 72,
     "dex": 29
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Ceremonial Halberd",
@@ -49888,7 +50295,10 @@
    "req": {
     "str": 72,
     "dex": 29
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Sword Spear",
@@ -49936,7 +50346,11 @@
    "req": {
     "str": 29,
     "dex": 72
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Parrying Dagger",
@@ -49982,7 +50396,10 @@
    "req": {
     "dex": 51,
     "int": 51
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Tearing Flail",
@@ -50028,7 +50445,10 @@
    "req": {
     "str": 72,
     "int": 29
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Paralysing Staff",
@@ -50118,7 +50538,10 @@
    "req": {
     "str": 60,
     "int": 43
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Strider Vest",
@@ -50799,7 +51222,11 @@
     "str": 29,
     "dex": 71,
     "int": 50
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Smuggler Coat",
@@ -51171,7 +51598,10 @@
    "spirit": null,
    "req": {
     "str": 91
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Zealot Greathammer",
@@ -51217,7 +51647,10 @@
    "spirit": null,
    "req": {
     "str": 91
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Arcing Quarterstaff",
@@ -51264,7 +51697,10 @@
    "req": {
     "dex": 71,
     "int": 29
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Rider Bow",
@@ -51309,7 +51745,10 @@
    "spirit": null,
    "req": {
     "dex": 91
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Painted Crossbow",
@@ -51356,7 +51795,10 @@
    "req": {
     "str": 50,
     "dex": 50
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Swift Spear",
@@ -51405,7 +51847,11 @@
    "req": {
     "str": 29,
     "dex": 71
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Sandsworn Cuirass",
@@ -52981,7 +53427,10 @@
    "req": {
     "str": 49,
     "dex": 49
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Ember Greataxe",
@@ -53028,7 +53477,10 @@
    "req": {
     "str": 70,
     "dex": 28
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Totemic Greatclub",
@@ -53075,7 +53527,10 @@
    "spirit": null,
    "req": {
     "str": 89
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Tribal Bow",
@@ -53121,7 +53576,10 @@
    "spirit": null,
    "req": {
     "dex": 89
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Piercing Crossbow",
@@ -53171,7 +53629,10 @@
    "req": {
     "str": 49,
     "dex": 49
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Chieftain Cuirass",
@@ -54158,7 +54619,10 @@
    "req": {
     "str": 49,
     "dex": 49
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Jade Club",
@@ -54206,7 +54670,10 @@
    "spirit": null,
    "req": {
     "str": 87
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Kris Knife",
@@ -54252,7 +54719,10 @@
    "req": {
     "dex": 49,
     "int": 49
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Smooth Quarterstaff",
@@ -54298,7 +54768,10 @@
    "req": {
     "dex": 68,
     "int": 28
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Roaring Staff",
@@ -54514,7 +54987,10 @@
    "req": {
     "str": 67,
     "dex": 27
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Flared Mace",
@@ -54559,7 +55035,10 @@
    "spirit": null,
    "req": {
     "str": 86
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Blacksmith Maul",
@@ -54605,7 +55084,10 @@
    "spirit": null,
    "req": {
     "str": 86
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Barbarous Quarterstaff",
@@ -54650,7 +55132,10 @@
    "req": {
     "dex": 67,
     "int": 27
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Protector Bow",
@@ -54697,7 +55182,10 @@
    "spirit": null,
    "req": {
     "dex": 86
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Robust Crossbow",
@@ -54744,7 +55232,10 @@
    "req": {
     "str": 48,
     "dex": 48
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Coursing Spear",
@@ -54793,7 +55284,11 @@
    "req": {
     "str": 27,
     "dex": 67
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Rugged Cuirass",
@@ -55631,7 +56126,10 @@
     "max": 55,
     "range": 13
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Icicle Flail",
@@ -55679,7 +56177,10 @@
    "req": {
     "str": 66,
     "int": 27
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Oneiric Ring",
@@ -55763,7 +56264,10 @@
    "req": {
     "str": 53,
     "int": 38
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Stratified Targe",
@@ -55907,7 +56411,10 @@
    "req": {
     "str": 45,
     "dex": 45
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Keen Greatsword",
@@ -55952,7 +56459,10 @@
    "req": {
     "str": 45,
     "dex": 45
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Boarding Hatchet",
@@ -55998,7 +56508,10 @@
    "req": {
     "str": 63,
     "dex": 26
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Reaver Glaive",
@@ -56043,7 +56556,10 @@
    "req": {
     "str": 63,
     "dex": 26
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Morning Star",
@@ -56089,7 +56605,10 @@
    "spirit": null,
    "req": {
     "str": 80
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Pointed Maul",
@@ -56134,7 +56653,10 @@
    "spirit": null,
    "req": {
     "str": 80
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Crossblade Spear",
@@ -56184,7 +56706,11 @@
    "req": {
     "str": 26,
     "dex": 63
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Mail Breaker",
@@ -56232,7 +56758,10 @@
    "req": {
     "dex": 45,
     "int": 45
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Hefty Quarterstaff",
@@ -56280,7 +56809,10 @@
    "req": {
     "dex": 63,
     "int": 26
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Guarded Flail",
@@ -56326,7 +56858,10 @@
    "req": {
     "str": 63,
     "int": 26
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Artillery Bow",
@@ -56374,7 +56909,10 @@
    "spirit": null,
    "req": {
     "dex": 80
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Blackfire Crossbow",
@@ -56422,7 +56960,10 @@
    "req": {
     "str": 45,
     "dex": 45
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Juggernaut Plate",
@@ -57702,7 +58243,10 @@
    "spirit": null,
    "req": {
     "str": 80
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Snakewood Greathammer",
@@ -57748,7 +58292,10 @@
    "spirit": null,
    "req": {
     "str": 80
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Reaching Quarterstaff",
@@ -57795,7 +58342,10 @@
    "req": {
     "dex": 63,
     "int": 26
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Snakewood Shortbow",
@@ -57840,7 +58390,10 @@
    "spirit": null,
    "req": {
     "dex": 80
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Taut Crossbow",
@@ -57889,7 +58442,10 @@
    "req": {
     "str": 45,
     "dex": 45
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Steelhead Spear",
@@ -57937,7 +58493,11 @@
    "req": {
     "str": 26,
     "dex": 63
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Barbarian Plate",
@@ -60836,7 +61396,10 @@
    "req": {
     "str": 40,
     "dex": 40
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Jagged Greataxe",
@@ -60884,7 +61447,10 @@
    "req": {
     "str": 56,
     "dex": 23
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Broad Spear",
@@ -60934,7 +61500,11 @@
    "req": {
     "str": 26,
     "dex": 55
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Vicious Talisman",
@@ -60980,7 +61550,10 @@
    "req": {
     "str": 47,
     "int": 34
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Altar Robe",
@@ -61687,7 +62260,10 @@
    "spirit": null,
    "req": {
     "str": 72
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Forge Maul",
@@ -61735,7 +62311,10 @@
    "spirit": null,
    "req": {
     "str": 72
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Cultist Greathammer",
@@ -61784,7 +62363,10 @@
    "spirit": null,
    "req": {
     "str": 72
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Hardwood Spear",
@@ -61834,7 +62416,11 @@
    "req": {
     "str": 23,
     "dex": 56
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runeforged Winged Spear",
@@ -61885,7 +62471,11 @@
    "req": {
     "str": 23,
     "dex": 56
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runeforged War Spear",
@@ -61936,7 +62526,11 @@
    "req": {
     "str": 23,
     "dex": 56
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runeforged Crescent Quarterstaff",
@@ -61986,7 +62580,10 @@
    "req": {
     "dex": 56,
     "int": 23
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runeforged Steelpoint Quarterstaff",
@@ -62033,7 +62630,10 @@
    "req": {
     "dex": 56,
     "int": 23
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runeforged Warden Bow",
@@ -62081,7 +62681,10 @@
    "spirit": null,
    "req": {
     "dex": 72
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Runeforged Recurve Bow",
@@ -62128,7 +62731,10 @@
    "spirit": null,
    "req": {
     "dex": 72
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Runeforged Dyad Crossbow",
@@ -62177,7 +62783,10 @@
    "req": {
     "str": 40,
     "dex": 40
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Runemastered Steel Plate",
@@ -63210,7 +63819,10 @@
    "req": {
     "dex": 39,
     "int": 39
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Zealot Bow",
@@ -63256,7 +63868,10 @@
    "spirit": null,
    "req": {
     "dex": 70
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Scalper's Jacket",
@@ -63572,7 +64187,10 @@
    "spirit": null,
    "req": {
     "str": 68
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Ring Flail",
@@ -63619,7 +64237,10 @@
    "req": {
     "str": 54,
     "int": 23
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Reaping Staff",
@@ -63711,7 +64332,10 @@
    "req": {
     "str": 39,
     "dex": 39
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Viper Cap",
@@ -63972,7 +64596,10 @@
    "spirit": null,
    "req": {
     "str": 68
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Slim Mace",
@@ -64021,7 +64648,10 @@
    "spirit": null,
    "req": {
     "str": 68
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Warpick",
@@ -64070,7 +64700,10 @@
    "spirit": null,
    "req": {
     "str": 68
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Felled Greatclub",
@@ -64116,7 +64749,10 @@
    "spirit": null,
    "req": {
     "str": 68
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Oak Greathammer",
@@ -64164,7 +64800,10 @@
    "spirit": null,
    "req": {
     "str": 68
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Studded Greatclub",
@@ -64212,7 +64851,10 @@
    "spirit": null,
    "req": {
     "str": 68
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Runeforged Ironhead Spear",
@@ -64262,7 +64904,11 @@
    "req": {
     "str": 23,
     "dex": 54
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runeforged Hunting Spear",
@@ -64313,7 +64959,11 @@
    "req": {
     "str": 23,
     "dex": 54
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Runeforged Wrapped Quarterstaff",
@@ -64362,7 +65012,10 @@
    "req": {
     "dex": 54,
     "int": 23
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runeforged Long Quarterstaff",
@@ -64411,7 +65064,10 @@
    "req": {
     "dex": 54,
     "int": 23
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runeforged Gothic Quarterstaff",
@@ -64460,7 +65116,10 @@
    "req": {
     "dex": 54,
     "int": 23
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Runeforged Makeshift Crossbow",
@@ -64511,7 +65170,10 @@
    "req": {
     "str": 39,
     "dex": 39
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Runeforged Tense Crossbow",
@@ -64560,7 +65222,10 @@
    "req": {
     "str": 39,
     "dex": 39
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Runeforged Changeling Talisman",
@@ -64607,7 +65272,10 @@
    "req": {
     "str": 45,
     "int": 32
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runeforged Nettle Talisman",
@@ -64654,7 +65322,10 @@
    "req": {
     "str": 45,
     "int": 32
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runeforged Familial Talisman",
@@ -64703,7 +65374,10 @@
    "req": {
     "str": 45,
     "int": 32
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Runemastered Rusted Cuirass",
@@ -68787,7 +69461,10 @@
    "req": {
     "str": 52,
     "dex": 22
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Barrier Quarterstaff",
@@ -68835,7 +69512,10 @@
    "req": {
     "dex": 52,
     "int": 22
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Vaal Cuirass",
@@ -69159,7 +69839,10 @@
    "req": {
     "str": 37,
     "dex": 37
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Construct Hammer",
@@ -69207,7 +69890,10 @@
    "spirit": null,
    "req": {
     "str": 65
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Serpentscale Coat",
@@ -69925,7 +70611,10 @@
    "req": {
     "str": 40,
     "int": 29
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Falchion",
@@ -69972,7 +70661,10 @@
    "req": {
     "str": 34,
     "dex": 34
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Stone Greatsword",
@@ -70018,7 +70710,10 @@
    "req": {
     "str": 34,
     "dex": 34
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Carving Hatchet",
@@ -70065,7 +70760,10 @@
    "req": {
     "str": 47,
     "dex": 20
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Rending Halberd",
@@ -70111,7 +70809,10 @@
    "req": {
     "str": 47,
     "dex": 20
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Brigand Mace",
@@ -70157,7 +70858,10 @@
    "spirit": null,
    "req": {
     "str": 60
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Leaden Greathammer",
@@ -70202,7 +70906,10 @@
    "spirit": null,
    "req": {
     "str": 60
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Barbed Spear",
@@ -70252,7 +70959,11 @@
    "req": {
     "str": 20,
     "dex": 47
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Obsidian Dagger",
@@ -70299,7 +71010,10 @@
    "req": {
     "dex": 34,
     "int": 34
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Slicing Quarterstaff",
@@ -70345,7 +71059,10 @@
    "req": {
     "dex": 47,
     "int": 20
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Stone Flail",
@@ -70394,7 +71111,10 @@
    "req": {
     "str": 47,
     "int": 20
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Acrid Wand",
@@ -70482,7 +71202,10 @@
    "spirit": null,
    "req": {
     "dex": 60
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Bombard Crossbow",
@@ -70532,7 +71255,10 @@
    "req": {
     "str": 34,
     "dex": 34
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Full Plate",
@@ -73618,7 +74344,10 @@
    "req": {
     "str": 29,
     "dex": 29
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Arced Longsword",
@@ -73664,7 +74393,10 @@
    "req": {
     "str": 29,
     "dex": 29
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Temple Maul",
@@ -73709,7 +74441,10 @@
    "spirit": null,
    "req": {
     "str": 52
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Steelpoint Quarterstaff",
@@ -73755,7 +74490,10 @@
    "req": {
     "dex": 41,
     "int": 18
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Dualstring Bow",
@@ -73803,7 +74541,10 @@
    "spirit": null,
    "req": {
     "dex": 52
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Primal Talisman",
@@ -73851,7 +74592,10 @@
    "req": {
     "str": 34,
     "int": 25
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Keth Raiment",
@@ -74721,7 +75465,10 @@
    "req": {
     "str": 39,
     "dex": 17
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Engraved Knife",
@@ -74768,7 +75515,10 @@
    "req": {
     "dex": 29,
     "int": 29
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Steel Plate",
@@ -75255,7 +76005,10 @@
    "req": {
     "str": 38,
     "dex": 17
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Plated Mace",
@@ -75301,7 +76054,10 @@
    "spirit": null,
    "req": {
     "str": 48
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Forked Spear",
@@ -75350,7 +76106,11 @@
    "req": {
     "str": 17,
     "dex": 38
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Slender Flail",
@@ -75397,7 +76157,10 @@
    "req": {
     "str": 38,
     "int": 17
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Alloy Crossbow",
@@ -75445,7 +76208,10 @@
    "req": {
     "str": 28,
     "dex": 28
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Shrine Sceptre",
@@ -76743,7 +77509,10 @@
    "req": {
     "str": 24,
     "dex": 24
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Warpick",
@@ -76791,7 +77560,10 @@
    "spirit": null,
    "req": {
     "str": 41
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Cultist Greathammer",
@@ -76838,7 +77610,10 @@
    "spirit": null,
    "req": {
     "str": 41
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Composite Bow",
@@ -76884,7 +77659,10 @@
    "spirit": null,
    "req": {
     "dex": 41
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Frenzied Talisman",
@@ -76930,7 +77708,10 @@
    "req": {
     "str": 28,
     "int": 20
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Rhoahide Coat",
@@ -77341,7 +78122,10 @@
    "req": {
     "str": 23,
     "dex": 23
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "War Spear",
@@ -77391,7 +78175,11 @@
    "req": {
     "str": 14,
     "dex": 31
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Effigial Tower Shield",
@@ -77857,7 +78645,10 @@
    "req": {
     "str": 30,
     "dex": 14
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Elegant Glaive",
@@ -77903,7 +78694,10 @@
    "req": {
     "str": 30,
     "dex": 14
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Moon Dagger",
@@ -77952,7 +78746,10 @@
    "req": {
     "dex": 22,
     "int": 22
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Crescent Quarterstaff",
@@ -77998,7 +78795,10 @@
    "req": {
     "dex": 30,
     "int": 14
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Twin Flail",
@@ -78047,7 +78847,10 @@
    "req": {
     "str": 30,
     "int": 14
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Dyad Crossbow",
@@ -78097,7 +78900,10 @@
    "req": {
     "str": 22,
     "dex": 22
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Maraketh Cuirass",
@@ -78384,7 +79190,10 @@
    "req": {
     "str": 19,
     "dex": 19
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Broad Greatsword",
@@ -78430,7 +79239,10 @@
    "req": {
     "str": 19,
     "dex": 19
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Extended Cleaver",
@@ -78479,7 +79291,10 @@
    "req": {
     "str": 25,
     "dex": 12
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Arched Greataxe",
@@ -78525,7 +79340,10 @@
    "req": {
     "str": 25,
     "dex": 12
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Spiked Club",
@@ -78571,7 +79389,10 @@
    "spirit": null,
    "req": {
     "str": 31
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Studded Greatclub",
@@ -78616,7 +79437,10 @@
    "spirit": null,
    "req": {
     "str": 31
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Winged Spear",
@@ -78665,7 +79489,11 @@
    "req": {
     "str": 12,
     "dex": 25
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Skinning Knife",
@@ -78712,7 +79540,10 @@
    "req": {
     "dex": 19,
     "int": 19
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Crackling Quarterstaff",
@@ -78760,7 +79591,10 @@
    "req": {
     "dex": 25,
     "int": 12
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Iron Flail",
@@ -78807,7 +79641,10 @@
    "req": {
     "str": 25,
     "int": 12
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Volatile Wand",
@@ -78942,7 +79779,10 @@
    "spirit": null,
    "req": {
     "dex": 31
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Varnished Crossbow",
@@ -78990,7 +79830,10 @@
    "req": {
     "str": 19,
     "dex": 19
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Omen Sceptre",
@@ -79079,7 +79922,10 @@
    "req": {
     "str": 21,
     "int": 16
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Raider Plate",
@@ -81973,7 +82819,10 @@
    "req": {
     "dex": 15,
     "int": 15
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Soldier Greathelm",
@@ -82378,7 +83227,10 @@
    "req": {
     "str": 14,
     "dex": 14
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Blessed Claymore",
@@ -82424,7 +83276,10 @@
    "req": {
     "str": 14,
     "dex": 14
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Forge Maul",
@@ -82471,7 +83326,10 @@
    "spirit": null,
    "req": {
     "str": 23
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Gothic Quarterstaff",
@@ -82517,7 +83375,10 @@
    "req": {
     "dex": 18,
     "int": 9
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Holy Flail",
@@ -82564,7 +83425,10 @@
    "req": {
     "str": 18,
     "int": 9
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Siphoning Wand",
@@ -82652,7 +83516,10 @@
    "spirit": null,
    "req": {
     "dex": 23
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Iron Cuirass",
@@ -83773,7 +84640,10 @@
    "req": {
     "str": 17,
     "dex": 9
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Executioner Greataxe",
@@ -83821,7 +84691,10 @@
    "req": {
     "str": 17,
     "dex": 9
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Slim Mace",
@@ -83867,7 +84740,10 @@
    "spirit": null,
    "req": {
     "str": 21
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Hunting Spear",
@@ -83917,7 +84793,11 @@
    "req": {
     "str": 9,
     "dex": 17
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Sturdy Crossbow",
@@ -83965,7 +84845,10 @@
    "req": {
     "str": 13,
     "dex": 13
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Cinderbark Talisman",
@@ -84013,7 +84896,10 @@
    "req": {
     "str": 15,
     "int": 11
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Pelt Mantle",
@@ -85174,7 +86060,10 @@
    "req": {
     "str": 9,
     "dex": 9
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Iron Greatsword",
@@ -85220,7 +86109,10 @@
    "req": {
     "str": 9,
     "dex": 9
-   }
+   },
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Crone Knife",
@@ -85269,7 +86161,10 @@
    "req": {
     "dex": 9,
     "int": 9
-   }
+   },
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Chain Flail",
@@ -85315,7 +86210,10 @@
    "spirit": null,
    "req": {
     "str": 12
-   }
+   },
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Stoic Sceptre",
@@ -85769,7 +86667,11 @@
    "spirit": null,
    "req": {
     "dex": 10
-   }
+   },
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Shortbow",
@@ -85815,7 +86717,10 @@
    "spirit": null,
    "req": {
     "dex": 12
-   }
+   },
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Nettle Talisman",
@@ -85861,7 +86766,10 @@
    "req": {
     "str": 9,
     "int": 8
-   }
+   },
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Feathered Robe",
@@ -86787,7 +87695,10 @@
    "spirit": null,
    "req": {
     "str": 9
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Light Halberd",
@@ -86832,7 +87743,10 @@
    "spirit": null,
    "req": {
     "str": 9
-   }
+   },
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Smithing Hammer",
@@ -86880,7 +87794,10 @@
    "spirit": null,
    "req": {
     "str": 11
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Oak Greathammer",
@@ -86927,7 +87844,10 @@
    "spirit": null,
    "req": {
     "str": 11
-   }
+   },
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Long Quarterstaff",
@@ -86974,7 +87894,10 @@
    "spirit": null,
    "req": {
     "dex": 9
-   }
+   },
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Tense Crossbow",
@@ -87024,7 +87947,10 @@
    "req": {
     "str": 8,
     "dex": 8
-   }
+   },
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Fur Plate",
@@ -87527,7 +88453,10 @@
     "max": 9,
     "range": 13
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Corroded Longsword",
@@ -87569,7 +88498,10 @@
     "max": 16,
     "range": 16
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Sword Slash"
+   ]
   },
   {
    "name": "Dull Hatchet",
@@ -87612,7 +88544,10 @@
     "max": 10,
     "range": 13
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Splitting Greataxe",
@@ -87654,7 +88589,10 @@
     "max": 20,
     "range": 15
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Axe Slash"
+   ]
   },
   {
    "name": "Wooden Club",
@@ -87697,7 +88635,10 @@
     "max": 10,
     "range": 13
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Felled Greatclub",
@@ -87739,7 +88680,10 @@
     "max": 18,
     "range": 15
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Mace Strike"
+   ]
   },
   {
    "name": "Hardwood Spear",
@@ -87784,7 +88728,11 @@
     "max": 9,
     "range": 15
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Spear Stab",
+    "Spear Throw"
+   ]
   },
   {
    "name": "Glass Shank",
@@ -87827,7 +88775,10 @@
     "max": 10,
     "range": 10
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Dagger Stab"
+   ]
   },
   {
    "name": "Wrapped Quarterstaff",
@@ -87869,7 +88820,10 @@
     "max": 12,
     "range": 14
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Quarterstaff Strike"
+   ]
   },
   {
    "name": "Splintered Flail",
@@ -87912,7 +88866,10 @@
     "max": 9,
     "range": 13
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Flail Strike"
+   ]
   },
   {
    "name": "Withered Wand",
@@ -88038,7 +88995,10 @@
     "max": 9,
     "range": 120
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Bow Shot"
+   ]
   },
   {
    "name": "Makeshift Crossbow",
@@ -88082,7 +89042,10 @@
     "range": 120,
     "reload_ms": 800
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Crossbow Shot"
+   ]
   },
   {
    "name": "Rattling Sceptre",
@@ -88162,7 +89125,10 @@
     "max": 15,
     "range": 12
    },
-   "spirit": null
+   "spirit": null,
+   "attacks": [
+    "Punch"
+   ]
   },
   {
    "name": "Rusted Cuirass",

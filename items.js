@@ -651,9 +651,11 @@ const martial = it => !!baseOf(it)?.tags?.includes('weapon');   // keywords Mart
 export const isMelee = it => martial(it) && !baseOf(it).tags.includes('ranged');
 export const TRADE_LABELS = D.trade_labels || {};   // a gem's and a waystone's property labels in each language, by the trade site's filter
 export const isCorrupted = text => text.replace(/\r/g, '').split('\n').some(corruptLine);
-// the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]]
+// the skills the gear gives with no gem (a sceptre's Purity of Fire, a unique's Blink): [[gem name, slot, level the item says]],
+// and the weapon's own attacks (Mace Strike; a cannon's Grenade), level 20 as the game's skill panel shows them (27/11)
 export const grantedSkills = (items = {}) => Object.entries(items).flatMap(([slot, it]) =>
-  [...baseOf(it)?.grants || [], ...(it.fists ? fistMods(it) : it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]));
+  [...[...baseOf(it)?.grants || [], ...(it.fists ? fistMods(it) : it.mods || []).map(m => D.mod_grants?.[m.id]).filter(Boolean)].map((n, i) => [n, slot, it.grantLevels?.[i]]),
+    ...slot === 'weapon' ? (baseOf(it)?.attacks || []).map(n => [n, slot, 20]) : []]);
 // what the off hand can hold next to a weapon: nothing with a two-handed one, but a quiver with a bow (and only with a
 // bow). giant: the build has Giant's Blood, which holds two-handed axes, maces and swords in one hand; staffFocus:
 // Instruments of Power, a Focus next to a Staff
