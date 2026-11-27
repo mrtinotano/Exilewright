@@ -1845,7 +1845,7 @@ export function initScene(el, api) {
     const CF = S && !S.src && partOf(S, 'CrushingFearNovaPlayer');
     if (CF) {
       const cs = CF.dmg.stats, pw = pow(d), A = radOf(CF) * Math.sqrt(1 + cs['crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy'] * pw / 100);
-      later(.1, () => { pop(p, A, 'chaos'); boom(p, A, { ...CF, gm: (CF.gm ?? 1) * (1 + cs['crushing_fear_damage_+%_final_per_power_of_culled_enemy'] * pw / 100) }); });
+      cfDrain(p); later(.1, () => { cfNova(p, A); area(p, A, { ...CF, gm: (CF.gm ?? 1) * (1 + cs['crushing_fear_damage_+%_final_per_power_of_culled_enemy'] * pw / 100) }); });
     }
     if (st.shock > 0) gainBuff(S, 'shockKill');
     // Earthbound: Spark triggered from where a Shocked enemy you kill was, away from you. note: the triggered Spark's own
@@ -2040,6 +2040,51 @@ export function initScene(el, api) {
     fx.explode(c, R, S.el, o);
     if (R > 1.4 && !o.soft) shake = Math.max(shake, Math.min(.5, R * .09));
     return area(c, R, S, o);
+  }
+  // Crushing Fear's look (Horror's Flight: uniques/ChokingMists). Its dash (grdDash_start, EPK_Body): pale wind swirling
+  // over the ground for 0.3-0.4 s (0.45 / 0.45 / 0.45), a sonic boom for 0.12-0.3 s (0.71 / 0.6 / 0.9), glass shards
+  // falling off you to lie for 2.5-4.5 s, blue motes for 0.5-1.85 s (0.1 / 0.11 / 1) and feathers for 2-3 s (their
+  // texture's mean 84 / 54 / 54); its hit (Charged_Impact: conversionImpact) violet sparks and embers for 0.5-2 s (0.46
+  // / 0.22 / 1), feathers and a 0.1 s shake. A kill (EmotionDrain) draws violet ribbons out of the enemy for 0.3-0.7 s
+  // (0.76 / 0.56 / 1); its shockwave (Shattering_Blastwave: shatterblast) a dark sphere for 0.35 s, a flash for 0.2 s
+  // (0.56 / 0.32 / 1), streaks for 0.25 s (0.26 / 0.2 / 1), a violet ring for 0.75 s (0.42 / 0.24 / 1.14 to 0.93 / 0.9 / 1)
+  // and flames for 0.3-0.4 s (0.23 / 0.11 / 1) from 0.03 s, its push wave at 0.08 s (0.48 / 0.32 / 1), a lilac light ring
+  // and sphere at 0.1 s for 0.5-0.65 s (0.74 / 0.6 / 1), glass shards flung for 1-2 s (0.76 / 0.56 / 0.76) and more on the
+  // ground for 3-4 s, blue embers for 1-2 s and the glassy cracks it leaves for 4.5 s (VFX_FrozenLake02: 77 / 95 / 109).
+  // note: the counts, speeds and sizes are the scene's; its blurs and distortions are left out
+  const CFEAR = { wind: 0x737373, boom: 0xb599e6, mote: 0x1a1cff, glass: 0xc28fc2, feather: 0x543636, spark: 0x7538ff, ribbon: 0xc28fff, flash: 0x8f52ff, streak: 0x4233ff, ring: 0x5e36ff, ringHot: 0xede6ff, flame: 0x3b1cff, push: 0x7a52ff, light: 0xbd99ff, crack: 0x4d5f6d, dark: 0x0a0614 };
+  const feathers = (p, n, r) => fx.emit(n, { p, r, h: .6, v: .5, life: 2.5, size: .09, c: CFEAR.feather, smoke: true, a: .9, g: .6, drag: 2 });
+  function cfDash(a, b) {
+    const n = Math.ceil(dist(a, b) * 3);
+    fx.emit(24, { p: { x: a.x, y: .1, z: a.z }, r: .4, v: 1.8, up: .2, life: .35, size: .4, grow: 1.8, c: CFEAR.wind, smoke: true, a: .25, drag: 2, flat: true });
+    fx.ring({ x: a.x, z: a.z }, .1, .9, CFEAR.boom, .2, { a: .5, y: 1 }); fx.strip(a, b, .25, CFEAR.boom, .25, { a: .35, k: 1.6, y: 1 });
+    for (let i = 0; i <= n; i++) {
+      const q = { x: a.x + (b.x - a.x) * i / n, y: .7, z: a.z + (b.z - a.z) * i / n };
+      fx.emit(2, { p: q, r: .3, h: .8, v: .6, life: 1.2, size: .05, c: CFEAR.mote, k: 2.4, drag: 1.5 });
+      fx.emit(1, { p: q, r: .25, h: .6, v: .5, life: 3.5, size: .07, c: CFEAR.glass, c2: 'white', k: 1.2, g: 9 });
+      feathers(q, 1, .25);
+    }
+  }
+  function cfHit(p) {
+    const q = { x: p.x, y: 1, z: p.z };
+    fx.glow(q, .6, CFEAR.spark, .12, 2.2); fx.emit(14, { p: q, r: .15, v: 3, up: .8, life: 1.2, size: .05, c: CFEAR.spark, c2: 'white', k: 2.4, g: 2, drag: 1.8 });
+    feathers(q, 5, .2); shake = Math.max(shake, .12);
+  }
+  const cfDrain = p => { for (let i = 0; i < 3; i++) { const a = rnd(TAU); fx.streak(V(p.x + Math.cos(a) * .35, .4, p.z + Math.sin(a) * .35), V(p.x, 1.7, p.z), CFEAR.ribbon, rnd(.3, .7), .05, .9); } };
+  function cfNova(p, R) {
+    const g = { x: p.x, z: p.z }, c = { x: p.x, y: .8, z: p.z };
+    fx.emit(6, { p: c, r: .2, v: .4, life: .35, size: R * .5, grow: 1.5, c: CFEAR.dark, smoke: true, a: .7 });
+    fx.glow(c, R * .45, CFEAR.flash, .2, 2); fx.flash(p, CFEAR.flash, 30 + R * 10, .3, 8 + R * 3); shake = Math.max(shake, Math.min(.5, R * .09));
+    for (let i = 0; i < 8; i++) { const a = rnd(TAU); fx.streak(V(c.x, c.y, c.z), V(c.x + Math.cos(a) * R * .8, c.y + rnd(-.3, .3), c.z + Math.sin(a) * R * .8), CFEAR.streak, .25, .04, 1.2); }
+    fx.emit(30, { p: c, r: .3, v: R * 2.5, up: 3, life: 1.5, size: .07, c: CFEAR.glass, c2: 'white', k: 1.3, g: 9, drag: .6 });
+    fx.emit(30, { p: c, r: .3, v: R * 1.5, up: 1.5, life: 1.5, size: .05, c: CFEAR.mote, c2: CFEAR.light, k: 2.4, drag: 1.5 });
+    later(.03, () => { fx.ring(g, R * .2, R, CFEAR.ring, .75, { a: .9 }); fx.ring(g, R * .1, R * .9, CFEAR.ringHot, .4, { a: .3 }); fx.emit(40, { p: { x: p.x, y: .1, z: p.z }, r: R * .6, v: 1, up: 2.5, life: .35, size: .3, c: CFEAR.flame, c2: CFEAR.ring, k: 2.4, drag: 2 }); });
+    later(.08, () => fx.ring(g, R * .3, R * 1.1, CFEAR.push, .2, { a: .6 }));
+    later(.1, () => {
+      fx.ring(g, .2, R * .8, CFEAR.light, .5, { a: .6, y: .8 }); fx.ball(c, R * .4, CFEAR.light, .65, .6);
+      fx.emit(20, { p: { x: p.x, y: .1, z: p.z }, r: R * .7, v: .3, life: 3.5, size: .06, c: CFEAR.glass, c2: 'white', k: 1, g: 9, flat: true });
+      fx.disc(g, R * .9, CFEAR.crack, 4.5, { tex: 'cracks', a: .6, hold: .7, k: 1 });
+    });
   }
   // small impact without the full explosion
   function pop(p, r, c) {
@@ -3999,10 +4044,11 @@ export function initScene(el, api) {
         if (d.dead) return;
         if (P.dash || dist(d.pos, pp) > meleeR(S) + SIM.body) {   // strikes that carry you to the target
           const a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) + (k ? rnd(-2, 2) : 0), q = { x: d.pos.x + Math.sin(a) * 1.1, z: d.pos.z + Math.cos(a) * 1.1 };
-          fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1); pp.x = q.x; pp.z = q.z;
+          if (S.name === 'Crushing Fear') cfDash({ x: pp.x, z: pp.z }, q); else fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1);
+          pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Boneshatter') bsSurge(d); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Boneshatter') bsSurge(d); if (S.name === 'Crushing Fear') cfHit(d.pos); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
@@ -4034,7 +4080,7 @@ export function initScene(el, api) {
         });
       }
       // Killing Palm: its target culled, it dashes on to strike the other cullable enemies within its dash range
-      if (S.P.culls && first.dead) dummies.filter(e => cullable(e, S) && dist(e.pos, pp) <= (S.dmg?.stats?.base_melee_dash_range || 0) / 10).forEach((e, k) => later((k + 1) * .13, () => go(e, k + 1)));
+      if (S.name === 'Killing Palm' && first.dead) dummies.filter(e => cullable(e, S) && dist(e.pos, pp) <= (S.dmg?.stats?.base_melee_dash_range || 0) / 10).forEach((e, k) => later((k + 1) * .13, () => go(e, k + 1)));
       // Ancestrally Boosted: it targets its additional enemies in reach too; Kaom's Strikes trigger Volcanic Eruption, its
       // projectiles landing between their least and most distance around the target
       for (const e of dummies.filter(e => !e.dead && e !== first && dist(e.pos, pp) <= reach + SIM.body).slice(0, S.addTargets || 0)) { const l = dist(e.pos, pp) || 1; slash(S, (e.pos.x - pp.x) / l, (e.pos.z - pp.z) / l); hit(e, S); }

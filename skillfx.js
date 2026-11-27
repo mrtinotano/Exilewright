@@ -150,8 +150,8 @@ export function profile(gem, d = {}) {
   const leaves = desc.match(/leav(?:es|ing) behind an? (?:\[(Cold|Fire|Lightning)\] \[ElementalInfusion|\[ElementalInfusion\|(Cold|Fire|Lightning) Infusion\])/)?.slice(1).find(Boolean)?.toLowerCase() || null;
   const infuses = /Consume\]? all three types of \[ElementalInfusion/.test(desc) ? ['fire', 'cold', 'lightning'] : [...desc.matchAll(/Consumes?\]? an? \[(?:(Cold|Fire|Lightning)\] \[ElementalInfusion|(Verisium)Infusion)/g)].map(m => (m[1] || m[2]).toLowerCase());
   const spend = ['Frenzy', 'Power', 'Endurance'].filter(c => has(`SkillConsumes${c}ChargesOnUse`)).map(c => c.toLowerCase());
-  const a = gem?.attr || {};
-  const gain = has('GeneratesCharges') ? ((a.int || 0) >= (a.dex || 0) && (a.int || 0) >= (a.str || 0) ? 'power' : (a.dex || 0) >= (a.str || 0) ? 'frenzy' : 'endurance') : null;
+  // the charges it grants: as its description names them (Crushing Fear, a Killing Palm of Horror's Flight, keeps the type but grants none)
+  const gain = has('GeneratesCharges') ? desc.match(/\[Charges\|(Power|Frenzy|Endurance) Charges?\]/)?.[1].toLowerCase() || null : null;
 
   // Which ailments the hits of this skill inflict. Bleeding, poison and Armour Break need a stat of the skill that gives them
   // (the game's glossary: damage alone never bleeds or poisons); the tree and gear can add them too (calc.js ailments()).
