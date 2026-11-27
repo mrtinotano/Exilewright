@@ -19,7 +19,8 @@ The MIT license in `LICENSE` covers the code of Exilewright only. Not covered:
   authors, under the MIT license in three/LICENSE.
 
 - moves.json holds fourteen animations of the KayKit Adventurers Character
-  Pack and four of the KayKit Character Animations pack (the bow's), both by
+  Pack and five of the KayKit Character Animations pack (the bow's and a
+  two-handed slice), both by
   Kay Lousberg (https://www.kaylousberg.com), CC0 1.0 (public domain), turned
   into turns of the mannequin's joints.
 

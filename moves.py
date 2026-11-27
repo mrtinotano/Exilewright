@@ -10,6 +10,7 @@
 #     Unarmed_Melee_Attack_Punch_A Unarmed_Melee_Attack_Punch_B Spellcast_Shoot Spellcast_Raise Spellcast_Long Cheer
 #   Rig_Medium_CombatRanged.glb (KayKit Character Animations 1.1): Ranged_Bow_Release@0-20+Ranged_Bow_Draw@9-30
 #     Ranged_Bow_Release_Up@0-29+Ranged_Bow_Draw_Up@8-30
+#   Rig_Medium_CombatMelee.glb (KayKit Character Animations 1.1): Melee_Dualwield_Attack_Slice
 import sys, os, json, struct, math
 src, dst, want = sys.argv[1], sys.argv[2], sys.argv[3:]
 d = open(src, 'rb').read()

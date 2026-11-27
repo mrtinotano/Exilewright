@@ -174,6 +174,8 @@ const CLIPS = {
   ]),
 };
 // poses held for as long as something lasts
+CLIPS.gouge = CLIPS.slam;   // both hands raking down at once (Cross Slash's claws), low as a slam
+
 const HOLD = Object.fromEntries(Object.entries({
   channel: { ...BRACE, spine: [4, 6, 0], chest: [8, 14, 0], head: [0, -10, 0], shR: [76, 6, 0], elR: 24, haR: [24, 0, 0], shL: [66, -6, 0], elL: 44 },
   press: { ...LUNGE, spine: [6, 10, 0], chest: [10, 22, 0], head: [0, -16, 0], shR: [74, 10, 0], elR: 30, haR: [50, 0, 0], shL: [20, 20, 0], elL: 60 },
@@ -183,7 +185,7 @@ const HOLD = Object.fromEntries(Object.entries({
   air: { pos: [0, 0, 0], body: [10, 0, 0], spine: [-6, 0, 0], chest: [-8, 0, 0], shR: [156, 6, 0], elR: 60, haR: [-20, 0, 0], shL: [150, 6, 0], elL: 60, hipL: [58, 6, 0], knL: 92, hipR: [8, 6, 0], knR: 70 },
   dash: { ...LUNGE, pos: [0, -.16, .2], body: [22, 0, 0], spine: [8, 0, 0], chest: [6, 16, 0], head: [-24, -12, 0], shR: [-30, 20, 0], elR: 50, haR: [40, 0, 0], shL: [60, 0, 60], elL: 80 },
 }).map(([k, p]) => [k, pose({ ...STAND, ...p })]));
-const FREE_HAND = new Set(['castPoint', 'castNova', 'castLow', 'shout', 'punch', 'throw']);   // the second hand leaves the weapon
+const FREE_HAND = new Set(['castPoint', 'castNova', 'castLow', 'shout', 'punch', 'throw', 'gouge']);   // the second hand leaves the weapon
 const TRAIL = new Set(['swing', 'cleave', 'slam', 'thrust']), TRAIL_N = 12;   // the blows whose weapon leaves a trail, and how many steps of it are kept
 // The pack's move each clip plays over its poses, and the second of it where a use starts: right before its blow.
 // Several: one use each, in turn. A weapon held in both hands has its own under the clip's name + 2. A held pose stays
@@ -197,7 +199,7 @@ const MOVES = {
   slam: [['1H_Melee_Attack_Chop', .55]], slam2: [['2H_Melee_Attack_Chop', .72]], thrust: [['1H_Melee_Attack_Stab', .36]],
   punch: [['Unarmed_Melee_Attack_Punch_A', .4], ['Unarmed_Melee_Attack_Punch_B', .43]], fire: [['2H_Ranged_Shooting', .28]], throw: [['Throw', .68]],
   castFwd: [['Spellcast_Shoot', .12]], castPoint: [['Spellcast_Raise', .3]], castSelf: [['Spellcast_Raise', .3]], castLow: [['Spellcast_Raise', .3]],
-  castNova: [['Spellcast_Long', .15]], shout: [['Cheer', .1]],
+  castNova: [['Spellcast_Long', .15]], shout: [['Cheer', .1]], gouge: [['Melee_Dualwield_Attack_Slice', .33]],
 };
 let moves = null;
 fetch('moves.json').then(r => r.json()).then(j => { moves = j; console.assert(Object.values(MOVES).flat().every(([m]) => j.clips[m]), 'moves.json lacks a move'); }).catch(() => {});   // without them: the poses alone
@@ -238,7 +240,7 @@ export function makeHumanoid(fx) {
   const PALM = .085, hip0 = jt.hips.position.clone();   // wrist to the middle of the palm; where the hips stand
   let UPPER = .27, FORE = .27 + PALM;   // shoulder to elbow, elbow to palm: the mannequin's once it is loaded
   const tip = new THREE.Object3D(), butt = new THREE.Object3D(), grip2 = new THREE.Object3D(), nock = new THREE.Object3D();
-  let made = [], orbs = [], fam = 'unarmed', stance = STANCE.unarmed, glow = null, string = null, lookKey = null, rig = null;
+  let gear = null, made = [], orbs = [], fam = 'unarmed', stance = STANCE.unarmed, glow = null, string = null, lookKey = null, rig = null;
 
   const put = (parent, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; parent.add(m); made.push(m); return m; };
   const group = (parent, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g); made.push(g); return g; };
@@ -349,7 +351,7 @@ export function makeHumanoid(fx) {
 
   // the weapon: drawn along +Y from the hand that holds it, then laid across the palm
   function equip(cls, off) {
-    const [f, model] = WEAPON[cls] || ['unarmed', ''], left = model === 'bow', g = group(left ? jt.haL : jt.haR, 0, -PALM, 0);
+    const [f, model] = WEAPON[cls] || ['unarmed', ''], left = model === 'bow', g = gear = group(left ? jt.haL : jt.haR, 0, -PALM, 0);
     fam = f; stance = STANCE[f]; glow = string = null;
     g.rotation.x = model === 'crossbow' ? Math.PI : Math.PI / 2;
     let top = 0, low = 0;
@@ -522,6 +524,7 @@ export function makeHumanoid(fx) {
       }
       if (string) { const p = string.geometry.attributes.position; p.setZ(1, -.2 - draw * .46); p.needsUpdate = true; }
       sweep(dt, blow);
+      if (gear) gear.visible = act?.name !== 'gouge';   // shapeshifted, claws and no weapon (Cross Slash)
       if (rig) { for (const S of 'LR') rig.grip[S] += ((grips[S] && !(S === 'L' && free) ? 1 : .25) - rig.grip[S]) * Math.min(1, dt * 14); skin(fullW, Math.max(fullW, runW)); }
       energy = Math.max(0, energy - dt * 2.5);
       if (glow) glow.userData.glow.scale.setScalar(glow.userData.core.scale.x * (7 + energy * 9 + Math.sin(time * 5) * .5));

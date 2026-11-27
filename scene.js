@@ -5014,6 +5014,7 @@ export function initScene(el, api) {
   // (clawSlash_Glow 1 / 0.72 / 0.43), cracks lit orange for 2.5-4 s (clawSlash_Cracks 1 / 0.64 / 0.3), sparks drifting for
   // 0.75-4 s (clawSlash_Sparks 5 / 3.88 / 2.12) and dust (0.17) for 1-1.5 s; your claws glowing as you strike, here your hands
   // (onACT_PounceClawGlow 1.25 / 0.93 / 0.5, 0.42 s)
+  const CLIP_OF = { 'Cross Slash': 'gouge' };   // a skill's own move of the figure (humanoid.js MOVES), over clipOf's
   const GOUGE = { glow: 0xffb86e, crack: 0xffa34d, spark: 0xffc66c, dust: 0x2b2b2b, claw: 0xffbe66, dark: 0x1c120c };
   K.cross = S => {
     const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, w = radOf(S), a0 = Math.atan2(S.dx, S.dz), half = st.wolf_cross_slash_angle / 2 * Math.PI / 180, off = st.wolf_cross_slash_offset / 10;
@@ -5037,7 +5038,7 @@ export function initScene(el, api) {
         lob(fx.orb('cold', .1), new THREE.Vector3(F.p.x, .3, F.p.z), new THREE.Vector3(mid.x, .1, mid.z), .2, .5, () => { pop(mid, F.R, 'ice'); F.go(mid); });
       }
     });
-    move = { from: c, to: { x: c.x - S.dx * 4.5, z: c.z - S.dz * 4.5 }, k: 0, dur: T, h: .6, S, seen: new Set() };
+    move = { from: c, to: { x: c.x - S.dx * 4.5, z: c.z - S.dz * 4.5 }, k: 0, dur: T, h: .6, S, seen: new Set(), own: true };   // its own clip in the air (CLIP_OF), not the leap's
   };
   // Unearth: its cone of bone spikes in front of you (its radius, its angle); each corpse in it becomes a Bone Construct
   // for its duration, up to its limit
@@ -5754,7 +5755,7 @@ export function initScene(el, api) {
       if (S.dmg?.sum?.gain_X_tasalios_perfection_on_perfect_timing) S.mult *= 1 + TASALIO.more * (me.tasalio || 0) / 100;
       if (P.spell && S.dmg?.sum?.gain_X_wildshard_stacks_on_cast) me.wildshard = (me.wildshard || 0) + S.dmg.sum.gain_X_wildshard_stacks_on_cast;   // Sione's Temper
       facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); goal = null; walk = false;
-      if (!auto) { const T = S.dmg?.speed > 0 ? 1 / S.dmg.speed : SIM.castTime; me.actEnd = time + T; player.act(clipOf(P, S.kind, player.family()), T); player.setColor(S.el); }   // what you use yourself is what the figure plays
+      if (!auto) { const T = S.dmg?.speed > 0 ? 1 / S.dmg.speed : SIM.castTime; me.actEnd = time + T; player.act(CLIP_OF[S.name] || clipOf(P, S.kind, player.family()), T); player.setColor(S.el); }   // what you use yourself is what the figure plays
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
       // Triskelion Cascade, Barrage: their share of the empowered skill's use time added to their last use's cooldown (up to its most)
@@ -7849,7 +7850,7 @@ export function initScene(el, api) {
       fx.emit(6, { p, r: .1, v: 1.5, up: 1.2, life: .3, size: .06, c: BP.spark, c2: BP.ember, k: 2.5, g: 6, drag: 1.5 }); fx.emit(2, { p, r: .1, v: .4, up: .2, life: .6, size: .3, grow: 1.5, c: BP.smoke, smoke: true, a: .35 }); }
     cstaffBlades(dt);
     player.update(dt, { moving: moving && !move, speed: spd(), hold: !!held, charge: charge ? Math.min(1, charge.s / (base(charge.i)?.P.perfect ? 1 : 1.6)) : null,
-      roll: move?.roll && !move.powder && !move.blink ? move.k : null, leap: move && (move.powder || !move.roll && move.h) ? move.k : null, dash: move && !move.roll && !move.h ? move.k : null });
+      roll: move?.roll && !move.powder && !move.blink ? move.k : null, leap: move && !move.own && (move.powder || !move.roll && move.h) ? move.k : null, dash: move && !move.own && !move.roll && !move.h ? move.k : null });
     reticle(); arena.update(dt, pp); fx.update(dt);
     if (toastT > 0 && (toastT -= dt) <= 0) toastEl.classList.remove('on');
     if ((hudT -= dt) <= 0) { hudT = .12; drawHud(); api.onLive?.(live()); player.setLook(api.look?.()); }   // the build's weapon in the figure's hands
