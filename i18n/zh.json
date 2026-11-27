@@ -1030,5 +1030,7 @@
  "Predator's Mark": "掠食者印記",
  "Summon Wolf": "召喚惡狼",
  "Used with weapon set:": "搭配武器套裝：",
- "Enabled": "啟用"
+ "Enabled": "啟用",
+ "Main Hand Accuracy Rating": "主手命中值",
+ "Estimated main hand Chance to Hit at {0}m": "在{0}公尺距離時的主手命中機率估算值"
 }

@@ -1030,5 +1030,7 @@
  "Predator's Mark": "포식자의 징표",
  "Summon Wolf": "늑대 소환",
  "Used with weapon set:": "함께 사용하는 무기 세트:",
- "Enabled": "사용함"
+ "Enabled": "사용함",
+ "Main Hand Accuracy Rating": "주 무기 정확도",
+ "Estimated main hand Chance to Hit at {0}m": "{0}미터에서 예상 주 무기 명중 확률"
 }

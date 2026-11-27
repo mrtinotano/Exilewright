@@ -1030,5 +1030,7 @@
  "Predator's Mark": "Marque du prédateur",
  "Summon Wolf": "Invocation de Loup",
  "Used with weapon set:": "Utilisé avec l'Ensemble d'armes :",
- "Enabled": "Activé"
+ "Enabled": "Activé",
+ "Main Hand Accuracy Rating": "Score de Précision de la main principale",
+ "Estimated main hand Chance to Hit at {0}m": "Estimation des chances de Toucher à {0}m (Main principale)"
 }

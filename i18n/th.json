@@ -1030,5 +1030,7 @@
  "Predator's Mark": "คำแช่งนักล่า",
  "Summon Wolf": "อัญเชิญหมาป่า",
  "Used with weapon set:": "ใช้ร่วมกับชุดอาวุธ:",
- "Enabled": "เปิด"
+ "Enabled": "เปิด",
+ "Main Hand Accuracy Rating": "อัตราความแม่นยำ ของมือหลัก",
+ "Estimated main hand Chance to Hit at {0}m": "โอกาสปะทะ ของมือหลัก โดยประมาณ ในระยะ {0} ม."
 }

@@ -1030,5 +1030,7 @@
  "Predator's Mark": "Mal des Raubtiers",
  "Summon Wolf": "Wolf beschwören",
  "Used with weapon set:": "Benutzt mit Waffenset:",
- "Enabled": "Aktiviert"
+ "Enabled": "Aktiviert",
+ "Main Hand Accuracy Rating": "Haupthand: Treffgenauigkeit",
+ "Estimated main hand Chance to Hit at {0}m": "Geschätzte Trefferchance der Haupthand bei {0}m"
 }

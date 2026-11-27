@@ -21,7 +21,7 @@ import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
 import { statLines } from './stats.js';
 import { SK } from './skilldata.js';
-import { onSet } from './calc.js';
+import { onSet, accLoss } from './calc.js';
 
 const TAU = Math.PI * 2, rnd = (a = 1, b) => b === undefined ? Math.random() * a : a + Math.random() * (b - a);
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z), dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
@@ -472,7 +472,7 @@ export function initScene(el, api) {
   // armour and resistances, times what the skill's stats give: a consumed state, more damage against a state, charges spent.
   // A multiplier of the scene (stages, channelling, a consumed state the data gives no number for) marks it "~", like the hits
   // whose damage the data does not give (minions, totems, an attack without a weapon...): those take 1/8 of the pool.
-  const falloff = d => clamp((dist(pp, d.pos) - 2) / 7, 0, 1);   // accuracy's loss with distance, none within 2 m, all of it at 9 m (KeywordPopups Accuracy)
+  const falloff = d => accLoss(dist(pp, d.pos));   // accuracy's loss with distance (calc.js accLoss)
   function hit(d, S, o = {}) {
     if (d.dead) return false;
     const FF = S.dmg?.stats?.[FROSTFLAME];   // Frostflame Nova: its wave touches only the Ignited, and deals them no damage (afflict)
@@ -486,8 +486,7 @@ export function initScene(el, api) {
     const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
     let overHit = 0;   // Amazon: a share of the chance to hit over 100% as critical hit chance
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
-      // player attacks lose accuracy with distance: none within 2 m, linearly up to the most at 9 m (KeywordPopups
-      // Accuracy; linear as Path of Building 2), from you to the target; not your minions' and totems' own attacks
+      // player attacks lose accuracy with distance (falloff), from you to the target; not your minions' and totems' own attacks
       // the tree's increased accuracy in a state and its accuracy against Bleeding enemies: your own attacks'
       const c = sheet(), mine = !/minion|totem/.test(S.src), far = mine ? falloff(d) : 0, accIn = mine ? (c.accWhen || []).reduce((t, w) => t + (condN(w.cond, d, S) ? w.val : 0), 0) : 0;
       const acc = (c.accuracy + (mine && c.accBleed && has(d, 'bleed') ? c.accBleed : 0)) * (S.accX || 1) * (1 + (banner('banner_accuracy_+%') + (shifted()?.acc || 0) + (c.accCrit || 0) * (D?.crit || 0) / 100 + accIn) / 100 / (c.accuracyInc || 1)) * (1 - far * (c.accuracyFalloff || 0) / 100);

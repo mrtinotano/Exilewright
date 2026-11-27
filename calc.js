@@ -5,7 +5,7 @@ import { t, tn, fmt, cap, lang } from './i18n.js';
 import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef, wornItems, newItem, swapSet } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
-import { enemy, spectreOf, spectreSpirit, attackOf, attacksOf, monSkill, ENEMIES, deflection, K as MON_K } from './enemies.js';
+import { enemy, spectreOf, spectreSpirit, attackOf, attacksOf, monSkill, ENEMIES, deflection, playerHitChance, K as MON_K } from './enemies.js';
 
 // Campaign rewards a character keeps for good. Which the campaign gives and which are a choice comes from Path of
 // Building 2 (skilldata.js); the stats of each are the game's own table's, met through the wording of each line.
@@ -280,13 +280,19 @@ export function attributes(sum, ascName) {
 
 // What one attribute point gives, read from the game's own attribute text (ClientStrings <Attr>Description):
 // "1 [Strength|Strength] = +2 Life", "1 [Dexterity|Dexterity] = +8 [Accuracy|Accuracy]" -> {life: 2}, {accuracy: 8}
+// note: the game gives 6 accuracy a point of Dexterity, not its text's 8 (the game's skill windows, 27/11: 995 accuracy
+// unarmed = 6 x 90 levels + 65 + 6 x 65 Dexterity, 1151 with a crossbow of +26 Dexterity; Path of Building 2's AccuracyPerDexBase)
 function perAttr(attr) {
   const t = SK.attribute_text?.[attr] || '', out = {};
   for (const [k, re] of [['life', /\+(\d+) \[?Life/], ['mana', /\+(\d+) \[?Mana/], ['accuracy', /\+(\d+) \[?Accuracy/]]) {
-    const m = t.match(re); if (m) out[k] = +m[1];
+    const m = t.match(re); if (m) out[k] = k === 'accuracy' ? 6 : +m[1];
   }
   return out;
 }
+// the share of their most accuracy loss (accuracyFalloff) player attacks lose at m metres: none within 2 m, then 9% of
+// accuracy a metre with the game's -90% (the game's skill windows, 27/11: 1151 accuracy 100/94/75% at 2/5/9 m, 995
+// 97/90/71%, both 63% less at 9 m), so all of it at 12 m. note: its Accuracy text says all of it past 9 m
+export const accLoss = m => Math.min(1, Math.max(0, (m - 2) / 10));
 
 // "<type> damage (from hits / hit and dot) taken as <type>": { hit: { physical: { fire: 10 } }, dot: {...} }
 function takenAs(sum) {
@@ -428,9 +434,9 @@ export function character(b, sum) {
     // the tree's increased accuracy in a state, its accuracy against Bleeding enemies (the scene checks them on each attack)
     accWhen: ACC_WHEN.filter(([k]) => sum[k]).map(([k, cv, en]) => ({ cond: en ? { type: 'ActorCondition', actor: 'enemy', var: cv } : { type: 'Condition', var: cv }, val: sum[k] })), accBleed: v(sum, 'accuracy_rating_vs_bleeding_enemies') * accInc * (sum.accuracy_rating_is_doubled ? 2 : 1),
     accCrit: v(sum, 'accuracy_rating_+%_equal_to_%_attack_critical_strike_chance'),   /* Pinpoint Shot: increased accuracy, its share of the attack's critical hit chance */ lances: v(sum, 'spear_skills_inflict_bloodstone_lance_on_hit'),
-    // the most accuracy your attacks lose with distance (KeywordPopups Accuracy: up to 90% less), unless something says they do not
+    // the most accuracy your attacks lose with distance (character.ot: -90%; accLoss), unless something says they do not
     accuracyFalloff: v(sum, 'accuracy_is_unaffected_by_distance', 'deadeye_accuracy_unaffected_by_range', 'main_hand_accuracy_is_unaffected_by_distance',
-      'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : 90 * pct('accuracy_range_penalty_+%', 'distance_scaled_accuracy_rating_penalty_+%'),
+      'base_main_hand_accuracy_is_unaffected_by_distance', 'local_weapon_accuracy_is_unaffected_by_distance') ? 0 : -(CHAR['accuracy_rating_+%_final_at_max_distance_scaled'] || 0) * pct('accuracy_range_penalty_+%', 'distance_scaled_accuracy_rating_penalty_+%'),
     missingBase: lifeBase == null,
     // thorns (keywords.json: a Hit of yours, not an attack nor a spell, dealt back to an enemy whose melee attack hits you):
     // its base with its increases (thornsX, for thorns a buff adds), its crit, the build's ailments on hits
@@ -1887,13 +1893,20 @@ export function skill(g, b, treeGear) {
     if (out.avg != null) out.avg = Object.values(H).reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   }
   if (flags.has('global_cannot_crit')) out.crit = 0;
+  // main hand accuracy and the estimated chance to hit at 2, 5 and 9 m (the game's window): against an enemy of level
+  // min(character, 82)'s evasion, as the character panel's estimates, with accuracy's loss at that distance (accLoss)
+  if (attack && w && !out.ail?.alwaysHit && !sum.global_always_hit) {
+    const ch = character(b, sum), acc = out.accuracy = ch.accuracy, ev = estMonster(b.level || 1, 'Evasion');
+    out.hitAt = [2, 5, 9].map(m => playerHitChance(Math.floor(acc * (1 - accLoss(m) * ch.accuracyFalloff / 100)), ev));
+  }
   if (out.avg != null) {
     const c = (out.crit || 0) / 100, cb = (out.critBonus || 0) / 100, IC = c > 0 && c < 1 && sum['oracle_hits_eventually_crit_with_critical_strike_multiplier_+%_final_per_failed_roll'];
     // Oracle's Inevitable Critical Hits: the hits that fail re-roll until they crit, its less bonus per re-roll (as the scene: up to 99 re-rolls)
     let k = 1 + c * cb;
     if (IC) { k = c * (1 + cb); let q = 1 - c; for (let n = 1; n < 99; n++, q *= 1 - c) k += q * c * (1 + cb * Math.max(0, 1 + IC * n / 100)); k += q * (1 + cb * Math.max(0, 1 + IC * .99)); }
-    // a skill the gem sets off itself (Volcanic Steps): its average per hit, as the game's window, with no rate of its own
-    out.perHit = out.avg * k; out.triggered = !!PT && gt.includes('Triggered');
+    // a skill the gem sets off itself (Volcanic Steps): its average per hit, as the game's window, with no rate of its own.
+    // An attack's counts its chance to hit at 2 m (the game's window, 17/11: unarmed, 97%, 570.74 = 553 x 1.064 x .97)
+    out.perHit = out.avg * k * (out.hitAt ? out.hitAt[0] / 100 : 1); out.triggered = !!PT && gt.includes('Triggered');
     if (!out.triggered && out.speed) out.dps = out.perHit * out.speed;
   } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
   // a gem whose own skill deals no damage (a warcry, a buff) with a skill that does laid over its numbers (Ancestral Cry's

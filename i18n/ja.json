@@ -1030,5 +1030,7 @@
  "Predator's Mark": "プレデターの呪印",
  "Summon Wolf": "ウルフ召喚",
  "Used with weapon set:": "使用中の武器セット：",
- "Enabled": "有効"
+ "Enabled": "有効",
+ "Main Hand Accuracy Rating": "メインハンド命中力",
+ "Estimated main hand Chance to Hit at {0}m": "{0}mでの推定メインハンドヒット率"
 }

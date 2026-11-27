@@ -1030,5 +1030,7 @@
  "Predator's Mark": "Метка хищника",
  "Summon Wolf": "Призыв волка",
  "Used with weapon set:": "Используется с набором оружия:",
- "Enabled": "Включено"
+ "Enabled": "Включено",
+ "Main Hand Accuracy Rating": "Меткость оружия в правой руке",
+ "Estimated main hand Chance to Hit at {0}m": "Ожидаемый шанс нанесения удара оружием в правой руке на расстоянии {0} м"
 }
