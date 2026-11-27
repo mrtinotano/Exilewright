@@ -380,7 +380,7 @@ export function initOpt(el, ctx) {
     else if (d.c) { S[d.c] = x.checked; U = null; }
     else if (d.jx) { S.jx = { ...S.jx, [d.jx]: !x.checked }; S.jxOpen = true; T = null; other = true; }
     else if ('gem' in d) { S.gem[ctx.id()] = +x.value; delete typed.sockets; T = U = null; other = true; }
-    else if ('sub' in d) { const g = pickOf(ctx.build()); S.sub = { ...S.sub, [subKey(g)]: x.value }; if (!x.value) delete S.sub[subKey(g)]; T = U = null; other = true; }
+    else if ('sub' in d) { const g = pickOf(ctx.build()); S.sub = { ...S.sub, [subKey(g)]: x.value }; T = U = null; other = true; }
     else if ('cls' in d) S.cls[gearSel(ctx.build()).slot] = x.value;
     else if (d.like != null) { const l = likeOf(gearSel(ctx.build()).slot)[+d.like]; if (l) l.value = +x.value || 0; }
     else return;
