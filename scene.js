@@ -4193,7 +4193,7 @@ export function initScene(el, api) {
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
           hexOld(d, S.name, S.dmg?.sum?.curse_ignores_curse_limit);
           if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
-          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); if (L) { const q = { x: d.pos.x, y: 2.05 * d.sc + .9, z: d.pos.z }; fx.ball(q, .2, L.orb, 2, .5); fx.glow(q, .9, L.orb, .35, 2.4); } else fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); if (L) { const q = { x: d.pos.x, y: 2.05 * d.sc + .9, z: d.pos.z }; fx.ball(q, .2, L.orb, 2, .5); fx.glow(q, .9, L.glow ?? L.orb, .35, 2.4); } else fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
@@ -7007,16 +7007,22 @@ export function initScene(el, api) {
   // (curse_runes despair_area, hex_despair_ring 4 / 1 / 15), a ring widening from half its area to all of it over 1.5 s,
   // the ground darkened for 2 s (black_shockwave) and sparkles rising for 1 s (hex_despair_sparkles 1.8 / 1.25 / 8);
   // each enemy it curses its symbol over its head while cursed (curse_runes despair, in its orb's colour), shown
-  // with a violet orb for 2 s (hex_despair_orb 3.5 / 1 / 8). note: its dark wave is left out; the counts, speeds and sizes are the scene's
-  const CURSE_LOOK = { Despair: { rune: 'despair', ring: 0x4412ff, spark: 0x3928ff, orb: 0x7020ff, wave: 0xcc99ff } };
-  const curseTex = (L, k) => artTex(`curse_${L.rune}${k}`, `particles/curses_02/area/curse_runes/${L.rune}${k}_dxt1`);
+  // with a violet orb for 2 s (hex_despair_orb 3.5 / 1 / 8). note: its dark wave is left out; the counts, speeds and sizes are the scene's.
+  // Elemental Weakness's (elemental_weakness_aoe.ao, eleweakness_surge_wave.ao, orbs/elemental_weakness.ao; its tutorial
+  // video): its runes (eleweakness_area, elementalweakness) three colours by the game's colour mask (color_msk, its
+  // material's 1.25 / 0.25 / 0.025, 0.1 / 0.25 / 1, 0.35 / 0.45 / 1), baked into their pictures; its surge 1 / 0.58 / 0.4,
+  // its orb fire (1 / 0.12 / 0.005) in a cold glow (0.35 / 0.4 / 0.8); no sparkles. note: its widening ring in the mask's
+  // blue (0.1 / 0.25 / 1), the colour of most of its runes' ring
+  const CURSE_LOOK = { Despair: { rune: 'despair', ring: 0x4412ff, spark: 0x3928ff, orb: 0x7020ff, wave: 0xcc99ff },
+    'Elemental Weakness': { rune: 'elementalweakness', area: 'eleweakness_area', tint: 0xffffff, ring: 0x1a40ff, orb: 0xff1f01, glow: 0x5966cc, sym: 0xffffff, wave: 0xff9466 } };
+  const curseTex = r => artTex('curse_' + r, `particles/curses_02/area/curse_runes/${r}_dxt1`);
   function hexArea(L, c, R, wait) {
     const H = hand(), l = dist(c, pp) || 1, dx = (c.x - pp.x) / l, dz = (c.z - pp.z) / l, to = { x: H.x + dx * 1.4, z: H.z + dz * 1.4 };
     fx.strip(H, to, .45, L.wave, .8, { a: .45, k: 1.6, y: H.y });
     for (let i = 0; i < 3; i++) fx.streak(V(H.x, H.y, H.z), V(to.x - dz * (i - 1) * .25, H.y + (i - 1) * .2, to.z + dx * (i - 1) * .25), L.wave, rnd(.6, .8), .02, .5);
-    const D = fx.decal(c, R, curseTex(L, '_area'), L.ring, { a: .9, k: 2.2, rot: 0 }); later(Math.max(wait, .8), () => D.remove());
+    const D = fx.decal(c, R, curseTex(L.area || L.rune + '_area'), L.tint ?? L.ring, { a: .9, k: 2.2, rot: 0 }); later(Math.max(wait, .8), () => D.remove());
     fx.ring(c, R * .5, R, L.ring, 1.5, { a: .8, tex: 'outline' }); fx.disc(c, R, 0x000000, 2, { dark: true, a: .35 });
-    fx.emit(24, { p: { x: c.x, y: .1, z: c.z }, r: R * .9, v: .2, up: 1.5, life: 1, size: .06, c: L.spark, c2: 'white', k: 2.2, drag: 1 });
+    if (L.spark) fx.emit(24, { p: { x: c.x, y: .1, z: c.z }, r: R * .9, v: .2, up: 1.5, life: 1, size: .06, c: L.spark, c2: 'white', k: 2.2, drag: 1 });
   }
   // Blasphemy's look (Metadata/Effects/Spells/supports/blasphemy, art/particles/supports/blasphemy): each curse in it a
   // ring of its own runes on the ground round you, as wide as its area, in its colour (its aura_<curse> mat's albedo),
@@ -7358,7 +7364,7 @@ export function initScene(el, api) {
     d.lunge = Math.max(0, d.lunge - dt * 3.2);
     f.upper.rotation.x = frozen ? 0 : Math.sin(time * 22 + d.ph) * d.wob * .16 + Math.sin(d.lunge * Math.PI) * .42; f.upper.rotation.z = frozen ? 0 : Math.cos(time * 17 + d.ph) * d.wob * .1;
     // over its head: its Mark's rune, else its curse's symbol (one with its own look: no ring under it then)
-    const MR = d.mark && MARK_RUNE[d.mark.name], CK = d.curse && CURSE_LOOK[d.curse.name], CL = !MR && CK, RN = MR ? [artTex('rune_' + MR[0], `particles/curses_02/marks/mark_runes/${MR[0]}`), MR[1]] : CL ? [curseTex(CL, ''), CL.orb] : null;
+    const MR = d.mark && MARK_RUNE[d.mark.name], CK = d.curse && CURSE_LOOK[d.curse.name], CL = !MR && CK, RN = MR ? [artTex('rune_' + MR[0], `particles/curses_02/marks/mark_runes/${MR[0]}`), MR[1]] : CL ? [curseTex(CL.rune), CL.sym ?? CL.orb] : null;
     f.ice.visible = frozen; f.curse.visible = !!d.curse && !CK; f.mark.visible = !!d.mark && !MR; f.rune.visible = !!RN;
     if (RN) { const m = f.rune.material, T = fx.T[RN[0]]; if (m.map !== T) { m.map = T; m.color.set(RN[1]).multiplyScalar(2.5); m.needsUpdate = true; } m.opacity = .8 + Math.sin(time * 4) * .2; }
     if (d.curse) f.curse.rotation.y += dt * .8;
