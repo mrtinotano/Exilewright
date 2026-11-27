@@ -1314,8 +1314,6 @@ export function initScene(el, api) {
     if (o) Object.assign(o, v, { s, S, spreads: 0 }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
     d.by = S; return d.dots.find(o => o.name === S.name);
   }
-  // Pounce: Predator's Mark (its own part) on the highest Rarity enemy it hits, one at a time: that enemy takes increased
-  // damage per its enemies near it (hit). note: its 8 s duration is the scene's mark default, as in its data
   // Pounce: its Mark goes on the highest Rarity enemy its leap hits (one Mark per use: a hit of the same use on a rarer
   // one moves it), the Mark gem socketed in it instead of Predator's Mark; its Wolf Minions leap to it at once
   function pounceMark(d, S) {
@@ -1332,6 +1330,7 @@ export function initScene(el, api) {
     const n = 1 + (P['skill_cross_slash_triggered_summon_+_wolves_if_' + d.stat.rarity] || 0), S = { ...M.S, src: undefined, name: 'Summon Wolf', label: t('Summon Wolf'), dmg: W };
     for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, P.number_of_wolves_allowed + (st.number_of_wolves_allowed ?? st._mods?.number_of_wolves_allowed ?? 0), S); minion(S, around(d.pos, 1), Infinity, { kind: S.name }); }
   }
+  // Predator's Mark (Pounce's own part): increased damage taken per enemy near it (hit), 8 s (the scene's mark default, as in its data)
   function wolfMark(d, S) {
     const P = S.dmg.part, st = S.dmg.stats, k = "skill_wolf_mark_damage_taken_+%_";
     d.mark = { at: time, s: 8, els: [], label: t("Predator's Mark"), name: "Predator's Mark", hits: 0, R: S.A, S: { ...S, src: 'mark' }, wolf: { per: P[k + 'per_nearby_enemy'] + (st[k + 'per_nearby_enemy'] || 0), cap: P[k + 'cap'] + (st[k + 'cap'] || 0) } };

@@ -1825,11 +1825,11 @@ export function skill(g, b, treeGear) {
     // each part's ailments with that part's own stats (its more Stun or Freeze buildup, its Maim, its more chance to Ignite)
     out.cmd.ail = k.sets.map(s => { const a = ailments({ ...mst, ...s.const }, sum, finals, tags, flags); return { ...a, stun: a.stun * (1 + (mn?.stun || 0) / 100), breakPct: a.breakPct + (mn?.breakPct || 0) }; });
   }
-  out.minionLife = mid && !DJ ? minionLife(st, gsum, mid, finals) : null;
+  out.minionLife = mid && !DJ ? minionLife(st, gsum, mid, finals) : null;   // a djinn cannot be damaged
   // Pounce's Summon Wolf (Predator's Mark Activating as the marked enemy dies): its Wolf Minion, Wolf Pack's monster
   // (Path of Building 2's minionList: WolfMinion), at the gem's level with the gem's supports, as hits the scene uses
   const WID = part.number_of_wolves_allowed && SK.minions['Wolf Pack']?.[0], wm = WID && minionOf(st, sum, fin, WID, attributes(sum, b?.asc));
-  if (wm) out.wolf = { minion: wm, hits: wm.hits, speed: wm.speed, crit: wm.crit, critBonus: wm.critBonus, minionLife: minionLife(st, sum, WID, finals), stats: st, sum, finals, ail: { ...out.ail, stun: out.ail.stun * (1 + wm.stun / 100), breakPct: out.ail.breakPct + wm.breakPct } };   // a djinn cannot be damaged
+  if (wm) out.wolf = { minion: wm, hits: wm.hits, speed: wm.speed, crit: wm.crit, critBonus: wm.critBonus, minionLife: minionLife(st, sum, WID, finals), stats: st, sum, finals, ail: { ...out.ail, stun: out.ail.stun * (1 + wm.stun / 100), breakPct: out.ail.breakPct + wm.breakPct } };
   if (mn) out.ail = { ...out.ail, stun: out.ail.stun * (1 + mn.stun / 100), breakPct: out.ail.breakPct + mn.breakPct };   // the tree's Minions' Stun buildup and Armour Break
   out.minionUndead = !!mid && enemy(mid)?.category === 'Undead';   // monsters.json category (Kulemak's Sovereignty)
   if (mn && msum !== sum && sum['companion_chance_to_poison_on_hit_%']) out.ail = { ...out.ail, poison: (out.ail.poison || 0) + sum['companion_chance_to_poison_on_hit_%'] };   // the tree's Companions' chance to Poison
