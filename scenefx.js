@@ -650,6 +650,22 @@ export function makeMinion(fx, c) {
   return { group: g, arm, draw: P.draw, dispose() { g.parent?.remove(g); eyes.traverse(m => m.material?.dispose()); P.dispose(); } };
 }
 
+// Dark Effigy's totem (DarkEffigyTotem.sm, 2 m tall): a spear stuck in rocks, sticks tied across it, a skull with antlers on
+// top, its eyes the skill's violet; the colours are its textures' means (CannibalPictSpear, ForestChest, TwigSkull1)
+export function makeEffigy(fx, c) {
+  const g = new THREE.Group(), stick = std(0x58473c, .9), rock = std(0x463e37, .95), skull = std(0x543f34, .8);
+  const mesh = (geo, m, x, y, z, rx = 0, rz = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.set(rx, 0, rz); g.add(o); return o; };
+  mesh(new THREE.DodecahedronGeometry(.32), rock, -.12, .14, .05); mesh(new THREE.DodecahedronGeometry(.24), rock, .2, .1, -.08);
+  mesh(new THREE.CylinderGeometry(.035, .05, 1.9, 6), stick, 0, .95, 0);
+  mesh(new THREE.CylinderGeometry(.025, .025, 1.1, 5), stick, 0, 1.25, 0, 0, 1.2); mesh(new THREE.CylinderGeometry(.02, .02, .8, 5), stick, 0, .95, .02, 0, -1.1);
+  mesh(new THREE.SphereGeometry(.17, 10, 8), skull, 0, 1.78, .04).scale.set(.9, 1, 1.1);
+  for (const s of [-1, 1]) { mesh(new THREE.ConeGeometry(.025, .45, 5), stick, s * .17, 2.0, 0, 0, -s * .7); mesh(new THREE.ConeGeometry(.015, .2, 4), stick, s * .3, 2.1, 0, 0, -s * .2); }
+  shadow(g);
+  const eyes = [-1, 1].map(s => { const o = fx.orb(c, .03); o.position.set(s * .06, 1.79, .19); g.add(o); return o; });
+  const P = lifePlate(g, 2.45, 1.8);
+  return { group: g, draw: P.draw, dispose() { g.parent?.remove(g); eyes.forEach(o => o.traverse(m => m.material?.dispose())); P.dispose(); } };
+}
+
 export function makeTotem(fx, c, ballista, up) {   // up: an upward ballista (Artillery Ballista), its bow raised on a round base
   const M = mats(), g = new THREE.Group();
   const mesh = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); g.add(o); return o; };

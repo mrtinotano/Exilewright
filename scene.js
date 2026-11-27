@@ -15,7 +15,7 @@ import * as THREE from 'three';
 import { t, esc, tn, fmt, cap } from './i18n.js';
 import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, mapGround, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection, armourNow } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
-import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem } from './scenefx.js';
+import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem, makeEffigy } from './scenefx.js';
 import { makeHumanoid, clipOf } from './humanoid.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
@@ -2060,6 +2060,47 @@ export function initScene(el, api) {
   // spikes for 0.06-0.13 s (0.84 / 1 / 0.5), a wave back for 0.1-0.2 s (0.91 / 1 / 0.35) and embers for 0.4-1.2 s (0.53 /
   // 1 / 0.3); a cull (culling_impact.ao: frenzyImpact) the same, brighter, with a 0.075 s shake. note: the counts,
   // speeds and sizes are the scene's
+  // Dark Effigy's look (chaos_dark_effigy; its tutorial video). Its totem rises in a violet wave (dark_effigy_start:
+  // summon_wave for 1 s, 0.76 / 0.7 / 1, and 128 embers for 0.5-1.2 s, 0.66 / 0.6 / 1) and stands in its ground glow
+  // (effigy_ground, 0.74 / 0.7 / 1) with violet ribbons rising for 3-4 s (0.72 / 0.7 / 1) and embers for 1.5-4 s. Each
+  // volley (spellcast_burst_01) a surge on it (cast_surge) and its mortars fired from 0.48 s to 0.83 s of its 1 s, each
+  // trailing (Forbidden Rite's FR_trail: 2.5 m for 0.5 s, 0.68 / 0.5 / 1 in a dark envelope 0.52 / 0.45 / 0.6). Its
+  // impact (impact.pet): a flash for 0.1-0.18 s (0.38 / 0.24 / 1), a shockwave sphere for 0.35 s (0.76 / 0.65 / 1), a ring
+  // for 1 s (0.79 / 0.67 / 1), sparks for 0.2-0.4 s (0.68 / 0.4 / 1), 32 embers for 3.2-4.8 s (0.48 / 0.28 / 1), a swirl
+  // for 0.5-1 s, a dark splash on the ground for 5 s (0.22 / 0.17 / 0.31) and a light for 0.16-0.25 s (0.47 / 0.4 / 1).
+  // note: the counts, speeds and sizes are the scene's
+  const DEFF = { wave: 0xc2b3ff, ember: 0xa999ff, ground: 0xbdb3ff, ribbon: 0xb8b3ff, trail: 0xad80ff, smoke: 0x857399, core: 0x613dff, shock: 0xc2a6ff, ring: 0xc9abff, spark: 0xad66ff, hot: 0x7a47ff, splash: 0x382b4f, light: 0x7866ff };
+  // the enemies it bombards: afflicted by a chaos damage over time debuff (a chaos skill's, or Poison's)
+  const chaosDotOn = d => !d.dead && (d.st.poison > 0 || d.dots.some(o => o.chaos && o.s > 0));
+  function deRise(c) {
+    fx.ring(c, .2, 1.6, DEFF.wave, 1, { a: .7 }); fx.glow({ x: c.x, y: 1, z: c.z }, 1.4, DEFF.wave, .6, 2);
+    fx.emit(40, { p: { x: c.x, y: .2, z: c.z }, r: .5, v: 1.5, up: 3, life: .9, size: .06, c: DEFF.ember, c2: 'white', k: 2.4, drag: 1.2 });
+  }
+  function deIdle(e, dt) {
+    if ((e.gd = (e.gd || 0) - dt) <= 0) { e.gd = 1; fx.disc(e.pos, .9, DEFF.ground, 1.1, { a: .3 }); }
+    if (Math.random() < dt * 3) fx.emit(1, { p: { x: e.pos.x, y: .3, z: e.pos.z }, r: .3, v: .1, up: .6, life: 3.5, size: .18, c: DEFF.ribbon, smoke: true, a: .35, drag: .5 });
+    if (Math.random() < dt * 8) fx.emit(1, { p: { x: e.pos.x, y: .5, z: e.pos.z }, r: .4, v: .2, up: .5, life: 2.5, size: .04, c: DEFF.ember, k: 2.2, drag: .5 });
+  }
+  function deImpact(p, r) {
+    const q = { x: p.x, y: .5, z: p.z };
+    fx.glow(q, r * .9, DEFF.core, .15, 2.6); fx.ball(q, r * .6, DEFF.shock, .35, 1.6); fx.ring(p, r * .2, r * 1.2, DEFF.ring, 1, { a: .7 });
+    fx.emit(12, { p: q, r: .1, v: 6, up: 1, life: .3, size: .05, c: DEFF.spark, c2: 'white', k: 2.6, drag: 3 });
+    fx.emit(16, { p: q, r: r * .4, v: 1, up: 1.5, life: 4, size: .04, c: DEFF.hot, k: 2.2, drag: 1.5 });
+    fx.emit(8, { p: q, r: r * .6, v: -1.5, life: .7, size: .25, c: DEFF.smoke, smoke: true, a: .5 });   // its swirl drawn in
+    fx.disc(p, r * .8, DEFF.splash, 5, { a: .55, hold: .8 }); fx.flash(p, DEFF.light, 25, .25, r * 6);
+  }
+  // its volley: a mortar at each enemy in its radius it bombards (one and its additional projectiles), fired from 0.48 s
+  // to 0.83 s of its use (spellcast_burst_01's proj_fire_start, proj_fire_end), at its projectile speed, bursting in
+  // its impact radius (its secondary radius, scaled as its area)
+  function effigyVolley(S, e, R, every) {
+    const st = S.dmg.stats, r = R * st.active_skill_base_secondary_area_of_effect_radius / st.active_skill_base_area_of_effect_radius, v = (S.G?.speed || SIM.projSpeed) * (S.dmg.projSpeed || 1);
+    const list = dummies.filter(d => dist(d.pos, e.pos) <= R && chaosDotOn(d)).slice(0, 1 + (st.number_of_additional_projectiles || 0));
+    fx.glow({ x: e.pos.x, y: 1.8, z: e.pos.z }, .9, DEFF.trail, every * .8, 2);   // its surge
+    list.forEach((d, i) => later(every * (.48 + .35 * i / list.length), () => {
+      const to = { x: d.pos.x, z: d.pos.z }, l = dist(to, e.pos);
+      lob(fx.orb(DEFF.trail, .12), V(e.pos.x, 1.8, e.pos.z), V(to.x, .1, to.z), l / v, l * .3, () => { deImpact(to, r); area(to, r, S); }, { trail: DEFF.trail });
+    }));
+  }
   const CTW = { wind: 0xa1ff61, gust: 0x75ff33, boom: 0xe6ecf2, spike: 0xa0ff40, cone: 0xdbff4d, core: 0xffd98c, hit: 0xd6ff80, wave: 0xe8ff59, ember: 0x87ff4d };
   function ctwLunge(a, b) {
     const l = dist(a, b) || 1, dx = (b.x - a.x) / l, dz = (b.z - a.z) / l;
@@ -3846,7 +3887,7 @@ export function initScene(el, api) {
       const su = S.dmg?.sum || {}, SPL = su.support_splinter_totem_X_times, gen = S.gen || 0, less = k => (1 + (su[k] || 0) / 100) ** gen;
       const mine = objs.filter(o => o.totemOf === S.name && !o.dead);
       if (SPL) { if (!gen) mine.forEach(o => o.die()); } else if (mine.length >= (F.dmg?.totems || 2)) mine[0].die();
-      const c = S.at, f = makeTotem(fx, S.el, S.P.ballista, S.name === 'Artillery Ballista'), TS0 = { ...F, src: real ? 'totemHit' : 'totem', mult: F.mult * (S.totemMult || 1) * less('support_splinter_totem_damage_+%_final_each_splinter') }, R0 = (F.R || S.R || SIM.totemArea) * Math.sqrt(less('support_splinter_totem_area_of_effect_+%_final_each_splinter')), far = S.P.ballista || S.P.ranged;
+      const DE = S.name === 'Dark Effigy', c = S.at, f = DE ? makeEffigy(fx, DEFF.core) : makeTotem(fx, S.el, S.P.ballista, S.name === 'Artillery Ballista'), TS0 = { ...F, src: real ? 'totemHit' : 'totem', mult: F.mult * (S.totemMult || 1) * less('support_splinter_totem_damage_+%_final_each_splinter') }, R0 = (F.R || S.R || SIM.totemArea) * Math.sqrt(less('support_splinter_totem_area_of_effect_+%_final_each_splinter')), far = S.P.ballista || S.P.ranged;
       const every = (real && F.dmg.speed ? 1 / F.dmg.speed : far ? 1 : 1.3) / less('support_splinter_totem_skill_speed_+%_final_each_splinter');
       if (gen) f.group.scale.setScalar(.8 ** gen);
       let acts = 0;
@@ -3858,7 +3899,7 @@ export function initScene(el, api) {
       // you would, from where it stands) and fades. note: where the warrior stands is not in the data: up to 1.5 m out
       const AW = S.name === 'Ancestral Warrior Totem' && real && j >= 0;
       if (AW) f.group.traverse(m => { if (m.isMesh && m.material?.emissive) { m.material = m.material.clone(); m.material.emissive.set(SPECTRE); m.material.emissiveIntensity = .12; } });
-      fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 });
+      if (DE) deRise(c); else { fx.ring(c, .2, 1.3, S.el, .4); fx.emit(18, { p: { x: c.x, y: .1, z: c.z }, r: .5, v: 1.5, up: 1.5, life: .6, size: .5, grow: 2, c: 'dust', smoke: true, a: .4 }); }
       let wait = .5;
       me.totemAt = time;
       const e = { pos: f.group.position, fig: f, r: .4, dead: false, s: 0, shot: time, totemOf: S.name, embank: EMBANK[S.name] ? S.name : F.P?.spell ? 'Spell Totem' : null,
@@ -3866,14 +3907,16 @@ export function initScene(el, api) {
           e.s += dt; if (e.s > (sh(S).totem || SIM.totemTime) * (S.totemTime || 1)) { e.die(); return; }
           const sg = e.segs?.[0], rg = sg && (S.dmg.totemRegen || 0) + (GR && gwN() * GR / 60); if (rg) sg.life = Math.min(sg.max, sg.life + sg.max * rg / 100 * dt);   // the tree's totem life regeneration; Greatwood's per other totem in its radius
           if (AW && Math.random() < dt * 12) fx.emit(1, { p: { x: e.pos.x, y: rnd(.4, 2), z: e.pos.z }, r: .35, up: .5, v: .3, life: .6, size: .14, c: SPECTRE, k: 1.4, drag: 1 });   // its ghostly wisps
+          if (DE) deIdle(e, dt);
           if ((wait -= dt) > 0) return;
           if (sheet().totemOnShot && !(me.shotAt > e.shot)) return;   // Cannons, Ready!: it only uses its skill when you fire an Attack Projectile (once for each, no faster than it can)
-          const d = near(e.pos, far ? 12 : R0 + 1); if (!d) { wait = .2; return; }
+          const d = DE ? near(e.pos, R0, chaosDotOn) : near(e.pos, far ? 12 : R0 + 1); if (!d) { wait = .2; return; }
           e.shot = time; wait = every / (F.P?.spell && sheet().totemCast ? 1 + sheet().totemCast * objs.filter(o => o.totemOf && !o.dead).length / 100 : 1);   // the tree's totem cast speed per summoned totem
           const k = dist(d.pos, e.pos) || 1, a0 = f.group.rotation.y = Math.atan2(d.pos.x - e.pos.x, d.pos.z - e.pos.z), n = far ? sh(F).projectiles || 1 : 1;
           const gw = gwN();
           const TS = gw ? { ...TS0, mult: TS0.mult * (1 + gw * su['damage_+%_final_per_totem_in_radius_from_support_greatwood'] / 100) } : TS0, R = R0 * Math.sqrt(1 + gw * (su['area_of_effect_+%_per_totem_in_radius_from_support_greatwood'] || 0) / 100);
-          if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
+          if (DE) effigyVolley(TS, e, R, every);
+          else if (F.kind === 'grenade') K.grenade({ ...TS, origin: { x: e.pos.x, z: e.pos.z }, at: { x: d.pos.x, z: d.pos.z } });
           else if (S.name === 'Artillery Ballista') artillery(TS, e, d, n, R);
           else if (far) for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .12; shoot(TS, e.pos, Math.sin(a), Math.cos(a), { speed: 22, range: 13 }); }
           else if (AW) {
