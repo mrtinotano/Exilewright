@@ -678,7 +678,7 @@ export function makeBanner(fx, L) {
     const q = (x, y, ww, hh, col) => { c.fillStyle = col; c.fillRect(x, y, ww, hh); };
     q(0, 0, w / 2, mid, L.quarters[0]); q(w / 2, 0, w / 2, mid, L.quarters[1]); q(0, mid, w / 2, h, L.quarters[1]); q(w / 2, mid, w / 2, h, L.quarters[0]);
     c.restore(); c.strokeStyle = L.trim; c.lineWidth = 6; c.stroke();
-    c.lineWidth = 2; for (let x = 4; x < w; x += 6) { const y0 = x < w / 2 ? cut + (h * .94 - cut) * x / (w / 2) : cut + (h * .94 - cut) * (w - x) / (w / 2); c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y0 + h * .06); c.stroke(); }
+    c.lineWidth = 2; for (let x = 4; x < w; x += 6) { const y0 = cut + (h * .94 - cut) * (1 - Math.abs(x - w / 2) / (w / 2)); c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y0 + h * .06); c.stroke(); }
   });
   const flag = new THREE.Mesh(new THREE.PlaneGeometry(.74, 1.48), new THREE.MeshStandardMaterial({ map, transparent: true, alphaTest: .5, side: THREE.DoubleSide, roughness: .9 }));
   const hang = new THREE.Group(); hang.position.set(0, 2.0, .07); flag.position.y = -.74; hang.add(flag);
