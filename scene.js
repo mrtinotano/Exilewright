@@ -322,7 +322,9 @@ export function initScene(el, api) {
     : S.R ? S.A * (.4 + .8 * S.stage) : S.A * (1 + 2 * S.stage);
   const meleeR = S => (sh(S).reach ?? SIM.meleeRange) + (time - (me.projHit ?? -99) <= 8 ? sheet().meleeProj || 0 : 0);   // the weapon's reach (calc.js shape), else the scene's; the tree's more after a projectile attack hit in the past 8 s
   // to the dummy's edge; a strike with a dash range of its own (Killing Palm, Ice Strike...) dashes to an enemy farther than melee
-  const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : Math.max(meleeR(S), sh(S).dash || 0)) + SIM.body;
+  // a melee skill steps to a target just past its weapon's reach (its melee_conditional_step_distance)
+  const stepR = S => (S.dmg?.stats?.melee_conditional_step_distance || 0) / 10;
+  const strikeR = S => (S.P.dash ? sh(S).dash ?? SIM.dashRange : Math.max(meleeR(S) + stepR(S), sh(S).dash || 0)) + SIM.body;
   const inCone = (c, a0, half, p) => { const da = Math.atan2(p.z - c.z, p.x - c.x) - a0; return Math.abs(Math.atan2(Math.sin(da), Math.cos(da))) <= half; };
   const coneHalf = S => (S.cone / 2 || (S.kind === 'cone' ? SIM.cone / 2 : 65)) * Math.PI / 180;   // S.cone: the data's angle (Deadly Resolve)
   function aim(S, p) {
@@ -3525,8 +3527,8 @@ export function initScene(el, api) {
     for (let i = 0; i < 10; i++) { const a = rnd(TAU); fx.streak(q.clone(), V(q.x + Math.cos(a) * 1.2, q.y + rnd(-.4, .6), q.z + Math.sin(a) * 1.2), BREAK.spike, .18, .025, .6); }
     fx.emit(10, { p: { x: d.pos.x, y: .15, z: d.pos.z }, dir: V(dx * 3, .3, dz * 3), r: .3, v: 1.5, life: .7, size: .4, grow: 1.8, c: 'dust', smoke: true, a: .4, drag: 1.5 });
   }
-  // (Axe Slash, the axes' default attack: none of this, as the game's: its default_attack melee trails are empty and the
-  // axes have none of their own, only the swing and the hit)
+  // (Axe Slash and Dagger Stab, the axes' and daggers' default attacks: none of this, as the game's: its default_attack
+  // melee trails are empty and they have none of their own, only the swing or stab and the hit)
   function slash(S, dx, dz, r = 2, half = .95) {
     fx.arc(pp, dx, dz, r, half, S.el); fx.sector(pp, dx, dz, r, half, S.el, .2, { a: .25, grow: true });
     fx.emit(8, { p: { x: pp.x + dx, y: 1.1, z: pp.z + dz }, dir: V(dx * 4, 0, dz * 4), v: 2, life: .25, size: .16, c: S.el, c2: 'white', drag: 2 });
@@ -4082,13 +4084,14 @@ export function initScene(el, api) {
       if (flagOf(S.name, 'cannot_gain_power_charges_during_skill')) me.noPower = time + n * .13;   // Flicker Strike, for its strikes
       const go = (d, k) => {
         if (d.dead) return;
-        if (P.dash || dist(d.pos, pp) > meleeR(S) + SIM.body) {   // strikes that carry you to the target
+        const past = dist(d.pos, pp) - meleeR(S) - SIM.body;
+        if (P.dash || past > 0) {   // strikes that carry you to the target, or step to it
           const a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) + (k ? rnd(-2, 2) : 0), q = { x: d.pos.x + Math.sin(a) * 1.1, z: d.pos.z + Math.cos(a) * 1.1 };
-          if (S.name === 'Crushing Fear') cfDash(pp, q); else if (S.name === 'Cull The Weak') ctwLunge(pp, q); else fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1);
+          if (S.name === 'Crushing Fear') cfDash(pp, q); else if (S.name === 'Cull The Weak') ctwLunge(pp, q); else if (P.dash || past > stepR(S)) fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1);
           pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name === 'Cull The Weak') ctwStab(pp, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Boneshatter') bsSurge(d); if (S.name === 'Crushing Fear') cfHit(d.pos); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name === 'Cull The Weak') ctwStab(pp, dx / l, dz / l); else if (!['Axe Slash', 'Dagger Stab'].includes(S.name)) slash(S, dx / l, dz / l); if (S.name === 'Boneshatter') bsSurge(d); if (S.name === 'Crushing Fear') cfHit(d.pos); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
         if (S.name === 'Cull The Weak') ctwHit(d.pos, d.dead);   // after its hit: culled or not
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
