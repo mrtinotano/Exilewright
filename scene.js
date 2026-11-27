@@ -1328,7 +1328,7 @@ export function initScene(el, api) {
   function wolfCall(M, d) {
     const W = M.S.dmg?.wolf, P = M.S.dmg.part, st = M.S.dmg.stats; if (!W) return;
     const n = 1 + (P['skill_cross_slash_triggered_summon_+_wolves_if_' + d.stat.rarity] || 0), S = { ...M.S, src: undefined, name: 'Summon Wolf', label: t('Summon Wolf'), dmg: W };
-    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, P.number_of_wolves_allowed + (st.number_of_wolves_allowed ?? st._mods?.number_of_wolves_allowed ?? 0), S); minion(S, around(d.pos, 1), Infinity, { kind: S.name }); }
+    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, P.number_of_wolves_allowed + (st.number_of_wolves_allowed ?? st._mods?.number_of_wolves_allowed ?? 0), S); minion(S, around(d.pos, 1), Infinity, { kind: S.name, look: wolfLook(WOLFC, 1.2, wolfIn) }); }
   }
   // Predator's Mark (Pounce's own part): increased damage taken per enemy near it (hit), 8 s (the scene's mark default, as in its data)
   function wolfMark(d, S) {
@@ -1748,6 +1748,12 @@ export function initScene(el, api) {
       },
       hit() { bite = time + .55; if (cur !== 'Attack') acts?.[cur]?.fadeOut(.1); cur = null; play('Attack'); } };
   }
+  // Summon Wolf's and Wolf Pack's wolf (WolfCompanionPlayerSummoned: WolfCompanion.ao, WolfCompanion.sm, WolfCompanionc.mat):
+  // its fur's colour (the middle of its texture 79 / 68 / 62, its lightest 5% 149 / 144 / 143), 1.2 m long (its mesh is
+  // 225 units long at its 108% size, the Azmerian Wolf's 317 at 1.6 m), fading in (wolf_fadein.epk). note: the fade
+  // is a faint puff of dust here
+  const WOLFC = { fur: 0x4f443e, light: 0x95908f, spirit: 0 };
+  const wolfIn = p => fx.emit(12, { p: { x: p.x, y: .3, z: p.z }, r: .5, v: .4, up: .6, life: .7, size: .4, grow: 1.5, c: 0x6a625e, smoke: true, a: .35, drag: 1 });
   // Cackling Companions' look (HyenaCompanionPlayerSummoned: HyenaArmour.sm, HyenaMonster .mat; HandoftheClan spawn.ao,
   // monster_spawn_IN_smoke.pet; wolfhowl.ao decoytotem_midline.pet): a hyena in its fur's light grey (the lightest 5% of
   // its texture, 124 / 112 / 107: its mean 64 / 54 / 52 is the ground's), 1 m long (its mesh is 197 units long, the
@@ -3656,7 +3662,7 @@ export function initScene(el, api) {
         if (per.hit && st.cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit) { per.melee_hit = per.hit; delete per.hit; }   // Thundergod's Wrath: on Melee Hit (its text)
         if (T.per) gainEnergy(T, 0);   // its maximum from the start (the buff shows its Energy as a % of it)
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms && !S.dmg?.stats?.maximum_corpse_beetles_allowed && !S.dmg?.stats?.base_number_of_verisium_runes_allowed) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : k === 'Cackling Companions' ? { look: hyenaLook(S) } : {}));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms && !S.dmg?.stats?.maximum_corpse_beetles_allowed && !S.dmg?.stats?.base_number_of_verisium_runes_allowed) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : k === 'Wolf Pack' ? { look: wolfLook(WOLFC, 1.2, wolfIn) } : k === 'Cackling Companions' ? { look: hyenaLook(S) } : {}));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
