@@ -2926,6 +2926,7 @@ export function initScene(el, api) {
     surges = surges.filter(s => s.until > time);
     for (let have = surges.filter(s => s.name === name && s.el === el).length; n > 0 && have < st.maximum_number_of_instilling_stacks; n--, have++)
       surges.push({ name, el, until: time + st.base_skill_effect_duration / 1000 });
+    const L = ESURGE[el], q = hand(); if (L && name !== 'Gemini Surge') { fx.ball(q, .12, L.crystal, .3, 2.4); fx.glow(q, .6, L.gain, .5, 2.2); }   // its gain on your weapon (Elemental Surge's look)
     hudT = 0;
   }
   // charges of a type consumed: the surges they grant, when (for "if you've consumed a ... Charge Recently") and what the
@@ -2947,7 +2948,9 @@ export function initScene(el, api) {
   function surgeBlast(S, s, p) {
     const D = granted(s.name, S.g?.level); if (!D) return;
     const B = asTrig(S, { ...D, id: s.name }), id = Object.keys(D.parts || {}).find(k => k.toLowerCase().includes(s.el)), X = id ? { ...partOf(B, id), A: B.A } : B;
-    if (s.el === 'chaos') { chaosBurst(p, X.A); area(p, X.A, X); } else { fx.ring(p, .2, X.A, s.el, .3); boom(p, X.A, X); }
+    if (s.name === 'Gemini Surge') { fx.ring(p, .2, X.A, s.el, .3); boom(p, X.A, X); return; }
+    if (s.el === 'chaos') chaosBurst(p, X.A); else elemBurst(p, X.A, s.el);
+    area(p, X.A, X);
   }
   // Chaotic Surge's look (instilling_chaos: ChaosInfusionProjectile infusion_CHAOS.epk on the projectile, ChaosInfusionExplosion
   // spear_discharge chaos_AoE.ao where it ends): the projectile trails violet strings for 0.35-1.2 s and a ribbon for 0.4-0.55 s
@@ -2963,6 +2966,44 @@ export function initScene(el, api) {
     fx.emit(10, { p: c, r: .2, v: R * 4, up: .3, life: .25, size: .12, c: CSURGE.streak, k: 2.4, drag: 3 });   // its streaks
     fx.emit(8, { p: c, r: R * .3, v: .6, up: 1.2, life: .35, size: .45, grow: 1.6, c: CSURGE.flame, k: 2.2, drag: 1 });
     fx.emit(64, { p: c, r: R * .3, v: R * 1.5, up: 1.5, life: 1, size: .05, c: CSURGE.ring, k: 2.4, g: 2, drag: 1.5 });
+  }
+  // Elemental Surge's look (instilling_X: XInfusionProjectile infusion_X.epk on the projectile, XInfusionExplosion
+  // spear_discharge X_AoE.ao where it ends; no tutorial video). Gaining a Surge (InstilledX on your weapon,
+  // skill_charges/elemental_infusion X_charge.pet): a crystal for 0.3 s and a glow for 0.5 s (fire 1 / 0.26 / 0.1 and 1 /
+  // 0.48 / 0.1, cold 0.6 / 0.76 / 1 and 0.7 / 0.82 / 1, lightning 0.15 / 0.24 / 1, chaos 0.18 / 0.01 / 1 and 0.24 / 0.08 /
+  // 1). The projectile trails strings for 0.35-1.2 s and a ribbon for 0.4-0.55 s (fire 1 / 0.48 / 0.15 and 1 / 0.33 / 0.1,
+  // cold 0.4 / 0.6 / 1 and 0.45 / 0.67 / 1, lightning 0.15 / 0.24 / 1 and 0.2 / 0.28 / 1; chaos CSURGE's). Its burst: fire
+  // (aoe_fire) a flash for 0.2 s (1 / 0.64 / 0.3), a ring for 0.25 s from 0.1 s (1 / 0.65 / 0.24), flames for 0.22-0.68 s
+  // from 0.12 s (1 / 0.38 / 0.11), a wave of fire for 0.45-0.8 s from 0.15 s (1 / 0.51 / 0.31), a push wave for 0.2 s from
+  // 0.18 s (1 / 0.33 / 0.1) and sparks for 1-2 s (1 / 0.28 / 0.08); cold (aoe_cold) a flash (0.5 / 0.78 / 1), icy strings
+  // for 0.12-1.65 s (0.7 / 0.91 / 1), a cold sphere for 0.6-0.8 s (0.65 / 0.77 / 1), its push wave (0.52 / 0.81 / 1), crystal
+  // dust for 1.5-2.5 s and dust for 1-1.5 s (0.37 / 0.39 / 0.46); lightning (aoe_light) a flash (0.4 / 0.6 / 1), bolts for
+  // 0.06-0.28 s from 0.15 s (0.12 / 0.16 / 1), sparks for 0.15 s (0.1 / 0.19 / 1), its push wave (0.3 / 0.5 / 1) and a shock
+  // wave for 0.09-0.25 s from 0.22 s. note: the trail its weapon leaves swinging while it has Surges is not drawn; counts,
+  // sizes and speeds are the scene's
+  const ESURGE = { fire: { crystal: 0xff421a, gain: 0xff7a1a, string: 0xff7a26, ribbon: 0xff541a, flash: 0xffa34d, ring: 0xffa63d, flame: 0xff611c, wave: 0xff824f, push: 0xff541a, spark: 0xff4714 },
+    cold: { crystal: 0x99c2ff, gain: 0xb3d1ff, string: 0x6699ff, ribbon: 0x73abff, flash: 0x80c7ff, ice: 0xb3e8ff, sphere: 0xa6c4ff, push: 0x85cfff, dust: 0x5e6375 },
+    lightning: { crystal: 0x263dff, gain: 0x263dff, string: 0x263dff, ribbon: 0x3347ff, flash: 0x6699ff, bolt: 0x1f29ff, spark: 0x1a30ff, push: 0x4d80ff },
+    chaos: { crystal: 0x2e03ff, gain: 0x3d14ff, string: CSURGE.string, ribbon: CSURGE.ribbon } };
+  function elemBurst(p, R, el) {
+    const L = ESURGE[el], c = { x: p.x, y: .6, z: p.z };
+    fx.flash(c, L.flash, 12, .2, 5); fx.glow(c, R * 1.1, L.flash, .2, 2.5);
+    later(.18, () => fx.ring(p, .2, R, L.push, .2, { a: .6 }));
+    if (el === 'fire') {
+      later(.1, () => fx.ring(p, .3, R * .9, L.ring, .25, { a: .8, y: .3 }));
+      later(.12, () => fx.emit(10, { p: c, r: R * .4, v: .6, up: 1.4, life: rnd(.22, .68), size: .4, grow: 1.6, c: L.flame, c2: L.ring, k: 2.2, drag: 1 }));
+      later(.15, () => fx.emit(12, { p: { x: p.x, y: .2, z: p.z }, r: .2, v: R * 2.5, up: .3, life: rnd(.45, .8), size: .3, c: L.wave, k: 2.2, drag: 3, flat: true }));
+      later(.05, () => fx.emit(48, { p: c, r: .2, v: R * 2.5, up: 2, life: rnd(1, 2), size: .04, c: L.spark, c2: 'white', k: 2.6, g: 5, drag: 1.5 }));
+    } else if (el === 'cold') {
+      later(.1, () => fx.ball(c, R * .45, L.sphere, rnd(.6, .8), 1.8));
+      later(.1, () => fx.emit(24, { p: c, r: .2, v: R * 3, up: 1, life: rnd(.12, 1.65), size: .06, c: L.ice, c2: 'white', k: 2.4, drag: 2.5 }));
+      later(.2, () => fx.emit(24, { p: c, r: R * .4, v: .5, up: .3, life: rnd(1.5, 2.5), size: .05, c: L.ice, c2: 'white', g: .5, drag: 1 }));
+      later(.15, () => fx.emit(6, { p: { x: p.x, y: .15, z: p.z }, r: R * .4, v: 1, up: .4, life: rnd(1, 1.5), size: .7, grow: 1.8, c: L.dust, smoke: true, a: .35, drag: 1.5 }));
+    } else {
+      for (let i = 0; i < 6; i++) later(.15 + rnd(.1), () => { const a = rnd(TAU); fx.bolt(V(p.x, .6, p.z), V(p.x + Math.cos(a) * R * rnd(.5, 1), rnd(.1, 1), p.z + Math.sin(a) * R * rnd(.5, 1)), L.bolt, rnd(.06, .28), .03, .25); });
+      later(.12, () => fx.emit(24, { p: c, r: .2, v: R * 3, up: 1, life: .15, size: .05, c: L.spark, c2: 'white', k: 2.6, drag: 2 }));
+      later(.22, () => fx.ring(p, .2, R * .8, L.bolt, rnd(.09, .25), { a: .7, y: .5 }));
+    }
   }
   // Elemental Expression's look (its elemental_strike effects, with the Invoker's materials; no tutorial video). Fiery
   // Explosion (fire_explode.ao, midline.pet): a flash for 0.12 s, a column of flame for 0.6 s (1 / 0.58 / 0.16), tufts of
@@ -3520,7 +3561,7 @@ export function initScene(el, api) {
         }
         if (q.dead) return;
         for (; EW && shardT >= gap && shot < EN; shardT -= gap) { const a = a0 + shot++ * 2.4; shoot({ ...cur, P: { ...cur.P, spiral: false, absorbs: false } }, m.position, Math.sin(a), Math.cos(a), { speed: SIM.projSpeed, shard: true }); }
-        if (surged.some(s => s.el === 'chaos')) { fx.emit(1, { p: m.position, r: .06, v: .2, life: .8, size: .05, c: CSURGE.string, k: 2.4 }); fx.emit(1, { p: m.position, r: .02, v: .05, life: .47, size: .1, c: CSURGE.ribbon, k: 2.2 }); }   // Chaotic Surge's
+        for (const s of surged) { const L = s.name !== 'Gemini Surge' && ESURGE[s.el]; if (L) { fx.emit(1, { p: m.position, r: .06, v: .2, life: rnd(.35, 1.2), size: .05, c: L.string, k: 2.4 }); fx.emit(1, { p: m.position, r: .02, v: .05, life: rnd(.4, .55), size: .1, c: L.ribbon, k: 2.2 }); } }   // Elemental and Chaotic Surge's
         const TB = CO || (CB && CBOLT);
         if (TB) { fx.trail(m.position, TB.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: CO ? .62 : .45, size: .05, c: TB.ember, k: 2.4 }); }
         else if (XS) { fx.strip(xp, m.position, .07, XBOLT.trail, .6, { a: .7, k: 2, y: m.position.y }); xp = m.position.clone(); } else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
