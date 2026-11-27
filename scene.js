@@ -3049,6 +3049,47 @@ export function initScene(el, api) {
     else for (let n = dt * 30; n > 0; n--) if (n >= 1 || Math.random() < n) { const a = rnd(TAU), r = R * rnd(.7, 1);
       fx.emit(1, { p: at(a, r, rnd(.15, .7)), dir: V(-Math.sin(a) * r * 4, .2, Math.cos(a) * r * 4), life: rnd(.5, .8), size: .22, c: L.ribbon, c2: L.hi, k: 2.2, drag: 3 }); }
   }
+  // Elemental Sundering's look (spear_extract_elements; its tutorial video). Where the spear is plunged (spear_surge,
+  // ground_decal): its ribbons for 0.8-0.9 s from 0.3 s (fire 1 / 0.47 / 0.08, cold, lightning), cracked glowing ground for
+  // 2 s (1 / 0.48 / 0.1), a flash of spikes for 0.2 s (0.65 / 0.79 / 1), rocks for 2-4 s, dust for 0.8-1.6 s, bolts for
+  // 0.15-0.55 s and 64 embers for 1.5-2 s; its pulse (ground_wave) a ring for 0.4 s (1 / 0.51 / 0.15 through 0.15 / 0.24 /
+  // 1) and cold smoke for 1 s from 0.1 s (0.36 / 0.4 / 0.46). Each ailment it consumes charges the enemy (charge_X: a glow
+  // for 1 s and 16 ribbons for 1-1.1 s; fire 1 / 0.37 / 0.1, cold 0.7 / 0.82 / 1, lightning 0.15 / 0.24 / 1), then it
+  // explodes (explosion_X, lightning's elemental_discharge lightning_aoe): a flash for 0.15 s, a wave for 0.45-0.5 s, a ring
+  // for 0.3 s and a sphere for 0.5 s, cold with 128 flakes of snow for 1.5-2.5 s, fire with 128 sparks for 1-2 s, lightning
+  // with 64 sparks for 1.5-3 s and 32 bolts dropping for 0.15-0.55 s. note: the explosion at the end of its 1 s charge, as
+  // in the video (the data gives no delay: the ailment is kept meanwhile, elemental_sundering_pause_ailment); counts per
+  // second, sizes and speeds are the scene's
+  const SUND = { fire: { glow: 0xff5e1a, ribbon: 0xff7814, flash: 0xff7033, ring: 0xff8f26, spark: 0xff4714 }, cold: { glow: 0xb3d1ff, ribbon: 0xb3d1ff, flash: 0x99c2ff, ring: 0xb3d1ff, spark: 0xe0edff },
+    lightning: { glow: 0x263dff, ribbon: 0x263dff, flash: 0x2129ff, ring: 0x333bff, spark: 0x99a6ff, bolt: 0x404dff }, ground: 0xff7a1a, spike: 0xa6c9ff, smoke: 0x5c6675, wave: 0xff8226 };
+  function sunderPulse(c, R) {
+    const q = { x: c.x, y: .3, z: c.z };
+    later(.3, () => { for (const el of ['fire', 'cold', 'lightning']) fx.emit(2, { p: q, r: .1, v: 1, up: 3, life: rnd(.8, .9), size: .2, c: SUND[el].ribbon, c2: 'white', k: 2.2, drag: 2 }); });
+    fx.disc(c, 1.2, SUND.ground, 2, { tex: 'cracks', a: .8, hold: .5, k: 1.4 });
+    later(.05, () => fx.spikes(c, .6, { n: 7, h: .7, w: .06, c: SUND.spike, dur: .2 }));
+    fx.emit(8, { p: q, r: .2, v: 2.5, up: 4, life: rnd(2, 4), size: .1, c: 'dust', c2: 0x6b5f50, g: 12, drag: .5, k: 1 });
+    fx.emit(8, { p: { x: c.x, y: .1, z: c.z }, r: .3, v: 1.2, up: .8, life: rnd(.8, 1.6), size: .8, grow: 2, c: 'dust', smoke: true, a: .4, drag: 1.2 });
+    for (let i = 0; i < 4; i++) { const a = rnd(TAU); fx.bolt(V(c.x, .1, c.z), V(c.x + Math.cos(a) * rnd(.4, 1), rnd(.1, .6), c.z + Math.sin(a) * rnd(.4, 1)), SUND.lightning.bolt, rnd(.15, .55), .02, .2); }
+    fx.emit(64, { p: q, r: .2, v: 2, up: 2, life: rnd(1.5, 2), size: .04, c: SUND.ground, c2: 'white', k: 2.4, drag: 1.5 });
+    fx.ring(c, .3, R, SUND.wave, .4, { a: .8 }); fx.ring(c, .2, R * .9, SUND.lightning.glow, .4, { a: .5 });
+    later(.1, () => fx.emit(6, { p: { x: c.x, y: .15, z: c.z }, r: R * .5, v: R, life: 1, size: 1.2, grow: 1.8, c: SUND.smoke, smoke: true, a: .3, drag: 1.5, flat: true }));
+  }
+  function sunderCharge(d, el) {
+    const L = SUND[el];
+    fx.glow(chest(d), .7, L.glow, 1, 2);
+    for (let i = 0; i < 16; i++) later(i / 16, () => { if (!d.dead) fx.emit(1, { p: chest(d), r: .35, v: .6, up: 1.2, life: rnd(1, 1.1) * .5, size: .16, c: L.ribbon, c2: 'white', k: 2.4, drag: 2 }); });
+  }
+  function sunderBlast(p, R, el) {
+    const L = SUND[el], q = { x: p.x, y: .6, z: p.z };
+    fx.glow(q, R * .9, L.flash, .15, 3); fx.flash(q, L.flash, 30 + R * 12, .3, 8 + R * 3); shake = Math.max(shake, Math.min(.35, R * .1));
+    fx.ring(p, R * .2, R, L.ring, .5, { a: .8 }); later(.05, () => fx.ring(p, .1, R * .7, L.ring, .3, { k: 2.6 })); fx.ball(q, R * .45, L.glow, .5, 2);
+    if (el === 'cold') fx.emit(128, { p: q, r: R * .4, v: R * 1.5, up: 1, life: rnd(1.5, 2.5), size: .05, c: L.spark, c2: 'white', g: 1, drag: 1.5 });
+    else if (el === 'fire') later(.05, () => fx.emit(128, { p: q, r: .2, v: R * 3, up: 2.5, life: rnd(1, 2), size: .04, c: L.spark, c2: 'white', k: 2.6, g: 5, drag: 1.5 }));
+    else {
+      fx.emit(64, { p: q, r: .3, v: R * 2, up: 1.5, life: rnd(1.5, 3), size: .04, c: L.spark, c2: 'white', k: 2.4, drag: 1.5 });
+      for (let i = 0; i < 12; i++) later(rnd(.2), () => { const a = rnd(TAU), r = R * rnd(.1, .9), x = p.x + Math.cos(a) * r, z = p.z + Math.sin(a) * r; fx.bolt(V(x, rnd(2, 3), z), V(x, .05, z), L.bolt, rnd(.15, .55), .03, .25); });
+    }
+  }
   // Elemental Storm (the Stormweaver's Tempest Caller): a spell critical hit triggers it, within its cooldown: a stationary
   // storm at the enemy for its duration, of the hit's highest elemental damage type (none from a hit with no elemental
   // damage), hitting the enemies in its area every its interval (stormLook)
@@ -4347,48 +4388,7 @@ export function initScene(el, api) {
       if (P.from) { const q = objs.find(o => o.proj && o.name === P.from && !o.dead); if (q) { c = { x: q.pos.x, z: q.pos.z }; say(t('{0} erupts from {1}', S.label, labelOf(P.from)), S.el); } }
       const R = stageR(S), dur = Math.min(.5, .12 + R * .045);
       if (S.name === 'Consecrate') { consecrate(c, R); ground('consecrated', c, R, durOf(S), S); return; }   // only its ground, for its duration
-      // Elemental Sundering's look (spear_extract_elements; its tutorial video). Where the spear is plunged (spear_surge,
-  // ground_decal): its ribbons for 0.8-0.9 s from 0.3 s (fire 1 / 0.47 / 0.08, cold, lightning), cracked glowing ground for
-  // 2 s (1 / 0.48 / 0.1), a flash of spikes for 0.2 s (0.65 / 0.79 / 1), rocks for 2-4 s, dust for 0.8-1.6 s, bolts for
-  // 0.15-0.55 s and 64 embers for 1.5-2 s; its pulse (ground_wave) a ring for 0.4 s (1 / 0.51 / 0.15 through 0.15 / 0.24 /
-  // 1) and cold smoke for 1 s from 0.1 s (0.36 / 0.4 / 0.46). Each ailment it consumes charges the enemy (charge_X: a glow
-  // for 1 s and 16 ribbons for 1-1.1 s; fire 1 / 0.37 / 0.1, cold 0.7 / 0.82 / 1, lightning 0.15 / 0.24 / 1), then it
-  // explodes (explosion_X, lightning's elemental_discharge lightning_aoe): a flash for 0.15 s, a wave for 0.45-0.5 s, a ring
-  // for 0.3 s and a sphere for 0.5 s, cold with 128 flakes of snow for 1.5-2.5 s, fire with 128 sparks for 1-2 s, lightning
-  // with 64 sparks for 1.5-3 s and 32 bolts dropping for 0.15-0.55 s. note: the explosion at the end of its 1 s charge, as
-  // in the video (the data gives no delay: the ailment is kept meanwhile, elemental_sundering_pause_ailment); counts per
-  // second, sizes and speeds are the scene's
-  const SUND = { fire: { glow: 0xff5e1a, ribbon: 0xff7814, flash: 0xff7033, ring: 0xff8f26, spark: 0xff4714 }, cold: { glow: 0xb3d1ff, ribbon: 0xb3d1ff, flash: 0x99c2ff, ring: 0xb3d1ff, spark: 0xe0edff },
-    lightning: { glow: 0x263dff, ribbon: 0x263dff, flash: 0x2129ff, ring: 0x333bff, spark: 0x99a6ff, bolt: 0x404dff }, ground: 0xff7a1a, spike: 0xa6c9ff, smoke: 0x5c6675, wave: 0xff8226 };
-  function sunderPulse(c, R) {
-    const q = { x: c.x, y: .3, z: c.z };
-    later(.3, () => { for (const el of ['fire', 'cold', 'lightning']) fx.emit(2, { p: q, r: .1, v: 1, up: 3, life: rnd(.8, .9), size: .2, c: SUND[el].ribbon, c2: 'white', k: 2.2, drag: 2 }); });
-    fx.disc(c, 1.2, SUND.ground, 2, { tex: 'cracks', a: .8, hold: .5, k: 1.4 });
-    later(.05, () => fx.spikes(c, .6, { n: 7, h: .7, w: .06, c: SUND.spike, dur: .2 }));
-    fx.emit(8, { p: q, r: .2, v: 2.5, up: 4, life: rnd(2, 4), size: .1, c: 'dust', c2: 0x6b5f50, g: 12, drag: .5, k: 1 });
-    fx.emit(8, { p: { x: c.x, y: .1, z: c.z }, r: .3, v: 1.2, up: .8, life: rnd(.8, 1.6), size: .8, grow: 2, c: 'dust', smoke: true, a: .4, drag: 1.2 });
-    for (let i = 0; i < 4; i++) { const a = rnd(TAU); fx.bolt(V(c.x, .1, c.z), V(c.x + Math.cos(a) * rnd(.4, 1), rnd(.1, .6), c.z + Math.sin(a) * rnd(.4, 1)), SUND.lightning.bolt, rnd(.15, .55), .02, .2); }
-    fx.emit(64, { p: q, r: .2, v: 2, up: 2, life: rnd(1.5, 2), size: .04, c: SUND.ground, c2: 'white', k: 2.4, drag: 1.5 });
-    fx.ring(c, .3, R, SUND.wave, .4, { a: .8 }); fx.ring(c, .2, R * .9, SUND.lightning.glow, .4, { a: .5 });
-    later(.1, () => fx.emit(6, { p: { x: c.x, y: .15, z: c.z }, r: R * .5, v: R, life: 1, size: 1.2, grow: 1.8, c: SUND.smoke, smoke: true, a: .3, drag: 1.5, flat: true }));
-  }
-  function sunderCharge(d, el) {
-    const L = SUND[el];
-    fx.glow(chest(d), .7, L.glow, 1, 2);
-    for (let i = 0; i < 16; i++) later(i / 16, () => { if (!d.dead) fx.emit(1, { p: chest(d), r: .35, v: .6, up: 1.2, life: rnd(1, 1.1) * .5, size: .16, c: L.ribbon, c2: 'white', k: 2.4, drag: 2 }); });
-  }
-  function sunderBlast(p, R, el) {
-    const L = SUND[el], q = { x: p.x, y: .6, z: p.z };
-    fx.glow(q, R * .9, L.flash, .15, 3); fx.flash(q, L.flash, 30 + R * 12, .3, 8 + R * 3); shake = Math.max(shake, Math.min(.35, R * .1));
-    fx.ring(p, R * .2, R, L.ring, .5, { a: .8 }); later(.05, () => fx.ring(p, .1, R * .7, L.ring, .3, { k: 2.6 })); fx.ball(q, R * .45, L.glow, .5, 2);
-    if (el === 'cold') fx.emit(128, { p: q, r: R * .4, v: R * 1.5, up: 1, life: rnd(1.5, 2.5), size: .05, c: L.spark, c2: 'white', g: 1, drag: 1.5 });
-    else if (el === 'fire') later(.05, () => fx.emit(128, { p: q, r: .2, v: R * 3, up: 2.5, life: rnd(1, 2), size: .04, c: L.spark, c2: 'white', k: 2.6, g: 5, drag: 1.5 }));
-    else {
-      fx.emit(64, { p: q, r: .3, v: R * 2, up: 1.5, life: rnd(1.5, 3), size: .04, c: L.spark, c2: 'white', k: 2.4, drag: 1.5 });
-      for (let i = 0; i < 12; i++) later(rnd(.2), () => { const a = rnd(TAU), r = R * rnd(.1, .9), x = p.x + Math.cos(a) * r, z = p.z + Math.sin(a) * r; fx.bolt(V(x, rnd(2, 3), z), V(x, .05, z), L.bolt, rnd(.15, .55), .03, .25); });
-    }
-  }
-  // Elemental Sundering: its pulse deals nothing; it Consumes the Freeze, Shock and Ignite of the enemies in it, nearest
+      // Elemental Sundering: its pulse deals nothing; it Consumes the Freeze, Shock and Ignite of the enemies in it, nearest
       // first, each an explosion of that element around the enemy (the cold one the gem's, the others its parts), up to its
       // most, with its more damage from a Unique; each ailment is kept while the enemy charges and consumed as it explodes
       // note: its pulse's radius is PoB2's (Skills/act_dex.lua ElementalSunderingPlayer "Pulse": 50), scaled as its explosion's;
