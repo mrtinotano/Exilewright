@@ -3765,9 +3765,10 @@ export function initScene(el, api) {
     curse(S) {
       const c = S.at, R = S.A;
       const wait = sheet().noCurseDelay ? 0 : sh(S).curseDelay || SIM.curseDelay;
-      fx.telegraph(c, R, 'curse', wait);
+      const L = CURSE_LOOK[S.name];
+      if (L) hexArea(L, c, R, wait); else fx.telegraph(c, R, 'curse', wait);
       later(wait, () => {
-        fx.disc(c, R, 'curse', .7, { tex: 'rune', a: .8, spin: 1 }); fx.ring(c, R * .3, R, 'curse', .5);
+        if (!L) { fx.disc(c, R, 'curse', .7, { tex: 'rune', a: .8, spin: 1 }); fx.ring(c, R * .3, R, 'curse', .5); }
         const C = S.dmg?.curse; let n = 0;
         const curseOn = (d, quiet) => {
           if (d.noRepulse > time && S.name === 'Repulsion') return;
@@ -3776,7 +3777,7 @@ export function initScene(el, api) {
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
           hexOld(d, S.name, S.dmg?.sum?.curse_ignores_curse_limit);
           if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
-          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); if (L) hexOrb(L, d); else fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
@@ -6537,6 +6538,26 @@ export function initScene(el, api) {
     }
     shake = Math.max(shake, .15);
   }
+  // A curse's own look (curses_02), Despair's (despair_aoe.ao, despair_surge_wave.ao, orbs/despair.ao): cast, a surge
+  // goes out of your hand toward its area for 0.6-1 s (0.8 / 0.6 / 1); its area its runes on the ground for its delay
+  // (curse_runes despair_area, hex_despair_ring 4 / 1 / 15), a ring widening from half its area to all of it over 1.5 s,
+  // the ground darkened for 2 s (black_shockwave) and sparkles rising for 1 s (hex_despair_sparkles 1.8 / 1.25 / 8);
+  // each enemy it curses its symbol over its head while cursed (curse_runes despair, in its orb's colour), shown
+  // with a violet orb for 2 s (hex_despair_orb 3.5 / 1 / 8). note: its dark wave is left out; the counts, speeds and sizes are the scene's
+  const CURSE_LOOK = { Despair: { rune: 'despair', ring: 0x4412ff, spark: 0x3928ff, orb: 0x7020ff, wave: 0xcc99ff } };
+  const curseTex = (L, k) => artTex(`curse_${L.rune}${k}`, `particles/curses_02/area/curse_runes/${L.rune}${k}_dxt1`);
+  function hexArea(L, c, R, wait) {
+    const H = hand(), l = dist(c, pp) || 1, dx = (c.x - pp.x) / l, dz = (c.z - pp.z) / l, to = { x: H.x + dx * 1.4, z: H.z + dz * 1.4 };
+    fx.strip(H, to, .45, L.wave, .8, { a: .45, k: 1.6, y: H.y });
+    for (let i = 0; i < 3; i++) fx.streak(V(H.x, H.y, H.z), V(to.x - dz * (i - 1) * .25, H.y + (i - 1) * .2, to.z + dx * (i - 1) * .25), L.wave, rnd(.6, .8), .02, .5);
+    const D = fx.decal(c, R, curseTex(L, '_area'), L.ring, { a: .9, k: 2.2, rot: 0 }); later(Math.max(wait, .8), () => D.remove());
+    fx.ring(c, R * .5, R, L.ring, 1.5, { a: .8, tex: 'outline' }); fx.disc(c, R, 0x000000, 2, { dark: true, a: .35 });
+    fx.emit(24, { p: { x: c.x, y: .1, z: c.z }, r: R * .9, v: .2, up: 1.5, life: 1, size: .06, c: L.spark, c2: 'white', k: 2.2, drag: 1 });
+  }
+  function hexOrb(L, d) {
+    const q = { x: d.pos.x, y: 2.05 * d.sc + .9, z: d.pos.z };
+    fx.ball(q, .2, L.orb, 2, .5); fx.glow(q, .9, L.orb, .35, 2.4);
+  }
   // Blasphemy's look (Metadata/Effects/Spells/supports/blasphemy, art/particles/supports/blasphemy): each curse in it a
   // ring of its own runes on the ground round you, as wide as its area, in its colour (its aura_<curse> mat's albedo),
   // turning slowly; turned on, its symbol (blasphemy_BC1, its base rune colour 0.7 / 1 / 6) surges round you.
@@ -6876,8 +6897,10 @@ export function initScene(el, api) {
     if (!frozen) { let a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) - f.group.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a)); f.group.rotation.y += a * Math.min(1, dt * 5); }   // they watch you
     d.lunge = Math.max(0, d.lunge - dt * 3.2);
     f.upper.rotation.x = frozen ? 0 : Math.sin(time * 22 + d.ph) * d.wob * .16 + Math.sin(d.lunge * Math.PI) * .42; f.upper.rotation.z = frozen ? 0 : Math.cos(time * 17 + d.ph) * d.wob * .1;
-    const MR = d.mark && MARK_RUNE[d.mark.name]; f.ice.visible = frozen; f.curse.visible = !!d.curse; f.mark.visible = !!d.mark && !MR; f.rune.visible = !!MR;
-    if (MR) { const m = f.rune.material, T = fx.T[artTex('rune_' + MR[0], `particles/curses_02/marks/mark_runes/${MR[0]}`)]; if (m.map !== T) { m.map = T; m.color.set(MR[1]).multiplyScalar(2.5); m.needsUpdate = true; } m.opacity = .8 + Math.sin(time * 4) * .2; }
+    // over its head: its Mark's rune, else its curse's symbol (one with its own look: no ring under it then)
+    const MR = d.mark && MARK_RUNE[d.mark.name], CL = !MR && d.curse && CURSE_LOOK[d.curse.name], RN = MR ? [artTex('rune_' + MR[0], `particles/curses_02/marks/mark_runes/${MR[0]}`), MR[1]] : CL ? [curseTex(CL, ''), CL.orb] : null;
+    f.ice.visible = frozen; f.curse.visible = !!d.curse && !(d.curse && CURSE_LOOK[d.curse.name]); f.mark.visible = !!d.mark && !MR; f.rune.visible = !!RN;
+    if (RN) { const m = f.rune.material, T = fx.T[RN[0]]; if (m.map !== T) { m.map = T; m.color.set(RN[1]).multiplyScalar(2.5); m.needsUpdate = true; } m.opacity = .8 + Math.sin(time * 4) * .2; }
     if (d.curse) f.curse.rotation.y += dt * .8;
     if (d.mark) { f.mark.rotation.y += dt * 2.5; f.mark.scale.setScalar(1 + Math.sin(time * 5) * .08); }
     const nb = Math.min(10, d.dots.reduce((n, v) => n + (v.el === 'physical' ? v.stacks || 1 : 0), 0)); f.blood.visible = nb > 0;   // Corrupted Blood's orbs, one a debuff
