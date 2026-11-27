@@ -2042,24 +2042,6 @@ export function initScene(el, api) {
     if (R > 1.4 && !o.soft) shake = Math.max(shake, Math.min(.5, R * .09));
     return area(c, R, S, o);
   }
-  // Crushing Fear's look (Horror's Flight: uniques/ChokingMists). Its dash (grdDash_start, EPK_Body): pale wind swirling
-  // over the ground for 0.3-0.4 s (0.45 / 0.45 / 0.45), a sonic boom for 0.12-0.3 s (0.71 / 0.6 / 0.9), glass shards
-  // falling off you to lie for 2.5-4.5 s, blue motes for 0.5-1.85 s (0.1 / 0.11 / 1) and feathers for 2-3 s (their
-  // texture's mean 84 / 54 / 54); its hit (Charged_Impact: conversionImpact) violet sparks and embers for 0.5-2 s (0.46
-  // / 0.22 / 1), feathers and a 0.1 s shake. A kill (EmotionDrain) draws violet ribbons out of the enemy for 0.3-0.7 s
-  // (0.76 / 0.56 / 1); its shockwave (Shattering_Blastwave: shatterblast) a dark sphere for 0.35 s, a flash for 0.2 s
-  // (0.56 / 0.32 / 1), streaks for 0.25 s (0.26 / 0.2 / 1), a violet ring for 0.75 s (0.42 / 0.24 / 1.14 to 0.93 / 0.9 / 1)
-  // and flames for 0.3-0.4 s (0.23 / 0.11 / 1) from 0.03 s, its push wave at 0.08 s (0.48 / 0.32 / 1), a lilac light ring
-  // and sphere at 0.1 s for 0.5-0.65 s (0.74 / 0.6 / 1), glass shards flung for 1-2 s (0.76 / 0.56 / 0.76) and more on the
-  // ground for 3-4 s, blue embers for 1-2 s and the glassy cracks it leaves for 4.5 s (VFX_FrozenLake02: 77 / 95 / 109).
-  // note: the counts, speeds and sizes are the scene's; its blurs and distortions are left out
-  // Cull The Weak's look (spear_frenzystab; its tutorial video). Its lunge (frenzied_lunge.atl: weaponCharge.ao) gathers
-  // wind about the spear, 24 ribbons for 0.5 s (0.63 / 1 / 0.38) and a gust off the blade for 0.12 s (0.46 / 1 / 0.2); its
-  // stab (stabStrike.ao) a pale sonic boom for 0.25 s, a spike cone for 0.25 s (0.63 / 1 / 0.25) and a wind cone for
-  // 0.17 s (0.86 / 1 / 0.3) from 0.04-0.08 s, a warm core at 0.1 s for 0.13 s (1 / 0.85 / 0.55). Its hit (hitImpact)
-  // spikes for 0.06-0.13 s (0.84 / 1 / 0.5), a wave back for 0.1-0.2 s (0.91 / 1 / 0.35) and embers for 0.4-1.2 s (0.53 /
-  // 1 / 0.3); a cull (culling_impact.ao: frenzyImpact) the same, brighter, with a 0.075 s shake. note: the counts,
-  // speeds and sizes are the scene's
   // Dark Effigy's look (chaos_dark_effigy; its tutorial video). Its totem rises in a violet wave (dark_effigy_start:
   // summon_wave for 1 s, 0.76 / 0.7 / 1, and 128 embers for 0.5-1.2 s, 0.66 / 0.6 / 1) and stands in its ground glow
   // (effigy_ground, 0.74 / 0.7 / 1) with violet ribbons rising for 3-4 s (0.72 / 0.7 / 1) and embers for 1.5-4 s. Each
@@ -2101,6 +2083,13 @@ export function initScene(el, api) {
       lob(fx.orb(DEFF.trail, .12), V(e.pos.x, 1.8, e.pos.z), V(to.x, .1, to.z), l / v, l * .3, () => { deImpact(to, r); area(to, r, S); }, { trail: DEFF.trail });
     }));
   }
+  // Cull The Weak's look (spear_frenzystab; its tutorial video). Its lunge (frenzied_lunge.atl: weaponCharge.ao) gathers
+  // wind about the spear, 24 ribbons for 0.5 s (0.63 / 1 / 0.38) and a gust off the blade for 0.12 s (0.46 / 1 / 0.2); its
+  // stab (stabStrike.ao) a pale sonic boom for 0.25 s, a spike cone for 0.25 s (0.63 / 1 / 0.25) and a wind cone for
+  // 0.17 s (0.86 / 1 / 0.3) from 0.04-0.08 s, a warm core at 0.1 s for 0.13 s (1 / 0.85 / 0.55). Its hit (hitImpact)
+  // spikes for 0.06-0.13 s (0.84 / 1 / 0.5), a wave back for 0.1-0.2 s (0.91 / 1 / 0.35) and embers for 0.4-1.2 s (0.53 /
+  // 1 / 0.3); a cull (culling_impact.ao: frenzyImpact) the same, brighter, with a 0.075 s shake. note: the counts,
+  // speeds and sizes are the scene's
   const CTW = { wind: 0xa1ff61, gust: 0x75ff33, boom: 0xe6ecf2, spike: 0xa0ff40, cone: 0xdbff4d, core: 0xffd98c, hit: 0xd6ff80, wave: 0xe8ff59, ember: 0x87ff4d };
   function ctwLunge(a, b) {
     const l = dist(a, b) || 1, dx = (b.x - a.x) / l, dz = (b.z - a.z) / l;
@@ -2135,6 +2124,17 @@ export function initScene(el, api) {
     if (Math.random() < dt * 16) fx.emit(1, { p: q, r: .12, v: .1, life: .5, size: .6, c: CSOUL.core, c2: CSOUL.flame, k: 2.4 });
     if (Math.random() < dt * 20) fx.emit(1, { p: q, r: .2, v: .15, up: 1.1, life: .6, size: .18, c: CSOUL.flame, c2: CSOUL.spark, k: 1.8, drag: .5 });
   }
+  // Crushing Fear's look (Horror's Flight: uniques/ChokingMists). Its dash (grdDash_start, EPK_Body): pale wind swirling
+  // over the ground for 0.3-0.4 s (0.45 / 0.45 / 0.45), a sonic boom for 0.12-0.3 s (0.71 / 0.6 / 0.9), glass shards
+  // falling off you to lie for 2.5-4.5 s, blue motes for 0.5-1.85 s (0.1 / 0.11 / 1) and feathers for 2-3 s (their
+  // texture's mean 84 / 54 / 54); its hit (Charged_Impact: conversionImpact) violet sparks and embers for 0.5-2 s (0.46
+  // / 0.22 / 1), feathers and a 0.1 s shake. A kill (EmotionDrain) draws violet ribbons out of the enemy for 0.3-0.7 s
+  // (0.76 / 0.56 / 1); its shockwave (Shattering_Blastwave: shatterblast) a dark sphere for 0.35 s, a flash for 0.2 s
+  // (0.56 / 0.32 / 1), streaks for 0.25 s (0.26 / 0.2 / 1), a violet ring for 0.75 s (0.42 / 0.24 / 1.14 to 0.93 / 0.9 / 1)
+  // and flames for 0.3-0.4 s (0.23 / 0.11 / 1) from 0.03 s, its push wave at 0.08 s (0.48 / 0.32 / 1), a lilac light ring
+  // and sphere at 0.1 s for 0.5-0.65 s (0.74 / 0.6 / 1), glass shards flung for 1-2 s (0.76 / 0.56 / 0.76) and more on the
+  // ground for 3-4 s, blue embers for 1-2 s and the glassy cracks it leaves for 4.5 s (VFX_FrozenLake02: 77 / 95 / 109).
+  // note: the counts, speeds and sizes are the scene's; its blurs and distortions are left out
   const CFEAR = { wind: 0x737373, boom: 0xb599e6, mote: 0x1a1cff, glass: 0xc28fc2, feather: 0x543636, spark: 0x7538ff, ribbon: 0xc28fff, flash: 0x8f52ff, streak: 0x4233ff, ring: 0x5e36ff, ringHot: 0xede6ff, flame: 0x3b1cff, push: 0x7a52ff, light: 0xbd99ff, crack: 0x4d5f6d, dark: 0x0a0614 };
   const feathers = (p, n, r) => fx.emit(n, { p, r, h: .6, v: .5, life: 2.5, size: .09, c: CFEAR.feather, smoke: true, a: .9, g: .6, drag: 2 });
   function cfDash(a, b) {
