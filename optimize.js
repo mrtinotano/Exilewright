@@ -37,7 +37,7 @@ export function toughness(c) {
 // damage of its own, what the skills it sets off deal (calc.js subDamage: Ancestral Cry's Volcanic Steps and Eruption).
 // g.sub: only that one of them (the Optimizer's choice: a build for Volcanic Steps), per hit if it has no rate of its own
 export const damage = (s, g) => { const x = g?.sub && subsOf(g, s).find(y => y.key === g.sub)?.s, z = x || s, dot = dotSum(z);
-  return z.reason === 'This skill cannot be used with the weapon in hand' ? null : z.dps == null && !dot ? (x ? x.perHit ?? null : subDamage(s)?.v ?? null) : (z.dps || 0) + dot; };
+  return z.noUse ? null : z.dps == null && !dot ? (x ? x.perHit ?? null : subDamage(s)?.v ?? null) : (z.dps || 0) + dot; };
 // the number an objective looks at, for build b with summed stats `sum` (g: the gem of b the skill objectives rate)
 export function score(key, b, sum, g) {
   if (key === 'dps') return damage(skill(g, b, sum), g);
