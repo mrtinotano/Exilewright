@@ -1329,7 +1329,8 @@ export function skill(g, b, treeGear) {
   if (accPhys) w.physical = w.physical.map(x => x + accPhys);
   // the weapons the skill is used with (ActiveSkills.WeaponRequirements; a shield skill names what the off hand holds)
   if (w?.noThrow && gt.includes('Projectile')) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };   // a weapon that Cannot use Projectile Attacks (Tyranny's Grip)
-  if (w && !bare && !palm && !fbG && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])))) return { ...out, reason: 'This skill cannot be used with the weapon in hand' };
+  // one the weapon in hand cannot use: its numbers with that weapon all the same, as the game's skill window, but no DPS
+  const noUse = w && !bare && !palm && !fbG && d.weapons && !['weapon', 'offhand'].some(s => d.weapons.includes(classOf(b.items[s])));
   // the skill a meta totem uses (Mortar Cannon's Cluster Grenade: the gem right after it, with the same supports, as a
   // Path of Building group comes in) is a totem's ballista attack: "increased Ballista / Totem Damage" count, "per active
   // Totem in your Presence" once, for that totem, and the meta gem's own -50% more damage. The game's window with one
@@ -1888,6 +1889,7 @@ export function skill(g, b, treeGear) {
   if (!g.part && !g.asHit && d.hit?.types?.some(x => x === 'Attack' || x === 'Spell') && !dealt(out) && !out.minion) {
     const H = skill({ ...g, asHit: true }, b, treeGear); if (dealt(H) || H.reason) out.hitAs = H;   // or why it deals none (no weapon): its tab still shows
   }
+  if (noUse) { out.reason = 'This skill cannot be used with the weapon in hand'; out.dps = null; }
   return out;
 }
 // the skills of a gem that deal damage besides its own (the game's skill window: a tab each): { key, tab (available.py:
@@ -1898,7 +1900,7 @@ export const subsOf = (g, s, all) => { const d = SK.skills[g.name] || {}, ok = x
 // what a gem without damage of its own deals through them: the DPS of those with a rate of their own, else (all set off
 // by the gem: Volcanic Steps) their damage per hit (perHit). ponytail: one number of either kind, as the game gives no rate for those
 export function subDamage(s) {
-  const L = [s.hitAs, ...Object.values(s.parts || {})].filter(dealt), rate = L.filter(x => x.dps != null || dotSum(x));
+  const L = [s.hitAs, ...Object.values(s.parts || {})].filter(x => dealt(x) && !x.reason), rate = L.filter(x => x.dps != null || dotSum(x));
   return !L.length ? null : rate.length ? { v: rate.reduce((t, x) => t + (x.dps || 0) + dotSum(x), 0) } : { v: L.reduce((t, x) => t + (x.perHit || 0), 0), perHit: true };
 }
 
