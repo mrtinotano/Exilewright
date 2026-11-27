@@ -5580,15 +5580,15 @@ export function initScene(el, api) {
   // 0.5-2 s; 1 / 0.24 / 0.21) and its red glow at your edges grows with your Demonflame (GameplayDrivenMultiplier). As
   // you revert (transform_deactivate) blood gushes out of you (shift_BLOOD, 10 s). note: the wisps' colour is not in the
   // data (darkness here); the wings' blast is at your shift here; the counts, speeds and sizes are the scene's
-  const DEMON = { wing: 0x44323b, dark: 0x453873, violet: 0x9980ff, ember: 0xff3d36, edge: 0xff1708, blast: 0xebe0ff, wind: 0x7a7684, smoke: 0x333333, blood: 0x8a0008, stain: 0x5a0006, flap: 1.02 };
+  const DEMON = { wing: 0x44323b, dark: 0x453873, violet: 0x9980ff, ember: 0xff3d36, blast: 0xebe0ff, wind: 0x7a7684, smoke: 0x333333, blood: 0x8a0008, stain: 0x5a0006, flap: 1.02 };
   let demK = 0, wings = null;
   function demonIn(grow) {
-    const c = { x: pp.x, y: 1.1, z: pp.z }, g = { x: pp.x, z: pp.z };
+    const c = { x: pp.x, y: 1.1, z: pp.z };
     barkU.demO.value = 1;
     for (let i = 0; i < 28; i++) { const a = rnd(TAU), r = rnd(1.2, 2), y = rnd(.2, 2.2); fx.emit(1, { p: { x: pp.x + Math.cos(a) * r, y, z: pp.z + Math.sin(a) * r }, dir: V(-Math.cos(a) * r * 1.6, (c.y - y) * 1.6, -Math.sin(a) * r * 1.6), v: .1, life: .6, size: .35, c: DEMON.dark, smoke: true, a: .6 }); }
     for (let i = 0; i < 8; i++) { const a = rnd(TAU), r = rnd(1.2, 2); fx.streak(V(pp.x + Math.cos(a) * r, rnd(.2, 2.2), pp.z + Math.sin(a) * r), V(c.x, c.y, c.z), DEMON.violet, rnd(.45, .75), .015, .35); }
     later(.02, () => { fx.ball({ x: pp.x, y: 0, z: pp.z }, 1.4, DEMON.blast, 1.5, .05); fx.emit(60, { p: { x: pp.x, y: .15, z: pp.z }, r: .5, v: 3, life: 2.2, size: .5, grow: 2, c: DEMON.smoke, smoke: true, a: .4, drag: 1.5, flat: true }); });
-    later(.06, () => { for (let i = 0; i < 3; i++) later(i * .04, () => fx.ring(g, .3, 2.4, DEMON.wind, .3, { a: .5, y: 1 })); });
+    later(.06, () => { for (let i = 0; i < 3; i++) later(i * .04, () => fx.ring(pp, .3, 2.4, DEMON.wind, .3, { a: .5, y: 1 })); });
     later(grow, () => fx.emit(16, { p: c, r: .4, h: 1.6, v: .3, up: .4, life: .75, size: .4, grow: 1.4, c: DEMON.dark, smoke: true, a: .5, drag: 1 }));
   }
   function demonBlood() {
@@ -5601,10 +5601,10 @@ export function initScene(el, api) {
     barkU.demK.value = k; barkU.demS.value = on ? Math.min(1, demon() / (M < Infinity ? M : 10)) : 0; barkU.demO.value = Math.max(0, barkU.demO.value - dt / (.45 * (me.demon?.grow || 1)));
     if (k && !wings) { wings = makeWings(DEMON.wing); player.chest.add(wings.group); wings.group.position.set(0, .14, -.12); }
     if (!wings) return k;
+    if (!k) { wings.dispose(); wings = null; return 0; }
     const f = Math.sin(time * TAU / DEMON.flap);
     wings.group.scale.setScalar(Math.max(1e-3, k));
     for (const [w, s] of [[wings.R, 1], [wings.L, -1]]) { w.rotation.y = s * (.45 + .3 * f); w.rotation.z = s * .12 * f; }
-    if (!k) { wings.dispose(); wings = null; return 0; }
     if (on && Math.random() < dt * 8) fx.emit(1, { p: { x: pp.x, y: rnd(.4, 1.8), z: pp.z }, r: .35, v: .15, up: .8, life: 1.1, size: .3, grow: 1.4, c: DEMON.dark, smoke: true, a: .4, drag: 1 });
     if (on && Math.random() < dt * 12) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .4, v: .3, up: 1, life: 1.25, size: .05, c: DEMON.ember, c2: 'white', k: 2.4, drag: 1 });
     return k;
@@ -5734,6 +5734,7 @@ export function initScene(el, api) {
   }
   // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
   // each second in it (up to Demonic Possession's most, 10 in its description; no most with Mastered Darkness), each its more spell damage and its Life lost per minute; its cast speed
+  const demonCast = b => me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1;   // its increased cast speed. note: as more here
   const demon = () => me.demon ? Math.min(me.demon.max, Math.floor(time - me.demon.at)) : 0;
   const demonOff = () => { say(t('{0} off', me.demon.label), 'dust'); (cdReady[me.demon.name] ||= []).push(time + me.demon.cd / 1000); me.demon = null; demonBlood(); };
   K.demon = S => { if (me.demon) return demonOff(); const sm = S.dmg.sum || {}; me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name, max: sm.demon_form_has_no_max_stacks ? Infinity : sm.max_demon_form_stacks || 10, grow: useTime(S), cd: S.dmg.cooldown || 0 }; demonIn(me.demon.grow); say(t('{0} on', S.label), 'fire'); };
@@ -6408,7 +6409,7 @@ export function initScene(el, api) {
     if (b.kind === 'totem' && b.dmg?.placeTime) return b.dmg.placeTime;
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
-      / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1) / (isCmd(b) ? 1 + PUPPET.cmdSpeed * pup() / 100 : 1)   /* Demon Form's increased cast speed, Puppet Master. note: both as more here */
+      / demonCast(b) / (isCmd(b) ? 1 + PUPPET.cmdSpeed * pup() / 100 : 1)   /* Demon Form, Puppet Master. note: as more here */
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
       / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (1 + souls() * SOUL.speed / 100) / (time < me.fervour && b.P.attack ? 1 + FERVOUR.speed * new Set(used.filter(u => u.gren && time - u.t <= RECENT).map(u => u.name)).size / 100 : 1) /* Explosive Fervour. note: as more here */ / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
@@ -7541,7 +7542,7 @@ export function initScene(el, api) {
       demon: me.demon ? { v: [demon() * me.demon.st.demon_form_life_loss_per_minute_per_stack / 60, 0], name: me.demon.label } : null,   // Demon Form's Life lost per Demonflame
       // the share of its damage per second a skill you use deals now: action speed, Rage on attacks, a mark's buff, Demon Form on spells (not a
       // totem's or a minion's, nor one a meta gem uses: those act by themselves)
-      dps: i => { const S = base(i), D = S?.dmg; return D && api.byHand(i) && !['totem', 'minion', 'raise'].includes(S.kind) ? act * (D.attack ? rageX(D) : 1) * (gain ? 1 + gain.pct / 100 : 1) * (me.demon && S.P.spell ? (1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100) * (1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100) : 1) : 1; },
+      dps: i => { const S = base(i), D = S?.dmg; return D && api.byHand(i) && !['totem', 'minion', 'raise'].includes(S.kind) ? act * (D.attack ? rageX(D) : 1) * (gain ? 1 + gain.pct / 100 : 1) * (me.demon && S.P.spell ? (1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100) * demonCast(S) : 1) : 1; },
     };
   }
   // your resistances with those of the charms in use
