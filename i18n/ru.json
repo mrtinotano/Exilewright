@@ -1023,5 +1023,6 @@
  "{0}: choose its monster in the Skills tab": "{0}: выберите монстра на вкладке «Умения»",
  "Average Damage per Hit": "Средний урон за попадание",
  "per hit": "за попадание",
- "Damage of the skills it sets off": "Урон умений, которые она вызывает"
+ "Damage of the skills it sets off": "Урон умений, которые она вызывает",
+ "Damage of": "Урон от"
 }

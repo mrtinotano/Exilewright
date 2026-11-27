@@ -1023,5 +1023,6 @@
  "{0}: choose its monster in the Skills tab": "{0}：スキルタブでモンスターを選択",
  "Average Damage per Hit": "ヒットあたりの平均ダメージ",
  "per hit": "ヒットあたり",
- "Damage of the skills it sets off": "このスキルが発動するスキルのダメージ"
+ "Damage of the skills it sets off": "このスキルが発動するスキルのダメージ",
+ "Damage of": "ダメージ対象"
 }

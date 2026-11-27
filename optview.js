@@ -5,9 +5,9 @@
 //          change(fn(b)) (edits the build, saves, redraws), showOnTree(ids) }
 import { t, esc, tn, fmt } from './i18n.js';
 import { OBJECTIVES, score, whyNot, optimizeTree, bestSupports } from './optimize.js';
-import { GEM, colour, supportText } from './skills.js';
+import { GEM, colour, supportText, tabName } from './skills.js';
 import { SK } from './skilldata.js';
-import { usedBy } from './calc.js';
+import { usedBy, skill, subsOf, dealt } from './calc.js';
 import { SLOTS, classOf, slotClasses, slotOpen, flaskOf, flaskLabel, wear, priceLines, affixLines, uniqueLines, modsOf, unmet, radiusOf, newItem, uniqueName, pickSkill, itemImg, JEWEL_UNIQUES } from './items.js';
 import { diff, impactHtml, impactList } from './impact.js';
 import { stored, put, ask } from './settings.js';
@@ -41,11 +41,17 @@ export function initOpt(el, ctx) {
   const wantMemo = { key: '', list: [] };
 
   // ---------- the build and the objective
+  // the skills of the gem whose damage the objectives can rate (its tabs in the Skills tab): none for a gem without them
+  const subPick = (b, g, sum) => {
+    if (!g || !['dps', 'mix'].includes(S.key)) return '';
+    const G = GEM[g.name], raw = g.of || g, s = skill(raw, b, sum), subs = subsOf(raw, s); if (!subs.length) return '';
+    return `<label>${t('Damage of')} <select data-sub>${opt('', dealt(s) ? tabName(SK.skills[g.name]?.tab, G) : t('Damage of the skills it sets off'), !g.sub)}${subs.map(x => opt(x.key, tabName(x.tab, G), x.key === g.sub)).join('')}</select></label>`;
+  };
   const skills = b => b.gems.filter(g => GEM[g.name] && GEM[g.name].kind !== 'support');
   // the skill picked for this build; none picked yet: the one that does the most damage (the first skill is often an aura
   // or a buff, and nothing raises the damage of a skill that does none)
   let main = null;
-  const gemOf = b => {
+  const pickOf = b => {
     const list = skills(b);
     if (S.gem[ctx.id()] != null) return list[S.gem[ctx.id()]] || list[0] || null;
     if (main?.rev !== ctx.rev() || main.id !== ctx.id()) {
@@ -54,6 +60,10 @@ export function initOpt(el, ctx) {
     }
     return main.g;
   };
+  // and the damage of which of its skills the objectives rate (S.sub, per build and gem: '' its own, or for a gem without
+  // damage of its own all the skills it sets off; else one of them, as calc.js subsOf: Ancestral Cry's Volcanic Steps)
+  const subKey = g => ctx.id() + '|' + g.name;
+  const gemOf = b => { const g = pickOf(b), k = g && S.sub?.[subKey(g)]; return k ? { ...g, sub: k, of: g } : g; };
   const rate = (key, b, g, sum = ctx.sumOf(b)) => whyNot(key, b, sum, g) ? null : score(key, b, sum, g);
   const num = (v, key) => { const o = OBJECTIVES[key]; return v == null ? '—' : fmt(v, o.dec ?? (o.skill && Math.abs(v) < 100 ? 1 : 0)) + (o.unit || ''); };
   // the objective as text ("balanced" is a product: its two numbers say more)
@@ -348,7 +358,8 @@ export function initOpt(el, ctx) {
     const g = gemOf(b), sum = ctx.sumOf(b), why = whyNot(S.key, b, sum, g), list = skills(b), top = el.scrollTop;
     el.innerHTML = `<div class="opt"><section class="opthead"><div class="optrow">
         <label>${t('Objective')} <select data-s="key">${Object.entries(OBJECTIVES).map(([k, o]) => opt(k, t(o.label), k === S.key)).join('')}</select></label>
-        <label>${t('Skill')} ${list.length ? `<select data-gem>${list.map((x, i) => { const M = usedBy(b, b.gems.indexOf(x)); return opt(i, M ? t('{0} (in {1})', tn(GEM[x.name]), tn(GEM[M.name]) || M.name) : tn(GEM[x.name]), x === g); }).join('')}</select>` : `<span class="note">${t('Add a skill to the build first')}</span>`}</label>
+        <label>${t('Skill')} ${list.length ? `<select data-gem>${list.map((x, i) => { const M = usedBy(b, b.gems.indexOf(x)); return opt(i, M ? t('{0} (in {1})', tn(GEM[x.name]), tn(GEM[M.name]) || M.name) : tn(GEM[x.name]), x === (g?.of || g)); }).join('')}</select>` : `<span class="note">${t('Add a skill to the build first')}</span>`}</label>
+        ${subPick(b, g, sum)}
         <div class="optnow">${why ? (list.length ? `<span class="note">${esc(t(why))}</span>` : '') : `${t('Now')}: <b>${show(S.key, b, g, sum)}</b>`}</div></div>
       ${NOTES[S.key] ? `<p class="note">${t(NOTES[S.key])}</p>` : ''}</section>
       ${treeCard(b, g, why)}${supCard(b, g, sum)}${gearCard(b, g)}</div>`;
@@ -369,6 +380,7 @@ export function initOpt(el, ctx) {
     else if (d.c) { S[d.c] = x.checked; U = null; }
     else if (d.jx) { S.jx = { ...S.jx, [d.jx]: !x.checked }; S.jxOpen = true; T = null; other = true; }
     else if ('gem' in d) { S.gem[ctx.id()] = +x.value; delete typed.sockets; T = U = null; other = true; }
+    else if ('sub' in d) { const g = pickOf(ctx.build()); S.sub = { ...S.sub, [subKey(g)]: x.value }; if (!x.value) delete S.sub[subKey(g)]; T = U = null; other = true; }
     else if ('cls' in d) S.cls[gearSel(ctx.build()).slot] = x.value;
     else if (d.like != null) { const l = likeOf(gearSel(ctx.build()).slot)[+d.like]; if (l) l.value = +x.value || 0; }
     else return;
@@ -407,7 +419,7 @@ export function initOpt(el, ctx) {
       ctx.change(b => { const z = withPath(b, r, fresh); Object.assign(b, { nodes: z.nodes, set1: z.set1, set2: z.set2, attrs: z.attrs }); });
     }
     if (what === 'useSup' && U) {
-      const names = U.r.combos[+btn.dataset.i]?.names, i = skills(b).indexOf(gemOf(b)); if (!names) return;
+      const names = U.r.combos[+btn.dataset.i]?.names, i = skills(b).indexOf(pickOf(b)); if (!names) return;
       msg.sup = t('Supports changed: {0}.', names.map(n => tn(GEM[n])).join(', '));
       ctx.change(b => { const g = skills(b)[i], m = g.meta && b.gems.find(x => x.name === g.meta);   // in a meta gem: the supports go in its sockets
         const to = m || g, held = m ? b.gems.filter(x => x.meta === m.name).length : 0;

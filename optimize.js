@@ -3,9 +3,10 @@
 // what the calculation (calc.js) says is best, so they only see what the planner calculates: a passive or support
 // whose effect is conditional or not modelled counts as nothing.
 // No DOM here: optview.js is the screen, app.js owns the build.
-import { skill, character, attributes, supportKnown, metaAdds, subDamage, dotSum, typeSets, fitsGem } from './calc.js';
+import { skill, character, attributes, supportKnown, metaAdds, subDamage, subsOf, dotSum, typeSets, fitsGem } from './calc.js';
 import { typical, hitChanceExact, playerTakes, K, TYPES } from './enemies.js';
 import { SK } from './skilldata.js';
+import { newItem } from './items.js';
 import { GEM, SUPPORTS, colour } from './skills.js';
 
 // ---------- objectives
@@ -33,21 +34,26 @@ export function toughness(c) {
   return lost > 0 && lands > 0 ? 1 / (lost * lands) : 0;
 }
 // hits and damage over time of a skill, per second (null: the skill deals no damage the app can work out); a gem with no
-// damage of its own, what the skills it sets off deal (calc.js subDamage: Ancestral Cry's Volcanic Steps and Eruption)
-export const damage = s => { const dot = dotSum(s); return s.dps == null && !dot ? subDamage(s)?.v ?? null : (s.dps || 0) + dot; };
+// damage of its own, what the skills it sets off deal (calc.js subDamage: Ancestral Cry's Volcanic Steps and Eruption).
+// g.sub: only that one of them (the Optimizer's choice: a build for Volcanic Steps), per hit if it has no rate of its own
+export const damage = (s, g) => { const x = g?.sub && subsOf(g, s).find(y => y.key === g.sub)?.s, z = x || s, dot = dotSum(z);
+  return z.dps == null && !dot ? (x ? x.perHit ?? null : subDamage(s)?.v ?? null) : (z.dps || 0) + dot; };
 // the number an objective looks at, for build b with summed stats `sum` (g: the gem of b the skill objectives rate)
 export function score(key, b, sum, g) {
-  if (key === 'dps') return damage(skill(g, b, sum));
+  if (key === 'dps') return damage(skill(g, b, sum), g);
   if (key === 'speed') return skill(g, b, sum).speed;
   const c = character(b, sum);
   switch (key) {
-    case 'mix': { const d = damage(skill(g, b, sum)); return d == null ? null : d * toughness(c); }
+    case 'mix': { const d = damage(skill(g, b, sum), g); return d == null ? null : d * toughness(c); }
     case 'tough': return toughness(c);
     case 'pool': return (c.life || 0) + c.es;
     case 'res': return Object.values(c.res).reduce((s, r) => s + r.capped, 0);
     default: return c[key] ?? 0;
   }
 }
+// self-check: Ancestral Cry's damage is its Volcanic Steps' and Eruption's per hit, or one of them (g.sub)
+{ const b = { gems: [], items: { weapon: newItem('Felled Greatclub') } }, A = sub => score('dps', b, {}, { name: 'Ancestral Cry', level: 10, supports: [], sub }), s = skill({ name: 'Ancestral Cry', level: 10, supports: [] }, b, {});
+  console.assert(A('hit') === s.hitAs.perHit && A('AncestralCryProjectilePlayer') === Object.values(s.parts)[0].perHit && Math.abs(A() - A('hit') - A('AncestralCryProjectilePlayer')) < 1e-9, 'optimizer: a skill the gem sets off', A(), A('hit')); }
 // why a skill objective has no number (calc.js gives the reason), or null
 export const whyNot = (key, b, sum, g) => !OBJECTIVES[key].skill ? null : !g ? 'Add a skill to the build first'
   : score(key, b, sum, g) == null ? skill(g, b, sum).reason || 'This skill does not deal direct damage' : null;
@@ -195,7 +201,7 @@ export async function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets
   if (capacity) {
     const at = attributes(sum, b.asc), per = SK.support_capacity_per_attribute || 5;
     cap = Object.fromEntries(Object.keys(ATTR).map(k => [k, Math.floor(at[k] / per)]));
-    for (const o of b.gems || []) if (o !== g && !o.meta && o.name !== g.meta) for (const n of o.supports || []) {   // a skill in a meta gem: its supports are the meta gem's
+    for (const o of b.gems || []) if (o !== g && o !== g.of && !o.meta && o.name !== g.meta) for (const n of o.supports || []) {   // a skill in a meta gem: its supports are the meta gem's
       const c = n && GEM[n] && colour(GEM[n]); if (c) cap[c]--; }
   }
   // every valid combination of up to `sockets` of them

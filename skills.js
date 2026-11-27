@@ -46,7 +46,7 @@ function condRows(s, b, sum) {
 }
 
 // a tab of the game's skill window: its label (available.py), else the skill's name
-const tabName = (x, G) => x?.['label_' + lang] || x?.label || tn(G);
+export const tabName = (x, G) => x?.['label_' + lang] || x?.label || tn(G);
 // side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill
 // details window, with a tab for each skill it sets off that deals damage (view: its key; Ancestral Cry's Volcanic Steps)
 function details(g, b, sum, geo, view) {
