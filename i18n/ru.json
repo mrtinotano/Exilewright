@@ -956,6 +956,7 @@
  "{0}: dismounted": "{0}: пешим",
  "{0} needs a Bow or a Spear": "{0}: нужен лук или копьё",
  "{0} cannot be used while mounted": "{0} нельзя использовать верхом",
+ "{0} cannot be used while Energy Shield is full": "{0} нельзя использовать при полном энергетическом щите",
  "Archon of Undeath": "Архонт бессмертия",
  "Puppet Master": "Кукловод",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "Сфера архитектора: один из модификаторов уникального предмета заменён модификатором ваал",

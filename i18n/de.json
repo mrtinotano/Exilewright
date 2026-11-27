@@ -956,6 +956,7 @@
  "{0}: dismounted": "{0}: abgesessen",
  "{0} needs a Bow or a Spear": "{0} benötigt einen Bogen oder einen Speer",
  "{0} cannot be used while mounted": "{0} kann nicht aufgesessen verwendet werden",
+ "{0} cannot be used while Energy Shield is full": "{0} kann nicht bei vollem Energieschild verwendet werden",
  "Archon of Undeath": "Untoter Archon",
  "Puppet Master": "Strippenzieher",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "Sphäre des Architekten: ein Modifikator des Einzigartigen durch einen Vaal-Modifikator ersetzt",

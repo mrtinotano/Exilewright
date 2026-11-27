@@ -956,6 +956,7 @@
  "{0}: dismounted": "{0}: 하차",
  "{0} needs a Bow or a Spear": "{0}: 활이나 창이 필요합니다",
  "{0} cannot be used while mounted": "{0}: 탑승 중에는 사용할 수 없습니다",
+ "{0} cannot be used while Energy Shield is full": "{0}: 에너지 보호막이 가득 찬 동안에는 사용할 수 없습니다",
  "Archon of Undeath": "불사의 집정관",
  "Puppet Master": "인형사",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "건축가의 오브: 고유 아이템의 속성 하나를 바알 속성으로 교체",

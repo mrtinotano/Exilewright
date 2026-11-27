@@ -956,6 +956,7 @@
  "{0}: dismounted": "{0}: desmontado",
  "{0} needs a Bow or a Spear": "{0} precisa de um arco ou uma lança",
  "{0} cannot be used while mounted": "{0} não pode ser usado montado",
+ "{0} cannot be used while Energy Shield is full": "{0} não pode ser usado com o Escudo de Energia cheio",
  "Archon of Undeath": "Arconte da Morte-viva",
  "Puppet Master": "Mestre das Marionetes",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "Orbe do Arquiteto: um dos modificadores do único substituído por um modificador vaal",

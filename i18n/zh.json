@@ -956,6 +956,7 @@
  "{0}: dismounted": "{0}：已下騎",
  "{0} needs a Bow or a Spear": "{0} 需要弓或長矛",
  "{0} cannot be used while mounted": "{0} 騎乘時無法使用",
+ "{0} cannot be used while Energy Shield is full": "{0} 在能量護盾全滿時無法使用",
  "Archon of Undeath": "亡靈統治者",
  "Puppet Master": "魁儡大師",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "策匠石：傳奇物品的一條詞綴被替換為瓦爾詞綴",

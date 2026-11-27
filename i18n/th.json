@@ -956,6 +956,7 @@
  "{0}: dismounted": "{0}: ลงจากพาหนะ",
  "{0} needs a Bow or a Spear": "{0} ต้องใช้ธนูหรือหอก",
  "{0} cannot be used while mounted": "{0} ใช้ขณะขี่ไม่ได้",
+ "{0} cannot be used while Energy Shield is full": "{0} ใช้ไม่ได้ขณะที่โล่พลังงานเต็ม",
  "Archon of Undeath": "อาร์คอนอันเดด",
  "Puppet Master": "ผู้เชิดหุ่น",
  "Architect's Orb: one of the unique's modifiers replaced by a Vaal modifier": "ลูกแก้วสถาปนิก: ม็อดหนึ่งของไอเทมยูนีคถูกแทนที่ด้วยม็อดวาล",

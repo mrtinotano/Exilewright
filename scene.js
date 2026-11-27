@@ -259,7 +259,7 @@ export function initScene(el, api) {
   // scene turns them on in the build's order while the build's Spirit covers them (the game starts none it cannot reserve)
   const always = g => (api.info(g).gem?.types || []).includes('Persistent'), unpaid = new Set();
   // a Banner too: on while its Spirit is reserved, building its Glory, and placed by hand
-  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || ['Iron Ward', 'Grim Feast', 'Rhoa Mount'].includes(g.name) || /Djinn$/.test(SK.minions[g.name]?.[0] || '') ? [i] : []);   // Temporal Rift, Iron Ward, Grim Feast (its Grim Resurrection), Rhoa Mount (mounting), a djinn (its own Command): on, and used
+  const slots = () => api.build().gems.flatMap((g, i) => api.byHand(i) || (api.info(g).gem?.types || []).some(x => x === 'Banner' || x === 'PersistentShowsCastTime') || ['Iron Ward', 'Grim Feast', 'Rhoa Mount', 'Convalescence'].includes(g.name) || /Djinn$/.test(SK.minions[g.name]?.[0] || '') ? [i] : []);   // Temporal Rift, Iron Ward, Grim Feast (its Grim Resurrection), Rhoa Mount (mounting), a djinn (its own Command): on, and used
   // the skill bar, as the game's: left, middle and right mouse button, then Q W E R T (Q E R T F moving with W A S D), each
   // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
   // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
@@ -3645,6 +3645,7 @@ export function initScene(el, api) {
       if (tog[k]?.cap) return invoke(tog[k]);   // an Invocation: used, it spends its energy
       if (tog[k] && k === 'Plague Bearer') return plague(S);   // Plague Bearer: used, it unleashes
       if (tog[k] && k === 'Grim Feast') return grim(S);   // Grim Feast: used, Grim Resurrection
+      if (tog[k] && k === 'Convalescence') return convalesce(S);   // Convalescence: used, its Recharge and Buff
       if (tog[k] && k === 'Rhoa Mount') return mount(S);   // Rhoa Mount: used again, you mount or dismount it
       if (tog[k] && k === 'Savage Fury' && me.wild > 0) return frenzy(S);   // Savage Fury: used with Fury, its frenzy
       if (tog[k]) { untoggle(k); say(t('{0} off', S.label), 'dust'); return; }
@@ -4808,7 +4809,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
@@ -5371,11 +5372,35 @@ export function initScene(el, api) {
     if (Math.random() < .25 * rg) fx.emit(1, { p: at(rnd(.8, 1.6)), r: .3, v: .4, up: .6, life: 1.2, size: .1, c: BERSERK.blood, smoke: true, a: .9, g: 5 });
     return (.2 + .2 * rg) * (.8 + .2 * Math.sin(time * 9));
   }
+  // Convalescence, used while it is on (and your Energy Shield is not full): your Energy Shield starts Recharging at once
+  // and its Buff, for its duration (its quality's more), keeps hits from interrupting that Recharge (hurt); the Buff
+  // ends at full Energy Shield. Its look (reservation_convalescence): used (burst.ao, convalescence_burst.epk), a flash
+  // (burst_Flash 0.7 / 0.82 / 1, 0.25 s), a blurred sphere (0.5 s from 0.05 s), 64 strings of light (burst_Strings
+  // 0.45 / 0.67 / 1, 0.35-2 s from 0.085 s), your skin lit (burstPower_Skin 0.35 / 0.67 / 1), flares (burst_LensFlare
+  // 0.3 / 0.69 / 1, 0.3 s) and sparks (burst_Sparks 0.2 / 0.69 / 1, 0.12-0.75 s from 0.065 s); while its Buff lasts
+  // (recover_es.epk), pale blue ribbons wind round your chest (esBarrier: es_Ribbons 0.5 / 0.87 / 1, 1 s each) and
+  // flares rise off you (energyShield_Sustain: 0.25-0.4 s). note: its sizes are the scene's
+  const CONV = { flash: 0xb3d1ff, string: 0x73abff, skin: 0x59abff, flare: 0x4dafff, spark: 0x33b0ff, ribbon: 0x80dfff };
+  function convalesce(S) {
+    const c = { x: pp.x, y: 1.1, z: pp.z }, dur = durOf(S);
+    me.esHurt = me.esStop = -99; me.conv = time + dur; setBuff({ label: S.label, name: S.name, c: '#80dfff', s: dur });
+    fx.glow(c, 1.6, CONV.flash, .25, 3); me.skin = { at: time, dur: .6, hex: CONV.skin };
+    fx.emit(8, { p: c, r: .4, v: .2, up: 3, life: .3, size: .12, c: CONV.flare, c2: 'white', k: 2.6 });
+    later(.05, () => fx.glow(c, 1.1, CONV.string, .5, 1.6));
+    later(.065, () => fx.emit(20, { p: c, r: .2, v: 3.5, up: 1, life: .45, size: .04, c: CONV.spark, c2: 'white', k: 2.6, drag: 2 }));
+    later(.085, () => fx.emit(64, { p: c, r: .3, v: 2.2, up: .6, life: 1.2, size: .05, c: CONV.string, c2: 'white', k: 2.4, drag: 2 }));
+  }
+  function convLook(dt) {
+    if (!(time < me.conv)) return;
+    if (me.es >= me.maxE) { me.conv = 0; buffs = buffs.filter(b => b.name !== 'Convalescence'); return; }
+    for (const k of [0, Math.PI]) { const a = time * 5 + k; fx.emit(2, { p: { x: pp.x + Math.cos(a) * .45, y: 1.2 + Math.sin(time * 3 + k) * .2, z: pp.z + Math.sin(a) * .45 }, r: .02, v: 0, up: .05, life: .6, size: .11, c: CONV.ribbon, c2: 'white', k: 3, drag: 1 }); }
+    if (Math.random() < dt * 6) fx.emit(1, { p: { x: pp.x, y: rnd(.6, 1.6), z: pp.z }, r: .35, v: .1, up: 1.5, life: .3, size: .1, c: CONV.flare, c2: 'white', k: 2.4 });
+  }
   const WARD = 0x125eff, WG = new THREE.Color();
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
-    const bz = berserkLook();
+    const bz = berserkLook(); convLook(dt);
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
     else if (bz) { w = bz; WG.set(BERSERK.skin); }   // Berserk: red over you while you have Rage
     orbiters(dt);
@@ -5827,6 +5852,7 @@ export function initScene(el, api) {
     if (AA && AK < AA) { toast(t('{0} needs {1} Blocked Hits', S.label, AA - AK)); return false; }
     if (AA) (me.aidAt ||= {})[S.name] = me.blockN;
     // as in the game, a skill the weapon in hand cannot use is not used (calc.js skill)
+    if (!auto && S.name === 'Convalescence' && tog[S.name] && me.es >= me.maxE) { toast(t('{0} cannot be used while Energy Shield is full', S.label)); return false; }   // its text
     if (S.dmg?.reason === 'This skill cannot be used with the weapon in hand') { toast(`${S.label}: ${t(S.dmg.reason)}`); return false; }
     if (!auto && me.maxM && !tog[S.name]) {
       let { cost, life } = costOf(S, o.held);
@@ -6621,7 +6647,7 @@ export function initScene(el, api) {
     if (me.st.shock > 0) { const k = 1 + me.mag.shock / 100; n *= k; chaos *= k; }   // shocked, you take more damage
     if (hit && sheet().regrow?.lose) me.regrow = 0;   // Dustbloom: all Fragile Regrowth lost when hit
     if (hit && sheet().tailwind?.lose) me.tail = 0;   // Gathering Winds: all Tailwind lost when hit
-    stats.taken += n; me.hurt = time; if (sheet().gambleMove) me.gamble = Math.random() * sheet().gambleMove; if (!(sheet().esKeep && time - (me.esRech ?? -99) <= RECENT)) me.esHurt = time, me.esRech = null, me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage((sheet().rage?.gain.hurt || 0) + (hit ? flaskOn('rageHit') : 0));   // Blood of the Warrior: Rage when Hit during its effect
+    stats.taken += n; me.hurt = time; if (sheet().gambleMove) me.gamble = Math.random() * sheet().gambleMove; if (!(sheet().esKeep && time - (me.esRech ?? -99) <= RECENT) && !(time < me.conv)) me.esHurt = time, me.esRech = null, me.esEarly = 0; if (held && base(held.i)?.kind === 'meditate') held = null; shake = Math.min(.45, shake + .1); gainRage((sheet().rage?.gain.hurt || 0) + (hit ? flaskOn('rageHit') : 0));   // Blood of the Warrior: Rage when Hit during its effect
     const c = el === 'physical' ? 'blood' : el; record('taken', d?.mon.name || '?', '', n, css(c));
     if (Math.round(n) >= 1) fx.num({ x: pp.x + rnd(-.2, .2), y: 2.2, z: pp.z }, '−' + short(n) + (crit ? '!' : ''), css(c), crit ? .62 : .46, !!crit);
     fx.emit(6, { p: { x: pp.x, y: 1.1, z: pp.z }, v: 2.2, up: 1, life: .3, size: .12, c, c2: 'white', drag: 2 });
