@@ -598,9 +598,9 @@ export function initScene(el, api) {
       if (na) for (const e in raw) raw[e] *= 1 + PA * na / 100 * (D?.incW?.[e] ?? 1);
       if (S.P.spell && !S.src && time < me.earch) { for (const e of ELEM) if (raw[e]) raw[e] *= 1 + EARCHON.more / 100; delete raw.physical; delete raw.chaos; }   // Elemental Archon: no non-elemental spell damage
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
-      // Elemental Conflux: while on, its more damage of one element, a random one again every its duration
+      // Elemental Conflux: while on, its more damage of its element (confluxLook)
       const EC = S.src !== 'minionHit' && onS('Elemental Conflux');
-      if (EC) { if (!(time < me.conflux?.until)) me.conflux = { el: ELEM[Math.floor(Math.random() * ELEM.length)], until: time + durOf(EC) }; if (raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100; }
+      if (EC && me.conflux) { if (raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100; }
       const SO = S.P.spell && !S.src && objs.find(o => o.soul && !o.dead)?.soul;   // Soul Offering
       if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] * SO._x / 100;
       const CL = d.boils > 0 && D?.sum?.['ascendancy_ritualist_damage_+%_final_vs_enemies_affected_by_blood_boil']; if (CL) for (const e in raw) raw[e] *= 1 + CL / 100;   // Corrupted Lifeforce: more damage against an enemy with Blood Boils
@@ -2034,6 +2034,29 @@ export function initScene(el, api) {
   // and sizes too
   const AURA_LOOK = { Discipline: { base: 0x2696ff, spark: 0x081fff } }, AURA_R = 1;
   const auraD = {};
+  // Elemental Conflux: while on, one element at random, again every its duration. Its look (reservation_elementalconflux,
+  // its element's .ao, 1.3 m up on you): on changing a flash for 0.45-0.65 s (lightning's 0.12-0.25
+  // s and bolts for 0.08-0.4 s) and 256 sparks for 0.25-1 s (confluxBurst), then its halo while it lasts (confluxActive:
+  // fire's for 0.7 s, cold's for 2 s, lightning's bolts for 0.08-0.65 s and glow for 0.15-0.75 s). note: the sizes, the
+  // number of sparks and the halo's rate are the scene's; its ring as it is about to change (confluxPrepare) left out
+  const CONFLUX = { fire: { halo: 0xff991f, spark: 0xff7814, life: .7 }, cold: { halo: 0x8cbaff, spark: 0x66b3ff, life: 2 },
+    lightning: { halo: 0x3045ff, spark: 0x1445ff, bolt: 0x4059ff, life: .45 } };
+  function confluxLook(dt) {
+    const CF = onS('Elemental Conflux'); if (!CF) return;
+    const q = V(pp.x, 1.3, pp.z);
+    if (!(time < me.conflux?.until)) {
+      const el = ELEM[Math.floor(Math.random() * ELEM.length)], L = CONFLUX[el], bolt = el === 'lightning';
+      me.conflux = { el, until: time + durOf(CF), halo: 0 };
+      fx.glow(q, 1.6, L.halo, bolt ? rnd(.12, .25) : rnd(.45, .65), 2.6); fx.flash(q, L.halo, 20, .3, 6);
+      fx.emit(96, { p: q, r: .2, v: 3, up: .5, life: rnd(.25, 1), size: .04, c: L.spark, c2: 'white', k: 2.4, drag: 2 });
+      if (bolt) for (let i = 0; i < 6; i++) { const a = rnd(TAU); fx.bolt(q.clone(), V(q.x + Math.cos(a) * 1.2, rnd(.3, 2), q.z + Math.sin(a) * 1.2), L.bolt, rnd(.08, .4), .03); }
+    }
+    const C = me.conflux, L = CONFLUX[C.el];
+    if ((C.halo -= dt) > 0) return;
+    C.halo = L.life / 2;
+    fx.glow(q, .9, L.halo, C.el === 'lightning' ? rnd(.15, .75) : L.life, 2.2);
+    if (L.bolt) for (let i = 0; i < 2; i++) { const a = rnd(TAU), h = rnd(.6, 1.9); fx.bolt(V(pp.x + Math.cos(a) * .35, h, pp.z + Math.sin(a) * .35), V(pp.x - Math.cos(a) * .35, h + rnd(-.4, .4), pp.z - Math.sin(a) * .35), L.bolt, rnd(.08, .65), .015, .12); }
+  }
   function auraLook(dt) {
     for (const k in AURA_LOOK) {
       const L = AURA_LOOK[k], on = !!tog[k];
@@ -5299,8 +5322,8 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence', 'Crackling Palm', 'Defiance Banner', 'Dread Banner']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
-  const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence', 'Crackling Palm', 'Defiance Banner', 'Dread Banner', 'Elemental Conflux']);   // persistent skills with nothing of theirs on you in the game (K.toggle; Elemental Conflux: its element's burst, confluxLook)
+  const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Elemental Conflux', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle; Elemental Conflux: its element's burst, confluxLook)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
   const SPLINTER = 0x58c8ff, splinterCost = S => (S.dmg?.stats?.['meta_skill_base_costs_equals_%_total_base_costs_from_all_socketed_skills'] ?? 100) / 100
@@ -6003,7 +6026,7 @@ export function initScene(el, api) {
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
-    const bz = berserkLook(); convLook(dt); palmLook(dt); auraLook(dt); eaRods(dt);
+    const bz = berserkLook(); convLook(dt); palmLook(dt); auraLook(dt); confluxLook(dt); eaRods(dt);
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
     else if (bz) { w = bz; WG.set(BERSERK.skin); }   // Berserk: red over you while you have Rage
     orbiters(dt);
