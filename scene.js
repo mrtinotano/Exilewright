@@ -483,7 +483,7 @@ export function initScene(el, api) {
     if (d.dead) return false;
     const FF = S.dmg?.stats?.[FROSTFLAME];   // Frostflame Nova: its wave touches only the Ignited, and deals them no damage (afflict)
     if (FF != null && !(d.st.ignite > 0)) return false;
-    if (S.dmg?.stats?.['time_rip_damage_share_%']) visage(d, S);
+    if (S.dmg?.stats?.['time_rip_damage_share_%']) ripVisage(d, S);
     // Temper Weapon: an Empowered attack Combusts on its first hit (its chance): its own hit, fire, in its area around the enemy
     const CB = S.combust; if (CB && !CB.done && Math.random() * 100 < CB.T.dmg.stats['imbue_weapon_combust_trigger_chance_%']) { CB.done = true; const c = { x: d.pos.x, z: d.pos.z }; later(.05, () => boom(c, CB.T.A, CB.T)); }
     d.aggro = true;   // hit, it comes at you
@@ -1169,7 +1169,8 @@ export function initScene(el, api) {
   // to Flammability and Ignite, or to Shock chance, one of them at random, changing every its interval
   const unravel = SU => { const X = SU.unravelling_cycling_buff_every_x_ms; if (!X) return null; if (!(time < me.unravel?.until)) me.unravel = { until: time + X / 1000, a: ['freeze', 'ignite', 'shock'][Math.floor(rnd(3))] }; return me.unravel.a; };
   let critHit = null;   // the skill whose critical hit is inflicting ailments now
-  function afflict(d, S, raw, o = {}) { critHit = o.crit ? S : null; try { afflict0(d, S, raw, o); } finally { critHit = null; } }
+  // ponytail: a hit with no ailment table of its own inflicts none; seen once from a minion's hit (27/11), its source not found
+  function afflict(d, S, raw, o = {}) { if (!S.dmg?.ail) return; critHit = o.crit ? S : null; try { afflict0(d, S, raw, o); } finally { critHit = null; } }
   function afflict0(d, S, raw, o = {}) {
     const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail * awe(d, 'ailment')), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
@@ -1806,7 +1807,7 @@ export function initScene(el, api) {
   // bar by rarity) leaves a visage of it there for as long as that immobilisation would last; its share of the damage
   // the visage takes is dealt to the enemy too. The enemy cannot be ripped again for its delay
   // note: the visage stands still and takes no damage of its own, it only passes the share on
-  function visage(d, S) {
+  function ripVisage(d, S) {   // (not visage, Abyssal Apparition's figure below: one declaration hid the other)
     const st = S.dmg.stats, a = !d.visage && !(d.ripAt > time) && ['stun', 'electrocute', 'freeze'].find(a => (d.bar[a] || 0) >= PRIMED[d.stat.rarity]);
     if (!a) return;
     d.ripAt = time + st.rip_from_time_immunity_duration_ms / 1000;
@@ -2072,17 +2073,17 @@ export function initScene(el, api) {
   }
   const cfDrain = p => { for (let i = 0; i < 3; i++) { const a = rnd(TAU); fx.streak(V(p.x + Math.cos(a) * .35, .4, p.z + Math.sin(a) * .35), V(p.x, 1.7, p.z), CFEAR.ribbon, rnd(.3, .7), .05, .9); } };
   function cfNova(p, R) {
-    const g = { x: p.x, z: p.z }, c = { x: p.x, y: .8, z: p.z };
+    const g = { x: p.x, z: p.z }, c = { x: p.x, y: .8, z: p.z }, f = { x: p.x, y: .1, z: p.z }, o = V(c.x, c.y, c.z);
     fx.emit(6, { p: c, r: .2, v: .4, life: .35, size: R * .5, grow: 1.5, c: CFEAR.dark, smoke: true, a: .7 });
     fx.glow(c, R * .45, CFEAR.flash, .2, 2); fx.flash(p, CFEAR.flash, 30 + R * 10, .3, 8 + R * 3); shake = Math.max(shake, Math.min(.5, R * .09));
-    for (let i = 0; i < 8; i++) { const a = rnd(TAU); fx.streak(V(c.x, c.y, c.z), V(c.x + Math.cos(a) * R * .8, c.y + rnd(-.3, .3), c.z + Math.sin(a) * R * .8), CFEAR.streak, .25, .04, 1.2); }
+    for (let i = 0; i < 8; i++) { const a = rnd(TAU); fx.streak(o, V(c.x + Math.cos(a) * R * .8, c.y + rnd(-.3, .3), c.z + Math.sin(a) * R * .8), CFEAR.streak, .25, .04, 1.2); }
     fx.emit(30, { p: c, r: .3, v: R * 2.5, up: 3, life: 1.5, size: .07, c: CFEAR.glass, c2: 'white', k: 1.3, g: 9, drag: .6 });
     fx.emit(30, { p: c, r: .3, v: R * 1.5, up: 1.5, life: 1.5, size: .05, c: CFEAR.mote, c2: CFEAR.light, k: 2.4, drag: 1.5 });
-    later(.03, () => { fx.ring(g, R * .2, R, CFEAR.ring, .75, { a: .9 }); fx.ring(g, R * .1, R * .9, CFEAR.ringHot, .4, { a: .3 }); fx.emit(40, { p: { x: p.x, y: .1, z: p.z }, r: R * .6, v: 1, up: 2.5, life: .35, size: .3, c: CFEAR.flame, c2: CFEAR.ring, k: 2.4, drag: 2 }); });
+    later(.03, () => { fx.ring(g, R * .2, R, CFEAR.ring, .75, { a: .9 }); fx.ring(g, R * .1, R * .9, CFEAR.ringHot, .4, { a: .3 }); fx.emit(40, { p: f, r: R * .6, v: 1, up: 2.5, life: .35, size: .3, c: CFEAR.flame, c2: CFEAR.ring, k: 2.4, drag: 2 }); });
     later(.08, () => fx.ring(g, R * .3, R * 1.1, CFEAR.push, .2, { a: .6 }));
     later(.1, () => {
       fx.ring(g, .2, R * .8, CFEAR.light, .5, { a: .6, y: .8 }); fx.ball(c, R * .4, CFEAR.light, .65, .6);
-      fx.emit(20, { p: { x: p.x, y: .1, z: p.z }, r: R * .7, v: .3, life: 3.5, size: .06, c: CFEAR.glass, c2: 'white', k: 1, g: 9, flat: true });
+      fx.emit(20, { p: f, r: R * .7, v: .3, life: 3.5, size: .06, c: CFEAR.glass, c2: 'white', k: 1, g: 9, flat: true });
       fx.disc(g, R * .9, CFEAR.crack, 4.5, { tex: 'cracks', a: .6, hold: .7, k: 1 });
     });
   }
@@ -4044,7 +4045,7 @@ export function initScene(el, api) {
         if (d.dead) return;
         if (P.dash || dist(d.pos, pp) > meleeR(S) + SIM.body) {   // strikes that carry you to the target
           const a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) + (k ? rnd(-2, 2) : 0), q = { x: d.pos.x + Math.sin(a) * 1.1, z: d.pos.z + Math.cos(a) * 1.1 };
-          if (S.name === 'Crushing Fear') cfDash({ x: pp.x, z: pp.z }, q); else fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1);
+          if (S.name === 'Crushing Fear') cfDash(pp, q); else fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1);
           pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
