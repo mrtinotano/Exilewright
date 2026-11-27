@@ -3077,7 +3077,7 @@ export function initScene(el, api) {
   function sunderCharge(d, el) {
     const L = SUND[el];
     fx.glow(chest(d), .7, L.glow, 1, 2);
-    for (let i = 0; i < 16; i++) later(i / 16, () => { if (!d.dead) fx.emit(1, { p: chest(d), r: .35, v: .6, up: 1.2, life: rnd(1, 1.1) * .5, size: .16, c: L.ribbon, c2: 'white', k: 2.4, drag: 2 }); });
+    for (let i = 0; i < 16; i++) later(i / 16, () => { if (!d.dead) fx.emit(1, { p: chest(d), r: .35, v: .6, up: 1.2, life: rnd(1, 1.1), size: .16, c: L.ribbon, c2: 'white', k: 2.4, drag: 2 }); });
   }
   function sunderBlast(p, R, el) {
     const L = SUND[el], q = { x: p.x, y: .6, z: p.z };
@@ -3087,7 +3087,7 @@ export function initScene(el, api) {
     else if (el === 'fire') later(.05, () => fx.emit(128, { p: q, r: .2, v: R * 3, up: 2.5, life: rnd(1, 2), size: .04, c: L.spark, c2: 'white', k: 2.6, g: 5, drag: 1.5 }));
     else {
       fx.emit(64, { p: q, r: .3, v: R * 2, up: 1.5, life: rnd(1.5, 3), size: .04, c: L.spark, c2: 'white', k: 2.4, drag: 1.5 });
-      for (let i = 0; i < 12; i++) later(rnd(.2), () => { const a = rnd(TAU), r = R * rnd(.1, .9), x = p.x + Math.cos(a) * r, z = p.z + Math.sin(a) * r; fx.bolt(V(x, rnd(2, 3), z), V(x, .05, z), L.bolt, rnd(.15, .55), .03, .25); });
+      for (let i = 0; i < 32; i++) later(rnd(.2), () => { const a = rnd(TAU), r = R * rnd(.1, .9), x = p.x + Math.cos(a) * r, z = p.z + Math.sin(a) * r; fx.bolt(V(x, rnd(2, 3), z), V(x, .05, z), L.bolt, rnd(.15, .55), .03, .25); });
     }
   }
   // Elemental Storm (the Stormweaver's Tempest Caller): a spell critical hit triggers it, within its cooldown: a stationary
