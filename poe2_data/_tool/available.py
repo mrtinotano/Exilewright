@@ -190,7 +190,8 @@ for i, g in enumerate(skill_gems):
         ex = gem_effects[g['GemEffects'][0]] if g['GemEffects'] else {}
         desc_col = next((c for c in ('SupportText', 'Description') if ex.get(c)), 'SupportText')
         gems[-1].update(description=ex.get(desc_col), **tr(gem_effects_tr, g['GemEffects'][0], desc_col, 'description', True) if g['GemEffects'] else {})
-        gems[-1].update(icon=sr['Icon'], family=[support_family[f]['Id'] for f in sr['Family']], lineage=sr['IsLineage'],
+        # the newer lineage supports have no SupportGems.Icon (Her Declaration, Medved's Felling): their gem's own art
+        gems[-1].update(icon=sr['Icon'] or art, family=[support_family[f]['Id'] for f in sr['Family']], lineage=sr['IsLineage'],
                         require=types(ge['AllowedActiveSkillTypes']), exclude=types(ge['ExcludedActiveSkillTypes']),
                         adds=types(ge['AddedActiveSkillTypes']), gems_only=ge['SupportsGemsOnly'])
     elif ge and ge['ActiveSkill'] is not None:

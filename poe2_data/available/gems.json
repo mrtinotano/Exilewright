@@ -52024,7 +52024,7 @@
   "description_ko": "[Persistent|유지형] [Buff|버프] 스킬에 적용됩니다. 보조 대상 스킬이 활성화된 동안 [Presence|접근] 거리에 들어오는 적이 [Intimidate|위협]받습니다.",
   "description_th": "ใช้เสริมสกิล[Buff|บัฟ][Persistent|ยั่งยืน] เพื่อให้ศัตรูที่เข้ามาใน[Presence|ระยะปรากฏกาย]ติดสถานะ [Intimidate|ข่มขู่] ขณะที่สกิลที่เสริมทำงานอยู่",
   "description_zh": "輔助[Persistent|持續性]的[Buff|增益效果]技能，使進入你[Presence|存在範圍]的敵人在該技能啟動期間成為[Intimidate|被威嚇]狀態。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/MothersDeclaration.dds",
   "family": [
    "HerDeclaration"
   ],
@@ -52074,7 +52074,7 @@
   "description_ko": "직접 사용하여 적을 [Hit|명중]하는 비-[Channelling|집중 유지] 스킬에 적용됩니다. 보조 대상 스킬이 [Rage|격노]에 따라 [Critical|치명타] 확률을 획득하지만, [Critical|치명타 명중] 시 [Rage|격노]를 모두 제거합니다.",
   "description_th": "ใช้เสริมสกิลที่[Channelling|แชนเนล]คุณใช้ด้วยตัวเองที่[Hit|ปะทะ]ศัตรู เพื่อให้สกิลนี้มีโอกาส[Critical|ปะทะคริติคอล]เพิ่มขึ้น อีก ตามจำนวนสถานะ [Rage|คลั่ง] แต่กำจัดสถานะ [Rage|คลั่ง] ทั้งหมดเมื่อคุณ[Critical|ปะทะคริติคอล]",
   "description_zh": "輔助任何會[Hit|擊中]敵人的非[Channelling|引導]技能，使其根據[Rage|盛怒]獲得[Critical|暴擊]機率，但會在你[Critical|暴擊]時消耗所有[Rage|盛怒]。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/PrototypeSeventeen.dds",
   "family": [
    "Prototype"
   ],
@@ -52131,7 +52131,7 @@
   "description_ko": "[Persistent|유지형] [Buff|버프] 스킬에 적용됩니다. 보조 대상 스킬이 활성화된 동안 적이 일정 확률로 플레이어의 [Resistances|저항]이 90%인 것처럼 [Hit|명중]을 계산합니다.",
   "description_th": "ใช้เสริมสกิล[Buff|บัฟ][Persistent|ยั่งยืน] เพื่อให้ศัตรูมีโอกาสคำนวณการ[Hit|ปะทะ]ของมันราวกับว่าคุณมี[Resistances|ค่าต้านทาน] 90% ขณะที่สกิลที่เสริมทำงานอยู่",
   "description_zh": "輔助[Persistent|持續性]的[Buff|增益效果]技能，使敵人有機率以你的[Resistances|抗性]為 90% 計算其[Hit|擊中傷害]，該技能啟動期間生效。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/SeraphsHeart.dds",
   "family": [
    "SeraphsHeart"
   ],
@@ -52182,7 +52182,7 @@
   "description_ko": "재사용 대기시간이 있는 스킬에 적용됩니다. 보조 대상 스킬 사용 시 [OverflowingChalice|넘치는 성배]를 획득합니다. 생명력 플라스크의 효과를 받는 동안 보조 대상 스킬이 주는 피해가 증폭되고, 마나 플라스크의 효과를 받는 동안에는 보조 대상 스킬의 마나 소모 [Efficiency|효율]이 증가합니다.",
   "description_th": "ใช้เสริมสกิลที่มีคูลดาวน์ เพื่อให้สกิลที่เสริมให้สถานะ [OverflowingChalice|จอกที่เอ่อล้น] เมื่อใช้งาน ทำให้สกิลที่เสริมสร้างความเสียหายเพิ่มขึ้น อีก ขณะที่มีผลจากขวดยาพลังชีวิต และมี[Efficiency|ประสิทธิภาพ]การใช้งานมานาเพิ่มขึ้น ขณะที่มีผลจากขวดยามานา",
   "description_zh": "輔助具有冷卻時間的技能，使其使用時獲得[OverflowingChalice|滿溢聖杯]。被輔助的技能在你的生命藥劑效果期間造成更多傷害，並在你的魔力藥劑效果期間獲得更高的魔力消耗[Efficiency|效用]。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/UthredsChalice.dds",
   "family": [
    "UhtredChalice"
   ],
@@ -52238,7 +52238,7 @@
   "description_ko": "직접 시전하는 비-즉시 [Spell|주문]에 적용됩니다. 보조 대상 [Spell|주문]이 자기 파편화를 [Trigger|발동]하여 분열된 모방물을 생성합니다. 분열된 모방물은 일정 수가 모이면 해당 [Spell|주문]을 시전합니다.",
   "description_th": "ใช้เสริม[Spell|เวท]ที่ไม่ส่งผลทันทีที่คุณร่ายด้วยตัวเอง เพื่อให้[Spell|เวท]ที่เสริม[Trigger|ทริกเกอร์]ตัวตนแตกร้าว (Fragment Self) เพื่อสร้างเงาลอกเลียนแตกร้าวที่จะร่าย[Spell|เวท]นั้นหากคุณมีร่างมากพอ",
   "description_zh": "輔助你所施放的非立即[Spell|法術]。被輔助的[Spell|法術]會觸發破碎仿身，創造一個會在你擁有足夠數量時施放該[Spell|法術]的破碎複製體。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/TrickstersShard.dds",
   "family": [
    "SpellEcho"
   ],
@@ -52294,7 +52294,7 @@
   "description_ko": "[Persistent|유지형] [Buff|버프] 스킬에 적용됩니다. 보조 대상 스킬이 활성화되어 있는 동안 플레이어가 [Presence|접근]해 있는 동료들에게 주기적으로 [Guard|가호]를 부여합니다.",
   "description_th": "ใช้เสริมสกิล[Buff|บัฟ][Persistent|ยั่งยืน] เพื่อให้คุณมอบ[Guard|พลังคุ้มกัน]ให้กับเพื่อนใน[Presence|ระยะปรากฏกาย]ของคุณเป็นระยะ ขณะที่สกิลนี้ทำงาน",
   "description_zh": "輔助[Persistent|持續]的[Buff|增益效果]技能，使你在該技能啟動期間定期為你[Presence|存在範圍]內的友方賦予[Guard|守護]。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/MothersWard.dds",
   "family": [
    "ArbitersReach"
   ],
@@ -52348,7 +52348,7 @@
   "description_ko": "[Companion|반려수]를 소환하는 스킬에 적용됩니다. 해당 반려수가 [Gigantic|방대]해지고, 플레이어의 [Evasion|회피] 및 [Deflect|튕겨내기]에 따라 회피 및 튕겨내기를 획득합니다.",
   "description_th": "ใช้เสริมสกิลที่อัญเชิญ[Companion|สหาย] เพื่่อให้มัน [Gigantic|มหึมา] และได้รับ[Evasion|การหลบหลีก]และ[Deflect|การปัดป้อง]ตามค่าเหล่านั้นของคุณ",
   "description_zh": "輔助召喚[Companion|盟友]的技能，使其[Gigantic|極大]，並根據你自身的[Evasion|閃避]和[Deflect|偏斜]獲得相應加成。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/TangmazusThurible.dds",
   "family": [
    "HulkingMinions"
   ],
@@ -52454,7 +52454,7 @@
   "description_ko": "[Hit|명중]하는 [Lightning|번개] 스킬에 적용되어 레벨을 1 추가하고, 보조 대상 스킬의 [Lightning|번개] 피해가 항상 [BooleanDamageRoll|최솟값과 최댓값 둘 중의 하나로만 판정]되게 합니다. 레벨이 없는 스킬에는 적용되지 않습니다.",
   "description_th": "ใช้เสริมสกิล[Lightning|สายฟ้า]ที่[Hit|ปะทะ]ได้ เพื่อให้สกิลนี้มีเลเวลเพิ่มเติม 1 เลเวลและทำให้ความเสียหาย [Lightning|สายฟ้า] ของสกิลนี้[BooleanDamageRoll|สุ่มความเสียหายต่ำสุดหรือสูงสุดเท่านั้น]\r\nไม่สามารถเสริม สกิลที่ไม่มีเลเวล ได้",
   "description_zh": "輔助[Hit|擊中]的[Lightning|閃電]技能，為其賦予額外一個等級，並使其對[Lightning|閃電]傷害[BooleanDamageRoll|只擲出最低或最高值]。無法輔助無等級的技能。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/EshsProwess.dds",
   "family": [
    "Mastery"
   ],
@@ -52507,7 +52507,7 @@
   "description_ko": "적을 [Hit|명중]하는 모든 스킬에 적용되어, 해당 스킬로 [Freeze|동결] 또는 [Electrocute|전기 처형]되는 적의 [ArmourBreak|방어구를 파괴]합니다.",
   "description_th": "ใช้เสริมสกิลที่[Hit|ปะทะ]ศัตรู เพื่อให้สกิลนี้[ArmourBreak|หักเกราะ]ศัตรูที่ติดสถานะ [Freeze|แช่แข็ง]หรือ[Electrocute|ช็อตประสาท] จากสกิลนี้",
   "description_zh": "輔助任何會[Hit|擊中]敵人的技能，使其[Freeze|冰凍]或[Electrocute|觸電]的敵人被[ArmourBreak|護甲破壞]。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/BreachlordsRemorse.dds",
   "family": [
    "ArmourBreak"
   ],
@@ -52556,7 +52556,7 @@
   "description_ko": "[Projectile|투사체]를 발사하고 재사용 대기시간이 없으며 플레이어가 직접 사용하는 [Lightning|번개] 또는 [Cold|냉기] 스킬에 적용됩니다. 보조 대상 스킬에 재사용 대기시간을 추가하고 [Projectile|투사체]가 돌아오며 대상을 관통하게 합니다.",
   "description_th": "ใช้เสริมสกิล[Lightning|สายฟ้า]หรือ[Cold|น้ำแข็ง]ที่คุณใช้ด้วยตัวเองที่ยิง[Projectile|โพรเจกไทล์]และไม่มีคูลดาวน์ เพื่อให้การทำให้[Projectile|โพรเจกไทล์]ย้อนกลับมา พร้อมกับเจาะทะลุเป้าหมายขณะที่ย้อนกลับ แลกกับการทำให้สกิลที่เสริมมีคูลดาวน์",
   "description_zh": "輔助由自身使用的、發射[Projectile|投射物]且原本沒有冷卻時間的[Lightning|閃電]或[Cold|冰冷]技能，為其新增冷卻時間，使[Projectile|投射物]在穿透目標後返回。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/BreachlordsAmalgam.dds",
   "family": [
    "GrantsCooldown"
   ],
@@ -52620,7 +52620,7 @@
   "description_ko": "[Warcry|함성]에 적용되어, 함성이 [IceCrystals|얼음 결정] 및 [IceFragment|얼음 파편]을 파괴하게 합니다. 보조 대상 스킬이 [IceCrystals|얼음 결정]과 [IceFragment|얼음 파편]을 일정 개수 이상 파괴하면 추가적인 [Attack|공격]이 [Empowered|강화]됩니다.",
   "description_th": "ใช้เสริมการ[Warcry|คำราม] เพื่อให้สกิลนี้ทำลาย[IceCrystals|ผลึกน้ำแข็ง]และ[IceFragment|เศษน้ำแข็ง] สกิลที่เสริมจะเสริมฤทธิ์ให้กับการโจมตีเพิ่มเติมหากมันทำลาย[IceCrystals|ผลึกน้ำแข็ง]และ[IceFragment|เศษน้ำแข็ง]ได้มากพอ",
   "description_zh": "輔助[Warcry|戰吼]技能，使其摧毀[IceCrystals|冰晶]和[IceFragment|寒冰碎片]。被輔助的技能若摧毀足夠[IceCrystals|冰晶]和[IceFragment|寒冰碎片]，則會強化額外[Attack|攻擊]次數。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/VruunsAftermath.dds",
   "family": [
    "VruunsWarhorn"
   ],
@@ -52671,7 +52671,7 @@
   "description_ko": "[Melee|근접] [Attack|공격] 스킬에 적용됩니다. 보조 대상 스킬이 아닌 [Melee|근접] [Attack|공격]으로 적을 [Strike|타격]하면 보조 대상 스킬이 [Combo|연계]를 얻습니다. 보조 대상 스킬 사용 시 [Combo|연계]가 소모되고, 사용 시점의 [Combo|연계]가 높을수록 효과 범위가 늘어납니다. 이미 [Combo|연계]를 얻는 스킬에는 적용되지 않습니다. [Minion|소환수]의 스킬에는 적용되지 않습니다.",
   "description_th": "ใช้เสริมสกิล[Attack|โจมตี][Melee|ประชิด] สกิลที่เสริมได้รับ[Combo|คอมโบ]เมื่อคุณ[Strike|ฟาด]ศัตรูด้วยการ[Attack|โจมตี][Melee|ประชิด]อื่นๆ สกิลที่เสริมจะจ่าย[Combo|คอมโบ]ของสกิลนี้เมื่อใช้งาน เพื่อให้มีพื้นที่ส่งผลเพิ่มขึ้น อีก ตามจำนวน[Combo|คอมโบ]ที่คุณมีตอนที่ใช้งาน\r\nไม่สามารถเสริม สกิลที่ได้รับ[Combo|คอมโบ]ตั้งแต่แรก และไม่สามารถเปลี่ยนแปลง สกิลของ[Minion|มิเนียน] ได้",
   "description_zh": "輔助[Melee|近戰][Attack|攻擊]技能。當你以其他[Melee|近戰][Attack|攻擊]成功[Strike|打擊]敵人時，被輔助的技能獲得[Combo|連擊]。使用被輔助的技能時即消耗其[Combo|連擊]，使用時擁有的[Combo|連擊]數越多，範圍效果就越大。不能輔助已經獲得[Combo|連擊]的技能。無法修改由[Minion|召喚物]使用的技能。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/VruunsSpike.dds",
   "family": [
    "IncreasedAreaOfEffect"
   ],
@@ -52730,7 +52730,7 @@
   "description_ko": "재사용 대기시간이 있는 비-즉시 스킬에 적용되어, 재사용 횟수를 2회 추가하고 최근 4초 이내에 사용한 재사용 대기시간이 있는 스킬 가짓수당 해당 스킬의 피해가 증폭됩니다.",
   "description_th": "ใช้เสริมสกิลที่ไม่ส่งผลทันทีที่มีคูลดาวน์ ทำให้เก็บการใช้งานได้เพิ่มเติม 2 ครั้งและสร้างความเสียหายเพิ่มขึ้น อีก ตามจำนวนสกิลที่มีคูลดาวน์แตกต่างกันที่คุณใช้มาเร็วๆ นี้",
   "description_zh": "輔助具有冷卻時間的非即時技能，為其額外賦予兩次冷卻用量，並根據你最近使用過的不同冷卻時間技能數量獲得更多傷害。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/UhtredsConstellation.dds",
   "family": [
    "SecondWind"
   ],
@@ -52783,7 +52783,7 @@
   "description_ko": "플레이어가 직접 사용하는 [Melee|근접 공격]에 적용됩니다. 보조 대상 스킬이 플레이어의 [Rage|격노]가 많을수록 빠르게 공격하고 명중 시 [Rage|격노]를 부여하지만, 해당 스킬 사용 시 [Rage|격노]에 따라 생명력을 잃습니다.",
   "description_th": "ใช้เสริม[Melee|การโจมตีประชิด]ที่คุณใช้ด้วยตัวเอง เพื่อให้สกิลนี้โจมตีเร็วขึ้นตามสถานะ [Rage|คลั่ง] ที่คุณมีและให้สถานะ [Rage|คลั่ง] เมื่อคุณปะทะ แลกกับการทำให้คุณสูญเสียพลังชีวิตตามสถานะ [Rage|คลั่ง] ที่คุณมีเมื่อคุณใช้สกิลที่เสริม",
   "description_zh": "輔助由自身使用的[Melee|近戰攻擊]，使其擊中時賦予一定比例的最大[Rage|盛怒]。同時會使被輔助的[Melee|近戰攻擊]根據盛怒量增加攻擊速度，並使你在使用被輔助的技能時失去一定比例的最大生命。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/MedvedsFelling.dds",
   "family": [
    "Rage"
   ],
@@ -52836,7 +52836,7 @@
   "description_ko": "대상에게 [Hit|명중]하고 효과 범위가 있는 스킬에 적용되어, 효과 범위를 증가시키고 [Isolated|고립]된 대상에게 더 강하게 [Hit|명중]하게 합니다.",
   "description_th": "ใช้เสริมสกิลที่[Hit|ปะทะ]เป้าหมายและที่มีพื้นที่ส่งผล เพื่อให้สกิลนี้มีขนาดใหญ่ขึ้นและ[Hit|ปะทะ]เป้าหมายที่[Isolated|เดียวดาย]ได้หนักขึ้น",
   "description_zh": "輔助[Hit|擊中]目標且具有範圍效果的技能，擴大其影響範圍，並使其對[Isolated|孤立]目標造成更多[Hit|擊中]傷害。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/VoranasSiege.dds",
   "family": [
    "IncreasedAreaOfEffect",
    "ConcentratedEffect"
@@ -52891,7 +52891,7 @@
   "description_ko": "방패를 올리는 스킬에 적용되어, 막아낼 시 다른 근접 스킬이 주는 피해를 증폭시킵니다.",
   "description_th": "ใช้เสริมสกิลที่ยกโล่ของคุณ เพื่อให้สกิลประชิดอื่นๆ ของคุณสร้างความเสียหายเพิ่มขึ้น อีก หากคุณบล็อคมาก่อน",
   "description_zh": "輔助會舉起盾牌的技能，格擋時使你非盾牌的近戰技能造成更多傷害。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/KnightsLegacy.dds",
   "family": [
    "StyrnsMountain"
   ],
@@ -52940,7 +52940,7 @@
   "description_ko": "[Hit|명중]하는 방패 스킬에 적용됩니다. 보조 대상 스킬 명중 시 대상을 [Crushed|타쇄]합니다. 그 대상이 [Crushed|타쇄]당한 동안 [Physical|물리 피해]에 [Hit|명중]당할 때마다 [ArmourBreak|방어구가 파괴]됩니다.",
   "description_th": "ใช้เสริมสกิลโล่ที่[Hit|ปะทะ]ได้ ทำให้การปะทะเหล่านั้นสร้างสถานะ [Crushed|บดขยี้] ต่อเป้าหมาย และทำให้การ[Hit|ปะทะ] [Physical|กายภาพ] [ArmourBreak|หักเกราะ]เป้าหมายที่ติดสถานะ [Crushed|บดขยี้]",
   "description_zh": "輔助會[Hit|擊中]的盾牌技能，使那些擊中[Crushed|壓碎]目標，此外當對[Crushed|被壓碎]的目標造成任何[Physical|物理傷害][Hit|擊中]時，同時會[ArmourBreak|破壞護甲]。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/KnightsFerocity.dds",
   "family": [
    "ArmourBreak"
   ],
@@ -52995,7 +52995,7 @@
   "description_ko": "[Companion|반려수]를 생성하는 스킬에 적용됩니다. 반려수 주변의 적들을 [Blind|실명]시키고 [Ignite|점화]합니다. [Ignite|점화]의 피해는 보조 대상 [Minion|소환수]의 생명력에 따라 결정됩니다.",
   "description_th": "ใช้เสริมสกิลที่สร้าง[Companion|สหาย] เพื่อให้ศัตรูที่อยู่ใกล้มันติดสถานะ [Blind|ตาบอด]และ[Ignite|ลุกไหม้] ความเสียหายของสถานะ [Ignite|ลุกไหม้] ขึ้นอยู่กับพลังชีวิตของ[Minion|มิเนียน]ที่เสริม",
   "description_zh": "輔助創造[Companion|盟友]的技能，使附近的敵人[Blind|致盲]並[Ignite|點燃]。[Ignite|點燃]的傷害基於被輔助[Minion|召喚物]的生命值計算。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/CathasBrilliance.dds",
   "family": [
    "InfernalLegion"
   ],
@@ -53048,7 +53048,7 @@
   "description_ko": "적을 [Hit|명중]하는 모든 스킬에 적용됩니다. 보조 대상 스킬이 적에게 유발된 [Frozen|동결]을 소모할 시 피해가 증폭되고 자연의 교환을 발동합니다. [Freeze|동결]을 [Consume|소모]하는 스킬에는 적용되지 않습니다.",
   "description_th": "ใช้เสริมสกิลที่[Hit|ปะทะ]ศัตรู เพื่อให้สร้างความเสียหายเพิ่มขึ้น อีก และ[Trigger|ทริกเกอร์]ธรรมชาติแลกเปลี่ยน (Nature's Exchange] เมื่อกลืนกินสถานะ [Freeze|แช่แข็ง] บนตัวศัตรู\r\nไม่สามารถเสริม สกิลที่[Consume|กลืนกิน]สถานะ [Freeze|แช่แข็ง] ได้",
   "description_zh": "輔助任何會[Hit|擊中]敵人的技能，使其造成更多傷害，並在消耗敵人身上的[Freeze|冰凍]時觸發自然交換。無法輔助會[Consume|消耗][Freeze|冰凍]的技能。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/MorrigansRefuge.dds",
   "family": [
    "BitingFrost"
   ],
@@ -53108,7 +53108,7 @@
   "description_ko": "직접 시전하는 [Cascadable|연속 가능] [Spell|주문]에 적용되어, [Block|막아낼 시] 해당 주문이 [Seal|봉인]됩니다. 사용 시 [Seal|봉인]을 파괴하고, 파괴된 봉인당 해당 [Spell|주문]이 [Cascadable|메아리]칩니다. 재사용 대기시간이 있는 스킬이나 이미 봉인을 획득하는 스킬에는 적용되지 않습니다.",
   "description_th": "ใช้เสริม[Spell|เวท]ที่[Cascadable|สามารถเรียงหลั่น]ได้ที่คุณร่ายด้วยตัวเอง สกิลนี้จะสร้าง[Seal|ผนึก]เมื่อคุณ[Block|บล็อค] [Seal|ผนึก]เหล่านี้จะสลายตัวเมื่อถูกใช้งานเพื่อให้[Spell|เวท][Cascadable|ก้องสะท้อน]\r\nไม่สามารถเสริม สกิลที่มีคูลดาวน์หรือสกิลที่สะสมผนึกตั้งแต่แรก ได้",
   "description_zh": "輔助由你自身施放的[Cascadable|可爆發][Spell|法術]，在你[Block|格擋]時[Seal|封印]它們。使用時破除[Seal|封印]，使每個[Spell|法術][Cascadable|迴響]。無法輔助具有冷卻時間或已獲得封印的技能。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/TulsProgeny.dds",
   "family": [
    "SpellEcho",
    "Seal"
@@ -54941,7 +54941,7 @@
   "description_ko": "일정 개수의 다른 스킬을 [Empowered|강화]할 수 있는 스킬에 적용되어, 더 많은 스킬 사용에 적용되게 합니다.",
   "description_th": "ใช้เสริมสกิลที่[Empowered|เสริมฤทธิ์]ให้กับสกิลอื่นโดยมีจำนวนครั้ง ทำให้สกิลนี้ส่งผลกับจำนวนครั้งในการใช้งานของสกิลอื่นได้มากกว่าเดิม",
   "description_zh": "輔助可[Empowered|強化]特定數量其他技能的技能，使其套用至更多次技能使用。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/OlrothsConviction.dds",
   "family": [
    "OlrothsConviction"
   ],
@@ -55099,7 +55099,7 @@
   "description_ko": "직접 사용하거나 [Trigger|발동]시키는 [Attack|공격]에 적용됩니다. 보조 대상 공격이 사용 시 [Ward|룬 수호]를 소모하지만, [Ward|룬 수호] 비용에 따라 추가 [Physical|물리] 및 [Cold|냉기] 피해를 주고, [Physical|물리] 피해가 [Freeze|동결] 축적에 [Contributes|반영]됩니다. [Channelling|집중 유지] 스킬이나 [Sustained|지속형] 스킬, 비용이 없는 스킬에는 적용되지 않습니다.",
   "description_th": "ใช้เสริมการ[Attack|โจมตี]ที่คุณใช้งานหรือ[Trigger|ทริกเกอร์]ด้วยตัวเอง เพื่อให้สกิลนี้ต้องการ[Ward|วอร์ดอักขระ]ในการใช้งาน แลกกับการสร้างความเสียหาย [Physical|กายภาพ] เพิ่มเติม ตามค่าใช้งาน[Ward|วอร์ดอักขระ] และทำให้ความเสียหาย [Physical|กายภาพ] [Contributes|ส่งผลต่อ]การสะสมค่า[Freeze|แช่แข็ง] เช่นกัน\r\nไม่สามารถเสริม สกิล[Channelling|แชนเนล] สกิล[Sustained|ทยอยปะทะ] หรือสกิลที่ไม่มีค่าใช้งาน ได้",
   "description_zh": "輔助你使用或自行[Trigger|觸發]的[Attack|攻擊]，使其消耗[Ward|符文保護]來使用，但會根據其[Ward|符文保護]消耗量造成額外[Physical|物理]和[Cold|冰冷]傷害，並使[Physical|物理]傷害[Contributes|貢獻]至[Freeze|冰凍累積]。不能輔助[Channelling|引導]技能、[Sustained|持續]技能或沒有消耗的技能。",
-  "icon": "",
+  "icon": "Art/2DItems/Gems/New/NewSupport/Lineage/OlrothsHubris.dds",
   "family": [
    "RunicInfusion"
   ],
