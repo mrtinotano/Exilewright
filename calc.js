@@ -107,7 +107,8 @@ const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', '
 // a gem used with the weapon set in hand (g.wset: 1 or 2, none both; the game's "Used with weapon set:"): a persistent
 // skill of the other set is off, a skill of only the other set is worked out as with that set in hand (skill())
 export const onSet = (b, g) => !g?.wset || g.wset === (b?.wset === 2 ? 2 : 1);
-const live = (b, g) => g.enabled !== false && onSet(b, g);   // a persistent skill that is on: not turned off (g.enabled false, the game's or PoB's) and of the set in hand
+const isOn = g => g.enabled !== false;   // not turned off (g.enabled false, the game's or PoB's)
+const live = (b, g) => isOn(g) && onSet(b, g);   // on and of the weapon set in hand
 let SUM_OF = null;
 const OTHER_SUM = new WeakMap();
 export const useSumOf = f => { SUM_OF = f; };   // app.js sumOf: the stats of a build, for its other weapon set
@@ -479,7 +480,7 @@ export function character(b, sum) {
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
-    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + (g.enabled === false ? 0 : reservation(g, sum, b, true, 0)), 0),   // Infernalist's Beidat's Gaze and Atziri's Communion: their share of life reserved
+    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + (isOn(g) ? reservation(g, sum, b, true, 0) : 0), 0),   // Infernalist's Beidat's Gaze and Atziri's Communion: their share of life reserved
     presCd: v(sum, 'enemies_in_presence_cooldown_recovery_+%'),   // the increased (reduced) cooldown recovery of enemies in your Presence
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
@@ -631,7 +632,7 @@ export function character(b, sum) {
   if (sum.base_cannot_evade) c.evadePct = c.evadeMax = 0;   // Bramblejack: no chance to evade with whatever evasion (the hits roll against evadeMax; what is worked out from the evasion still counts it)
   if (sum.resolute_technique) c.accuracy *= 2;
   if (sum.keystone_lord_of_the_wilds) c.spirit = Math.round(c.spirit / 2);
-  c.reserved = (b.gems || []).reduce((t, g) => t + (g.enabled === false ? 0 : reservation(g, sum, b, false, c.life || 0)), 0);   // spirit reserved by the build's persistent skills (here: Prism Guardian's is by the maximum life)
+  c.reserved = (b.gems || []).reduce((t, g) => t + (isOn(g) ? reservation(g, sum, b, false, c.life || 0) : 0), 0);   // spirit reserved by the build's persistent skills (here: Prism Guardian's is by the maximum life)
   if (sum.base_darkness) { c.spirit = 0; c.darkness = Math.round((sum.base_darkness + v(sum, 'darkness_per_level') * lvl) * (pct('maximum_darkness_+%') + v(sum, 'maximum_darkness_+%_per_capped_chaos_damage_resistance') * Math.max(0, c.res.chaos.capped) / 100)); c.darkFor = v(sum, 'base_darkness_refresh_rate_ms') / 1000; }
   return c;
 }
