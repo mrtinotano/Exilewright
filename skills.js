@@ -112,7 +112,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
   function render() {
     const b = getBuild(), sum = getSum(), attrs = attributes(sum, b.asc), used = { str: 0, dex: 0, int: 0 };
     linkMetas(b);
-    const rows = b.gems.map((g, gi) => {
+    const cards = b.gems.map((g, gi) => {
       const G = GEM[g.name];
       if (!G || G.kind === 'support') return '';
       g.sockets ??= 2; g.supports ??= [];
@@ -148,14 +148,17 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
           <small class="note">${t('{0} supports compatible with this skill\'s types', opts.length)}</small></div>
           <div class="suplist">${g.supports[open[1]] ? `<button class="supopt" data-sup=""><span><b>${t('— empty —')}</b><small>${t('Remove support')}</small>${gain(null)}</span></button>` : ''}${opts.map(item).join('')}</div></div>`;
       }
-      return `<div class="skill${gi === sel ? ' sel' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
+      return `<div class="skill${gi === sel ? ' sel' : ''}${holder ? ' inmeta' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
         <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level">${d.stats?._level > g.level ? ` <b class="slv" title="${t('With the levels your passives and gear add')}">${d.stats._level}</b>` : ''} <span title="${t('Quality')}">Q:</span> <input type="number" min="0" max="40" value="${g.quality || 0}" data-gi="${gi}" data-k="quality" title="${t('Quality')}"> <label class="scor"><input type="checkbox"${g.corrupted ? ' checked' : ''} data-gi="${gi}" data-k="corrupted">${t('Corrupted')}</label> <b>${esc(gemName(g))}</b>
           ${spec}${inMeta}<span class="sockn"${holder ? ' hidden' : ''}>${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
           ${GEM[g.name]?.types?.includes('Persistent') ? `<label class="scor"><input type="checkbox"${g.enabled !== false ? ' checked' : ''} data-gi="${gi}" data-k="enabled">${t('Enabled')}</label>` : ''}
           <label class="smeta"${holder ? ' hidden' : ''}>${t('Used with weapon set:')} <select data-gi="${gi}" data-k="wset">${[['', 'I + II'], [1, 'I'], [2, 'II']].map(([v, l]) => `<option value="${v}"${(g.wset || '') == v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
           <b class="sdps" title="${esc(t(sd ? 'Damage of the skills it sets off' : d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' + (dd ? `<i class="vs ${dd > 0 ? 'up' : 'dn'}" title="${esc(t('Compared with {0}', vs.b.name))}">${dd > 0 ? '+' : ''}${fmt(dd)}</i>` : '') : sd ? `${fmt(Math.round(sd.v))} <small>${sd.perHit ? t('per hit') : 'DPS'}</small>` : /weapon/.test(d.reason) ? `<small class="swhy">${esc(t(d.reason))}</small>` : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
         <div class="socks">${sockets}</div>${picker}</div></div>`;
-    }).join('');
+    });
+    // a skill in a meta gem (Mortar Cannon's Cluster Grenade) right under it, the two in one frame and joined by a line
+    const by = b.gems.map((g, i) => usedBy(b, i));
+    const rows = b.gems.map((g, i) => { const inner = b.gems.map((x, j) => by[j] === g ? cards[j] : '').join(''); return by[i] ? '' : inner ? `<div class="mgroup">${cards[i]}${inner}</div>` : cards[i]; }).join('');
     const per = SK.support_capacity_per_attribute;
     // what the gear gives that the build does not have yet (the build's own gems are what is worked out)
     const give = grantedSkills(wornItems(b, getSum())).filter(([n]) => GEM[n] && !b.gems.some(g => g.name === n)).map(([n, slot, level]) =>
