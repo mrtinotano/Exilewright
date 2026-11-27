@@ -470,7 +470,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     ge_of = {i: x for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets']}
     def tab(i):
         x, L = ge_of[i], ss_tab[i]['Label']
-        name = {'label': labels[L]['Text'], **tr(labels_tr, L, 'Text', 'label')} if L is not None else             {'label': active_skills[x['ActiveSkill']]['DisplayedName'], **tr(active_skills_tr, x['ActiveSkill'], 'DisplayedName', 'label')} if x['ActiveSkill'] is not None and active_skills[x['ActiveSkill']]['DisplayedName'] else {}
+        name = {}
+        if L is not None: name = {'label': labels[L]['Text'], **tr(labels_tr, L, 'Text', 'label')}
+        elif x['ActiveSkill'] is not None and active_skills[x['ActiveSkill']]['DisplayedName']:
+            name = {'label': active_skills[x['ActiveSkill']]['DisplayedName'], **tr(active_skills_tr, x['ActiveSkill'], 'DisplayedName', 'label')}
         A = x['ActiveSkill'] if x is not e and x['ActiveSkill'] is not None and active_skills[x['ActiveSkill']]['Description'] else None   # a skill of its own: what it does (the gem's own is the gem's)
         return {**name, **({'description': active_skills[A]['Description'], **tr(active_skills_tr, A, 'Description', 'description', keep=True)} if A is not None else {}),
                 'types': types(active_skills[x['ActiveSkill']]['ActiveSkillTypes']) if x['ActiveSkill'] is not None else [], 'cast_time_ms': x['CastTime']}

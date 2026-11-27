@@ -1250,6 +1250,8 @@ export function charConds(sum) {
 export const withConds = (sum, conds) => { if (conds) for (const [k, key, to, x = 1] of charConds(sum)) if (conds[key]) sum[to] = (sum[to] || 0) + sum[k] * x; return sum; };
 // a condition of out.when as the planner's panel keeps it: "enemy:Frozen", "Surrounded", "#PowerCharge" (a count)
 export const condKey = c => (/^Multiplier/.test(c.type) ? '#' : c.actor === 'enemy' ? 'enemy:' : '') + c.var;
+// a skill() result with damage of its own (hits or damage over time); its damage over time per second
+export const dealt = x => !!x && (x.avg != null || Object.keys(x.dot).length > 0), dotSum = x => Object.values(x.dot).reduce((a, y) => a + y, 0);
 export function skill(g, b, treeGear) {
   // a buff the scene has on (g.add: Nature's Archon's stats), added to what the tree and gear give
   // and Gemling Legionnaire: per red / green / blue (strength / dexterity / intelligence) support socketed in the skill,
@@ -1838,12 +1840,11 @@ export function skill(g, b, treeGear) {
   } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
   // a gem whose own skill deals no damage (a warcry, a buff) with a skill that does laid over its numbers (Ancestral Cry's
   // Volcanic Steps, Temper Weapon's Combust): that skill's hits as the gem's other tab
-  if (!g.part && !g.asHit && d.hit?.types?.some(x => x === 'Attack' || x === 'Spell') && out.avg == null && !Object.keys(out.dot).length && !out.minion) {
-    const H = skill({ ...g, asHit: true }, b, treeGear); if (H.avg != null || Object.keys(H.dot).length) out.hitAs = H;
+  if (!g.part && !g.asHit && d.hit?.types?.some(x => x === 'Attack' || x === 'Spell') && !dealt(out) && !out.minion) {
+    const H = skill({ ...g, asHit: true }, b, treeGear); if (dealt(H)) out.hitAs = H;
   }
   return out;
 }
-const dealt = x => !!x && (x.avg != null || Object.keys(x.dot).length > 0), dotSum = x => Object.values(x.dot).reduce((a, y) => a + y, 0);
 // the skills of a gem that deal damage besides its own (the game's skill window: a tab each): { key, tab (available.py:
 // label, label_<lang>, description, types), s (skill() of it) }
 export const subsOf = (g, s) => { const d = SK.skills[g.name] || {};

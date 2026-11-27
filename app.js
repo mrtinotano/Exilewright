@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { gemName, withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf, subsOf } from './calc.js';
+import { gemName, withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf, subsOf, dealt } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { SLOTS, initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
 import { initSkills } from './skills.js';
@@ -1450,7 +1450,7 @@ function renderEnemy() {
     row(t('Damage per second'), `<b>${small(vp.dps)}</b>`),
     row(t('You survive'), vp.pool == null ? t('life unknown') : vp.ttd == null ? '∞' : `<b>${secs(vp.ttd)}</b>`)];
   // a gem with no damage of its own: the first skill it sets off that has some (Ancestral Cry's Volcanic Steps)
-  const g = b.gems[scene3d?.selected() ?? 0], own = g && simDmg(g), dmg = own && own.avg == null && !Object.keys(own.dot).length && subsOf(g, own)[0]?.s || own, ve = dmg && versusEnemy(dmg, st, c.accuracy);
+  const g = b.gems[scene3d?.selected() ?? 0], own = g && simDmg(g), dmg = own && !dealt(own) && subsOf(g, own)[0]?.s || own, ve = dmg && versusEnemy(dmg, st, c.accuracy);
   const yours = !g ? '' : `<h4>${t('{0} against it', esc(gemInfo(g).label))}</h4>` + (ve ? `<table class="en-t">${[...types(ve),
       ve.dotTaken > 0 ? row(t('Damage over time'), `<b>${small(ve.dotTaken)}</b> / s`) : '',
       dmg.attack ? row(t('Chance to hit'), pct(ve.hit)) : '',

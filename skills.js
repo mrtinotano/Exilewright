@@ -70,7 +70,7 @@ function details(g, b, sum, geo, view) {
       s.rage > 0 && ['Rage (more attack damage)', s.rage],
       s.rage > 0 && s.rageEffect > 0 && ['Increased Rage effect (Berserk)', s.rageEffect + '%'],
     ])}
-    ${sub?.s.triggered ? sec('Speed', [s.cooldown && ['Cooldown time', fmt(s.cooldown / 1000, 2) + ' s']]) : sec('Speed', [
+    ${sub && s.triggered ? sec('Speed', [s.cooldown && ['Cooldown time', fmt(s.cooldown / 1000, 2) + ' s']]) : sec('Speed', [
       !s.attack && ['Cast time', s.castTime ? fmt(s.castTime / 1000, 2) + ' s' : '—'],
       s.attack && s.useTime && ['Attack time', fmt(s.useTime, 2) + ' s'],
       [s.attack ? 'Attacks per second' : 'Uses per second', s.speed ? fmt(s.speed, 2) : '—'],
@@ -86,8 +86,7 @@ function details(g, b, sum, geo, view) {
       s.ignite && ['Ignite duration', fmt(s.ignite.duration, 1) + ' s'],
     ])}
     ${(c => c ? `<h4>${t('Conditions')}</h4><p class="note">${t('Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.')}</p><div class="conds">${c}</div>` : '')(condRows(s, b, sum))}
-    ${sub ? '' : sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]])}
-    ${sub ? '' : sec('Area & Duration', [
+    ${sub ? '' : sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]]) + sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
       SK.skills[g.name]?.duration_ms && ['Duration', fmt(SK.skills[g.name].duration_ms / 1000, 2) + ' s'],
       geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
