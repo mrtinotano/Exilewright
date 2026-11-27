@@ -600,7 +600,7 @@ export function initScene(el, api) {
       if (time < me.pinn?.until) for (const e of ELEM) if (raw[e]) raw[e] *= 1 + me.pinn.more / 100;   // Pinnacle of Power
       // Elemental Conflux: while on, its more damage of its element (confluxLook)
       const EC = S.src !== 'minionHit' && onS('Elemental Conflux');
-      if (EC && me.conflux) { if (raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100; }
+      if (EC && me.conflux && raw[me.conflux.el]) raw[me.conflux.el] *= 1 + EC.dmg.stats['skill_elemental_conflux_active_element_damage_+%_final'] / 100;
       const SO = S.P.spell && !S.src && objs.find(o => o.soul && !o.dead)?.soul;   // Soul Offering
       if (SO) for (const e in raw) raw[e] *= 1 + SO['power_offering_buff_spell_damage_+%'] * SO._x / 100;
       const CL = d.boils > 0 && D?.sum?.['ascendancy_ritualist_damage_+%_final_vs_enemies_affected_by_blood_boil']; if (CL) for (const e in raw) raw[e] *= 1 + CL / 100;   // Corrupted Lifeforce: more damage against an enemy with Blood Boils
@@ -2045,16 +2045,16 @@ export function initScene(el, api) {
     const CF = onS('Elemental Conflux'); if (!CF) return;
     const q = V(pp.x, 1.3, pp.z);
     if (!(time < me.conflux?.until)) {
-      const el = ELEM[Math.floor(Math.random() * ELEM.length)], L = CONFLUX[el], bolt = el === 'lightning';
+      const el = ELEM[Math.floor(Math.random() * ELEM.length)], L = CONFLUX[el];
       me.conflux = { el, until: time + durOf(CF), halo: 0 };
-      fx.glow(q, 1.6, L.halo, bolt ? rnd(.12, .25) : rnd(.45, .65), 2.6); fx.flash(q, L.halo, 20, .3, 6);
+      fx.glow(q, 1.6, L.halo, L.bolt ? rnd(.12, .25) : rnd(.45, .65), 2.6); fx.flash(q, L.halo, 20, .3, 6);
       fx.emit(96, { p: q, r: .2, v: 3, up: .5, life: rnd(.25, 1), size: .04, c: L.spark, c2: 'white', k: 2.4, drag: 2 });
-      if (bolt) for (let i = 0; i < 6; i++) { const a = rnd(TAU); fx.bolt(q.clone(), V(q.x + Math.cos(a) * 1.2, rnd(.3, 2), q.z + Math.sin(a) * 1.2), L.bolt, rnd(.08, .4), .03); }
+      if (L.bolt) for (let i = 0; i < 6; i++) { const a = rnd(TAU); fx.bolt(q.clone(), V(q.x + Math.cos(a) * 1.2, rnd(.3, 2), q.z + Math.sin(a) * 1.2), L.bolt, rnd(.08, .4), .03); }
     }
     const C = me.conflux, L = CONFLUX[C.el];
     if ((C.halo -= dt) > 0) return;
     C.halo = L.life / 2;
-    fx.glow(q, .9, L.halo, C.el === 'lightning' ? rnd(.15, .75) : L.life, 2.2);
+    fx.glow(q, .9, L.halo, L.bolt ? rnd(.15, .75) : L.life, 2.2);
     if (L.bolt) for (let i = 0; i < 2; i++) { const a = rnd(TAU), h = rnd(.6, 1.9); fx.bolt(V(pp.x + Math.cos(a) * .35, h, pp.z + Math.sin(a) * .35), V(pp.x - Math.cos(a) * .35, h + rnd(-.4, .4), pp.z - Math.sin(a) * .35), L.bolt, rnd(.08, .65), .015, .12); }
   }
   function auraLook(dt) {
