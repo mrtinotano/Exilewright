@@ -2336,7 +2336,7 @@ export function initScene(el, api) {
   function chain(from, d, S, n, seen = new Set(), mult = 1) {
     const to = chest(d), R = sh(S).chainRange || SIM.chainRange;
     if (!seen.size && S.els?.includes('lightning') && Math.random() * 100 < (S.dmg?.sum?.['lightning_skill_additional_chain_chance_%'] || 0)) n++;   // the tree's chance for Lightning skills to chain once more
-    if (S.name === 'Arc' && S.el === 'lightning') arcLook(from, to, !seen.size); else { fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6); }
+    if (S.name === 'Arc' && S.el === 'lightning') arcLook(from, to, !seen.size); else if (S.expr) exBolt(from, to); else { fx.bolt(from, to, S.el, .18); fx.flash(to, S.el, 12, .2, 6); }
     const cst = S.dmg?.stats || {}, RC = cst['active_skill_projectile_damage_+%_final_for_each_remaining_chain'] || 0;   // Arc's quality: more per chain it has left
     seen.add(d); hit(d, S, { mult: mult * (1 + (S.perChain || 0) * (S.chained || 0) / 100) * (1 + RC * Math.max(0, n) / 100) });   // Crescendo Arrows: per time it has Chained
     const free = d.curse && flagOf(S.name, 'always_chain_from_cursed_enemies');   // Coiling Bolts: through any number of Cursed targets
@@ -2964,6 +2964,36 @@ export function initScene(el, api) {
     fx.emit(8, { p: c, r: R * .3, v: .6, up: 1.2, life: .35, size: .45, grow: 1.6, c: CSURGE.flame, k: 2.2, drag: 1 });
     fx.emit(64, { p: c, r: R * .3, v: R * 1.5, up: 1.5, life: 1, size: .05, c: CSURGE.ring, k: 2.4, g: 2, drag: 1.5 });
   }
+  // Elemental Expression's look (its elemental_strike effects, with the Invoker's materials; no tutorial video). Fiery
+  // Explosion (fire_explode.ao, midline.pet): a flash for 0.12 s, a column of flame for 0.6 s (1 / 0.58 / 0.16), tufts of
+  // flame for 0.4-0.8 s, a ring of dark smoke for 1.25-1.75 s, 128 sparks for 0.15-0.55 s and more for 1.5-2.5 s (1 / 0.28 /
+  // 0.08), embers for 2-4 s (1 / 0.46 / 0.18) and its scorch on the ground for 4 s. Arcing Bolt (lightning_bolt.ao,
+  // line2.pet): two ribbons of lightning for 0.35-0.55 s (0.05 / 0.06 / 0.2) with forks for 0.1-0.4 s (0.06 / 0.06 / 0.11);
+  // at each it hits (lightning_impact.ao, end2.pet) a flash for 0.25 s, a sphere for 0.7 s, a ring for 0.4 s, sparkles for
+  // 0.7-2.1 s, smoke for 2-4 s and the ground cracked for 5 s (0.23 / 0.25 / 1). Icy Wave (ElementalStrikeColdProjectile,
+  // rig.ao, line2.pet): shimmering ice for 1.85-2.15 s, smoke kicked up for 0.4-1 s (0.51 / 0.55 / 0.62) and snow for 2-4 s
+  // along its way. note: white where its colour is its texture's; counts, speeds and sizes are the scene's
+  const EXPR = { flame: 0xff9429, spark: 0xff4714, ember: 0xff752e, smoke: 0x080808, scorch: 0x140804, bolt: 0x404dff, fork: 0x8c8cff, crack: 0x3b40ff, flash: 0xc8d0ff, kick: 0x828c9e, ice: 0xdff0ff };
+  function exFire(c, R) {
+    const q = { x: c.x, y: .5, z: c.z }, g = { x: c.x, y: .1, z: c.z };
+    fx.glow(q, R * .7, EXPR.flame, .12, 3); fx.flash(q, EXPR.flame, 30 + R * 15, .3, 8 + R * 3); shake = Math.max(shake, Math.min(.4, R * .1));
+    later(.02, () => fx.pillar(c, R * .35, 2.5, EXPR.flame, .6, 2.4));
+    fx.emit(30, { p: q, r: R * .4, v: 1, up: 2, life: .6, size: .4, c: EXPR.flame, c2: EXPR.spark, k: 2.4, drag: 2 });
+    fx.emit(16, { p: g, r: .3, v: R * 2, up: .1, life: 1.5, size: .6, grow: 1.8, c: EXPR.smoke, smoke: true, a: .5, drag: 2, flat: true });
+    fx.emit(64, { p: q, r: .2, v: R * 3, up: 2, life: .35, size: .04, c: EXPR.spark, c2: 'white', k: 2.4, drag: 2 });
+    later(.02, () => fx.emit(16, { p: q, r: .3, v: R * 1.5, up: 3, life: 2, size: .04, c: EXPR.spark, c2: 'white', k: 2.4, g: 6, drag: 1 }));
+    fx.emit(12, { p: q, r: R * .5, v: .5, up: 1, life: 3, size: .05, c: EXPR.ember, c2: 'white', k: 2.4, drag: 1 });
+    fx.disc(c, R, EXPR.scorch, 4, { dark: true, tex: 'cracks', a: .8, hold: .6, y: .033 });
+  }
+  function exBolt(from, to) {
+    for (let j = 0; j < 2; j++) fx.bolt(from, to, EXPR.bolt, rnd(.35, .55), j ? .03 : .06, .4);
+    for (let k = 0; k < 3; k++) { const m = from.clone().lerp(to, rnd(.2, .8)); fx.bolt(m, V(m.x + rnd(-.8, .8), m.y + rnd(-.5, .5), m.z + rnd(-.8, .8)), EXPR.fork, rnd(.1, .4), .015, .2); }
+    const g = { x: to.x, z: to.z };
+    fx.glow(to, 1, EXPR.flash, .25, 2.6); fx.flash(to, EXPR.bolt, 14, .25, 6); fx.ball(to, .5, EXPR.bolt, .7, 2); fx.ring(g, .2, 1.2, EXPR.bolt, .4, { a: .7 });
+    fx.emit(10, { p: to, r: .3, v: 1.5, up: 1, life: 1.4, size: .04, c: EXPR.fork, c2: 'white', k: 2.4, drag: 1.5 });
+    fx.emit(5, { p: { x: to.x, y: .1, z: to.z }, r: .4, v: .4, up: .4, life: 3, size: .6, grow: 1.6, c: EXPR.kick, smoke: true, a: .25, drag: 1.5 });
+    fx.disc(g, .8, EXPR.crack, 5, { tex: 'cracks', a: .7, hold: .7, k: 1.5 });
+  }
   // Elemental Expression (the Invoker's): a melee critical hit triggers it, within its cooldown: a fiery explosion at the
   // enemy, a bolt of lightning chaining from it or a wave of icy projectiles toward it, each as likely as your Strength,
   // Dexterity and Intelligence (the wave's spread: a look only). note: the level of the triggered skill is not in the data: the attack's own
@@ -2972,7 +3002,8 @@ export function initScene(el, api) {
     if (!D || !spend({ id: 'Elemental Expression', cooldown: D.cooldown, uses: D.uses })) return;
     const a = sheet().attrs || {}, r = Math.random() * ((a.str || 0) + (a.dex || 0) + (a.int || 0)), el = r < a.str ? 'Fire' : r < a.str + a.dex ? 'Lightning' : 'Cold';
     const X = partOf(asTrig(S, { ...D, id: 'Elemental Expression' }), `ElementalExpression${el}Player`); if (!X) return;
-    if (el === 'Fire') boom(d.pos, X.A, X);
+    X.expr = el;   // its look (exFire, exBolt, shoot)
+    if (el === 'Fire') { exFire(d.pos, X.A); area(d.pos, X.A, X); }
     else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, chainsOf(X));
     else { const a0 = Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), n = X.dmg.stats.base_number_of_projectiles; for (let k = 0; k < n; k++) { const q = a0 + (k - (n - 1) / 2) * .25; shoot(X, pp, Math.sin(q), Math.cos(q)); } }
   }
@@ -3408,6 +3439,7 @@ export function initScene(el, api) {
         const TB = CO || (CB && CBOLT);
         if (TB) { fx.trail(m.position, TB.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: CO ? .62 : .45, size: .05, c: TB.ember, k: 2.4 }); }
         else if (XS) { fx.strip(xp, m.position, .07, XBOLT.trail, .6, { a: .7, k: 2, y: m.position.y }); xp = m.position.clone(); } else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
+        if (S.expr && Math.random() < dt * 40) { const p = m.position; fx.emit(1, { p, r: .1, v: .2, life: 2, size: .12, c: EXPR.ice, c2: 'white', k: 2, drag: 1 }); fx.emit(1, { p, r: .2, v: .3, up: .2, life: 3, size: .03, c: 'white', g: 1, drag: 1 }); fx.emit(1, { p: { x: p.x, y: .1, z: p.z }, r: .2, v: .5, up: .3, life: .7, size: .4, grow: 1.6, c: EXPR.kick, smoke: true, a: .3, drag: 1.5 }); }   // Elemental Expression's Icy Wave
         if (DA?.ember) fx.emit(DA.lick ? 3 : 1, { p: m.position, r: .06, v: .3, life: DA.lick ? .5 : 1.2, size: DA.lick ? .14 : .04, c: DA.ember, c2: 'white', k: 2.4, drag: 1 });
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
