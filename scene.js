@@ -1083,6 +1083,8 @@ export function initScene(el, api) {
   // the Consecrated Ground you stand on, if any (Gifts from Above: you have it around you while stationary. note: its
   // radius is not in the data: it is under you alone)
   const holyAt = () => grounds.find(g => g.type === 'consecrated' && !g.dead && dist(g, pp) <= g.r) || sheet().holyStill && !walk && !move && {};
+  // the enemy's curse moves among its older ones (up to your curse limit) to make room for a new one called name
+  const hexOld = (d, name, ign) => d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== name).slice(0, ign || sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1);
   const hexN = () => Object.values(me.hexes || {}).filter(h => time < h.until).length;
   const uncurse = () => { const k = Object.keys(me.hexes || {}).find(n => time < me.hexes[n].until); if (k) { delete me.hexes[k]; fx.ring(pp, .2, 1.2, 'gold', .35); } };   // one of the curses on you
   const onMe = f => Object.values(me.hexes || {}).reduce((t, h) => t + (time < h.until ? (f(h.C) || 0) * h.k : 0), 0) * (holyAt() ? .5 : 1);   // on Consecrated Ground, 50% reduced effect (keywords.json)
@@ -1812,13 +1814,13 @@ export function initScene(el, api) {
       // with a flash on its skin (contagionWisps_spread)
       const carry = d.dots.filter(o => o.spread || o.chaos), hexes = [...(d.hexes || [])].reverse().concat(d.curse || []), list = inside(p, sp.S.A).filter(e => e !== d), from = V(p.x, 1, p.z);
       fx.emit(14, { p: from, r: .4, v: .8, up: .6, life: rnd(1, 3), size: .24, c: CONTAGION.wisp, k: 1.8, drag: 1 }); rotAt(p);
-      for (const e of list) { wisps(from, chest(e), 8); later(.25, () => fx.glow(chest(e), .9, CONTAGION.wisp, .4, 1.6));
+      for (const e of list) { wisps(from, chest(e), 8); later(.25, () => ctFlash(chest(e)));
         for (const o of carry) {
           const x = e.dots.find(x => x.name === o.name), s = durOf(o.S) || o.S.P.dur || 5, v = dotOf(e, o.S), CS = o.spread && o.S.dmg?.stats, n = (o.spreads || 0) + 1;
           if (x) { x.s = s; continue; }
           if (CS?.['contagion_spread_magnitude_+%_final']) v.dps *= 1 + Math.min(CS['contagion_maximum_spread_magnitude_+%_final'], CS['contagion_spread_magnitude_+%_final'] * n) / 100;
           e.dots.push({ ...o, s, ...v, spreads: o.spread ? n : o.spreads }); }
-        for (const u of hexes) { e.hexes = [e.curse, ...(e.hexes || [])].filter(x => x && x.name !== u.name).slice(0, sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1); e.curse = { ...u, s: u.full }; }
+        for (const u of hexes) { hexOld(e, u.name); e.curse = { ...u, s: u.full }; }
         e.by = S; }
       if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
     }
@@ -3142,13 +3144,14 @@ export function initScene(el, api) {
   const CONTAGION = { wisp: 0x5c33ff, skin: [.36 * .45, .2 * .45, .45], rot: 0x130059 };
   const wisps = (a, b, n) => { for (let i = 0; i < n; i++) { const t = (i + rnd()) / n, y = a.y + (b.y - a.y) * t;
     later(t * .25, () => fx.emit(1, { p: { x: a.x + (b.x - a.x) * t, y, z: a.z + (b.z - a.z) * t }, r: .1, v: .2, up: .3, life: rnd(.75, 1.2), size: .22, c: CONTAGION.wisp, k: 1.8, drag: 1 })); } };
+  const ctFlash = q => fx.glow(q, .9, CONTAGION.wisp, .4, 1.6);
   const rotAt = p => { const m = fx.decal(p, .9, 'patch', CONTAGION.rot, { dark: true, a: .8 }); later(rnd(2, 2.5), () => m.remove()); };
   function contagion(S) {
     const d = near(S.at, SIM.snap), q = d ? chest(d) : V(S.at.x, .3, S.at.z);
     wisps(hand(), q, 12); later(.3, () => rotAt(d ? { ...d.pos } : S.at));
     if (!d) return;
     dot(d, S); d.wob = .5;
-    later(.25, () => { fx.glow(q, .9, CONTAGION.wisp, .4, 1.6); fx.emit(8, { p: q, r: .3, v: .4, up: .5, life: rnd(.88, 1.05), size: .2, c: CONTAGION.wisp, k: 1.8, drag: 1 }); });
+    later(.25, () => { ctFlash(q); fx.emit(8, { p: q, r: .3, v: .4, up: .5, life: rnd(.88, 1.05), size: .2, c: CONTAGION.wisp, k: 1.8, drag: 1 }); });
   }
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const full = life;
@@ -3471,7 +3474,7 @@ export function initScene(el, api) {
           if (C?.maxLevel && d.level > C.maxLevel) { if (!quiet) say(t('{0} cannot curse enemies above level {1}', S.label, C.maxLevel), 'curse'); return; }
           n++;
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
-          d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== S.name).slice(0, sheet().curseIgnore || S.dmg?.sum?.curse_ignores_curse_limit ? Infinity : (sheet().curseLimit || 1) - 1);
+          hexOld(d, S.name, S.dmg?.sum?.curse_ignores_curse_limit);
           if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
           d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
@@ -6403,7 +6406,7 @@ export function initScene(el, api) {
       }
     }
     d.flash = Math.max(0, d.flash - dt); d.wob = Math.max(0, d.wob - dt * 2.2);
-    const frozen = st.freeze > 0, e = f.sack.emissive, xd = d.dots.some(v => v.el !== 'physical'), pd = d.dots.length && !xd;   // a physical one (Corrupted Blood) has nothing on the body in the game (BuffVisuals corrupted_blood): its blood as Bleeding's
+    const frozen = st.freeze > 0, ct = d.dots.some(v => v.spread), e = f.sack.emissive, xd = d.dots.some(v => v.el !== 'physical'), pd = d.dots.length && !xd;   // a physical one (Corrupted Blood) has nothing on the body in the game (BuffVisuals corrupted_blood): its blood as Bleeding's
     if (!frozen) { let a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) - f.group.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a)); f.group.rotation.y += a * Math.min(1, dt * 5); }   // they watch you
     d.lunge = Math.max(0, d.lunge - dt * 3.2);
     f.upper.rotation.x = frozen ? 0 : Math.sin(time * 22 + d.ph) * d.wob * .16 + Math.sin(d.lunge * Math.PI) * .42; f.upper.rotation.z = frozen ? 0 : Math.cos(time * 17 + d.ph) * d.wob * .1;
@@ -6414,13 +6417,13 @@ export function initScene(el, api) {
     const nb = Math.min(10, d.dots.reduce((n, v) => n + (v.el === 'physical' ? v.stacks || 1 : 0), 0)); f.blood.visible = nb > 0;   // Corrupted Blood's orbs, one a debuff
     f.blood.children.forEach((o, i) => { const a = time * 1.6 + i / nb * Math.PI * 2; o.visible = i < nb; o.position.set(Math.cos(a) * .45, Math.sin(time * 3 + i) * .05, Math.sin(a) * .45); });
     if (d.flash > 0) e.setRGB(.9, .3, .2).multiplyScalar(d.flash / .18);
-    else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (d.dots.some(v => v.spread)) e.setRGB(...CONTAGION.skin); else if (st.poison > 0 || xd) e.setRGB(.1, .28, .04);
+    else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (ct) e.setRGB(...CONTAGION.skin); else if (st.poison > 0 || xd) e.setRGB(.1, .28, .04);
     else if (st.chill > 0) e.setRGB(.05, .2, .35); else if (d.boils > 0) e.setRGB(...BOIL.skin).multiplyScalar(Math.min(1, .4 + d.boils * .15)); else e.setRGB(0, 0, 0);
     const p = { x: d.pos.x, y: .9 * d.sc, z: d.pos.z };
     if (st.ignite > 0 && Math.random() < dt * 22) fx.emit(1, { p, r: .25, h: .8, v: .2, up: 1.8, life: .5, size: .32, c: 'fire', c2: 'ember' });
     if (st.shock > 0 && Math.random() < dt * 9) fx.emit(2, { p, r: .3, h: 1, v: 1.6, life: .18, size: .13, c: 'lightning', c2: 'white', k: 3 });
     if (st.poison > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .8, life: .9, size: .16, c: 'poison' });
-    if (Math.random() < dt * 3 && d.dots.some(v => v.spread)) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .2, life: rnd(3, 4), size: .18, c: CONTAGION.wisp, k: 1.6, drag: 1 });   // Contagion's oozing wisps
+    if (ct && Math.random() < dt * 3) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .2, life: rnd(3, 4), size: .18, c: CONTAGION.wisp, k: 1.6, drag: 1 });   // Contagion's oozing wisps
     if ((st.bleed > 0 || pd) && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if ((st.chill > 0 || frozen) && Math.random() < dt * 6) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
     if (xd && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
@@ -6720,7 +6723,7 @@ export function initScene(el, api) {
     if (U.mana) { const n = avgHit({ dmg: d.atk }) * U.mana / 100, RT = sheet().recoup?.time || 8; me.recoup.push({ k: 'mana', left: n, rate: n / RT }); }
     if (U.blood) { const v = { s: U.bloodTime, name: 'Bloodbarrier', label: t('Corrupted Blood'), S: thornX({ hits: {} }, t('Corrupted Blood')), el: 'physical', dps: takes(d, 'physical', me.maxL * U.blood / 60, false) }; const o = d.dots.filter(x => x.name === v.name); if (o.length < BLOOD_MAX) d.dots.push(v); else Object.assign(o.reduce((a, x) => x.s < a.s ? x : a), v); }
     if (U.enfeeble && Math.random() * 100 < U.enfeeble.chance) { const E = U.enfeeble;   // Rondel de Ezo: cursed with Enfeeble, as a curse of yours
-      d.hexes = [d.curse, ...(d.hexes || [])].filter(u => u && u.name !== 'Enfeeble').slice(0, sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1);
+      hexOld(d, 'Enfeeble');
       d.curse = { s: SIM.curseTime, full: SIM.curseTime, label: api.info({ name: 'Enfeeble' }).label, name: 'Enfeeble', C: E.C, k: E.C.effect * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe('Enfeeble', E.C, SIM.curseTime); }
   }
   const blocked = d => { blockU(d); me.blockAt = time; me.blockN = (me.blockN || 0) + 1; me.life = Math.min(me.maxL, me.life + recOn('block') + me.maxL * recOn('blockPct') / 100); fx.ring(pp, .4, 1.1, 'white', .25, { a: .6 }); fx.text(above(), t('Blocked'), GREY, .32); event('block', pp, {}); record('avoid', d.mon.name, t('Blocked'), 0, GREY); };   // Cast / Curse on Block: its energy per block
