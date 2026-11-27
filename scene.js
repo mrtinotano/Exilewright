@@ -188,6 +188,7 @@ export function initScene(el, api) {
   const toast = text => { toastEl.textContent = text; toastEl.classList.add('on'); toastT = 2.2; };
   const later = (sec, fn) => { timers.push({ s: sec, fn }); };
   const hand = () => player.hand(V());
+  const palms = () => { const a = V(), b = V(); player.palms(a, b); return [a, b]; };
   // the character of the build (calc.js): defences, accuracy and recovery
   let shC = { at: -9, v: {} };
   // The Hammer of Faith's lesser Shrine buff and the modifiers Headhunter took from rare monsters, while they last, and the
@@ -694,6 +695,8 @@ export function initScene(el, api) {
       const c = { x: d.pos.x, z: d.pos.z }, X = { ...S, name: RB.name, label: RB.label, A: RB.A, src: 'blades', dmg: { ...D, hits: scale(D.hits, RS._base_multiplier / (D.stats?._base_multiplier || 10000)), trig: [] } };
       later(RS.rain_of_blades_fall_delay_ms / 1000, () => { pop(c, RB.A, 'dust'); boom(c, RB.A, X); });
     }
+    // Crackling Palm, Gelid Palm (Thunderfist): your unarmed melee attack hits call down their bolts (palmBolt)
+    if (!S.src && P.attack && P.melee && D?.unarmed) for (const n of ['Crackling Palm', 'Gelid Palm']) { const X = onS(n); if (X) palmBolt(X, d); }
     // Rage: "Only one Hit every 0.5 seconds can cause you to gain Rage" (keywords.json); the tree's gains and the skill's
     // supports' (calc.js onHit); a crit can cost it (Prototype Seventeen); Combo from Strikes; a perfectly timed hit's charge
     const H = real ? D.onHit : null;
@@ -1941,6 +1944,36 @@ export function initScene(el, api) {
   }
 
   // Every enemy in a circle, plus whatever lies there and reacts (grenades, crystals, rods, gas, oil).
+  // Crackling Palm, Gelid Palm: an unarmed melee attack hit calls down a bolt on the enemy, no more than its number every
+  // its delay, hitting the enemies within its radius for its own damage. Crackling Palm's look (thunder_bolt.ao: its
+  // lightning_bolt ribbons falling from 15 m above for 0.35-0.55 s, impact.pet: a flash 0.12 s, sparks, rings and a ring out
+  // to its area 0.35-0.55 s, small bolts drawn in for 0.4-0.8 s; their Lightning Color 0.05 / 0.06 / 0.2, the flash
+  // 2.3 / 3.11 / 15); Gelid Palm's is its element's
+  const TFIST = { bolt: 0x404cff, flash: 0x2735ff, ring: 0x3340ff, hand: 0x3126ff };
+  function palmBolt(X, d) {
+    const st = X.dmg?.stats || {}, k = 'palm' + X.name, L = me[k] = (me[k] || []).filter(t0 => time - t0 < st.thunderfist_bolt_delay_ms / 1000);
+    if (L.length >= st.thunderfist_number_of_bolts_delays) return;
+    L.push(time);
+    const c = { x: d.pos.x, z: d.pos.z }, cp = X.name === 'Crackling Palm', col = cp ? TFIST.bolt : X.el;
+    for (let j = 0; j < 3; j++) fx.bolt(V(c.x + rnd(-.3, .3), 15, c.z + rnd(-.3, .3)), V(c.x, 0, c.z), col, rnd(.35, .55), j ? .05 : .09, .5);
+    later(.1, () => {
+      fx.glow({ x: c.x, y: .4, z: c.z }, 1.8, cp ? TFIST.flash : X.el, .12, 3);
+      fx.emit(24, { p: { x: c.x, y: .2, z: c.z }, r: .2, v: 6, up: 2, life: rnd(.2, .4), size: .05, c: cp ? TFIST.ring : X.el, c2: 'white', k: 2.6, drag: 2 });
+      fx.ring(c, .2, X.A, cp ? TFIST.ring : X.el, rnd(.35, .55), { a: .8 });
+      for (let j = 0; j < 8; j++) { const a = rnd(TAU), r = rnd(.5, 1) * X.A; fx.bolt(V(c.x + Math.cos(a) * r, .1, c.z + Math.sin(a) * r), V(c.x, .3, c.z), col, rnd(.4, .8), .025, .25); }
+      area(c, X.A, { ...X, src: 'palm' });
+    });
+  }
+  // the hands while Crackling Palm is on (thunderfist_ambient.epk: lightning_hand_pt, small bolts about the hands and drops
+  // of lightning, 0.15-0.4 s; 3.85 / 3 / 20)
+  function palmLook(dt) {
+    if (!tog['Crackling Palm']) return;
+    for (const h of palms()) {
+      if (Math.random() < dt * 30) fx.bolt(h.clone().add(V(rnd(-.08, .08), rnd(-.08, .08), rnd(-.08, .08))), h.clone().add(V(rnd(-.12, .12), rnd(-.12, .12), rnd(-.12, .12))), TFIST.hand, rnd(.2, .4), .01, .06);
+      if (Math.random() < dt * 10) fx.emit(1, { p: h, r: .05, v: .1, up: -1, life: rnd(.15, .25), size: .06, c: TFIST.hand, c2: 'white', k: 2.6 });
+      if (Math.random() < dt * 8) fx.glow(h, .35, TFIST.hand, rnd(.15, .3), 2.4);
+    }
+  }
   function area(c, R, S, o = {}) {
     let n = 0;
     for (const d of dummies) if (!d.dead && dist(d.pos, c) <= R + SIM.body && hit(d, S, o)) n++;
@@ -4157,8 +4190,6 @@ export function initScene(el, api) {
       if (HS) { const w = (S.wardPaid || 0) + me.ward; spendWard(me.ward);
         if (time < me.hollowAt) return; me.hollowAt = time + st.hollow_shell_per_target_cooldown_ms / 1000;
         const g = w * HS / 100; fx.ring(pp, .3, S.A, 'holy', .45); guardFor(g, durOf(S)); return say(`${S.label}: ${Math.round(g)}`, 'holy'); }
-      // note: Crackling Palm and Gelid Palm (Thunderfist) call down their bolts on Unarmed melee attack hits; no gem is an
-      // Unarmed melee attack and the game's Punch has no damage data, so they are not simulated
       // Refutation: spends all your Runic Ward; for its duration you Block every blockable hit and Parry its attacker
       // (activeBlock), with its less Stun Threshold, less by its more per 10 Ward spent (hurt)
       if (st['runic_fortress_stun_threshold_+%_final'] != null) { const w = me.ward; spendWard(w); me.refute = { until: time + durOf(S), st, stun: (1 + st['runic_fortress_stun_threshold_+%_final'] / 100) * (1 + Math.floor(w / 10) * (st['runic_fortress_stun_threshold_+%_final_per_10_ward_spent'] || 0) / 100) }; return say(t('{0} active', S.label), 'gold'); }
@@ -4809,7 +4840,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence', 'Crackling Palm']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them
@@ -5400,7 +5431,7 @@ export function initScene(el, api) {
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
-    const bz = berserkLook(); convLook(dt);
+    const bz = berserkLook(); convLook(dt); palmLook(dt);
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
     else if (bz) { w = bz; WG.set(BERSERK.skin); }   // Berserk: red over you while you have Rage
     orbiters(dt);

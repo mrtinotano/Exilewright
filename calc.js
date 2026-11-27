@@ -1321,6 +1321,7 @@ export function skill(g, b, treeGear) {
   // and fire damage gained per Intelligence (Northpaw, Thunderfist, Facebreaker)
   const unarmed = attack && !!w && !b.items?.weapon, FB = unarmed && (sum['unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength'] || sum['non_skill_unarmed_damage_to_gain_as_fire_1%_per_X_intelligence']) && character(b, sum).attrs;
   const perX = (a, k) => FB && sum[k] ? Math.floor((FB[a] || 0) / sum[k]) : 0;
+  out.unarmed = unarmed;   // for Crackling Palm and Gelid Palm (scene.js palmBolt)
   // Dance with Death: 25% more skill speed with the off hand empty and a one-handed martial weapon in the main hand
   const dwd = sum.keystone_dance_with_death && !b?.items?.offhand && w && weaponTags(w).includes('onehand') && !/^(Wands|Sceptres)$/.test(classOf(b.items.weapon)) ? 1.25 : 1;
   // Amazon: physical damage added to attacks with the weapon, a share of the weapon's own accuracy

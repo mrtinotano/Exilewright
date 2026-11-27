@@ -444,6 +444,7 @@ export function makeHumanoid(fx) {
     // a second figure (Abyssal Apparition) takes its weapon trail out of the scene with it
     dispose() { root.parent?.remove(root); trail.parent?.remove(trail); trail.geometry.dispose(); trail.material.dispose(); },
     hand(v) { return tip.getWorldPosition(v); },
+    palms(a, b) { jt.haL.localToWorld(a.set(0, -PALM, 0)); jt.haR.localToWorld(b.set(0, -PALM, 0)); },   // the middle of the left and right palms
     ends(a, b) { tip.getWorldPosition(a); butt.getWorldPosition(b); },   // a quarterstaff's two ends
     eye(v, s) { return jt.head.localToWorld(v.set(s * .035, .09, .1)); },   // left (-1) or right (1) eye, roughly
     setColor(c) { trail.material.color.copy(fx.color(c, .5)).lerp(WHITE, .3); if (!glow) return; glow.userData.core.material.color.copy(fx.color(c, 3.2)); glow.userData.glow.material.color.copy(fx.color(c, 1.6)); },
