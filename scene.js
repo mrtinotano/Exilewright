@@ -1938,11 +1938,43 @@ export function initScene(el, api) {
     d.corpse = 0; d.back = SIM.respawn; d.fig.group.visible = false;
     fx.emit(26, { p: { x: d.pos.x, y: .4, z: d.pos.z }, r: .5, v: 1.5, up: 3, life: .8, size: .22, c, c2: 'blood' }); fx.ring(d.pos, 1.3, .2, c, .4);
   }
+  // Detonate Dead's look (witch_detonate_dead, necromancer_detonatedead; its tutorial video). Cast, flames at your hand;
+  // the corpse swells through its delay (bloatCorpse_Skin_FIRE: Corpse_Bloating, by 0.55 of its size), glowing; then it
+  // bursts (core_explosion_01.ao, explosion_01.ao): an orange light (2.18 / 0.62 / 0.21) for 0.1-0.15 s with a 0.1 s
+  // shake, a flash for 0.15 s, 32 flames for 0.23-0.67 s (1 / 0.8 / 0.54), a sphere for 0.25-0.35 s (1 / 0.74 / 0.57), a
+  // ring for 0.4 s (1.2 / 0.78 / 0.48) and its core ring for 0.65 s (1 / 0.69 / 0.54), dark smoke for 0.77-1.23 s,
+  // shrapnel (0.42 / 0.39 / 0.35) and blood from 0.05-0.08 s, a smoke wave from 0.06 s for 1.3 s, fire on the ground for
+  // 1-4 s, 64 embers for 4.2-5.8 s and the ground scorched for 7 s. note: the flames at your hand and the corpse's glow
+  // are not in the data (the explosion's flames here); the counts, speeds and sizes are the scene's
+  const DDEAD = { light: 0xff4818, flame: 0xffcc8a, sphere: 0xffbd91, ring: 0xffa666, core: 0xffb08a, smoke: 0x333333, gib: 0x6b6359, scorch: 0x050505 };
+  function ddBloat(c, w) {
+    const d = c.d, f = d?.fig, q = { x: c.x, y: .35, z: c.z };
+    fx.emit(14, { p: hand(), r: .2, v: .6, up: 1, life: .4, size: .25, grow: 1.4, c: DDEAD.flame, c2: DDEAD.light, k: 2.2, drag: 1.5 });
+    fx.glow(q, 1.2, DDEAD.light, w, 2); fx.emit(10, { p: q, r: .4, v: .3, up: .6, life: w, size: .2, c: DDEAD.flame, c2: DDEAD.light, k: 2, drag: 1 });
+    if (!f) return () => {};
+    const s0 = f.group.scale.x; f.group.visible = true;
+    for (let i = 1; i < 8; i++) later(w * i / 8, () => f.group.scale.setScalar(s0 * (1 + .55 * i / 7)));
+    return () => { f.group.scale.setScalar(s0); if (!d.corpse) f.group.visible = false; };
+  }
+  function ddBlast(c, R) {
+    const q = { x: c.x, y: .5, z: c.z }, g = { x: c.x, z: c.z };
+    fx.flash(q, DDEAD.light, 40 + R * 10, .15, 8 + R * 3); shake = Math.max(shake, Math.min(.5, R * .09));
+    fx.glow(q, R * .9, 'white', .15, 3); fx.ball(q, R * .45, DDEAD.sphere, .3, 1.8);
+    fx.emit(32, { p: q, r: .3, v: R * 2.2, up: 1, life: .45, size: .6, grow: 1.6, c: DDEAD.flame, c2: DDEAD.light, k: 2.4, drag: 2.5 });
+    fx.ring(g, .2, R * .8, DDEAD.ring, .4, { a: .8, y: .5 }); fx.ring(g, .1, R, DDEAD.core, .65, { a: .6 });
+    fx.emit(8, { p: q, r: .4, v: 1, up: .8, life: 1, size: R * .5, grow: 1.8, c: DDEAD.smoke, smoke: true, a: .5, drag: 1 });
+    later(.05, () => fx.emit(16, { p: q, r: .2, v: 5, up: 3, life: 1.2, size: .07, c: DDEAD.gib, g: 9, drag: .5 }));
+    later(.06, () => fx.ring(g, R * .3, R * 1.1, DDEAD.smoke, 1.3, { a: .4 }));
+    later(.08, () => fx.emit(12, { p: q, r: .2, v: 3, up: 2.5, life: 1.5, size: .08, c: 'blood', g: 9, drag: .6 }));
+    fx.emit(Math.ceil(R * 8), { p: { x: c.x, y: .1, z: c.z }, r: R * .7, v: .3, up: .6, life: 2.5, size: .25, c: DDEAD.flame, c2: DDEAD.light, k: 2, drag: 1 });
+    fx.emit(64, { p: q, r: R * .5, v: 1.5, up: 1.5, life: 5, size: .04, c: DDEAD.light, c2: 'white', k: 2.4, g: 1, drag: 1.2 });
+    fx.disc(g, R, DDEAD.scorch, 7, { dark: true, a: .7, tex: 'patch', hold: .8, y: .02 });
+  }
   // Corpse skills act on a corpse near the cursor; without one they do nothing.
   function useCorpse(S) {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap));
     if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
-    const p = { x: d.pos.x, z: d.pos.z, life: d.max }; me.corpseAt = time;   // life: the corpse's monster's
+    const p = { x: d.pos.x, z: d.pos.z, life: d.max, d }; me.corpseAt = time;   // life: the corpse's monster's
     if (!(Math.random() * 100 < (S.dmg?.sum?.['base_chance_to_not_consume_corpse_%'] || 0))) eat(d, S.P.ground === 'gas' ? GAS.bloat : S.el);   // the tree's chance to not destroy it
     flaskGain(0, S.dmg?.sum?.support_grants_X_life_flask_charges_on_using_corpse || 0); flaskGain(1, S.dmg?.sum?.support_grants_X_mana_flask_charges_on_using_corpse || 0);   // Gorge
     if (S.P.gain) chargeBy(S.P.gain, S);
@@ -4405,8 +4437,8 @@ export function initScene(el, api) {
       // monster's life as physical
       const cs = S.dmg?.stats || {}, CP = c.life && cs.corpse_explosion_monster_life_permillage_physical;
       if (CP) {
-        const n = c.life * CP / 1000; fx.telegraph(c, R, S.el, (cs.explosion_delay_ms || 0) / 1000);
-        return later((cs.explosion_delay_ms || 0) / 1000, () => { boom(c, R, S); lifeBlast(c, R, S, 'physical', n); });
+        const n = c.life * CP / 1000, w = (cs.explosion_delay_ms || 0) / 1000, off = ddBloat(c, w);
+        return later(w, () => { off(); ddBlast(c, R); area(c, R, S); lifeBlast(c, R, S, 'physical', n); });
       }
       if (P.stages && !P.els.length && P.dur) {   // a rune on the ground that only buffs (Sigil of Power)
         const dec = fx.decal(pp, R, 'rune', S.el, { a: .6, spin: .25 });
