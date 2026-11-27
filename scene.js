@@ -1488,10 +1488,56 @@ export function initScene(el, api) {
     if (list.length) say(t('{0} detonates {1}', S.label, list[0].S.label) + ` ×${list.length}`, 'gold');
     if (list.length && Math.random() * 100 < (S.dmg?.stats?.['thunderous_leap_%_chance_for_shocked_ground_when_detonating'] || 0)) ground('shocked', c, SIM.area, GROUND_TIME.shocked, { ...S, src: 'ground' });
   }
+  // Detonate Living's look (supports/RunicSupports/DetonateLiving). Cast, runes are pulled into your hand for 0.62-1.38 s
+  // (0.07 / 0.37 / 1) with sparks and a curl (0.42 / 0.88 / 1), a wave goes from it for 0.5-0.7 s (0.16 / 0.6 / 1) and
+  // the enemy is wrapped in ribbons for 0.75 s with a ring under it for 1 s. An enemy it detonates (explode.ao) flashes
+  // for 0.15 s, then a sphere for 0.4 s, 128 sparks for 0.1-0.3 s, a ring for 0.45 s (0.2 / 0.18 / 0.15), dust for
+  // 0.75-1.5 s (0.24 grey by 0.16 / 0.33 / 1), embers for 0.75-2 s, its runic liquid (0 / 0.47 / 1) bursting for 0.5 s,
+  // flung for 4-6 s and pooled for 4.75-5.25 s, gibs for 3-7 s, a glowing mark for 4 s and blood (0.54 / 0.01 / 0.01)
+  // splashed for 8-12 s; none (whiff.ao) a flash for 0.2 s, a ring for 0.25 s, 5 ribbons for 0.45-0.85 s, 15 runes
+  // floating for 1-3 s, a curl of smoke for 1-3 s and sparks for 0.35-1.25 s. note: the counts, speeds and sizes are the
+  // scene's; its blurs are left out
+  const DLIV = { glow: 0x6be0ff, deep: 0x125eff, wave: 0x2999ff, ring: 0x332e26, dust: 0x0a143d, liquid: 0x0078ff, blood: 0x8a0303 };
+  function dlCast(c) {
+    const H = hand(), l = dist(c, pp) || 1, to = { x: c.x - (c.x - pp.x) / l * .5, z: c.z - (c.z - pp.z) / l * .5 }, q = { x: c.x, y: 1, z: c.z };
+    fx.emit(12, { p: H, r: .6, v: .1, life: 1, size: .07, c: DLIV.deep, c2: DLIV.glow, k: 2.4, drag: 1 });
+    fx.emit(8, { p: H, r: .1, v: 1.2, up: .4, life: .6, size: .04, c: DLIV.glow, c2: 'white', k: 2.4, drag: 2 });
+    fx.strip(H, to, .5, DLIV.wave, .5, { a: .5, k: 1.8, y: H.y });
+    for (let i = 0; i < 4; i++) { const a = rnd(TAU); fx.streak(V(c.x + Math.cos(a) * .4, rnd(.3, 1.6), c.z + Math.sin(a) * .4), V(c.x - Math.sin(a) * .4, rnd(.3, 1.6), c.z + Math.cos(a) * .4), DLIV.wave, .75, .03, .6); }
+    fx.ring(c, .2, 1.1, DLIV.glow, 1, { a: .6, tex: 'outline' }); fx.glow(q, .6, DLIV.glow, .3, 2);
+  }
+  function dlWhiff(c) {
+    const q = { x: c.x, y: 1, z: c.z };
+    fx.glow(q, .9, DLIV.deep, .2, 2.4);
+    later(.1, () => {
+      fx.ball(q, .5, DLIV.glow, .25, 2.2);
+      for (let i = 0; i < 5; i++) { const a = rnd(TAU); fx.streak(V(q.x, q.y, q.z), V(q.x + Math.cos(a) * .8, q.y + rnd(-.3, .5), q.z + Math.sin(a) * .8), DLIV.glow, rnd(.45, .85), .025, .5); }
+      fx.emit(10, { p: q, r: .2, v: 2, up: .5, life: .8, size: .04, c: DLIV.glow, c2: 'white', k: 2.4, g: 2, drag: 1.5 });
+    });
+    fx.emit(15, { p: q, r: .6, v: .2, up: .3, life: 2, size: .09, c: DLIV.deep, c2: DLIV.glow, k: 2, drag: 1 });
+    fx.emit(4, { p: q, r: .3, v: .2, up: .6, life: 2, size: .4, grow: 1.6, c: DLIV.wave, smoke: true, a: .25, drag: 1 });
+  }
+  function dlBlast(c, R) {
+    const q = { x: c.x, y: .9, z: c.z }, g = { x: c.x, z: c.z };
+    fx.glow(q, R * .8, DLIV.glow, .15, 3); fx.flash(q, DLIV.glow, 30 + R * 10, .2, 6 + R * 3);
+    later(.1, () => {
+      fx.emit(24, { p: q, r: .2, v: 1.5, up: 1, life: 1.4, size: .04, c: DLIV.glow, c2: 'white', k: 2.2, g: 1, drag: 1.2 });
+      fx.emit(10, { p: q, r: .2, v: 4, up: 3, life: 5, size: .08, c: DLIV.liquid, c2: DLIV.glow, k: 1.6, g: 9, drag: .4 });
+      fx.disc(g, R * .4, DLIV.glow, 4, { a: .3, hold: .6, k: 1.4 }); fx.disc(g, R * .45, DLIV.liquid, 5, { a: .45, tex: 'patch', hold: .8, y: .03 });
+    });
+    later(.15, () => {
+      fx.ball(q, R * .45, DLIV.glow, .4, 1.8); fx.ball(q, R * .3, DLIV.liquid, .5, 1.2); shake = Math.max(shake, Math.min(.4, R * .08));
+      fx.emit(128, { p: q, r: .2, v: R * 4, up: 1, life: .2, size: .04, c: DLIV.glow, c2: 'white', k: 2.6, drag: 3 });
+      fx.emit(4, { p: q, r: .4, v: 1, up: .5, life: 1.1, size: R * .5, grow: 1.6, c: DLIV.dust, smoke: true, a: .5, drag: 1.5 });
+      fx.emit(14, { p: q, r: .3, v: 3, up: 2.5, life: 5, size: .09, c: DLIV.blood, g: 9, drag: .5 });
+      fx.disc(g, R * .5, DLIV.blood, 10, { a: .6, tex: 'patch', hold: .8, y: .02 });
+    });
+    later(.2, () => fx.ring(g, R * .2, R, DLIV.ring, .45, { a: .8, y: .3 }));
+  }
   function detonate(d, S) {
     const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
     me.culledAt = time; cullUp(S); if (sheet().uEv?.fearCull) me.fear = { n: Math.min(FEAR.max, (time < me.fear?.until ? me.fear.n : 0) + sheet().uEv.fearCull), until: time + FEAR.time };   /* Horror's Flight */ fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
-    if (X) later(.05, () => { boom(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); lifeBlast(c, X.A, X, 'physical', n); });
+    if (X) later(.05, () => { dlBlast(c, X.A); area(c, X.A, { ...X, mult: S.mult, src: 'detonate' }); lifeBlast(c, X.A, X, 'physical', n); });
     return true;
   }
   function cull(d, S, any = false) {
@@ -4457,6 +4503,7 @@ export function initScene(el, api) {
         return;
       }
       if (S.R >= 6 && !S.src) c = S.from;
+      if (S.name === 'Detonate Living') { const at = me.culledAt; dlCast(c); area(c, R, S); if (me.culledAt === at) dlWhiff(c); return; }   // a whiff when it detonates none
       boom(c, R, S);
       if (P.ground) ground(P.ground, c, R, Math.min(P.dur || GROUND_TIME[P.ground] || SIM.groundTime, 10), S);
     },
