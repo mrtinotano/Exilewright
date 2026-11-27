@@ -2977,6 +2977,38 @@ export function initScene(el, api) {
     const X = asTrig(S, T), dur = sh(X).duration || ts.base_skill_effect_duration / 1000;
     for (let k = 0; k < (sh(X).projectiles || ts.base_number_of_projectiles || 1); k++) hazardAt(X, around(at, ts.active_skill_base_secondary_area_of_effect_radius / 10), dur);
   }
+  // Earthquake's look (quake_slam; its tutorial video). Its slam (quakeslam_one, quakeslam_second): a flash for 0.28 s
+  // (flash: 0.53 / 0.45 / 0.33), a pulse for 0.4 s (0.37 / 0.3 / 0.27), dirt flung for 1 s (0.27 / 0.26 / 0.25), a ring of
+  // dust for 0.4-0.55 s (smoke: 0.51 / 0.41 / 0.33), bits for 0.6 s (0.29 / 0.25 / 0.21) and smoke for 0.7 s (wisp: 0.24 /
+  // 0.2 / 0.18). Its Jagged Ground puffs each second (marker cyl.pet: dust, dirt and a pulse for 1 s, 0.48 / 0.43 / 0.32).
+  // Its Aftershock (quakeslamshockwave, quakespike): a flash for 0.28 s, a pulse for 0.4 s, a burst for 0.2 s (0.35 / 0.3 /
+  // 0.19), rocks for 1 s, a wave for 0.4 s, bits for 0.6 s, smoke for 1.7 s, the ground cracked for 2.7 s from 0.06 s and
+  // spikes of rock bursting up with rubble for 0.8 s. note: its distortions are left out; the shakes' strength, the
+  // number of spikes, counts, speeds and sizes are the scene's
+  const EQK = { flash: 0xffd99e, pulse: 0xffcfba, dirt: 0x45423f, dust: 0x82694f, bitz: 0x4a4036, wisp: 0x3d332e, mark: 0xffe6a8, burst: 0xffdb8a, crack: 0x0a0806 };
+  function eqHit(c, R) {
+    const q = { x: c.x, y: .4, z: c.z };
+    fx.glow(q, R * .6, EQK.flash, .28, 2.2); fx.ring(c, .2, R, EQK.pulse, .4, { a: .5 }); shake = Math.max(shake, Math.min(.5, R * .09));
+    fx.emit(Math.ceil(R * 6), { p: q, r: .3, v: 3, up: 3, life: 1, size: .08, c: EQK.dirt, smoke: true, a: .9, g: 9, drag: .4 });
+    fx.emit(16, { p: { x: c.x, y: .1, z: c.z }, r: .3, v: R * 2, up: .1, life: .5, size: .5, grow: 1.8, c: EQK.dust, smoke: true, a: .35, drag: 2, flat: true });
+    fx.emit(12, { p: q, r: .2, v: R * 2.5, up: 1, life: .6, size: .1, c: EQK.bitz, smoke: true, a: .8, drag: 2 });
+    fx.emit(6, { p: q, r: R * .3, v: .5, up: .6, life: .7, size: .6, grow: 1.8, c: EQK.wisp, smoke: true, a: .4, drag: 1.5 });
+  }
+  function eqMark(c, r) {
+    fx.glow({ x: c.x, y: .1, z: c.z }, r * .4, EQK.mark, 1, 1.4);
+    fx.emit(2, { p: { x: c.x, y: .1, z: c.z }, r: r * .5, v: .3, up: .6, life: .7, size: .4, grow: 1.6, c: EQK.dust, smoke: true, a: .3, drag: 1.5 });
+    fx.emit(3, { p: { x: c.x, y: .1, z: c.z }, r: r * .5, v: .5, up: 1.5, life: .4, size: .05, c: EQK.dirt, smoke: true, a: .9, g: 9 });
+  }
+  function eqAfter(c, R) {
+    const q = { x: c.x, y: .5, z: c.z };
+    fx.glow(q, R * .9, EQK.flash, .28, 2.4); fx.glow(q, R * .5, EQK.burst, .2, 2.6); fx.ring(c, .2, R * 1.1, EQK.pulse, .4, { a: .6 }); shake = Math.max(shake, Math.min(.6, R * .12));
+    later(.06, () => fx.disc(c, R, EQK.crack, 2.7, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .034 }));
+    fx.spikes({ x: c.x, z: c.z }, R * .7, { n: 7, h: rnd(1, 1.6), w: .3, dur: .8, dark: true, c: EQK.dirt });
+    fx.emit(Math.ceil(R * 10), { p: q, r: R * .4, v: 4, up: 4, life: 1, size: .1, c: EQK.dirt, smoke: true, a: .9, g: 9, drag: .3 });
+    fx.emit(20, { p: { x: c.x, y: .1, z: c.z }, r: .3, v: R * 2.5, up: .1, life: .4, size: .5, grow: 1.8, c: EQK.dust, smoke: true, a: .4, drag: 2, flat: true });
+    fx.emit(16, { p: q, r: .3, v: R * 2.5, up: 1.2, life: .6, size: .12, c: EQK.bitz, smoke: true, a: .8, drag: 2 });
+    fx.emit(Math.ceil(R * 4), { p: q, r: R * .5, v: 1.2, up: 1.2, life: 1.7, size: .9, grow: 1.8, c: EQK.wisp, smoke: true, a: .45, drag: 1.2 });
+  }
   // A Slam reaching the ground: it sets off the Crater fissures it reaches; Brambleslam leaves its brambles in the slam's
   // area (where in it the data does not say), Hazards that arm and deal less if set off early, and Maim; its cooldown
   function slammed(S, c, R) {
@@ -4219,6 +4251,7 @@ export function initScene(el, api) {
           if (X) for (const d of there.slice(0, ss.sunder_shockwave_limit_per_cascade)) boom({ x: d.pos.x, z: d.pos.z }, XR, X, { soft: true });
           boom(q, r, S);
         }); }
+        else if (P.aftershock) { eqHit(c, R); area(c, R, S); }
         else boom(c, R, S);
         // Supercharged Slam: an Aftershock per stage, each its delay later and its radius larger per previous one
         const ps = S.dmg?.part || {};
@@ -4247,7 +4280,7 @@ export function initScene(el, api) {
           if (X) spendRage(FS);
           for (const sgn of [-1, 1]) later(st.aftershock_delay_ms / 1000, () => { const a = a0 + sgn * off, q = { x: c.x + Math.sin(a) * gap, z: c.z + Math.cos(a) * gap }; boom(q, r, W); if (X) ground('jagged', q, r, durOf(X), W); });
         }
-        slammed(S, c, R); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
+        slammed(S, c, R); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); if (!P.aftershock) fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         // Starborn Onslaught: its fissures, lasting its duration up to its limit, and its stars falling one after another
         // (its first delay, its delay) between its inner and outer radius around the impact (its explosion part)
         // note: the branching of its fissures is not drawn
@@ -4264,12 +4297,13 @@ export function initScene(el, api) {
         // the earthen object it leaves: Earthshatter's spike where its fissure ends, Forge Hammer's hammer where it lands
         if (P.earthen) { const spike = !!st.spike_slam_max_spikes; earth(S, spike ? { x: c.x + S.dx * 5, z: c.z + S.dz * 5 } : c, spike ? st.spike_slam_max_spikes : st.forge_hammer_maximum_hammers, spike); }
         // Earthquake: its Jagged Ground (its tertiary radius and duration, up to its most patches, never on one of its own)
-        // erupts at its end in its Aftershock part. note: the Aftershock hits the patch's area (its own radius is smaller)
+        // erupts at its end in its Aftershock part, its radius its own per level added to the slam's (2.4-3 m at gem levels
+        // 1-20 in the game's 0.3.0 notes; Path of Building's too), grown as the slam's by its increased area
         if (P.aftershock) {
-          const r = st.active_skill_base_tertiary_area_of_effect_radius / 10 || R, dur = st.skill_jagged_ground_base_duration_ms / 1000, X = partOf(S, 'EarthquakeAftershockPlayer') || S, mine = grounds.filter(g => !g.dead && g.quake === S.name);
+          const r = st.active_skill_base_tertiary_area_of_effect_radius / 10 || R, dur = st.skill_jagged_ground_base_duration_ms / 1000, X = partOf(S, 'EarthquakeAftershockPlayer') || S, QR = X === S ? r : S.A * (1 + X.dmg.stats.active_skill_base_area_of_effect_radius / st.active_skill_base_area_of_effect_radius), mine = grounds.filter(g => !g.dead && g.quake === S.name);
           if (mine.length < (st.base_number_of_earthquakes_allowed || 1) && !mine.some(g => dist(g, c) < g.r + r)) {
-            ground('jagged', c, r, dur, S).quake = S.name; fx.telegraph(c, r, S.el, dur);
-            later(dur, () => { say(t('Aftershock of {0}', S.label), S.el); pop(c, r, S.el); boom(c, r, { ...X, mult: S.mult }); });
+            ground('jagged', c, r, dur, S).quake = S.name; for (let k = 1; k < dur; k++) later(k, () => eqMark(c, r));
+            later(dur, () => { say(t('Aftershock of {0}', S.label), S.el); eqAfter(c, QR); area(c, QR, { ...X, mult: S.mult }); });
           }
         } else if (P.ground) ground(P.ground, c, R * 1.15, P.dur, S);
         if (P.fan && S.spent) { const a0 = Math.atan2(S.dx, S.dz), n = 1 + S.spent * 2; for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * .22; shoot({ ...S, aoe: false, P: { ...P, explodes: false } }, c, Math.sin(a), Math.cos(a), { speed: 20, range: 11 }); } }
