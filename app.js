@@ -571,13 +571,22 @@ const openShare = async (exporting, again) => {
     if (names.includes(again)) { pob.value = again; pob.onchange(); }
   });
   // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
-  const importXML = (xml, name) => {
+  // a build's skills in the order of the game's skill panel (serve.py pob?order), when that answer is this character's
+  // (the same skill gems); a gem a meta gem holds (Cluster Grenade in Mortar Cannon) stays right after it
+  const inGameOrder = (b, order) => {
+    const top = b.gems.filter(g => !g.meta).map(g => g.name), at = n => order.indexOf(n), groups = [];
+    if (top.length !== order.length || !top.every(n => order.includes(n))) return;
+    for (const g of b.gems) if (g.meta && groups.length) groups.at(-1).push(g); else groups.push([g]);
+    b.gems = groups.sort((x, y) => at(x[0].name) - at(y[0].name)).flat();
+  };
+  const importXML = (xml, name, order) => {
     const ctx = shareCtx(), { build, warn, specs, active } = fromXML(xml, ctx, blank);
     if (name) build.name = name;
     // one from a Path of Building file replaces the build that came from that file (the newest, if several; before builds
     // kept their file, the one of the same name), so changing it there and importing it again updates it; Undo brings it back
     let upd = false, what = '';
     const put = (o, key) => {
+      if (order?.length) inGameOrder(o, order);
       if (!name) return addBuild(o);
       o.pob = key;
       const id = Object.keys(builds).filter(k => builds[k].pob === key || !builds[k].pob && builds[k].name === o.name).sort((x, y) => y - x)[0];
@@ -595,7 +604,7 @@ const openShare = async (exporting, again) => {
   };
   if (pob) pob.onchange = async () => {
     if (!pob.value) return;
-    try { importXML(await (await fetch('pob?name=' + encodeURIComponent(pob.value))).text(), pob.value.replace(/\.xml$/i, '')); }
+    try { importXML(await (await fetch('pob?name=' + encodeURIComponent(pob.value))).text(), pob.value.replace(/\.xml$/i, ''), await fetch('pob?order').then(r => r.ok ? r.json() : []).catch(() => [])); }
     catch (err) { inmsg.textContent = t('Could not import: {0}', err.message); }
   };
   const close = () => { d.remove(); removeEventListener('keydown', key); };

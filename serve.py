@@ -110,6 +110,9 @@ def documents():
 # note: where Path of Building 2 keeps its builds on Windows by default, and only the ones not in a folder of
 # their own; its "buildPath" setting if someone keeps them elsewhere
 POB = os.path.join(documents(), 'Path of Building (PoE2)', 'Builds')
+# the game's answer for the character Path of Building 2 imported last (in its own folder): the only place with where
+# each skill gem sits in the game's skill panel, which its build files leave out
+POB_API = os.path.join(os.environ.get('APPDATA', ''), 'Path of Building Community (PoE2)', 'poe_api_response.json')
 
 
 def call(url, body=None, ua=UA):
@@ -674,6 +677,15 @@ class Handler(SimpleHTTPRequestHandler):
         except OSError:   # no Path of Building 2 here
             names = []
         name = parse_qs(u.query).get('name', [''])[0]
+        if 'order' in parse_qs(u.query, keep_blank_values=True):   # that character's skill gems in the order of the game's skill panel (its slots left to right), then the rest
+            try:
+                with open(POB_API, encoding='utf-8') as f:
+                    j = json.load(f)
+                skills = (j.get('character') or j).get('skills') or []
+            except (OSError, ValueError, AttributeError):
+                skills = []
+            slot = lambda s: s.get('x') if s.get('inventoryId') == 'SkillSlots' and isinstance(s.get('x'), int) else 99
+            return self.reply_json(200, json.dumps([s.get('typeLine') for s in sorted(skills, key=slot)]).encode())
         if not name:
             return self.reply_json(200, json.dumps(names).encode())
         if name not in names:   # one of the list, never a path of the page's own
