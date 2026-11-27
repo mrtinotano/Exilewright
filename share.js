@@ -61,7 +61,7 @@ ${[[1, set1], [2, set2]].filter(([, s]) => s.length).map(([k, s]) => `<WeaponSet
 <Overrides><AttributeOverride strNodes="${attr('str')}" dexNodes="${attr('dex')}" intNodes="${attr('int')}"/></Overrides>
 </Spec></Tree>
 <Skills activeSkillSet="1"><SkillSet id="1">
-${b.gems.map((g, i) => usedBy(b, i) ? null : `<Skill enabled="true" slot="" mainActiveSkill="1">${gem(g.name, g.level ?? 20, g.quality)}${
+${b.gems.map((g, i) => usedBy(b, i) ? null : `<Skill enabled="${g.enabled !== false}" slot="" mainActiveSkill="1">${gem(g.name, g.level ?? 20, g.quality)}${
    b.gems.filter((x, k) => usedBy(b, k) === g).map(x => gem(x.name, x.level ?? 20, x.quality)).join('')}${(g.supports || []).filter(Boolean).map(s => gem(s, 1)).join('')}</Skill>`).filter(Boolean).join('\n')}
 </SkillSet></Skills>
 <Items activeItemSet="1">
@@ -126,7 +126,7 @@ export function fromXML(xml, ctx, blank, at) {
     const act = gs.filter(o => o.g.kind !== 'support' && !again.includes(o.g.name)), meta = act.find(o => o.g.tags?.includes('meta'));
     for (const o of act)
       b.gems.push({ name: o.g.name, level: o.level, ...o.quality ? { quality: o.quality } : {}, sockets: Math.min(ctx.maxSockets, Math.max(2, sup.length + (o === meta ? act.length - 1 : 0))),
-        supports: [...sup], ...meta && o !== meta && { meta: meta.g.name } });
+        supports: [...sup], ...meta && o !== meta && { meta: meta.g.name }, ...sk.getAttribute('enabled') === 'false' && { enabled: false } });
   }
   // items: the active item set's slots, and the tree's jewel sockets
   const itemsEl = kids(root, 'Items')[0], text = {};

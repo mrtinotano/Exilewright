@@ -107,12 +107,13 @@ const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', '
 // a gem used with the weapon set in hand (g.wset: 1 or 2, none both; the game's "Used with weapon set:"): a persistent
 // skill of the other set is off, a skill of only the other set is worked out as with that set in hand (skill())
 export const onSet = (b, g) => !g?.wset || g.wset === (b?.wset === 2 ? 2 : 1);
+const live = (b, g) => g.enabled !== false && onSet(b, g);   // a persistent skill that is on: not turned off (g.enabled false, the game's or PoB's) and of the set in hand
 let SUM_OF = null;
 const OTHER_SUM = new WeakMap();
 export const useSumOf = f => { SUM_OF = f; };   // app.js sumOf: the stats of a build, for its other weapon set
 export function skillStats(b) {
   const out = motes(b);
-  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent') && onSet(b, g))
+  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent') && live(b, g))
     for (const n of g.supports || []) for (const [k, x] of Object.entries({ ...SK.skills[n]?.constant, ...Object.values(SK.skills[n]?.levels || {})[0] }))
       if (GRANTS[k]) out[GRANTS[k]] = (out[GRANTS[k]] || 0) + x;
   return out;
@@ -131,7 +132,7 @@ const BUFF_GRANTS = { 'herald_of_ash_fire_damage_+%': 'fire_damage_+%', 'herald_
   'sacrifice_minion_life_granted_+%': 'minion_maximum_life_+%', ...Object.fromEntries(['alchemists_boon_attack_speed_granted_+%_during_life_flask', 'alchemists_boon_cast_speed_granted_+%_during_mana_flask', 'charge_regulation_damage_per_charge_granted_+%', 'base_ward_cost_efficiency_+%'].map(k => [k, k])) };
 export function auraStats(b, sum) {
   const out = {}, k = 1 + v(sum, 'aura_effect_+%') / 100;
-  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent') && onSet(b, g)) { const aura = GEM[g.name].types.includes('Aura');
+  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent') && live(b, g)) { const aura = GEM[g.name].types.includes('Aura');
     for (const [id, x] of Object.entries(gemStats(g, sum))) { const to = aura && AURA_GRANTS[id] || BUFF_GRANTS[id]; if (to) out[to] = (out[to] || 0) + x * (aura ? k : 1); } }
   return out;
 }
@@ -478,7 +479,7 @@ export function character(b, sum) {
     // Shaman's Reactive Growth / Avatar of Evolution: Adaptations to the highest elemental type of each hit you take (KeywordPopups Adaptation: 3 at a time, no duration unless one is given)
     adapt: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage ? { gain: sum.gain_X_adaptation_matching_type_when_hit_by_elemental_damage, max: v(sum, 'base_max_adaptations') || 3,
       per: v(sum, 'ascendancy_druid_shaman_elemental_damage_taken_+%_final_per_matching_adaptation') * (sum.double_adaptation_effect ? 2 : 1), less: v(sum, 'ascendancy_shaman_reactive_growth_elemental_damage_taken_+%_final'), dur: v(sum, 'adaptation_duration_ms') / 1000 || Infinity } : null,
-    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, true, 0), 0),   // Infernalist's Beidat's Gaze and Atziri's Communion: their share of life reserved
+    lifeReserved: v(sum, 'life_reserved_by_stat_only_for_midnight_bargain_and_infernalist_%') + (b.gems || []).reduce((t, g) => t + (g.enabled === false ? 0 : reservation(g, sum, b, true, 0)), 0),   // Infernalist's Beidat's Gaze and Atziri's Communion: their share of life reserved
     presCd: v(sum, 'enemies_in_presence_cooldown_recovery_+%'),   // the increased (reduced) cooldown recovery of enemies in your Presence
     presExpo: !!sum.enemies_in_presence_have_exposure,   // Shaman's Turning of the Seasons
     // Blood Mage's Sanguine Tides: life flask charges per 2% of life spent (its text), a hit while the life flask is full consuming its share of the charges
@@ -630,7 +631,7 @@ export function character(b, sum) {
   if (sum.base_cannot_evade) c.evadePct = c.evadeMax = 0;   // Bramblejack: no chance to evade with whatever evasion (the hits roll against evadeMax; what is worked out from the evasion still counts it)
   if (sum.resolute_technique) c.accuracy *= 2;
   if (sum.keystone_lord_of_the_wilds) c.spirit = Math.round(c.spirit / 2);
-  c.reserved = (b.gems || []).reduce((t, g) => t + reservation(g, sum, b, false, c.life || 0), 0);   // spirit reserved by the build's persistent skills (here: Prism Guardian's is by the maximum life)
+  c.reserved = (b.gems || []).reduce((t, g) => t + (g.enabled === false ? 0 : reservation(g, sum, b, false, c.life || 0)), 0);   // spirit reserved by the build's persistent skills (here: Prism Guardian's is by the maximum life)
   if (sum.base_darkness) { c.spirit = 0; c.darkness = Math.round((sum.base_darkness + v(sum, 'darkness_per_level') * lvl) * (pct('maximum_darkness_+%') + v(sum, 'maximum_darkness_+%_per_capped_chaos_damage_resistance') * Math.max(0, c.res.chaos.capped) / 100)); c.darkFor = v(sum, 'base_darkness_refresh_rate_ms') / 1000; }
   return c;
 }
@@ -894,7 +895,7 @@ export function ailmentDefence(c, sum) {
 // being lost; gain: Rage the build gains on hit / on attack or melee hit / on kill / when hit / on skill use
 const RAGE_GAIN = { hit: ['gain_x_rage_on_hit', 'base_gain_x_rage_on_hit'], attack: ['gain_x_rage_on_attack_hit'], melee: ['gain_x_rage_on_melee_hit'], kill: ['gain_rage_on_kill'], hurt: ['gain_x_rage_when_hit'], use: ['gain_x_rage_on_skill_use'] };
 export function rageOf(b, sum) {
-  const find = k => (b.gems || []).find(x => onSet(b, x) && (Object.values(SK.skills[x.name]?.levels || {})[0]?.[k] != null || SK.skills[x.name]?.constant?.[k] != null));
+  const find = k => (b.gems || []).find(x => live(b, x) && (Object.values(SK.skills[x.name]?.levels || {})[0]?.[k] != null || SK.skills[x.name]?.constant?.[k] != null));
   const rg = find('ceaseless_rage_base_rage_regeneration_per_minute'), bz = find('skill_base_rage_effect_+%_to_apply');
   const bs = bz ? gemStats(bz, sum) : {};
   const gain = Object.fromEntries(Object.entries(RAGE_GAIN).map(([k, ids]) => [k, v(sum, ...ids)]));
