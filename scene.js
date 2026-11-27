@@ -1943,7 +1943,7 @@ export function initScene(el, api) {
     const d = corpseAt(S.at, Math.max(S.A, SIM.snap));
     if (!d) { toast(t('{0} needs a corpse: kill an enemy or press C', S.label)); return null; }
     const p = { x: d.pos.x, z: d.pos.z, life: d.max }; me.corpseAt = time;   // life: the corpse's monster's
-    if (!(Math.random() * 100 < (S.dmg?.sum?.['base_chance_to_not_consume_corpse_%'] || 0))) eat(d, S.el);   // the tree's chance to not destroy it
+    if (!(Math.random() * 100 < (S.dmg?.sum?.['base_chance_to_not_consume_corpse_%'] || 0))) eat(d, S.P.ground === 'gas' ? GAS.bloat : S.el);   // the tree's chance to not destroy it
     flaskGain(0, S.dmg?.sum?.support_grants_X_life_flask_charges_on_using_corpse || 0); flaskGain(1, S.dmg?.sum?.support_grants_X_mana_flask_charges_on_using_corpse || 0);   // Gorge
     if (S.P.gain) chargeBy(S.P.gain, S);
     return p;
@@ -2001,7 +2001,7 @@ export function initScene(el, api) {
         // Decompose's: its explosion part after its delay, and its permillage of the corpse's life as chaos damage
         const X = partOf(g.S, 'CorpsewadeCorpseCloudExplosionPlayer'), gs = g.S.dmg?.stats || {}, n = (g.corpse || 0) * (gs.corpse_explosion_monster_life_permillage_chaos || 0) / 1000;
         later(X ? (gs.explosion_delay_ms || 0) / 1000 : .08, () => {
-          boom(g, g.r, X ? { ...X, mult: g.S.mult, src: 'cloud' } : { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
+          gasIgnite(g, g.r); area(g, g.r, X ? { ...X, mult: g.S.mult, src: 'cloud' } : { ...g.S, els: ['fire'], el: 'fire', ail: ['ignite'], src: 'ground' });
           lifeBlast(g, g.r, g.S, 'chaos', n);
         });
       } else if (g.type === 'oil' && fire) {
@@ -2041,6 +2041,33 @@ export function initScene(el, api) {
     fx.explode(c, R, S.el, o);
     if (R > 1.4 && !o.soft) shake = Math.max(shake, Math.min(.5, R * .09));
     return area(c, R, S, o);
+  }
+  // Decompose's gas (corpse_cloud: Toxic Grenade's art, crossbow_toxic_grenade). The corpse it consumes bloats green
+  // (detonateDead_POISON: bloatCorpse_Skin_GCHAOS's glow 0.54 / 0.9 / 0.1); the cloud bursts out (toxic_explosion.pet: a
+  // flash for 0.2 s, 0.96 / 1 / 0.14, a sphere for 1 s, a ring for 1.2 s and splashes for 0.3-0.5 s, 0.88 / 1 / 0, a wave
+  // at 0.07 s for 0.55 s, 0.97 / 1 / 0.09) with a yellow ring on the ground for 3 s (toxic_gas_ring: 1 / 0.93 / 0.29) and
+  // its smoke billows for 1.5-2.5 s, then hangs for 4.5-5.5 s (toxic_smoke: its albedo 0.11 / 0.11 / 0.06, brightened
+  // here as the scene's smoke is unlit). Ignited (ignite_explosion.pet), the gas flashes white, then orange (its colour
+  // curve: 7.4 / 8 / 7.2 at 0.02, 3 / 0.71 / 0.21 at 0.08, dark from 0.5), with an orange wave for 1 s (1 / 0.37 / 0.1),
+  // flames for 0.15-0.2 s (1 / 0.51 / 0.3) and 512 embers for 1.5-4 s (1 / 0.4 / 0.17). note: the counts, speeds and
+  // sizes are the scene's
+  const GAS = { bloat: 0x8ae61a, flash: 0xf5ff24, burst: 0xdfff00, wave: 0xf8ff17, ring: 0xffed4a, smoke: 0x8c8c4d, white: 0xfffaf0, hot: 0xff3b12, fire: 0xff5e1a, flame: 0xff824d, ember: 0xff6b2c, char: 0x080808 };
+  function gasBurst(c, R) {
+    const q = { x: c.x, y: .6, z: c.z };
+    fx.glow(q, R * .9, GAS.flash, .2, 2.4); fx.ball(q, R * .5, GAS.burst, 1, 1.2); fx.ring(c, .2, R, GAS.burst, 1.2, { a: .5 });
+    later(.07, () => fx.ring(c, R * .3, R * 1.2, GAS.wave, .55, { a: .4, y: .5 }));
+    fx.emit(14, { p: q, r: .2, v: 3, up: 2, life: .4, size: .12, c: GAS.burst, g: 9, drag: 1 });
+    fx.ring(c, R * .95, R, GAS.ring, 3, { a: .6 });
+    fx.emit(Math.ceil(R * 6), { p: { x: c.x, y: .4, z: c.z }, r: R * .6, v: 1.2, up: .4, life: 2, size: 1, grow: 1.8, c: GAS.smoke, smoke: true, a: .3, drag: 1.5 });
+  }
+  function gasIgnite(c, R) {
+    const q = { x: c.x, y: .7, z: c.z };
+    fx.glow(q, R * 1.1, GAS.white, .08, 3); later(.03, () => fx.glow(q, R * .9, GAS.hot, .35, 2.4));
+    fx.disc(c, R * 1.1, GAS.fire, 1, { a: .7 }); fx.flash(c, GAS.fire, 30 + R * 15, .4, 8 + R * 3);
+    fx.emit(Math.ceil(R * 20), { p: q, r: R * .8, v: 2, up: 1.5, life: .2, size: .45, c: GAS.flame, c2: GAS.fire, k: 2.4 });
+    fx.emit(Math.ceil(R * 25), { p: q, r: R * .7, v: 3, up: 2.5, life: 2.5, size: .05, c: GAS.ember, k: 2.2, g: 1.5, drag: 1 });
+    fx.emit(Math.ceil(R * 5), { p: q, r: R * .6, v: .8, up: 1, life: 1.2, size: 1, grow: 1.6, c: GAS.char, smoke: true, a: .45, drag: 1 });
+    shake = Math.max(shake, Math.min(.5, R * .09));
   }
   // Dark Effigy's look (chaos_dark_effigy; its tutorial video). Its totem rises in a violet wave (dark_effigy_start:
   // summon_wave for 1 s, 0.76 / 0.7 / 1, and 128 embers for 0.5-1.2 s, 0.66 / 0.6 / 1) and stands in its ground glow
@@ -2217,7 +2244,7 @@ export function initScene(el, api) {
     if (g.type === 'burning') fx.emit(1, { p, r, v: .2, up: 2, life: .6, size: .4, c: 'fire', c2: 'ember' });
     else if (g.type === 'chilled') fx.emit(1, { p, r, v: .1, up: .5, life: 1, size: .22, c: 'ice', k: 1.2 });
     else if (g.type === 'shocked') fx.emit(2, { p, r, v: 1.5, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
-    else if (g.type === 'gas') fx.emit(1, { p, r, h: .8, v: .3, up: .3, life: 1.6, size: 1.1, grow: 1.6, c: 0x5c7a22, smoke: true, a: .28 });
+    else if (g.type === 'gas') fx.emit(1, { p, r, h: .8, v: .15, up: .15, life: 5, size: 1.1, grow: 1.6, c: GAS.smoke, smoke: true, a: .2 });   // its smoke hanging (Decompose's look)
     else if (g.type === 'caustic') fx.emit(1, { p, r, v: .1, up: .7, life: .9, size: .2, c: 'poison' });
     else if (g.type === 'consecrated') fx.emit(1, { p, r, v: .1, up: .8, life: .8, size: .5, c: 0xffa74c, k: 1.4, a: .5 });   // its warm wisps rising (ground_effects holy cyl.pet: smoke_whisp, 0.8 s)
   }
@@ -4275,7 +4302,7 @@ export function initScene(el, api) {
         return;
       }
       if (P.corpse) { c = useCorpse(S); if (!c) return; }
-      fx.ring(c, .2, R, S.el, .45);
+      if (P.ground === 'gas') gasBurst(c, R); else fx.ring(c, .2, R, S.el, .45);
       // its ground grows its % a second up to its most (Decompose); a cloud made of a corpse keeps that monster's life
       const zs = S.dmg?.stats || {}, gr = zs['active_skill_ground_effect_area_of_effect_+%_final_per_second'];
       if (P.ground) { ground(P.ground, c, R, dur, S, gr && { per: gr, max: zs['active_skill_ground_effect_area_of_effect_+%_final_per_second_max'] }).corpse = c.life; area(c, R, S, { mult: .5 }); return; }
@@ -7945,6 +7972,10 @@ export function initScene(el, api) {
       KA.walked = 0;   // a Volcanic Step: a wave of fire on the ground from your feet, flames rising (hires_shockwave, fire_flare .mat)
       const c = { x: pp.x, z: pp.z }, R = KA.S.A; fx.ring(c, .3, R, 'fire', .4, { a: .7 }); fx.emit(30, { p: { x: c.x, y: .15, z: c.z }, r: .3, v: R * 2.2, flat: true, life: .4, size: .22, c: 'fire', c2: 'ember', drag: 1.5 });
       fx.emit(14, { p: { x: c.x, y: .1, z: c.z }, r: .4, up: 2.4, v: .8, life: .45, size: .3, c: 'fire', c2: 'ember', k: 1.8, drag: 1.5 }); area(c, R, KA.S, { soft: true }); }
+    // Corpsewade: Decompose (the build's, as the boots grant it) triggered every its distance travelled, on a corpse near
+    // you. note: how near is not in the data: the scene's targeting reach around you
+    const CW = step > 1e-4 && sheet().corpsewade ? byName('Decompose') : -1;
+    if (CW >= 0 && (me.cwWalked = (me.cwWalked || 0) + step) >= (base(CW)?.dmg?.stats?.trigger_on_X_units_travelled || Infinity) / 10) { me.cwWalked = 0; const d = corpseAt(pp, SIM.snap); if (d) use(CW, { at: { x: d.pos.x, z: d.pos.z }, src: 'meta' }); }
     kaomLook(dt); arcticLook(dt); rain.update(); faerieLook(); moths.update(); apoK = Math.max(0, Math.min(1, apoK + (time < (me.apo?.until ?? -9) ? dt * 2 : -dt))); arena.dim(apoK);
     let da = facing - player.group.rotation.y; da = Math.atan2(Math.sin(da), Math.cos(da)); player.group.rotation.y += da * Math.min(1, dt * 16);
 
