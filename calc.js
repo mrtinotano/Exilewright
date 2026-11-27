@@ -2,7 +2,7 @@
 // The numbers are the game's own (class base life/mana, skill damage per level: skills.json / ascendancies.json,
 // regenerated with poe2_data/_tool after each patch); what the data does not have is null and shown as "—".
 import { t, tn, fmt, cap, lang } from './i18n.js';
-import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef, wornItems, newItem } from './items.js';
+import { weaponStats, statsOf, classOf, rowReader, flaskRecovery, armourItems, pieceDef, wornItems, newItem, swapSet } from './items.js';
 import { SK } from './skilldata.js';
 import { statLinesEn } from './stats.js';
 import { enemy, spectreOf, spectreSpirit, attackOf, attacksOf, monSkill, ENEMIES, deflection, K as MON_K } from './enemies.js';
@@ -104,9 +104,15 @@ const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', '
   'support_spell_damage_spirit_cost_spell_damage_+%_on_full_energy_shield': 'spell_damage_+%_while_es_full', 'support_attack_damage_spirit_cost_attack_damage_+%_on_low_life': 'attack_damage_+%_when_on_low_life',
   // Upwelling (the scene's, while you are not on full mana), Arbiter's Reach (its Guard's duration)
   'support_minion_damage_spirit_cost_minion_damage_+%_while_missing_mana': 'minion_damage_+%_while_missing_mana', 'support_mothers_ward_base_duration_ms': 'mothers_ward_ms' };
+// a gem used with the weapon set in hand (g.wset: 1 or 2, none both; the game's "Used with weapon set:"): a persistent
+// skill of the other set is off, a skill of only the other set is worked out as with that set in hand (skill())
+export const onSet = (b, g) => !g?.wset || g.wset === (b?.wset === 2 ? 2 : 1);
+let SUM_OF = null;
+const OTHER_SUM = new WeakMap();
+export const useSumOf = f => { SUM_OF = f; };   // app.js sumOf: the stats of a build, for its other weapon set
 export function skillStats(b) {
   const out = motes(b);
-  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent'))
+  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent') && onSet(b, g))
     for (const n of g.supports || []) for (const [k, x] of Object.entries({ ...SK.skills[n]?.constant, ...Object.values(SK.skills[n]?.levels || {})[0] }))
       if (GRANTS[k]) out[GRANTS[k]] = (out[GRANTS[k]] || 0) + x;
   return out;
@@ -125,7 +131,7 @@ const BUFF_GRANTS = { 'herald_of_ash_fire_damage_+%': 'fire_damage_+%', 'herald_
   'sacrifice_minion_life_granted_+%': 'minion_maximum_life_+%', ...Object.fromEntries(['alchemists_boon_attack_speed_granted_+%_during_life_flask', 'alchemists_boon_cast_speed_granted_+%_during_mana_flask', 'charge_regulation_damage_per_charge_granted_+%', 'base_ward_cost_efficiency_+%'].map(k => [k, k])) };
 export function auraStats(b, sum) {
   const out = {}, k = 1 + v(sum, 'aura_effect_+%') / 100;
-  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent')) { const aura = GEM[g.name].types.includes('Aura');
+  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent') && onSet(b, g)) { const aura = GEM[g.name].types.includes('Aura');
     for (const [id, x] of Object.entries(gemStats(g, sum))) { const to = aura && AURA_GRANTS[id] || BUFF_GRANTS[id]; if (to) out[to] = (out[to] || 0) + x * (aura ? k : 1); } }
   return out;
 }
@@ -888,7 +894,7 @@ export function ailmentDefence(c, sum) {
 // being lost; gain: Rage the build gains on hit / on attack or melee hit / on kill / when hit / on skill use
 const RAGE_GAIN = { hit: ['gain_x_rage_on_hit', 'base_gain_x_rage_on_hit'], attack: ['gain_x_rage_on_attack_hit'], melee: ['gain_x_rage_on_melee_hit'], kill: ['gain_rage_on_kill'], hurt: ['gain_x_rage_when_hit'], use: ['gain_x_rage_on_skill_use'] };
 export function rageOf(b, sum) {
-  const find = k => (b.gems || []).find(x => Object.values(SK.skills[x.name]?.levels || {})[0]?.[k] != null || SK.skills[x.name]?.constant?.[k] != null);
+  const find = k => (b.gems || []).find(x => onSet(b, x) && (Object.values(SK.skills[x.name]?.levels || {})[0]?.[k] != null || SK.skills[x.name]?.constant?.[k] != null));
   const rg = find('ceaseless_rage_base_rage_regeneration_per_minute'), bz = find('skill_base_rage_effect_+%_to_apply');
   const bs = bz ? gemStats(bz, sum) : {};
   const gain = Object.fromEntries(Object.entries(RAGE_GAIN).map(([k, ids]) => [k, v(sum, ...ids)]));
@@ -1269,6 +1275,11 @@ export const condKey = c => (/^Multiplier/.test(c.type) ? '#' : c.actor === 'ene
 // a skill() result with damage of its own (hits or damage over time); its damage over time per second
 export const dealt = x => !!x && (x.avg != null || Object.keys(x.dot).length > 0), dotSum = x => Object.values(x.dot).reduce((a, y) => a + y, 0);
 export function skill(g, b, treeGear) {
+  if (!onSet(b, g) && SUM_OF) {   // used only with the other weapon set: its weapons, passives and persistent skills
+    const o = { ...b, items: { ...b.items }, swap: { ...b.swap } }; swapSet(o, g.wset);
+    if (!OTHER_SUM.has(treeGear)) OTHER_SUM.set(treeGear, SUM_OF(o));
+    return skill(g, o, OTHER_SUM.get(treeGear));
+  }
   // a buff the scene has on (g.add: Nature's Archon's stats), added to what the tree and gear give
   // and Gemling Legionnaire: per red / green / blue (strength / dexterity / intelligence) support socketed in the skill,
   // and less cost when blue supports are the most; Lich: more mana cost with no maximum energy shield

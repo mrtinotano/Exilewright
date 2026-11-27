@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { gemName, withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf, subsOf, dealt, gemStats } from './calc.js';
+import { useSumOf, gemName, withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf, subsOf, dealt, gemStats } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { SLOTS, initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
 import { initSkills } from './skills.js';
@@ -253,6 +253,7 @@ function sumOf(b) {   // every stat of a build's passives (with the weapon set i
   return withConds(sum, b.conds);   // the states the player says hold (the conditions panels): not in the simulator, which checks them itself
 }
 const treeSum = () => sumOf(B()), rawSum = () => sumOf({ ...B(), conds: null });
+useSumOf(sumOf);
 // where a build's stats come from, for the panels' breakdowns: the campaign, the skills' buffs, the tree, the ascendancy,
 // each worn item (with its own armour, evasion, energy shield); Other: what sumOf adds on top (effects of other bonuses,
 // radius jewels, small passives' increased effect, the conditions ticked)
