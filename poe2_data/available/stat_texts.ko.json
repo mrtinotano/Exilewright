@@ -23803,6 +23803,70 @@
  },
  {
   "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_rare"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "대상이 [Rarity|희귀] 등급인 경우 소환되는 추가 늑대@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Mark|징표]가 찍힌 대상이 [Rarity|희귀] 등급인 경우 소환되는 늑대 {0:+d}마리",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Mark|징표]가 찍힌 대상이 [Rarity|희귀] 등급인 경우 소환되는 늑대 {0:+d}마리",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "대상이 [Rarity|고유] 등급인 경우 소환되는 추가 늑대@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Mark|징표]가 찍힌 대상이 [Rarity|고유] 등급인 경우 소환되는 늑대 {0:+d}마리",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Mark|징표]가 찍힌 대상이 [Rarity|고유] 등급인 경우 소환되는 늑대 {0:+d}마리",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_raging_spirit_per_x_radius"
   ],
   "rows": [

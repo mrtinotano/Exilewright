@@ -23812,6 +23812,70 @@
  },
  {
   "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_rare"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Lobos invocados adicionais, se o alvo for [Rarity|raro]@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Invoca {0:+d} Lobo, se o alvo [Mark|marcado] for [Rarity|raro]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Invoca {0:+d} Lobos, se o alvo [Mark|marcado] for [Rarity|raro]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Lobos invocados adicionais, se o alvo for [Rarity|único]@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Invoca {0:+d} Lobo, se o alvo [Mark|marcado] for [Rarity|único]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Invoca {0:+d} Lobos, se o alvo [Mark|marcado] for [Rarity|único]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_raging_spirit_per_x_radius"
   ],
   "rows": [

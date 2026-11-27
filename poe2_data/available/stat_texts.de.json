@@ -23810,6 +23810,70 @@
  },
  {
   "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_rare"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Zusätzlich beschworene Wölfe, wenn Ziel [Rarity|selten] ist@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Beschwört {0:+d} Wolf, wenn [Mark|Maltragendes] Ziel [Rarity|selten] ist",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Beschwört {0:+d} Wölfe, wenn [Mark|Maltragendes] Ziel [Rarity|selten] ist",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Zusätzlich beschworene Wölfe, wenn Ziel [Rarity|einzigartig] ist@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Beschwört {0:+d} Wolf, wenn [Mark|Maltragendes] Ziel [Rarity|einzigartig] ist",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Beschwört {0:+d} Wölfe, wenn [Mark|Maltragendes] Ziel [Rarity|einzigartig] ist",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_raging_spirit_per_x_radius"
   ],
   "rows": [

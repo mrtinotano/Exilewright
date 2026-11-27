@@ -395,7 +395,7 @@ for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietie
 skills, skill_csd = {}, {}
 labels, labels_tr = load('GrantedEffectLabels'), load_langs('GrantedEffectLabels')
 PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|projectiles_fork|support_double_number_of_cooldown_uses|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin|minions_are_gigantic|companions_are_gigantic)')
-PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge|exploit_debuff|broken_stance|wolf_mark')
+PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge|exploit_debuff|broken_stance|wolf_mark|wolves')
 def stat_levels(effects, sets):
     """the constant stats of these stat sets and every other one per gem level (the effects' cooldown, uses, cost...)"""
     const = {sid(a): v for i in sets for a, v in zip(ss_tab[i]['ConstantStats'], ss_tab[i]['ConstantStatsValues'])}

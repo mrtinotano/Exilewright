@@ -23809,6 +23809,70 @@
  },
  {
   "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_rare"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Loups supplémentaires invoqués si la cible est [Rarity|Rare]@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Invoque {0:+d} Loup si la cible [Mark|Marquée] est [Rarity|Rare]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Invoque {0:+d} Loups si la cible [Mark|Marquée] est [Rarity|Rare]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Loups supplémentaires invoqués si la cible est [Rarity|Unique]@{0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Invoque {0:+d} Loup si la cible [Mark|Marquée] est [Rarity|Unique]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Invoque {0:+d} Loups si la cible [Mark|Marquée] est [Rarity|Unique]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_raging_spirit_per_x_radius"
   ],
   "rows": [

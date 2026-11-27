@@ -653,13 +653,13 @@ export function initScene(el, api) {
       // extracted (its "Vs Dazed" stat set's): it lasts until its hits
       // Fangs of Frost: a hit on a Parried enemy Consumes the Parried debuff (its quality: a chance not to) for its frost
       // burst (its part) where it stands and Chilled Ground for that part's duration
-      const FF = !S.src && time < d.parried?.until && D?.parts?.FangsOfFrostBurstPlayer && partOf(S, 'FangsOfFrostBurstPlayer');
-      if (FF) { if (!(Math.random() * 100 < (D.stats['chance_to_not_consume_parried_%'] || 0))) d.parried = null; const c = { x: d.pos.x, z: d.pos.z }; later(0, () => { boom(c, FF.A, FF); ground('chilled', c, FF.A, durOf(FF), FF); }); }
+      const FoF = !S.src && time < d.parried?.until && D?.parts?.FangsOfFrostBurstPlayer && partOf(S, 'FangsOfFrostBurstPlayer');
+      if (FoF) { if (!(Math.random() * 100 < (D.stats['chance_to_not_consume_parried_%'] || 0))) d.parried = null; const c = { x: d.pos.x, z: d.pos.z }; later(0, () => { boom(c, FoF.A, FoF); ground('chilled', c, FoF.A, durOf(FoF), FoF); }); }
       // Electrocuting Arrow: its hit attaches its Electrocuting Rod for its duration (all lightning damage then builds
       // Electrocution; removed when Electrocuted); hits against the target gain its quality's extra lightning, and it
       // takes its Gemling quality's increased damage
       if (!S.src && S.name === 'Electrocuting Arrow') d.erod = { until: time + durOf(S), X: D.stats['electrocuting_arrow_%_damage_gained_as_extra_lightning_on_debuffed_target'] || 0, taken: D.stats['electrocuting_arrow_damage_taken_+%'] || 0 };
-      if (!S.src && S.name === 'Pounce' && D.part?.['skill_wolf_mark_damage_taken_+%_per_nearby_enemy']) wolfMark(d, S);
+      if (!S.src && S.name === 'Pounce' && D.part?.['skill_wolf_mark_damage_taken_+%_per_nearby_enemy']) pounceMark(d, S);
       if (!S.src && S.P.attack) manifest(d);
       if (!S.src && S.P.detonator && d.spears) spearsOff(d, S); else if (!S.src && S.name === 'Rapid Assault') spearheads(d, S);
       const BS = !S.src && D?.part?.broken_stance_hit_limit;
@@ -1315,11 +1315,25 @@ export function initScene(el, api) {
     d.by = S; return d.dots.find(o => o.name === S.name);
   }
   // Pounce: Predator's Mark (its own part) on the highest Rarity enemy it hits, one at a time: that enemy takes increased
-  // damage per its enemies near it (hit). note: its 8 s duration is the scene's mark default, as in its data; the
-  // Summon Wolf it triggers on the target's death is not in the app's data
+  // damage per its enemies near it (hit). note: its 8 s duration is the scene's mark default, as in its data
+  // Pounce: its Mark goes on the highest Rarity enemy its leap hits (one Mark per use: a hit of the same use on a rarer
+  // one moves it), the Mark gem socketed in it instead of Predator's Mark; its Wolf Minions leap to it at once
+  function pounceMark(d, S) {
+    const on = dummies.find(e => e.mark?.pounce === time && !e.dead); if (on && (on === d || POWER[on.stat.rarity] >= POWER[d.stat.rarity])) return;
+    if (!on) for (const o of objs) if (o.minion && !o.dead && /Wolf/.test(o.ofS)) { const q = around(d.pos, 1.2); o.pos.set(q.x, 0, q.z); }
+    for (const e of dummies) if (e.mark?.pounce != null) e.mark = null;   // one at a time (number_of_marks_allowed_per_type)
+    const SM = api.build().gems.map((g, i) => g.meta === 'Pounce' && base(i)).find(x => x?.kind === 'mark');
+    if (SM) markOn(d, SM); else wolfMark(d, S); if (d.mark) d.mark.pounce = time;
+  }
+  // Predator's Mark Activating as its enemy dies: Summon Wolf, Wolf Minions that follow you as long as they live (calc.js
+  // out.wolf), one more for a unique enemy (its rare's: none), up to its limit (the Gemling quality's more)
+  function wolfCall(M, d) {
+    const W = M.S.dmg?.wolf, P = M.S.dmg.part, st = M.S.dmg.stats; if (!W) return;
+    const n = 1 + (P['skill_cross_slash_triggered_summon_+_wolves_if_' + d.stat.rarity] || 0), S = { ...M.S, src: undefined, name: 'Summon Wolf', label: t('Summon Wolf'), dmg: W };
+    for (let k = 0; k < n; k++) { limit(o => o.kind === S.name, P.number_of_wolves_allowed + (st.number_of_wolves_allowed ?? st._mods?.number_of_wolves_allowed ?? 0), S); minion(S, around(d.pos, 1), Infinity, { kind: S.name }); }
+  }
   function wolfMark(d, S) {
-    const on = dummies.find(e => e.mark?.wolf && !e.dead); if (on && (on === d || POWER[on.stat.rarity] >= POWER[d.stat.rarity])) return;
-    if (on) on.mark = null; const P = S.dmg.part, st = S.dmg.stats, k = "skill_wolf_mark_damage_taken_+%_";
+    const P = S.dmg.part, st = S.dmg.stats, k = "skill_wolf_mark_damage_taken_+%_";
     d.mark = { at: time, s: 8, els: [], label: t("Predator's Mark"), name: "Predator's Mark", hits: 0, R: S.A, S: { ...S, src: 'mark' }, wolf: { per: P[k + 'per_nearby_enemy'] + (st[k + 'per_nearby_enemy'] || 0), cap: P[k + 'cap'] + (st[k + 'cap'] || 0) } };
     fx.ring(d.pos, 2.2, .5, 'mark', .4);
   }
@@ -1855,6 +1869,7 @@ export function initScene(el, api) {
       if (Math.random() * 100 < hs['hinder_chance_%_on_spreading_poioson']) e.slows.push({ until: time + HINDER.time * (sheet().hinderTime || 1), pct: -HINDER.slow * slowK(onS('Herald of Plague')) });
     }
     if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
+    if (M?.wolf) wolfCall(M, d);
     const sp = d.dots.find(o => o.spread);
     if (sp) {   // Contagion spreads itself, the curses and the other chaos debuffs on it to the enemies within its radius, refreshing
       // their durations; its own deals its more damage for each time it has spread, up to its most. Its look: wisps

@@ -23810,6 +23810,70 @@
  },
  {
   "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_rare"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "若目標為[Rarity|稀有]則召喚額外@{0:+d}隻惡狼",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "如果[Mark|標記][Rarity|稀有]目標，召喚{0:+d}隻惡狼",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "如果[Mark|標記][Rarity|稀有]目標，召喚{0:+d}隻惡狼",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skill_cross_slash_triggered_summon_+_wolves_if_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "若目標為[Rarity|傳奇]則召喚額外@{0:+d}隻惡狼",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "如果[Mark|標記][Rarity|傳奇]目標，召喚{0:+d}隻惡狼",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "如果[Mark|標記][Rarity|傳奇]目標，召喚{0:+d}隻惡狼",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_raging_spirit_per_x_radius"
   ],
   "rows": [
