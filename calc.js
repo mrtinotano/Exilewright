@@ -115,11 +115,18 @@ export function skillStats(b) {
 // gear: resistances, and Discipline's energy shield added to the total. note: the gem's supports and a skill an item
 // grants are not counted
 const AURA_GRANTS = { ...Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map(e => [`base_skill_buff_${e}_damage_resistance_%_to_apply`, `base_${e}_damage_resistance_%`])),
-  'base_skill_buff_total_maximum_energy_shield_+_to_apply': 'total_maximum_energy_shield_+' };
+  'base_skill_buff_total_maximum_energy_shield_+_to_apply': 'total_maximum_energy_shield_+', 'base_skill_buff_energy_shield_recharge_rate_+%_to_apply': 'energy_shield_recharge_rate_+%' };
+// and what the buff of a persistent skill grants you (most from its quality: "Buff grants 20% increased Fire damage"),
+// as the stats of yours they are; Alchemist's Boon's and Charge Regulation's stay theirs (SPEED_WHILE, skill(): their condition)
+const BUFF_GRANTS = { 'herald_of_ash_fire_damage_+%': 'fire_damage_+%', 'herald_of_ice_cold_damage_+%': 'cold_damage_+%', 'herald_of_thunder_lightning_damage_+%': 'lightning_damage_+%',
+  'herald_of_blood_global_physical_damage_granted_+%': 'physical_damage_+%', 'mana_remnants_global_mana_regeneration_rate_granted_+%': 'mana_regeneration_rate_+%',
+  'time_of_need_global_life_regeneration_rate_granted_+%': 'life_regeneration_rate_+%', 'magma_barrier_maximum_block_chance_granted_%': 'additional_maximum_block_%',
+  'cast_on_crit_global_critical_hit_chance_granted_+%': 'critical_strike_chance_+%', 'cast_on_dodge_dodge_roll_distance_granted_+': 'dodge_roll_base_travel_distance',
+  'sacrifice_minion_life_granted_+%': 'minion_maximum_life_+%', ...Object.fromEntries(['alchemists_boon_attack_speed_granted_+%_during_life_flask', 'alchemists_boon_cast_speed_granted_+%_during_mana_flask', 'charge_regulation_damage_per_charge_granted_+%'].map(k => [k, k])) };
 export function auraStats(b, sum) {
   const out = {}, k = 1 + v(sum, 'aura_effect_+%') / 100;
-  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Aura') && GEM[g.name].types.includes('Persistent'))
-    for (const [id, x] of Object.entries(gemStats(g, sum))) if (AURA_GRANTS[id]) out[AURA_GRANTS[id]] = (out[AURA_GRANTS[id]] || 0) + x * k;
+  for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent')) { const aura = GEM[g.name].types.includes('Aura');
+    for (const [id, x] of Object.entries(gemStats(g, sum))) { const to = aura && AURA_GRANTS[id] || BUFF_GRANTS[id]; if (to) out[to] = (out[to] || 0) + x * (aura ? k : 1); } }
   return out;
 }
 function motes(b) {
@@ -1066,7 +1073,7 @@ const DEF_WHILE = [['parry_evasion_rating_+%_during_parry', 'e', 'Parrying'], ['
 // the tree's attack (a) / cast (c) speed while you are in a state: [stat, a / c / ac, the scene's condition]. note: not
 // counted against Bloodlusting
 // enemies, Parry's own speed after a Parry
-const SPEED_WHILE = [['parry_attack_speed_+%_if_youve_parried_recently', 'a', 'ParriedRecently'], ['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
+const SPEED_WHILE = [['parry_attack_speed_+%_if_youve_parried_recently', 'a', 'ParriedRecently'], ['attack_and_cast_speed_+%_while_affected_by_a_mana_flask', 'ac', 'ManaFlaskEffect'], ['alchemists_boon_attack_speed_granted_+%_during_life_flask', 'a', 'LifeFlaskEffect'], ['alchemists_boon_cast_speed_granted_+%_during_mana_flask', 'c', 'ManaFlaskEffect'], ['attack_speed_+%_during_flask_effect', 'a', 'FlaskEffect'],
   ['attack_speed_+%_if_enemy_killed_recently', 'a', 'KilledRecently'], ['attack_speed_+%_if_have_been_hit_recently', 'a', 'BeenHitRecently'],
   ['attack_speed_+%_if_have_crit_recently', 'a', 'CritRecently'], ['cast_speed_+%_if_have_crit_recently', 'c', 'CritRecently'],
   ['attack_speed_+%_if_rare_or_unique_enemy_nearby', 'a', 'RareOrUniqueInPresence'], ['attack_speed_+%_if_you_have_not_attacked_recently', 'a', 'NotAttackedRecently'],
@@ -1628,7 +1635,7 @@ export function skill(g, b, treeGear) {
   // in the last 6 s (attacks, up to 100%), per Combo the skill consumes (up to 40%), per Hazard triggered recently (up to 50%)
   const by = (k, cv, cap, ok = true) => { const x = ok && v(sum, k); if (x) out.when.push({ stat: k, cond: [{ type: 'Multiplier', var: cv }], val: x, cap, what: 'damage', w: out.incW }); };
   by('%_attack_damage_per_glory_consumed_for_6_seconds_up_to_100', 'GloryConsumedPast6', 100, attack); by('combo_finisher_damage_+%_up_to_40%', 'ComboConsumed', 40);
-  by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50); by('damage_+%_per_warcry_used_recently', 'WarcriesRecently'); by('damage_+%_per_different_warcry_used_recently', 'DifferentWarcriesRecently'); by('gain_attack_damage_+%_for_each_your_minion_in_presence_capped', 'MinionPresenceCount', 80, attack);   // its text: up to 80%
+  by('damage_+%_per_recently_triggered_hazard_up_to_50%', 'HazardsTriggeredRecently', 50); by('charge_regulation_damage_per_charge_granted_+%', 'Charges'); by('damage_+%_per_warcry_used_recently', 'WarcriesRecently'); by('damage_+%_per_different_warcry_used_recently', 'DifferentWarcriesRecently'); by('gain_attack_damage_+%_for_each_your_minion_in_presence_capped', 'MinionPresenceCount', 80, attack);   // its text: up to 80%
   const GP = v(sum, 'damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds');
   if (GP) for (const el of ['fire', 'cold', 'lightning']) out.when.push({ stat: 'damage_penetrates_x%_of_elemental_resistances_per_glory_skill_used_in_last_6_seconds', cond: [{ type: 'Multiplier', var: 'GlorySkillsUsedPast6' }], val: GP, what: 'pen', el });
   for (const [s, cv] of Object.entries(WHILE)) {
@@ -1713,7 +1720,7 @@ export function skill(g, b, treeGear) {
     forks: flags.has('projectiles_cannot_fork') || spProj && sum.projectiles_from_spells_cannot_fork || !(flags.has('projectiles_fork') || spProj && sum.projectiles_from_spells_fork || both('projectiles_fork') || gt.includes('Bow') && both('arrows_fork')) ? 0 : Math.min(2, 1 + both('number_of_additional_forks_base')),
     pierceForked: gt.includes('Bow') && both('arrows_always_pierce_after_forking') > 0,   // Slivertongue: arrows fork, then pierce every enemy
     chainRange: (st.arc_chain_distance ? st.arc_chain_distance / 10 : gt.includes('Projectile') ? 6 : 4) * (1 + both('chaining_range_+%') / 100),
-    pierceMore: finals['support_pierce_projectile_damage_+%_final_if_pierced_enemy'] || 0, perPierce: finals['support_pierce_damage_+%_final_per_pierced_target'] || 0,
+    pierceMore: ((1 + (finals['support_pierce_projectile_damage_+%_final_if_pierced_enemy'] || 0) / 100) * (1 + v(st, 'active_skill_projectile_damage_+%_final_if_pierced_enemy') / 100) - 1) * 100,   /* Pierce's and the skill's own (Frostbolt's quality) */ perPierce: finals['support_pierce_damage_+%_final_per_pierced_target'] || 0,
     forkMore: finals['support_fork_forked_projectile_damage_+%_final'] || 0, bolts: sec('orb_of_storms_base_bolt_frequency_ms'), maxBolts: st.orb_of_storms_maximum_number_of_hits || null,
     extraTargets: st.lightning_arrow_maximum_number_of_extra_targets || 0, split: both('projectile_number_to_split'),
     // reach, in the game's tenths of a metre: a melee attack's is its weapon's range plus "+0.2 metres to Melee Strike
@@ -1746,7 +1753,7 @@ export function skill(g, b, treeGear) {
     loseRageOnCrit: all2('lose_%_of_maximum_rage_on_dealing_critical_strike') };
   out.onUse = { speed: all2('skill_consume_frenzy_charge_to_gain_skill_speed_+%_final'), crit: all2('skill_consume_power_charge_to_gain_critical_strike_chance_+%_final'),
     breakPct: all2('skill_consume_frenzy_charge_to_armour_break_for_%_of_physical_damage'), curse: all2('support_consume_power_charge_to_gain_curse_duration_+%_final'),
-    lifePerEndurance: all2('consume_endurance_charges_on_use_to_recover_%_maximum_life_per_charge'), keep: all2('charge_skip_consume_chance_%'),
+    lifePerEndurance: all2('consume_endurance_charges_on_use_to_recover_%_maximum_life_per_charge'), keep: all2('charge_skip_consume_chance_%'), keepPower: all2('base_power_charge_skip_consume_chance_%'),
     double: all2('chance_%_to_double_effect_of_removing_charges'), lifePer5Rage: all2('lose_x%_of_life_per_5_rage_on_supported_skill_use'),
     lifePerCooldown: all2('restore_%_life_on_skill_use_per_1000_ms_cooldown') };
   // buffs of damage gained as extra of an element for a while, and life on kill (Cannibalism)
@@ -1835,7 +1842,7 @@ export function skill(g, b, treeGear) {
   const perCharge = (k, c, what, at, S = st, G = g, w = what === 'damage' ? Object.fromEntries(DMG.map(t => [t, 1])) : 1) => S[k] && out.when.push({ stat: k, cond: [{ type: at ? 'MultiplierThreshold' : 'Multiplier', var: c + 'ChargesConsumed', threshold: at }], val: S[k], skill: G.name, what, w });
   for (const r of [['ancestral_cry_duration_+%_final_per_removable_endurance_charge', 'Endurance', 'duration'],
     ['spiral_volley_damage_+%_final_when_frenzy_charges_consumed', 'Frenzy', 'damage', 1], ['spiral_volley_damage_+%_final_per_frenzy_charge_consumed', 'Frenzy', 'damage'],
-    ['spiral_volley_X_chains_per_frenzy_charge_consumed', 'Frenzy', 'chains'], ['rain_of_arrows_projectile_count_multiplier_per_frenzy_charge', 'Frenzy', 'projectiles'], ['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed', 'Endurance', 'totemLife']]) perCharge(...r);
+    ['spiral_volley_X_chains_per_frenzy_charge_consumed', 'Frenzy', 'chains'], ['rain_of_arrows_projectile_count_multiplier_per_frenzy_charge', 'Frenzy', 'projectiles'], ['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed', 'Endurance', 'totemLife'], ['lightning_strike_damage_+%_final_per_power_charge', 'Power', 'damage']]) perCharge(...r);
   if (meta?.name === 'Spell Totem' && byTotem) perCharge('spell_totem_damage_+%_final_per_power_charge_consumed', 'Power', 'damage', 0, gemStats(meta), meta);
   if (PP && DMG.some(t => EL[t] && out.hits?.[t])) perCharge('elemental_power_elemental_damage_+%_final_per_power_charge', 'Power', 'damage', 0, gemStats(PP), PP, EL);
   // the planner's conditions (b.conds: the states the player says hold, a count for a "per" one): the bonuses of out.when
@@ -1907,7 +1914,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
     let m = k.match(/consume_enemy_(freeze|shock|ignite|fully_broken_armour)_to_gain_(damage|hit_damage_stun_multiplier)(?:_against_(unique|non_unique))?_\+%(?:_final)?$/);
     if (m) { const c = consume[STATE_OF[m[1]] || m[1]] ||= {}, key = m[2] === 'damage' ? m[3] || 'any' : 'stun'; c[key] = (c[key] || 0) + all(k); continue; }
     if (k === 'support_morrigans_refuge_damage_+%_final_vs_frozen_enemies') { (consume.freeze ||= {}).any = (consume.freeze.any || 0) + all(k); continue; }   // Morrigan's Insight: "Consume Freeze on enemies to deal more Damage"
-    m = k.match(/damage_\+%_final_(?:vs|against)_(\w+?)(_unique|_non_unique)?_enemies$/);
+    m = k.match(/damage_\+%_final_(?:vs|against)_(\w+?)(_unique|_non_unique)?(?:_enemies)?$/);   // Leap Slam's vs_fully_broken_armour
     if (m && STATE_OF[m[1]]) vs.push([STATE_OF[m[1]], all(k), m[2] ? m[2] === '_unique' : null, /physical/.test(k)]);
   }
   for (const s of ['freeze', 'shock']) if (F(`base_consume_enemy_${s}_on_hit`)) consume[s] ||= {};
