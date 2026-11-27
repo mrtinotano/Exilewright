@@ -284,10 +284,8 @@ export function attributes(sum, ascName) {
 // unarmed = 6 x 90 levels + 65 + 6 x 65 Dexterity, 1151 with a crossbow of +26 Dexterity; Path of Building 2's AccuracyPerDexBase)
 function perAttr(attr) {
   const t = SK.attribute_text?.[attr] || '', out = {};
-  for (const [k, re] of [['life', /\+(\d+) \[?Life/], ['mana', /\+(\d+) \[?Mana/]]) {
-    const m = t.match(re); if (m) out[k] = +m[1];
-  }
-  if (/Accuracy/.test(t)) out.accuracy = 6;
+  const L = t.match(/\+(\d+) \[?Life/), M = t.match(/\+(\d+) \[?Mana/);
+  if (L) out.life = +L[1]; if (M) out.mana = +M[1]; if (/Accuracy/.test(t)) out.accuracy = 6;
   return out;
 }
 // the share of their most accuracy loss (accuracyFalloff) player attacks lose at m metres: none within 2 m, then 9% of
