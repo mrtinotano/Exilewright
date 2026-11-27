@@ -337,7 +337,9 @@
   .gc .dps { font-size:15px; color:#c8b890; } .gc .dps span { color:#f0d070; }
   .sdps { margin-left:auto; color:#f0d070; font-size:12px; white-space:nowrap; } .sdps small { color:#8a7a5c; }
   .sicon { cursor:pointer; }
-  .skadd { max-width:620px; display:flex; gap:6px; margin-bottom:8px; }
+  .skadd { max-width:620px; display:flex; gap:6px; margin-bottom:8px; position:relative; }
+  .gemsug { position:absolute; top:100%; left:0; right:0; z-index:20; max-height:320px; overflow-y:auto; background:#1a1815; border:1px solid #4a4134; }   /* the skills matching what is typed */
+  .gemsug[hidden] { display:none; } .gemsug button { display:block; width:100%; text-align:left; border:0; border-radius:0; background:none; padding:4px 8px; } .gemsug button:hover { background:#2a251d; }
   .shead .sdel { padding:0 5px; margin-left:4px; }
   #hud { left:8px; top:8px; }
   #items, #skills { overflow:auto; padding:10px; }
@@ -374,8 +376,8 @@
   .sockw { position:relative; display:inline-block; }
   .mgroup { border:1px solid #6b5a3a; background:#18150f; padding:4px 4px 0; margin-bottom:8px; }   /* a meta gem and the skills in it */
   .skill.inmeta { position:relative; margin-left:60px; }
-  .mgroup > .skill:first-child { position:relative; } .mgroup > .skill:first-child::after { content:''; position:absolute; left:38px; top:77px; bottom:-10px; border-left:2px solid #9a9a9a; pointer-events:none; }   /* down from the meta gem's icon */
-  .skill.inmeta::before { content:''; position:absolute; left:-23px; top:-2px; width:22px; height:39px; border:solid #9a9a9a; border-width:0 0 2px 2px; border-bottom-left-radius:6px; pointer-events:none; }   /* to its skill's icon */
+  .mgroup > .skill:first-child { position:relative; } .mgroup > .skill:first-child::after { content:''; position:absolute; left:38px; top:77px; bottom:-48px; width:23px; border:solid #9a9a9a; border-width:0 0 2px 2px; border-bottom-left-radius:6px; pointer-events:none; }   /* one line from the meta gem's icon down to the middle of its skill's (8 px between the cards, 40 to its middle) */
+  .smeta[hidden], .sockn[hidden] { display:none; }
   .sockx { position:absolute; top:-4px; right:-4px; width:16px; height:16px; min-width:0; padding:0; border-radius:50%; font-size:10px; line-height:14px; background:#2a1414; border:1px solid #7a3030; color:#e88; cursor:pointer; display:none; }
   .sockw:hover .sockx { display:block; }
   .dsup .sockx { position:static; display:inline-block; vertical-align:middle; margin-left:4px; }

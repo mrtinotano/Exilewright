@@ -1,4 +1,4 @@
-import { t, esc, tn, fmt, lang } from './i18n.js';
+import { t, esc, tn, fmt, lang, fold } from './i18n.js';
 import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
@@ -391,7 +391,7 @@ document.addEventListener('mouseover', e => gemTip(e.target.closest?.('[data-tip
 function addGem(name, level = 20) {   // level: the one an item that grants it says
   const g = gems.find(g => g.name === name || tn(g) === name || g.name_es === name);
   if (!g) return false;
-  B().gems.push({ name: g.name, level });
+  B().gems.push({ name: g.name, level, meta: '' });   // in no meta gem until one is chosen (not the one before it: calc.js usedBy)
   save(); renderSide(); return true;
 }
 
@@ -1060,7 +1060,6 @@ function drawNode(id, x, y, r, state, tint, pic2, alt) {   // state: on | path |
 }
 
 // ---------- node search: highlights nodes whose name or description contains the text (case and accent insensitive)
-const fold = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const SEARCH_TEXT = {};
 const searchText = id => SEARCH_TEXT[id] ??= fold([N[id].name, tn(N[id]), N[id].grants_skill, ...statLines(nodeStats(id))].filter(Boolean).join('\n'));
 let found = new Set(), foundAt = -1;

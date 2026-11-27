@@ -29,6 +29,8 @@ export const cap = s => s[0].toUpperCase() + s.slice(1);
 const KWRE = /\[([^\]|]+)(?:\|([^\]]*))?\]/g;
 export const KW = await fetch('poe2_data/available/keywords.json').then(r => r.ok ? r.json() : {}).catch(() => ({}));
 // a text as HTML, also inside a quoted attribute
+// text to search by: no accents or other marks, lower case ("cañón" finds "Canon" and back)
+export const fold = s => String(s).normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
 export const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 export const kwPlain = s => (s || '').replace(KWRE, (m, k, x) => x ?? k);
 // as HTML: a keyword the game explains on hover (KeywordPopups) shows that explanation as its tooltip (escaping

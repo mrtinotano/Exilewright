@@ -124,9 +124,10 @@ export function fromXML(xml, ctx, blank, at) {
     const again = sk.getAttribute('source') ? b.gems.map(g => g.name) : [];
     // a meta gem and the skills in it are one group (Mortar Cannon and its Cluster Grenade): those skills go in it
     const act = gs.filter(o => o.g.kind !== 'support' && !again.includes(o.g.name)), meta = act.find(o => o.g.tags?.includes('meta'));
+    const metaN = meta && b.gems.filter(x => x.name === meta.g.name).length;   // the build's second meta gem of that name, or third...
     for (const o of act)
       b.gems.push({ name: o.g.name, level: o.level, ...o.quality ? { quality: o.quality } : {}, sockets: Math.min(ctx.maxSockets, Math.max(2, sup.length + (o === meta ? act.length - 1 : 0))),
-        supports: [...sup], ...meta && o !== meta && { meta: meta.g.name }, ...sk.getAttribute('enabled') === 'false' && { enabled: false } });
+        supports: [...sup], ...meta && o !== meta && { meta: meta.g.name, ...metaN && { metaN } }, ...sk.getAttribute('enabled') === 'false' && { enabled: false } });
   }
   // items: the active item set's slots, and the tree's jewel sockets
   const itemsEl = kids(root, 'Items')[0], text = {};

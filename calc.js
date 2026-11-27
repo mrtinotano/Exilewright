@@ -61,9 +61,10 @@ const isMeta = g => !!GEM[g?.name]?.tags?.includes('meta');
 export const metasFor = (b, g) => { const types = new Set(GEM[g?.name]?.types || []);
   return isMeta(g) || GEM[g?.name]?.kind === 'support' ? [] : (b.gems || []).filter(m => m !== g && GEM[m.name]?.holds && canSupport(GEM[m.name].holds, types)); };
 // the meta gem that uses the build's i-th gem: the one it was put in (g.meta, as in the game: the skill sits in one of
-// the meta gem's sockets). A build from before that field: the gem before it, with the same supports.
+// the meta gem's sockets; g.metaN: which of the build's meta gems of that name, two Mortar Cannons). A build from before
+// that field: the gem before it, with the same supports.
 export const usedBy = (b, i) => { const g = b.gems?.[i]; if (!g) return null;
-  if ('meta' in g) return g.meta && metasFor(b, g).find(m => m.name === g.meta) || null;
+  if ('meta' in g) { const same = g.meta ? metasFor(b, g).filter(m => m.name === g.meta) : []; return same[g.metaN || 0] || same[0] || null; }
   const m = i > 0 && b.gems[i - 1];
   return m && String(m.supports || []) === String(g.supports || []) && metasFor(b, g).includes(m) ? m : null; };
 // the types skill g gets from the meta gem it sits in (gems.json holds.adds: Mortar Cannon's grenade is UsedByTotem and
@@ -85,7 +86,8 @@ export function linkMetas(b) {
   const inside = new Map();
   for (const [i, g] of (b.gems || []).entries()) {
     const m = usedBy(b, i);
-    if (m) { g.meta = m.name; inside.set(m, [...inside.get(m) || [], g]); } else if (g.meta) g.meta = '';
+    if (m) { g.meta = m.name; const k = b.gems.filter(x => x.name === m.name).indexOf(m); if (k > 0) g.metaN = k; else delete g.metaN; inside.set(m, [...inside.get(m) || [], g]); }
+    else if (g.meta) { g.meta = ''; delete g.metaN; }
   }
   for (const [m, list] of inside) {
     const n = Math.max(0, (m.sockets ?? 2) - list.length);
