@@ -1317,9 +1317,8 @@ export function initScene(el, api) {
   // Pounce: Predator's Mark (its own part) on the highest Rarity enemy it hits, one at a time: that enemy takes increased
   // damage per its enemies near it (hit). note: its 8 s duration is the scene's mark default, as in its data; the
   // Summon Wolf it triggers on the target's death is not in the app's data
-  const RANK = { normal: 0, magic: 1, rare: 2, unique: 3 };
   function wolfMark(d, S) {
-    const on = dummies.find(e => e.mark?.wolf && !e.dead); if (on && (on === d || RANK[on.stat.rarity] >= RANK[d.stat.rarity])) return;
+    const on = dummies.find(e => e.mark?.wolf && !e.dead); if (on && (on === d || POWER[on.stat.rarity] >= POWER[d.stat.rarity])) return;
     if (on) on.mark = null; const P = S.dmg.part, st = S.dmg.stats, k = "skill_wolf_mark_damage_taken_+%_";
     d.mark = { at: time, s: 8, els: [], label: t("Predator's Mark"), name: "Predator's Mark", hits: 0, R: S.A, S: { ...S, src: 'mark' }, wolf: { per: P[k + 'per_nearby_enemy'] + (st[k + 'per_nearby_enemy'] || 0), cap: P[k + 'cap'] + (st[k + 'cap'] || 0) } };
     fx.ring(d.pos, 2.2, .5, 'mark', .4);
@@ -3071,7 +3070,6 @@ export function initScene(el, api) {
     const SU = S.dmg?.sum || {}, FN = S.dmg?.finals || {}, bear = S.name === 'Wild Protector';
     if (L > 0) Object.assign(e, { decoy: true, recoupLoyal: SU['loyalty_%_of_redirected_damage_recouped_as_life_for_owner'] || 0, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0) + (e.companion && SU['companion_takes_%_damage_before_you'] || 0),   /* the tree's Trusted Partner */
       regen: (bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0) + (S.dmg?.minion?.regen || 0), rc: [], segs: [{ p: e.pos, r: .3, life: L, max: L, es: L * (S.dmg?.minion?.es || 0) / 100, esMax: L * (S.dmg?.minion?.es || 0) / 100, res: S.dmg?.minion?.res, hurt(n) { if (time < e.immune) return;   // a Skeleton a Skeletal Cleric Revived (its quality)
-
       // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
       // explosion's damage is not in its data
