@@ -226,7 +226,7 @@ const WEAPON = {   // item class → family and model
   'One Hand Maces': ['one', 'mace'], 'One Hand Swords': ['one', 'sword'], 'One Hand Axes': ['one', 'axe'], Flails: ['one', 'flail'], Daggers: ['one', 'dagger'],
   'Two Hand Maces': ['two', 'maul'], 'Two Hand Swords': ['two', 'greatsword'], 'Two Hand Axes': ['two', 'greataxe'],
   Quarterstaves: ['qstaff', 'qstaff'], Spears: ['spear', 'spear'], Bows: ['bow', 'bow'], Crossbows: ['crossbow', 'crossbow'],
-  Staves: ['staff', 'staff'], Talismans: ['staff', 'staff'], Wands: ['wand', 'wand'], Sceptres: ['wand', 'sceptre'],
+  Staves: ['staff', 'staff'], Talismans: ['unarmed', ''], Wands: ['wand', 'wand'], Sceptres: ['wand', 'sceptre'],   // a Talisman worn on the fists: nothing in the hand
 };
 
 export function makeHumanoid(fx) {
@@ -240,7 +240,7 @@ export function makeHumanoid(fx) {
   const PALM = .085, hip0 = jt.hips.position.clone();   // wrist to the middle of the palm; where the hips stand
   let UPPER = .27, FORE = .27 + PALM;   // shoulder to elbow, elbow to palm: the mannequin's once it is loaded
   const tip = new THREE.Object3D(), butt = new THREE.Object3D(), grip2 = new THREE.Object3D(), nock = new THREE.Object3D();
-  let gear = null, made = [], orbs = [], fam = 'unarmed', stance = STANCE.unarmed, glow = null, string = null, lookKey = null, rig = null;
+  let made = [], orbs = [], fam = 'unarmed', stance = STANCE.unarmed, glow = null, string = null, lookKey = null, rig = null;
 
   const put = (parent, geo, mat, x = 0, y = 0, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; parent.add(m); made.push(m); return m; };
   const group = (parent, x = 0, y = 0, z = 0) => { const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g); made.push(g); return g; };
@@ -351,7 +351,7 @@ export function makeHumanoid(fx) {
 
   // the weapon: drawn along +Y from the hand that holds it, then laid across the palm
   function equip(cls, off) {
-    const [f, model] = WEAPON[cls] || ['unarmed', ''], left = model === 'bow', g = gear = group(left ? jt.haL : jt.haR, 0, -PALM, 0);
+    const [f, model] = WEAPON[cls] || ['unarmed', ''], left = model === 'bow', g = group(left ? jt.haL : jt.haR, 0, -PALM, 0);
     fam = f; stance = STANCE[f]; glow = string = null;
     g.rotation.x = model === 'crossbow' ? Math.PI : Math.PI / 2;
     let top = 0, low = 0;
@@ -524,7 +524,6 @@ export function makeHumanoid(fx) {
       }
       if (string) { const p = string.geometry.attributes.position; p.setZ(1, -.2 - draw * .46); p.needsUpdate = true; }
       sweep(dt, blow);
-      if (gear) gear.visible = act?.name !== 'gouge';   // shapeshifted, claws and no weapon (Cross Slash)
       if (rig) { for (const S of 'LR') rig.grip[S] += ((grips[S] && !(S === 'L' && free) ? 1 : .25) - rig.grip[S]) * Math.min(1, dt * 14); skin(fullW, Math.max(fullW, runW)); }
       energy = Math.max(0, energy - dt * 2.5);
       if (glow) glow.userData.glow.scale.setScalar(glow.userData.core.scale.x * (7 + energy * 9 + Math.sin(time * 5) * .5));
