@@ -1833,10 +1833,9 @@ export function skill(g, b, treeGear) {
   // per power charge, for every skill. note: Barrage's repeats are for its Empowered attack: the scene's only, as every Empowered bonus
   const PP = (b?.gems || []).find(x => x.name === 'Pinnacle of Power'), EL = { fire: 1, cold: 1, lightning: 1 };
   const perCharge = (k, c, what, at, S = st, G = g, w = what === 'damage' ? Object.fromEntries(DMG.map(t => [t, 1])) : 1) => S[k] && out.when.push({ stat: k, cond: [{ type: at ? 'MultiplierThreshold' : 'Multiplier', var: c + 'ChargesConsumed', threshold: at }], val: S[k], skill: G.name, what, w });
-  for (const [k, c, what, at] of [['ancestral_cry_duration_+%_final_per_removable_endurance_charge', 'Endurance', 'duration'],
+  for (const r of [['ancestral_cry_duration_+%_final_per_removable_endurance_charge', 'Endurance', 'duration'],
     ['spiral_volley_damage_+%_final_when_frenzy_charges_consumed', 'Frenzy', 'damage', 1], ['spiral_volley_damage_+%_final_per_frenzy_charge_consumed', 'Frenzy', 'damage'],
-    ['spiral_volley_X_chains_per_frenzy_charge_consumed', 'Frenzy', 'chains'], ['rain_of_arrows_projectile_count_multiplier_per_frenzy_charge', 'Frenzy', 'projectiles'], ['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed', 'Endurance', 'totemLife']])
-    perCharge(k, c, what, at);
+    ['spiral_volley_X_chains_per_frenzy_charge_consumed', 'Frenzy', 'chains'], ['rain_of_arrows_projectile_count_multiplier_per_frenzy_charge', 'Frenzy', 'projectiles'], ['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed', 'Endurance', 'totemLife']]) perCharge(...r);
   if (meta?.name === 'Spell Totem' && byTotem) perCharge('spell_totem_damage_+%_final_per_power_charge_consumed', 'Power', 'damage', 0, gemStats(meta), meta);
   if (PP && DMG.some(t => EL[t] && out.hits?.[t])) perCharge('elemental_power_elemental_damage_+%_final_per_power_charge', 'Power', 'damage', 0, gemStats(PP), PP, EL);
   // the planner's conditions (b.conds: the states the player says hold, a count for a "per" one): the bonuses of out.when
