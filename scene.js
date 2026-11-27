@@ -351,7 +351,7 @@ export function initScene(el, api) {
     hudT = 0; return d;
   }
   // what an enemy carries from the fight: states, ailment bars, curse and mark, damage over time
-  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.rfc = d.spectral = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.vile = d.wasting = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
+  const clean = d => { d.impales = []; d.burnX = null; d.slows = []; d.gm = d.riven = d.erod = d.spears = d.rfc = d.spectral = null; d.blood = 0; d.dazed = d.smelt = d.attr = d.vile = d.wasting = d.inc = d.halt = d.crushed = d.intim = 0; d.agony = null; d.weak = []; d.shards = null; d.pustule = null; d.st = {}; d.burn = {}; d.dots = []; d.curse = d.mark = d.hexes = d.focusMax = d.mag2 = d.burn2 = d.gaps = null; d.frz = d.brk = 0; d.flam = []; d.bar = {}; d.lock = {}; d.imm = {}; d.mag = {}; d.cut = 0; };
   const restore = d => {
     const f = d.fig; d.pos.set(d.home.x, 0, d.home.z); d.aggro = false; d.dead = false; d.life = d.max; d.es = d.maxEs; d.fall = d.corpse = d.back = d.lances = d.ignSec = 0; d.by = null; d.sig = ''; d.wind = null; d.wait = rnd(.6, 1.2);
     clean(d);
@@ -504,6 +504,9 @@ export function initScene(el, api) {
     const KU = !S.src && sheet().kulemak; if (KU) g *= 1 + Math.floor(objs.filter(x => x.minion && x.undead && !x.dead).length * POWER.normal / KU) / 100;
     const FH = S.first && !S.first.has(d) && D?.stats?.['eye_of_winter_first_hit_damage_+%_final'];   // Eye of Winter: each enemy's first hit of the use
     if (FH) { S.first.add(d); g *= 1 + FH / 100; }
+    if (d.erod?.until > time) g *= 1 + d.erod.taken / 100;   // an Electrocuting Rod's increased damage taken
+    const WB = !S.src && D?.stats?.['wind_blast_damage_+%_final_from_distance']; if (WB) g *= 1 + WB * Math.min(1, Math.max(0, (4 - dist(d.pos, pp)) / 2.5)) / 100;   // Wind Blast's quality: its more within 1.5 m, down to none at 4 m (its text)
+    const WM = d.mark?.wolf; if (WM) g *= 1 + Math.min(WM.cap, WM.per * [pp, ...objs.filter(o => o.minion && !o.dead).map(o => o.pos)].filter(p => dist(p, d.pos) <= 6).length) / 100;   // Predator's Mark: per its enemies within 6 m (you and your minions; its text), up to its cap
     const ESP = D?.stats?.['earthshatter_damage_+%_final_per_spike']; if (ESP) g *= 1 + ESP * objs.filter(o => o.earth && !o.dead && o.name === S.name).length / 100;   // Earthshatter's quality: more per spike of it
     if (real && D.attack && S.src !== 'minionHit') g *= rageX(D);
     if ((sheet().parrySpell ? P?.spell : D?.attack) && time < d.parried?.until) g *= 1 + d.parried.more / 100;   // Parried (Nocturne: more Spell damage taken instead)
@@ -622,13 +625,13 @@ export function initScene(el, api) {
       }
       // shares of all damage gained as extra damage of a type, each of the damage before any of them: the buffs'; Mantra
       // of Destruction's Empowered attack and its Purple Flames (per stack) as chaos; Mana Tempest, Charged Shots, Volt
-      // Thrill of the Kill, Archmage and Ambrosia as lightning
+      // Thrill of the Kill, Archmage, Ambrosia and an Electrocuting Arrow's rod (its quality) as lightning
       const MT = empowered(S), TK = S.P.attack && time < me.thrill?.until && me.thrill.X;
       const SG = !S.src && sheet().tides, LF = SG && flasks()[0];   // Sanguine Tides: a hit while the life flask is full
       if (LF && flaskLeft(0) >= LF.max) { const n = Math.floor(LF.max * SG.use / 100); me.fl[0] -= n; me.tides = { pct: n * SG.per, until: time + SG.dur }; }
       const G = [...B, { el: 'chaos', pct: (S.mantra?.pct || 0) + (!S.src && time < me.purple?.until ? me.purple.n * me.purple.pct : 0) },
         { el: 'lightning', pct: (MT ? MT.dmg.stats['non_skill_base_all_damage_%_to_gain_as_lightning_with_spells_from_buff'] : 0) + (S.charged || 0) + (S.breath || 0) + (S.volt || 0) + (TK?.['support_thrill_of_the_kill_buff_grant_%_added_lightning_attack_damage'] || 0)
-          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) }, { el: 'fire', pct: S.fireGain }, { el: ELEM[Math.floor(Math.random() * 3)], pct: FAERIE.pct * (d.ff?.filter(u => u > time).length || 0) }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'cold', pct: time < me.verglas?.[S.name]?.until ? me.verglas[S.name].pct : 0 }, { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
+          + (archmage(S)?.['archmage_all_damage_%_to_gain_as_lightning_to_grant_to_non_channelling_spells_per_100_max_mana'] * Math.floor(me.maxM / 100) || 0) + (S.ambrosia || 0) + (d.erod?.until > time ? d.erod.X : 0) }, { el: 'fire', pct: S.fireGain }, { el: ELEM[Math.floor(Math.random() * 3)], pct: FAERIE.pct * (d.ff?.filter(u => u > time).length || 0) }, { el: 'physical', pct: time < me.tides?.until ? me.tides.pct : 0 }, ...(S.gains || []), { el: 'cold', pct: time < me.verglas?.[S.name]?.until ? me.verglas[S.name].pct : 0 }, { el: 'fire', pct: S.heated && S.dmg.stats['active_skill_all_damage_%_as_fire_if_heat_is_consumed'] }];   // Detonating Arrow's stages
       const all = Object.values(raw).reduce((t, v) => t + v, 0); for (const b of G) if (b.pct) raw[b.el] = (raw[b.el] || 0) + all * b.pct / 100;
       if (crit) gainBuff(S, 'crit');
       if (!S.src) { if (crit) trigger(S, 'crit', d); trigger(S, 'hit', d); harbinger(d, S, false); swarm(d, false); }
@@ -643,8 +646,24 @@ export function initScene(el, api) {
       const ZR = crit && !S.src ? sheet().critIgnoreRes : null;   // Beacon of Azis, Choir of the Storm: your critical hits ignore those resistances
       // Riven Armour (keywords.json RivenArmour): it stores 5% of the physical damage of the hit that inflicts it, before
       // mitigation; your later attack hits on that enemy gain as much added physical damage, and its armour breaks no further
-      if (!S.src && S.P.attack && d.riven?.until > time) raw.physical = (raw.physical || 0) + d.riven.mag;
+      if (!S.src && S.P.attack && d.riven?.until > time) { raw.physical = (raw.physical || 0) + d.riven.mag; if (d.riven.hits && --d.riven.hits <= 0) d.riven = null; }   // Broken Stance: gone after its hits
       if (riven) d.riven = { until: time + riven.base_skill_effect_duration / 1000, mag: (raw.physical || 0) * riven['exploit_debuff_attack_damage_to_convert_to_magnitude_%'] / 100 };
+      // Vaulting Impact: Broken Stance on a Dazed enemy (keywords.json BrokenStance: its share of the hit's physical damage
+      // added to your later attack hits), removed after its hits (its quality's more). note: its 60 s duration is not
+      // extracted (its "Vs Dazed" stat set's): it lasts until its hits
+      // Fangs of Frost: a hit on a Parried enemy Consumes the Parried debuff (its quality: a chance not to) for its frost
+      // burst (its part) where it stands and Chilled Ground for that part's duration
+      const FF = !S.src && time < d.parried?.until && D?.parts?.FangsOfFrostBurstPlayer && partOf(S, 'FangsOfFrostBurstPlayer');
+      if (FF) { if (!(Math.random() * 100 < (D.stats['chance_to_not_consume_parried_%'] || 0))) d.parried = null; const c = { x: d.pos.x, z: d.pos.z }; later(0, () => { boom(c, FF.A, FF); ground('chilled', c, FF.A, durOf(FF), FF); }); }
+      // Electrocuting Arrow: its hit attaches its Electrocuting Rod for its duration (all lightning damage then builds
+      // Electrocution; removed when Electrocuted); hits against the target gain its quality's extra lightning, and it
+      // takes its Gemling quality's increased damage
+      if (!S.src && S.name === 'Electrocuting Arrow') d.erod = { until: time + durOf(S), X: D.stats['electrocuting_arrow_%_damage_gained_as_extra_lightning_on_debuffed_target'] || 0, taken: D.stats['electrocuting_arrow_damage_taken_+%'] || 0 };
+      if (!S.src && S.name === 'Pounce' && D.part?.['skill_wolf_mark_damage_taken_+%_per_nearby_enemy']) wolfMark(d, S);
+      if (!S.src && S.P.attack) manifest(d);
+      if (!S.src && S.P.detonator && d.spears) spearsOff(d, S); else if (!S.src && S.name === 'Rapid Assault') spearheads(d, S);
+      const BS = !S.src && D?.part?.broken_stance_hit_limit;
+      if (BS && d.dazed > time && !(d.riven?.until > time)) { d.riven = { until: Infinity, hits: BS + (D.stats.broken_stance_hit_limit || 0), mag: (raw.physical || 0) * D.part['exploit_debuff_attack_damage_to_convert_to_magnitude_%'] / 100 }; d.dazed = 0; fx.text(over(d), t('Broken Stance'), css('gold'), .3); }
       const EI = !S.src && has(d, 'immobilised') ? 1 + (shrineOn()?.['tactician_artillery_ballista_aura_damage_+%_final_vs_immobilised_enemies'] || 0) / 100 : 1;   // Siege Ballista's Embankment
       for (const el in raw) { const got = dealt[el] = FF != null ? 0 : takes(d, el, raw[el], true, TIA ? 100 : D?.stats?.['enemy_phys_reduction_%_penalty_vs_hit'], W.pen[el], INV, ZR) * EI; total += got; if (got > best) { best = got; top = el; } }
       // Lightning Conduit consumes the shock it hit: the first consumed, its additional bolts fall among the enemies in its area
@@ -1056,7 +1075,7 @@ export function initScene(el, api) {
     if (a === 'freeze') { fx.text(over(d), t(STATE[a]), css('ice'), .36); fx.emit(22, { p, r: .3, v: 1.6, up: 1, life: .6, size: .16, c: 'ice', c2: 'white', g: 5 }); fx.ring(d.pos, .2, 1.1, 'ice', .35); }
     else if (a === 'stun') { fx.text(over(d), t(STATE[a]), '#f2ead8', .36); fx.ring(d.pos, .2, 1.2, 'white', .3); d.wind = null; if (!S.src) remnantOn('stun', d); }
     else if (a === 'armour') { fx.text(over(d), t(STATE[a]), css('dust'), .34); fx.emit(16, { p, v: 3, up: 2, life: .6, size: .1, c: 0xb0a898, g: 12, k: 1.2 }); }
-    else if (a === 'electrocute' || a === 'pin' || a === 'maim') { fx.text(over(d), t(STATE[a]), css(PIP[a]), .36); fx.ring(d.pos, .2, 1.1, PIP[a], .3); if (a === 'electrocute') d.wind = null; }
+    else if (a === 'electrocute' || a === 'pin' || a === 'maim') { fx.text(over(d), t(STATE[a]), css(PIP[a]), .36); fx.ring(d.pos, .2, 1.1, PIP[a], .3); if (a === 'electrocute') d.wind = d.erod = null; }
     else if (a === 'shock') fx.emit(8, { p, r: .3, v: 2.4, life: .2, size: .14, c: 'lightning', c2: 'white', k: 3 });
     else if (a === 'ignite') fx.emit(8, { p, r: .25, v: .5, up: 2.2, life: .5, size: .32, c: 'fire', c2: 'ember' });
     event(a, d.pos, S, d);
@@ -1186,7 +1205,7 @@ export function initScene(el, api) {
       if (o.crit) ex(['cold'], E.onColdCrit);
     }
     if (o.crit && SU.inflict_lightning_exposure_on_crit) expo(d, ['lightning'], EXPO.res * E.effect);   // Blessed Bonds: lightning exposure on a critical hit
-    const EZ = A.electrocute || (d.enerv > time && x('lightning') ? A.electrocuteIf : 0);   // Enervating Nova's
+    const EZ = A.electrocute || ((d.enerv > time || d.erod?.until > time) && x('lightning') ? A.electrocuteIf : 0);   // Enervating Nova's, an Electrocuting Rod's
     if (EZ) build(d, 'electrocute', (A.electrocute ? xa('electrocute', 'lightning') : x('lightning')) * GC.ElectrocuteDamageScale * EZ * (A.immob || 1) * IC * (UB ? UB.build : 1) * (1 + (d.mark?.D?.electrocute || 0) / 100) * (d.st.shock > 0 ? A.elShock || 1 : 1), S, A);
     const wasPinned = d.st.pin > 0;
     // Lockdown: its most more Pin buildup on enemies within 2 m of you (its text). note: how it falls off past 2 m is not
@@ -1252,7 +1271,7 @@ export function initScene(el, api) {
   // Overwhelming Presence: the enemies in your Presence have its less stun and ailment thresholds
   const awe = (d, k) => { const D = onS('Overwhelming Presence')?.dmg, st = D?.stats; return st && dist(d.pos, pp) <= sheet().overgrow.r ? 1 + st[`skill_overwhelming_pressure_aura_enemy_${k}_threshold_+%`] * (1 + (D.sum['aura_effect_+%'] || 0) / 100) / 100 : 1; };   // its magnitude with the build's aura effect
   // Daze: for its time the enemy takes more stun buildup
-  const daze = (d, s, S) => { if (!(s > 0) || S && [S.name, ...(S.g?.supports || [])].some(n => flagOf(n, 'cannot_daze'))) return;   /* S: the skill that would Daze: not Vaulting Impact, nor one with Dazzle */ if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
+  const daze = (d, s, S) => { if (!(s > 0) || S && [S.name, ...(S.g?.supports || [])].some(n => flagOf(n, 'cannot_daze'))) return;   /* S: the skill that would Daze: not Vaulting Impact, nor one with Dazzle */ if (d.riven?.hits) return; if (!(d.dazed > time)) fx.text(over(d), t('Daze'), css('gold'), .3); d.dazed = Math.max(d.dazed || 0, time + s); };
   function build(d, a, n, S, A) {
     if (!(n > 0) || d.st[a] > 0 || d.imm[a] > 0) return;
     if (a === 'stun' && d.dazed > time) n *= 1 + DAZE.stun * (sheet().dazeMag || 1) / 100;
@@ -1294,6 +1313,16 @@ export function initScene(el, api) {
     if (on.length) { consume(d, S, on[Math.floor(Math.random() * on.length)]); v.dps *= 1 + DA / 100; }
     if (o) Object.assign(o, v, { s, S, spreads: 0 }); else d.dots.push({ s, name: S.name, label: S.label, spread: !!S.P.spread, chaos: S.els.includes('chaos'), S, ...v });
     d.by = S; return d.dots.find(o => o.name === S.name);
+  }
+  // Pounce: Predator's Mark (its own part) on the highest Rarity enemy it hits, one at a time: that enemy takes increased
+  // damage per its enemies near it (hit). note: its 8 s duration is the scene's mark default, as in its data; the
+  // Summon Wolf it triggers on the target's death is not in the app's data
+  const RANK = { normal: 0, magic: 1, rare: 2, unique: 3 };
+  function wolfMark(d, S) {
+    const on = dummies.find(e => e.mark?.wolf && !e.dead); if (on && (on === d || RANK[on.stat.rarity] >= RANK[d.stat.rarity])) return;
+    if (on) on.mark = null; const P = S.dmg.part, st = S.dmg.stats, k = "skill_wolf_mark_damage_taken_+%_";
+    d.mark = { at: time, s: 8, els: [], label: t("Predator's Mark"), name: "Predator's Mark", hits: 0, R: S.A, S: { ...S, src: 'mark' }, wolf: { per: P[k + 'per_nearby_enemy'] + (st[k + 'per_nearby_enemy'] || 0), cap: P[k + 'cap'] + (st[k + 'cap'] || 0) } };
+    fx.ring(d.pos, 2.2, .5, 'mark', .4);
   }
   function markOn(d, S) {
     // Living Bomb, Untether: up to their most seeds at a time, the oldest gives way (and the Marks that have a limit of marked targets)
@@ -1421,6 +1450,20 @@ export function initScene(el, api) {
   // a share of a monster's life dealt as one element over an area, as it is (no bonus of the scene's or the build's)
   const spectralBlow = d => { const sp = d.spectral; d.spectral = null; if (sp.n > 0) { pop(d.pos, SPECTRAL, 'fire'); lifeBlast(d.pos, SPECTRAL, { ...sp.S, label: t('Spectral Fire'), mult: 1, gm: 1, dmg: { ...sp.S.dmg, attack: false, crit: 0 } }, 'fire', sp.n); } };   // (no hit roll, no critical hit: not the attack's)
   const lifeBlast = (c, R, X, el, n) => n > 0 && area(c, R, { ...X, el, els: [el], ail: [], src: 'corpse', dmg: { ...X.dmg, hits: { [el]: [n, n] } } }, { noPay: true, noTouch: true });
+  // Rapid Assault: its use leaves a spearhead in each enemy its final stab hits (its quality: a chance of another), up
+  // to its limit, for its final hit's duration; a Detonator hit explodes them (its detonation part, at the enemy), and
+  // Thunderous Leap may leave Shocked Ground there (its quality; keywords.json: 6 s; the area the scene's)
+  function spearheads(d, S) {
+    const st = S.dmg.parts?.RapidAssaultFinalHitPlayer?.stats; if (!st || d.spearBy === S) return; d.spearBy = S;
+    const n = 1 + (Math.random() * 100 < (S.dmg.stats['rapid_assault_%_chance_to_attach_additional_spear'] || 0)), until = time + st.base_skill_effect_duration / 1000;
+    d.spears = [...(d.spears || []).filter(u => u.until > time), ...Array.from({ length: n }, () => ({ until, S }))].slice(-st.rapid_assault_attached_spear_limit);
+  }
+  function spearsOff(d, S) {
+    const c = { x: d.pos.x, z: d.pos.z }, list = d.spears.filter(u => u.until > time); d.spears = null;
+    for (const u of list) { const X = partOf(u.S, 'RapidAssaultDetonation'); if (X) later(.05, () => boom(c, X.A, { ...X, src: 'detonate' })); }
+    if (list.length) say(t('{0} detonates {1}', S.label, list[0].S.label) + ` ×${list.length}`, 'gold');
+    if (list.length && Math.random() * 100 < (S.dmg?.stats?.['thunderous_leap_%_chance_for_shocked_ground_when_detonating'] || 0)) ground('shocked', c, SIM.area, GROUND_TIME.shocked, { ...S, src: 'ground' });
+  }
   function detonate(d, S) {
     const X = partOf(S, 'DetonateLivingExplodePlayer'), c = { x: d.pos.x, z: d.pos.z }, n = d.max * (X?.dmg.stats.corpse_explosion_monster_life_permillage_physical || 0) / 1000;
     me.culledAt = time; cullUp(S); if (sheet().uEv?.fearCull) me.fear = { n: Math.min(FEAR.max, (time < me.fear?.until ? me.fear.n : 0) + sheet().uEv.fearCull), until: time + FEAR.time };   /* Horror's Flight */ fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
@@ -2122,7 +2165,11 @@ export function initScene(el, api) {
     const only = ['red', 'blue', 'purple'].findIndex(c => s[`can_only_spawn_${c}_flame_of_chayula_remnants`]);   // Acolyte of Chayula's Choice of Life / Mana / Power: every Flame is that one
     for (let j = 0; j < n; j++) drop(R.kinds ? R.kinds[only >= 0 && S.name === 'Into the Breach' ? only : Math.floor(rnd(R.kinds.length))] : R, j ? around(p, SIM.pickup) : { x: p.x, z: p.z });
   }
+  // Explosive Transmutation, while on: picking up a Remnant explodes there, its part of the Remnant's element (an
+  // Infusion's, or a skill's Remnant of an element's colour). ponytail: other Remnants (life, mana...) set off none
+  function transmute(c, el) { const S = onS('Explosive Transmutation'), X = S && partOf(S, `ExplosiveTransmutation${cap(el)}Player`); if (X?.dmg) boom(c, X.A, X); }
   function collect(S, R, c) {
+    transmute(c, R.c);
     const s = rstats(S), k = 1 + (s['remnant_effect_+%'] || 0) / 100;
     fx.ring(c, .15, .8, R.c, .3); fx.emit(10, { p: { x: c.x, y: .5, z: c.z }, r: .2, v: 1.2, up: 1.5, life: .5, size: .14, c: R.c, c2: 'white' });
     if (s.remnants_affect_allies_in_presence_instead) return say(t('{0}: the Remnant affects your allies', S.label), R.c);   // the scene's minions have no life of their own
@@ -2152,7 +2199,7 @@ export function initScene(el, api) {
   function infRemnant(el, p, o = {}) {   // o: its pickup range +% (Siphon Elements), its duration (Runic Extraction's)
     if (sheet().equilibrium) el = EQUILIBRIUM[el] || el;
     const c = { x: p.x, z: p.z }, m = new THREE.Mesh(ORB, new THREE.MeshBasicMaterial({ color: fx.color(INF_C[el], 2.2), fog: false })), reach = SIM.pickup * (1 + (o.range || 0) / 100); m.position.set(c.x, .5, c.z);
-    thing(m, o.dur || SIM.lifetime, { name: 'infusion', c, tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; infGain(el, c); } } });
+    thing(m, o.dur || SIM.lifetime, { name: 'infusion', c, tick(dt, e) { m.position.y = .5 + Math.sin(e.s * 4) * .08; if (dist(pp, c) <= reach) { e.dead = true; infGain(el, c); transmute(c, el); } } });
   }
   // Siphon Elements, while on: a chance of a Remnant of that kind when you freeze (per Power of the enemy), ignite a
   // target not ignited or shock one not shocked
@@ -3023,7 +3070,8 @@ export function initScene(el, api) {
     // Spirit Walker's Sacred Unity: the Bear Spirit (Wild Protector) takes its share of your damage before you, as Loyalty, and regenerates its life
     const SU = S.dmg?.sum || {}, FN = S.dmg?.finals || {}, bear = S.name === 'Wild Protector';
     if (L > 0) Object.assign(e, { decoy: true, recoupLoyal: SU['loyalty_%_of_redirected_damage_recouped_as_life_for_owner'] || 0, loyal: (SU['companion_takes_%_damage_before_you_from_support'] || 0) + (bear && SU['ascendancy_bear_companion_takes_%_damage_before_you'] || 0) + (e.companion && SU['companion_takes_%_damage_before_you'] || 0),   /* the tree's Trusted Partner */
-      regen: (bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0) + (S.dmg?.minion?.regen || 0), rc: [], segs: [{ p: e.pos, r: .3, life: L, max: L, es: L * (S.dmg?.minion?.es || 0) / 100, esMax: L * (S.dmg?.minion?.es || 0) / 100, res: S.dmg?.minion?.res, hurt(n) {
+      regen: (bear && SU['ascendancy_bear_companion_life_regeneration_rate_per_minute_%'] || 0) + (S.dmg?.minion?.regen || 0), rc: [], segs: [{ p: e.pos, r: .3, life: L, max: L, es: L * (S.dmg?.minion?.es || 0) / 100, esMax: L * (S.dmg?.minion?.es || 0) / 100, res: S.dmg?.minion?.res, hurt(n) { if (time < e.immune) return;   // a Skeleton a Skeletal Cleric Revived (its quality)
+
       // Bone Offering: while its spike stands its shield takes its less damage from hits; a hit above its % of the minion's
       // maximum life is absorbed whole and the shield explodes (after that, its quality's less damage). note: the
       // explosion's damage is not in its data
@@ -3596,7 +3644,7 @@ export function initScene(el, api) {
         if (per.hit && st.cast_lightning_spell_on_hit_gain_X_centienergy_per_monster_power_on_hit) { per.melee_hit = per.hit; delete per.hit; }   // Thundergod's Wrath: on Melee Hit (its text)
         if (T.per) gainEnergy(T, 0);   // its maximum from the start (the buff shows its Energy as a % of it)
       }
-      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : k === 'Cackling Companions' ? { look: hyenaLook(S) } : {}));
+      else if (S.kind === 'minion' && !S.dmg?.stats?.skill_raging_spirits_max_per_action && !S.dmg?.stats?.max_azmerian_swarms && !S.dmg?.stats?.maximum_corpse_beetles_allowed && !S.dmg?.stats?.base_number_of_verisium_runes_allowed) for (let i = 0; i < (k === 'Rhoa Mount' || k === 'Spectre: {0}' || S.dmg.cmd ? 1 : S.dmg.stats?.skill_wolf_pack_size || S.dmg.stats?.skill_hyena_cackle_size || S.dmg.stats?.skill_desired_amount_override || 2); i++) T.objs.push(minion(S, { x: pp.x + rnd(-1.5, 1.5), z: pp.z + rnd(-1.5, 1.5) }, Infinity, k === 'Azmerian Wolf' ? { look: wolfLook() } : k === 'Cackling Companions' ? { look: hyenaLook(S) } : {}));
       // (Alchemist's Boon, Align Fate: nothing on you while they are on, as the game's: only what they do, fx.boon, visage)
       else if (S.kind === 'herald') T.decal = fx.decal(pp, .9, 'rune', S.el, { a: .7, spin: 1.5 });
       else if (!NOMARK.has(k)) { T.R = S.kind === 'field' ? S.A : S.R; T.decal = fx.decal(pp, T.R || 1.1, T.R ? 'outline' : 'ring', S.el, { a: .45, rot: 0 }); }
@@ -4020,12 +4068,26 @@ export function initScene(el, api) {
       const dec = fx.decal(c, R, P.plant ? 'cracks' : 'rune', S.el, { a: .55, spin: P.plant ? 0 : .3 }); let tk = 0;
       if (P.plant) limit(o => o.plant && o.name === S.name, S.dmg?.stats?.number_of_vine_arrow_pod_allowed, S);
       limit(o => o.name === S.name && !o.plant, S.dmg?.stats?.ritual_of_power_maximum_number_of_rituals ?? S.dmg?.stats?.number_of_poison_cloud_allowed, S);   // Profane Ritual, Decompose: up to their most
+      // Vine Arrow: its plant's vines latch onto the enemies in their radius (its flower part): its chaos damage over time
+      // and slow; a hit of yours that Poisons the plant stores that poison, the vines dealing its share of it (the
+      // part's less, its quality's more) as chaos per second for the poison's duration
+      const VX = partOf(S, 'VineArrowFlowerPlayer'), vs = VX?.dmg.stats || {}, vk = 'poison_vine_arrow_vine_stored_poison_damage_+%_final';
       const z = thing(holder(c), dur, { name: S.name, plant: P.plant && S, c, R,
         tick(dt, e) {
           if (e.plant) presence(e);
           if (Math.random() < dt * R * 8) fx.emit(1, { p: { x: c.x, y: .05, z: c.z }, r: R * .9, v: .2, up: 1.4, life: .7, size: .22, c: S.el });
           if ((tk -= dt) > 0) return; tk = .5;
-          area(c, e.R, { ...S, self: e, mult: S.mult * (e.more || 1) }, { mult: .25, noPay: e.s > .6, noTouch: true });
+          if (!VX) return area(c, e.R, { ...S, self: e, mult: S.mult * (e.more || 1) }, { mult: .25, noPay: e.s > .6, noTouch: true });
+          const PS = e.poison?.until > time ? e.poison.dps * (1 + (vs[vk] || 0) / 100) * (1 + (S.dmg.stats[vk] || 0) / 100) : 0;
+          for (const d of inside(c, VX.A * e.R / R)) {
+            const o = dot(d, { ...VX, mult: VX.mult * (e.more || 1), P: { ...VX.P, dur: .6 } }); if (PS) o.dps += defence(d, 'chaos', PS * (e.more || 1), false);
+            d.slows.push({ until: time + .6, pct: (vs['active_skill_base_slow_debuff_movement_speed_+%_final'] || 0) * slowK(S) });
+          }
+        },
+        touch(by) {   // a hit of yours that can Poison: its chance, the poison of its average physical and chaos damage
+          const A = by.dmg?.ail; if (!VX || by.src || !(Math.random() * 100 < (A?.poison || 0))) return;
+          const H = by.dmg.hits || {}, n = ['physical', 'chaos'].reduce((t, el) => t + (H[el] ? (H[el][0] + H[el][1]) / 2 : 0), 0) * (by.mult ?? 1) * GAME.poison_per_minute / 6000;
+          if (n > (this.poison?.until > time ? this.poison.dps : 0)) this.poison = { dps: n, until: time + DUR.poison * (A.poisonTime || 1) };
         },
         off: () => dec.remove() });
       if (z.plant) planted(z);
@@ -5097,6 +5159,35 @@ export function initScene(el, api) {
     const G = onS('Grim Feast'), s = G && rstats(G);
     if (s && dist(pp, e.pos) <= sheet().overgrow.r && Math.random() * 100 < s['grim_remnant_chance_to_spawn_orb_on_minion_death_in_presence_%']) remnant({ ...G, store: e.segs[0].max * s['grim_remnant_health_stored_in_globe_%'] / 100 }, e.pos);
   }
+  // Kelari's Malediction, while on: every its secondary duration it Consumes a corpse in your Presence for its Corpse
+  // Beetles (its description mode's number), while fewer than its most (its quality's more); a Beetle rushes the
+  // nearest enemy and explodes (its monster's Sandblast, once). ponytail: Commanded at once, the scene has no Command for them
+  function beetles() {
+    const S = onS("Kelari's Malediction"), st = S?.dmg.stats; if (!st || time < (me.kmAt ?? 0)) return;
+    const T = tog[S.name], c = corpses(pp, sheet().overgrow.r)[0]; me.kmAt = time + st.base_secondary_skill_effect_duration / 1000;
+    if (!c || T.objs.filter(o => !o.dead).length >= st.maximum_corpse_beetles_allowed) return;
+    eat(c, S.el); for (let k = 0; k < st.skill_specific_stat_description_mode; k++) T.objs.push(minion(S, around(c.pos, 1), Infinity, { kind: S.name, attacks: 1 }));
+  }
+  // Verisium Manifestations, while on: an attack hit of yours spends its Runic Ward cost (its cost efficiency) to summon a
+  // Verisium Manifestation by the enemy for its duration (its quality's more), up to its limit (its Gemling quality's
+  // more), its cooldown between. ponytail: its stored uses not counted, one per cooldown
+  function manifest(d) {
+    const S = onS('Verisium Manifestations'), st = S?.dmg.stats; if (!st || time < (me.vmAt ?? 0)) return;
+    const cost = (st._cost?.Ward || 0) / (1 + (S.dmg.sum?.['base_ward_cost_efficiency_+%'] || 0) / 100); if (me.ward < cost) return;
+    spendWard(cost); me.vmAt = time + (st._cooldown_ms || 0) / 1000;
+    limit(o => o.kind === S.name && !o.dead, st.base_number_of_verisium_runes_allowed, S); minion(S, around(d.pos, 1.5), durOf(S), { kind: S.name });
+  }
+  // Skeletal Cleric: each Cleric Revives a fallen Skeleton every its Revive Skeleton's cooldown and use time (its
+  // monster's skill), next to it; its quality: the Revived one immune to damage for its time
+  function clerics() {
+    const C = onS('Skeletal Cleric'), RV = C && monSkill('ResurrectSkeletonClericMinion'), every = (RV?.cooldown || 0) + (RV?.cast || 0); if (!every) return;
+    for (const o of tog[C.name].objs) {
+      if (o.dead || time < (o.revNext ??= time + every)) continue;
+      const i = me.fallen.findIndex(f => api.info(onS(f.name)?.g || {})?.gem?.types?.includes('CreatesSkeletonMinion')); if (i < 0) continue;
+      const [f] = me.fallen.splice(i, 1), X = onS(f.name); o.revNext = time + every; fx.ring(o.pos, 1.2, .3, 'gold', .4, { a: .5 });
+      tog[f.name].objs.push(Object.assign(minion(X, around(o.pos, 1.5), Infinity), { revAt: time, immune: time + (C.dmg.stats.skeletal_cleric_revived_skeletons_immune_for_X_ms || 0) / 1000 }));
+    }
+  }
   // the fallen minions Revived, in their order, up to n total maximum life of theirs
   function reviveFallen(n) {
     let used = 0, k = 0;
@@ -5726,7 +5817,7 @@ export function initScene(el, api) {
       // a Runic Ward cost (Conductive Runes); Scouring Flame, Runic Extraction, Olroth's Conviction: its share of the life
       // and mana cost as Runic Ward too; Olroth's Hubris: its share of your maximum Ward more, added physical and
       // cold damage of their shares of it (its physical counts for freeze: afflict). note: added as they are, not scaled by the skill's modifiers
-      const OH = S.dmg?.sum, WC = (S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100 + (cost + life) * (OH?.['base_skill_ward_cost_as_%_of_life_and_mana_cost'] || 0) / 100 + (S.kind === 'splinters' ? splinterCost(S) : 0);
+      const OH = S.dmg?.sum, WC = ((S.dmg?.stats?._cost?.Ward || 0) + me.maxW * (OH?.['base_ward_cost_+_%_of_maximum_ward'] || 0) / 100 + (cost + life) * (OH?.['base_skill_ward_cost_as_%_of_life_and_mana_cost'] || 0) / 100 + (S.kind === 'splinters' ? splinterCost(S) : 0)) / (1 + (OH?.['base_ward_cost_efficiency_+%'] || 0) / 100);   // Runic Ward cost efficiency (Explosive Transmutation's Gemling quality)
       if (WC > me.ward) { toast(t('Not enough Runic Ward for {0}', S.label)); return false; }
       if (WC) { spendWard(WC); S.wardPaid = WC; }
       // Derange: an Energy Shield cost equal to your Intelligence
@@ -7396,6 +7487,7 @@ export function initScene(el, api) {
     const VS = sheet().vivid; if (VS) { me.vmov = (me.vmov || 0) + Math.hypot(pp.x - (me.vp?.x ?? pp.x), pp.z - (me.vp?.z ?? pp.z)); me.vp = { x: pp.x, z: pp.z };   // a Vivid Wisp per its metres moved
       if (me.vmov >= VS.per) { me.wisps = Math.min(VS.max, (me.wisps || 0) + Math.floor(me.vmov / VS.per)); me.vmov %= VS.per; } }
     if (me.fallen.length && time >= me.reviveAt) { me.reviveAt = Infinity; reviveFallen(Infinity); }
+    beetles(); clerics();
     const RU = sheet().rareGlory; if (RU) { me.rg = (me.rg || 0) + dt * dummies.filter(d => !d.dead && ['rare', 'unique'].includes(d.stat.rarity) && dist(d.pos, pp) <= sheet().overgrow.r).length / RU; if (me.rg >= 1) { for (const S of gloryOf()) gloryAdd(S, Math.floor(me.rg)); me.rg %= 1; } }   // Glory per rare or unique monster in your Presence
     const DX = 1 + (sheet().debuffTime || 0) / 100;   // debuffs on you expire faster (the tree's Debuff Expiry Rate)
     for (const a in me.st) if (me.st[a] > 0) me.st[a] -= dt * DX;

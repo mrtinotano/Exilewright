@@ -84997,6 +84997,10 @@
    "weapons": [
     "Talismans"
    ],
+   "part": {
+    "skill_wolf_mark_damage_taken_+%_per_nearby_enemy": 3,
+    "skill_wolf_mark_damage_taken_+%_cap": 45
+   },
    "meta_support": null
   },
   "Rampage": {
@@ -109190,6 +109194,7 @@
     "cannot_cancel_skill_before_contact_point"
    ],
    "part": {
+    "exploit_debuff_attack_damage_to_convert_to_magnitude_%": 5,
     "active_skill_damage_+%_final_vs_unique_enemies": 0
    },
    "parts": {
@@ -117550,6 +117555,10 @@
    "flags": [
     "cannot_daze"
    ],
+   "part": {
+    "exploit_debuff_attack_damage_to_convert_to_magnitude_%": 10,
+    "broken_stance_hit_limit": 10
+   },
    "meta_support": null
   },
   "Storm Wave": {

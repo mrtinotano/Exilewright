@@ -872,6 +872,75 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "1회 추가로 갈라짐",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0}회 추가로 갈라짐",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "보조 대상 스킬의 투사체가 1회 추가로 갈라짐",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "보조 대상 스킬의 투사체가 {0}회 추가로 갈라짐",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "projectiles_return",
+   "projectile_return_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "0",
+     "1|99"
+    ],
+    "t": "투사체가 {1}%의 확률로 자신에게 돌아옴",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "100|#"
+    ],
+    "t": "투사체가 자신에게 돌아옴",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "투사체가 자신에게 돌아옴",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_chain_hit_damage_+%_final"
   ],
   "rows": [
@@ -1198,6 +1267,23 @@
      "1|#"
     ],
     "t": "1초마다 {0}의 [Physical|물리] 피해를 줌",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "1초마다 {0}의 [Cold|냉기] 피해를 줌",
     "h": [
      "per_minute_to_per_second",
      "1"
@@ -2171,6 +2257,52 @@
  },
  {
   "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Physical|물리] 피해의 {0}%를 [Fire|화염] 피해로 [Gain|획득]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_fire_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "주는 화염 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "주는 화염 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "주는 화염 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_life_spent_as_glory"
   ],
   "rows": [
@@ -2180,6 +2312,53 @@
     ],
     "t": "보조 대상 스킬이 다른 스킬에 사용한 생명력의\\n{0}%와 동일한 [Glory|영광] 획득",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "소환수 공격 속도 {0}% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[Projectile|투사체] 속도 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Projectile|투사체] 속도 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Projectile|투사체] 속도 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -8832,6 +9011,30 @@
  },
  {
   "stats": [
+   "trinity_skill_speed_+%_while_all_resonance_is_at_least_250_to_grant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "총 [Affinity|친화력]이 250을 초과할 때 [SkillSpeed|스킬 속도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "총 [Affinity|친화력]이 250을 초과할 때 [SkillSpeed|스킬 속도] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_unusable_until_moved_X_distance"
   ],
   "rows": [
@@ -15005,6 +15208,38 @@
  },
  {
   "stats": [
+   "triggered_skill_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "장착된 주문 [Trigger|발동] 시 주는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "보조 대상 발동형 주문이 주는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "보조 대상 발동형 주문이 주는 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy",
    "consume_shock_of_X_enemies_to_trigger_shocking_rift"
   ],
@@ -15442,6 +15677,23 @@
  },
  {
   "stats": [
+   "skill_main_hand_total_attack_fire_damage_permyriad_to_add_as_unscalable_damage_to_oil_ground_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ignite|점화]된 [OilGround|기름 지대]가 이 공격의 [Fire|화염] [Hit|피해]의 {0}%를 변경이 불가능한 [Hit|피해]로 [Ignite|점화]에 추가",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15532,6 +15784,30 @@
      "#|-1"
     ],
     "t": "[LowLife|낮은 생명력] 상태일 때 시전 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "효과 범위 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "효과 범위 {0}% 감폭",
     "h": [
      "negate",
      "1"
@@ -15673,6 +15949,30 @@
     "t": "{0}초간 [Withered|위축] 지속",
     "h": [
      "milliseconds_to_seconds",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_life_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "소환수의 최대 생명력 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "소환수의 최대 생명력 {0}% 감폭",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -16301,6 +16601,30 @@
  },
  {
   "stats": [
+   "accuracy_range_penalty_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "거리에 따라 [Accuracy|정확도] 페널티 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "거리에 따라 [Accuracy|정확도] 페널티 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_attack_speed_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16316,6 +16640,90 @@
      "#|-1"
     ],
     "t": "[DualWield|쌍수 장착] 시 두 무기 모두\\n{0}% 감폭한 공격 속도로 명중",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_chaos"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "피해의 {0}%를 추가 카오스 피해로 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "피해의 {0}%를 [Cold|냉기] 피해로 [Gain|획득]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "피해의 {0}%를 추가 화염 피해로 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "피해의 {0}%를 추가 번개 피해로 획득",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "적의 이동 속도 [Slow|감속]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "적의 이동 속도 {0}% [Slow|감속]",
     "h": [
      "negate",
      "1"
@@ -16364,6 +16772,78 @@
      "#|-1"
     ],
     "t": "{0}% 감폭된 피해를 준 것처럼 적을 [Chill|냉각]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_non_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|비-고유] 적의 [Freeze|동결]을 [Consume|소모]하여 {0}% 증폭한 피해를 줌",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|비-고유] 적의 [Freeze|동결]을 [Consume|소모]하여 {0}% 감폭한 피해를 줌",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적의 [Freeze|동결]을 [Consume|소모]하여 {0}% 증폭한 피해를 줌",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적의 [Freeze|동결]을 [Consume|소모]하여 {0}% 감폭한 피해를 줌",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_against_heavy_stunned_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[HeavyStun|강력 기절] 상태의 적에게 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[HeavyStun|강력 기절] 상태의 적에게 주는 피해 {0}% 감폭",
     "h": [
      "negate",
      "1"
@@ -16466,6 +16946,153 @@
      "#|-1"
     ],
     "t": "[DualWield|쌍수 장착] 시 두 무기 모두 {0}% 감폭한 피해로 명중",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_per_time_chained"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "이 스킬이 [Chain|연쇄]한 횟수 1회당 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "이 스킬이 [Chain|연쇄]한 횟수 1회당 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "이 스킬이 [Chain|연쇄]한 횟수 1회당 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "이 스킬이 [Chain|연쇄]한 횟수 1회당 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_burning_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Burning|화상] 상태의 적에게 주는 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Burning|화상] 상태의 적에게 주는 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Burning|화상] 상태의 적에게 주는 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Burning|화상] 상태의 적에게 주는 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Chill|냉각]된 적에게 주는 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Chill|냉각]된 적에게 주는 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Chill|냉각]된 적에게 주는 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Chill|냉각]된 적에게 주는 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[ArmourBreak|완전히 파괴된 방어구]를 가진 적에게 주는 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[ArmourBreak|완전히 파괴된 방어구]를 가진 적에게 주는 [Hit|명중] 피해 {0}% 감폭",
     "h": [
      "negate",
      "1"
@@ -16704,6 +17331,103 @@
  },
  {
   "stats": [
+   "active_skill_ignite_proliferation_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "이 스킬이 유발하는 [Ignite|점화]가 1초 동안\\n{0}미터 내에 머무르는 다른 적에게 [AilmentSpread|확산]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "이 스킬이 유발하는 [Ignite|점화]가 1초 동안\\n{0}미터 내에 머무르는 다른 적에게 [AilmentSpread|확산]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_knockback_distance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Knockback|밀어내기] 거리 증폭@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Knockback|밀어내기] 거리 {0}% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_lightning_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Lightning|번개] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Lightning|번개] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_hit_damage_stun_multiplier_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "소환수가 유발하는 [Stun|기절] 축적 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "소환수가 유발하는 [Stun|기절] 축적 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_pins_as_though_dealt_damage_+%_final",
    "quality_display_active_skill_pins_as_though_dealt_damage_+%_final_is_gem"
   ],
@@ -16739,6 +17463,54 @@
      "#"
     ],
     "t": "{0}% 감폭된 피해를 준 것처럼 적을 [Pinned|고정]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_for_each_remaining_chain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Projectile|투사체]가 남은 [Chain|연쇄] 하나당 주는 명중 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Projectile|투사체]가 남은 [Chain|연쇄] 하나당 주는 명중 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_if_pierced_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "적을 [Pierce|관통]한 후 [Projectile|투사체] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "적을 [Pierce|관통]한 후 [Projectile|투사체] 피해 {0}% 감폭",
     "h": [
      "negate",
      "1"
@@ -16799,6 +17571,30 @@
  },
  {
   "stats": [
+   "active_skill_shock_as_though_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% 증폭된 피해를 준 것처럼 적에게 [Shock|감전] 유발",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% 감폭된 피해를 준 것처럼 적에게 [Shock|감전] 유발",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_shock_chance_+%_final"
   ],
   "rows": [
@@ -16815,6 +17611,30 @@
     ],
     "t": "[Shock|감전] 확률 {0}% 감폭",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_shock_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Shock|감전] 지속시간 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Shock|감전] 지속시간 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -16922,6 +17742,54 @@
     ],
     "t": "[ElementalInfusion|원소 주입] 획득 시 같은 유형의 [ElementalInfusion|원소 주입] 1개를 추가로 획득",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_attack_speed_granted_+%_during_life_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "아무 생명력 [Flask|플라스크]나 효과를 받는 동안 [Attack|공격] 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "아무 생명력 [Flask|플라스크]나 효과를 받는 동안 [Attack|공격] 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_cast_speed_granted_+%_during_mana_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "아무 마나 [Flask|플라스크]나 효과를 받는 동안 시전 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "아무 마나 [Flask|플라스크]나 효과를 받는 동안 시전 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -17081,6 +17949,30 @@
     "t": "{0}초마다 차율라의 의지 [Trigger|발동]",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "arctic_armour_armour_granted_+%_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 단계 하나당 [Armour|방어도] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 단계 하나당 [Armour|방어도] {0}% 감소",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -17365,6 +18257,20 @@
  },
  {
   "stats": [
+   "base_power_charge_skip_consume_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "스킬이 {0}% 확률로 권능 [Charges|충전]을 제거하지 않고도 소모한 것으로 간주",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "bear_skills_additional_base_attack_time_when_performing_from_default_stance"
   ],
   "rows": [
@@ -17387,6 +18293,20 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "berserk_maximum_rage_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Rage|격노] 최대치 {0:+d}",
+    "h": []
    }
   ]
  },
@@ -17478,6 +18398,47 @@
      "#|-1"
     ],
     "t": "처치한 적에게 걸린 피 종기 하나당\\n[CorruptedBlood|타락한 피] 유발 효과 범위 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "bone_offering_damage_taken_+%_final_after_shield_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "보호된 [Minion|소환수]가 보호막을 상실한 후 1초 동안 받는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "보호된 [Minion|소환수]가 보호막을 상실한 후 1초 동안 받는 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "보호된 [Minion|소환수]가 보호막을 상실한 후 1초 동안 받는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "보호된 [Minion|소환수]가 보호막을 상실한 후 1초 동안 받는 피해 {0}% 감폭",
     "h": [
      "negate",
      "1"
@@ -17676,6 +18637,57 @@
  },
  {
   "stats": [
+   "cast_on_crit_global_critical_hit_chance_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Critical|치명타 명중] 확률 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 [Critical|치명타 명중] 확률 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_dodge_roll_distance_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Buff|버프] 시 회피 구르기 거리 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|버프] 시 회피 구르기 거리 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
   ],
   "rows": [
@@ -17836,6 +18848,27 @@
  },
  {
   "stats": [
+   "chance_%_to_spawn_another_infusion_remnant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}%의 확률로 [ElementalInfusion|주입] [Remnant|잔류물] 1개 추가 생성",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[ElementalInfusion|주입] [Remnant|잔류물] 1개 추가 생성",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17844,6 +18877,28 @@
      "#"
     ],
     "t": "스킬이 {0}% 확률로 [ElementalInfusion|원소 주입]을 제거하지 않고도 소모한 것으로 간주",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_not_consume_parried_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[ParriedDebuff|흘려보내기]를 소모하지 않을 확률@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% 확률로 [ParriedDebuff|흘려보내기 디버프]를 소모하지 않음",
     "h": []
    }
   ]
@@ -17920,6 +18975,30 @@
  },
  {
   "stats": [
+   "charge_regulation_damage_per_charge_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Charges|충전] 하나당 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 [Charges|충전] 하나당 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "consecrated_ground_effect_+%"
   ],
   "rows": [
@@ -17985,6 +19064,34 @@
      "1|#"
     ],
     "t": "가능한 경우 [Heat|열기]를 {0} 소모하여\\n[Ignite|점화] [BuffMagnitude|강도] {2}% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "contagion_number_of_additional_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "시전 시 전염이 적 {0}명을 추가 대상으로 지정",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "시전 시 전염이 적 {0}명을 추가 대상으로 지정",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "시전 시 전염이 적 {0}명을 추가 대상으로 지정",
     "h": []
    }
   ]
@@ -18215,6 +19322,28 @@
  },
  {
   "stats": [
+   "disengage_%_chance_for_additional_shockwave"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "추가 충격파 확률@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% 확률로 추가 충격파",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "display_max_ailment_bearer_charges"
   ],
   "rows": [
@@ -18225,6 +19354,40 @@
     ],
     "t": "족쇄 풀린 광분 필요@{0}",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "earthshatter_damage_+%_final_per_spike"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "가시 하나당 [Hit|명중] 피해 {0%} 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "가시 하나당 [Hit|명중] 피해 {0%} 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "가시 하나당 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -18497,6 +19660,27 @@
  },
  {
   "stats": [
+   "final_strike_number_of_spirit_strikes"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[FinalStrike|최후 타격]이 주변 적 {0}명을 추가 대상으로 삼음",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[FinalStrike|최후 타격]이 주변 적 {0}명을 추가 대상으로 삼음",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18588,6 +19772,30 @@
  },
  {
   "stats": [
+   "fortifying_cry_guard_gained_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "획득하는 [Guard|가호] {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "획득하는 [Guard|가호] {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "frozen_monsters_take_increased_damage"
   ],
   "rows": [
@@ -18618,6 +19826,114 @@
     ],
     "t": "[Hit|명중] 시 [Rage|격노] {0} 획득",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_ancestral_cry_global_fire_damage_granted_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Fire|화염] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Fire|화염] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_earthquake_damaging_ailment_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "유발하는 [DamagingAilments|피해를 주는 상태 이상]의 [BuffMagnitude|강도] {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "유발하는 [DamagingAilments|피해를 주는 상태 이상]의 [BuffMagnitude|강도] {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_flameblast_damaging_ailment_effect_per_stage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "단계 하나당 [DamagingAilments|피해를 주는 상태 이상]의 [BuffMagnitude|강도] {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "단계 하나당 [DamagingAilments|피해를 주는 상태 이상]의 [BuffMagnitude|강도] {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_marked_enemy_damage_dealt_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Mark|징표]가 찍힌 적이 주는 피해 감폭@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Mark|징표]가 찍힌 적이 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Mark|징표]가 찍힌 적이 주는 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
+    ]
    }
   ]
  },
@@ -18779,6 +20095,143 @@
  },
  {
   "stats": [
+   "herald_of_ash_fire_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Fire|화염] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 [Fire|화염] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_blood_global_physical_damage_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Physical|물리] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 [Physical|물리] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_ice_cold_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Cold|냉기] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 [Cold|냉기] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_thunder_lightning_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Lightning|번개] 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 [Lightning|번개] 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hexblast_damage_+%_final_per_second_remaining_curse_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "제거된 [Curse|저주]의 남은 지속시간 1초당 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "제거된 [Curse|저주]의 남은 지속시간 1초당 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "제거된 [Curse|저주]의 남은 지속시간 1초당 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "제거된 [Curse|저주]의 남은 지속시간 1초당 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_enemy_chaos_damage_taken_+%"
   ],
   "rows": [
@@ -18930,6 +20383,35 @@
  },
  {
   "stats": [
+   "inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Hit|명중] 시 [Exposure|노출] 유발 확률@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "[Hit|명중] 시 {0}% 확률로 [Exposure|노출] 유발",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[Hit|명중] 시 [Exposure|노출] 유발",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "infusion_remnants_%_chance_to_spawn_cold_infusion_on_freezing_an_enemy"
   ],
   "rows": [
@@ -19059,6 +20541,58 @@
      "#|-1"
     ],
     "t": "적에게 유발된 [Shock|감전] 효과 5%당 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "첫 충격 시 {0%} 확률로 추가 격발",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "magma_barrier_maximum_block_chance_granted_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|버프] 시 [Block|막기] 확률 최대치 {0:+d}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_remnants_global_mana_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 마나 재생 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 마나 재생 속도 {0}% 감소",
     "h": [
      "negate",
      "1"
@@ -19265,6 +20799,48 @@
     "t": "[Minion|소환수]가 1초마다 생명력의 {0}% 재생",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_rage_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Minion|소환수]의 [Rage|격노] 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "[Rage|격노] 효과 감소@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|소환수]의 [Rage|격노] 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|소환수]의 [Rage|격노] 효과 {0}% 감소",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -19602,6 +21178,54 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "화살이 낙하하는 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "화살이 낙하하는 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "소환한 좀비의 강화 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "소환한 좀비의 강화 효과 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "rhoa_movement_speed_penalty_+%_final_while_performing_action"
   ],
   "rows": [
@@ -19632,6 +21256,110 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_minion_life_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|소환수]의 최대 생명력 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|소환수]의 최대 생명력 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_max_stages"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "최대 {0}단계",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_damage_+%_final_per_stage",
+   "quality_display_sandstorm_swipe_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "단계 하나당 붕괴 피해 증폭@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "붕괴가 단계 하나당 주는 피해 {0:+d}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "붕괴가 단계 하나당 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "폭발이 단계 하나당 주는 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "단계 하나당 반경@+{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "단계 하나당 반경 {0:+d}",
+    "h": []
    }
   ]
  },
@@ -19735,6 +21463,43 @@
     "t": "플레이어가 [Critical|치명타 명중]으로 유발하는 [Shock|감전]의 [BuffMagnitude|강도] {0}% 감소",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skeletal_cleric_revived_skeletons_immune_for_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "되살아난 해골이 되살아난 후 {0}초 동안 피해에 면역",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "되살아난 해골이 되살아난 후 {0}초 동안 피해에 면역",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "되살아난 해골이 되살아난 후 {0}초 동안 피해에 면역",
+    "h": [
+     "milliseconds_to_seconds_1dp",
      "1"
     ]
    }
@@ -19990,6 +21755,28 @@
  },
  {
   "stats": [
+   "base_spell_%_chance_to_echo"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Cascadable|메아리] 확률@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Cascadable|메아리] 확률 {0}%",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_minimum_base_fire_damage_as_%_of_intelligence",
    "spell_maximum_base_fire_damage_as_%_of_intelligence"
   ],
@@ -20047,6 +21834,30 @@
     ],
     "t": "[Spell|주문] 스킬이 {0}%의 확률로 [Projectile|투사체] 2개 추가 발사",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellflux_frequency_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "상 빈도 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "상 빈도 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -20227,6 +22038,93 @@
  },
  {
   "stats": [
+   "tempest_bell_damage_+%_final_per_time_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "받은 [Hit|명중] 피해 1당 종이 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "받은 [Hit|명중] 피해 1당 종이 주는 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "종이 받은 [Hit|명중] 피해 1당 충격파가 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "종이 받은 [Hit|명중] 피해 1당 충격파가 주는 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thunderous_leap_%_chance_for_shocked_ground_when_detonating"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Detonator|기폭] 시 [ShockedGround|감전 지대] 확률@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "창 [Detonator|기폭] 시 {0}% 확률로 [ShockedGround|감전 지대]를 남김",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "time_of_need_global_life_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 생명력 재생 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|버프] 시 생명력 재생 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "tornado_base_damage_interval_ms"
   ],
   "rows": [
@@ -20292,6 +22190,20 @@
  },
  {
   "stats": [
+   "trinity_%_physical_damage_to_convert_to_random_element_granted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Physical|물리] 피해의 {0}%가 무작위 [ElementalDamage|원소]로 [Conversion|전환]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "use_time_+_ms_if_shapeshift_required"
   ],
   "rows": [
@@ -20350,6 +22262,38 @@
     "t": "폭발 반경 단계 하나당 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "verisium_infusion_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[VerisiumInfusion|베리시움 주입] 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[VerisiumInfusion|베리시움 주입] 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[VerisiumInfusion|베리시움 주입] 지속시간 {0}% 감소",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -20798,6 +22742,71 @@
  },
  {
   "stats": [
+   "whirling_slash_knockback_distance_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "단계 하나당 [Knockback|밀어내기] 거리 증폭@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "단계 하나당 [Knockback|밀어내기] 거리 {0}% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_blast_damage_+%_final_from_distance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "거리에 따른 피해 보너스 증폭 최대치@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "거리에 따른 피해 페널티 감폭 최대치@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "플레이어로부터 1.5미터 내에 있는 적들에게 주는 피해 {0}% 증폭, 보너스는 점차 감소하여 4미터 이상이 되면 없어짐",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "플레이어로부터 1.5미터 내에 있는 적들에게 주는 피해 {0}% 감폭, 보너스는 점차 감소하여 4미터 이상이 되면 없어짐",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "wolf_lunar_blessing_same_target_trigger_beam_attack_prevention_duration_ms"
   ],
   "rows": [
@@ -20924,6 +22933,30 @@
  },
  {
   "stats": [
+   "supplementary_stat_container_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Attack|공격] 속도 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Attack|공격] 속도 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final"
   ],
   "rows": [
@@ -21035,6 +23068,27 @@
  },
  {
   "stats": [
+   "number_of_wolves_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "소환된 늑대 {0}마리로 [Limit|제한]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "소환된 늑대 {0}마리로 [Limit|제한]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_raging_spirits_allowed"
   ],
   "rows": [
@@ -21057,6 +23111,20 @@
      "#"
     ],
     "t": "골렘 최대치 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Physical|물리] 피해의 {0}%를 [Cold|냉기] 피해로 [Gain|획득]",
     "h": []
    }
   ]
@@ -21122,6 +23190,54 @@
      "#|-1"
     ],
     "t": "시전 속도 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_critical_strike_chance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Critical|치명타 명중] 확률 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Critical|치명타 명중] 확률 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_quality_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "스킬 효과 지속시간 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "스킬 효과 지속시간 {0}% 감폭",
     "h": [
      "negate",
      "1"
@@ -21760,6 +23876,44 @@
      "#"
     ],
     "t": "장착된 서로 다른 스킬 하나당 혼백 그릇이 주는 피해 {0}% 증폭",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_area_of_effect_+%_final_per_1_unit_of_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "명중이 유발했을 [Knockback|밀어내기]\\n0.1미터당 효과 범위 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "명중이 유발했을 [Knockback|밀어내기]\\n0.1미터당 효과 범위 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_physical_damage_%_as_elemental_per_ailment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Physical|물리] 피해의 {0}%를 종의 [ElementalAilments|원소 상태 이상]과 일치하는 각 유형의 [Gain|추가] 피해로 획득",
     "h": []
    }
   ]
@@ -59817,6 +61971,30 @@
  },
  {
   "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는 충격파의 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는 충격파의 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "bow_attacks_have_culling_strike"
   ],
   "rows": [
@@ -69303,6 +71481,30 @@
     "t": "적이 최근 5초 이내 [Concentration|집중]을 상실하지 않은 경우 1초마다 [Concentration|집중]의 {0}%를 다시 획득함",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는 폭발의  [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는 폭발의  [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -91087,6 +93289,20 @@
  },
  {
   "stats": [
+   "maximum_caltrops_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "허용된 마름쇠 최대치 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_chance_to_evade_is_50%"
   ],
   "rows": [
@@ -92656,6 +94872,30 @@
     ],
     "t": "[Minion|소환수]가 받은 피해의 {0}%를 생명력으로 [Recoup|회생]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "소환수가 받는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "소환수가 받는 피해 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -97155,6 +99395,27 @@
  },
  {
   "stats": [
+   "rapid_assault_attached_spear_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "각 대상에게 꽂히는 창날 {0}개로 [Limit|제한]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "각 대상에게 꽂히는 창날 {0}개로 [Limit|제한]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "real_weapon_attack_added_physical_damage_%_of_weapon_item_accuracy"
   ],
   "rows": [
@@ -99067,6 +101328,60 @@
     "t": "[Rarity|고유] 적에게서 비롯되는 원소파의  [Hit|명중] 피해 {0}% 감폭",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는 폭발의  [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는 폭발의  [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_pulse_delay_ms",
+   "solaris_spear_number_of_pulses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "지면의 창이 {0}초마다 파동, 최대 {1}회 파동",
+    "h": [
+     "milliseconds_to_seconds",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "지면의 창이 {0}초마다 파동, 최대 {1}회 파동",
+    "h": [
+     "milliseconds_to_seconds",
      "1"
     ]
    }
@@ -107493,6 +109808,57 @@
  },
  {
   "stats": [
+   "poison_concoction_poison_burst_physical_damage_equal_to_%_of_strongest_active_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "적이 [Consume|소모]된 [Poison|중독]의 예상되는 남은 피해와 동일한 생명력 상실",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "적이 [Consume|소모]된 [Poison|중독]의 예상되는 남은 피해의 {0}%와 동일한 생명력 상실",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
+   "poisonous_concoction_area_of_effect_+%_final_per_active_poison_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "적에게 영향을 주는 [Poison|중독] 하나당 효과 범위 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "적에게 영향을 주는 [Poison|중독] 하나당 효과 범위 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
    "recovery_from_flasks_applies_to_allies_in_presence_%"
   ],
   "rows": [
@@ -107787,6 +110153,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "발걸음 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "발걸음 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#",
      "table_only"
     ],
@@ -107839,6 +110235,54 @@
      "#"
     ],
     "t": "[Physical|물리 피해]의 {0}%를 [Fire|화염] 피해로 [Conversion|전환]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#",
+     "#"
+    ],
+    "t": "용암 [Projectile|투사체] {0}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "#"
+    ],
+    "t": "용암 [Projectile|투사체] {0}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#",
+     "#"
+    ],
+    "t": "용암 [Projectile|투사체] {0}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "#"
+    ],
+    "t": "용암 [Projectile|투사체] {0}개 발사",
     "h": []
    }
   ],
@@ -108171,6 +110615,46 @@
  },
  {
   "stats": [
+   "unleash_the_elements_trigger_frequency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "[Trigger|발동] 빈도 {0}% 감소",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[Trigger|발동] 빈도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Trigger|발동] 빈도 {0}% 감소",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Trigger|발동] 빈도 {0}% 증가",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108285,6 +110769,36 @@
  },
  {
   "stats": [
+   "unleash_meteor_time_till_impact_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "유성이 {0}초 후 바닥에 떨어짐",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "유성이 {0}초 후 바닥에 떨어짐",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108305,6 +110819,60 @@
     "t": "충격 번개 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_number_of_pluses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "최후 타격 전에 파동 {0}회",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "최후 타격 전에 파동 {0}회",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_time_till_final_strike_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "{0}초 후 최후 타격",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초 후 최후 타격",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -108511,6 +111079,31 @@
      "#"
     ],
     "t": "[Buff|버프] 시 [Allies|동료]의 [Attack|공격]에 {0}~{1}의 추가 [Cold|냉기] 피해 부여",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Arctic Howl"
+  ]
+ },
+ {
+  "stats": [
+   "wolf_warcry_buff_freeze_buildup_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Buff|버프]의 [Freeze|동결] 축적 증가량@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|버프] 시 [Allies|동료]에게 [Freeze|동결] 축적 {0}% 증가 부여",
     "h": []
    }
   ],
@@ -108942,6 +111535,186 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[ElementalInfusion|화염 주입] 폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ElementalInfusion|화염 주입] 폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "ball_lightning_infused_burning_ground_interval_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "{0}초마다 [IgnitedGround|점화 지대] 생성",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초마다 [IgnitedGround|점화 지대] 생성",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[ElementalInfusion|화염 주입] 폭발이 {0}~{1}의 [Fire|화염] 피해를 줌",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|점화 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|점화 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Fire|화염] 피해를 {0}~{1} 준 것처럼 [Ignite|점화]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
    "barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits"
   ],
   "rows": [
@@ -109247,6 +112020,174 @@
  },
  {
   "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}~{1} [Cold|냉기] 피해",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Cold|냉기] 피해를 {0}~{1} 준 것처럼 적들 [Chill|냉각]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}미터 반경 내에 있는 적 [Chill|냉각]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "1초마다 {0}의 [Cold|냉기] 피해를 줌",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "룬 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "룬 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "룬 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "룬 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -109382,6 +112323,122 @@
   ],
   "skill": [
    "Blood Boil"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "적이 [Consume|소모]한 [BloodLoss|혈액상실]의 +{0}%와 동일한 생명력 상실",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[BloodLoss|혈액상실]로 인한 생명력 상실@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "적이 [Consume|소모]한 [BloodLoss|혈액상실]의 {0}%와 동일한 생명력 상실",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%",
+   "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "[Consume|소모]한 [BloodLoss|혈액상실] {1}당 효과 범위 증폭@{0}% (최대 500%)",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Consume|소모]한 [BloodLoss|혈액상실] {1}당 효과 범위 {0}% 증폭, 최대 500% 증폭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
   ]
  },
  {
@@ -109767,6 +112824,63 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n충격파의 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n충격파의 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_allowed_bone_storm_projectiles"
   ],
   "rows": [
@@ -109784,6 +112898,112 @@
     ],
     "t": "[Projectile|투사체] 최대 {0}개 발사",
     "h": []
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+%_final_per_additional_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 범위 증폭@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 효과 범위 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 효과 범위 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charges|권능 충전] 소모 시 보너스 반경@+{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Charges|권능 충전]을 소모한 경우\\n폭발 반경 +{0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charges|권능 충전]을 소모한 경우\\n폭발 반경 +{0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110247,6 +113467,36 @@
     "c": [
      "10"
     ],
+    "t": "파장 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "파장 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Charged Staff"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "폭발 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110260,6 +113510,52 @@
     "t": "폭발 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Cluster Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "skill_detonation_time_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[DetonationTime|기폭 시간] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "[DetonationTime|기폭 시간] {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[DetonationTime|기폭 시간] {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[DetonationTime|기폭 시간] {0}% 감소",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -110345,6 +113641,36 @@
   ],
   "skill": [
    "Comet"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Concussive Runes"
   ]
  },
  {
@@ -110555,6 +113881,63 @@
     ],
     "t": "룬 {0}개 생성",
     "h": []
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_electrocutes_as_though_dealt_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Electrocute|전기 처형] 축적 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Electrocute|전기 처형] 축적 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "룬 폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "룬 폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110937,6 +114320,92 @@
  },
  {
   "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "{1}초당 최대 볼트@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|비무장] [Melee|근접] 공격으로 [Hit|명중] 시 번개 줄기 생성, {1}초에 {0}번씩만 생성",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|비무장] [Melee|근접] 공격으로 [Hit|명중] 시 번개 줄기 생성, {1}초에 {0}번씩만 생성",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|비무장] [Melee|근접] 공격으로 [Hit|명중] 시 번개 줄기 생성, {1}초에 {0}번씩만 생성",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "볼트 충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "볼트 충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -110988,6 +114457,47 @@
   ],
   "skill": [
    "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "신기루 지속시간 {0:+d}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "신기루 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "신기루 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Mirage Deadeye"
   ]
  },
  {
@@ -111073,6 +114583,40 @@
   ],
   "skill": [
    "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "처치한 대상의 [Power|위세] 1당 효과 범위 {0}% 증폭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_damage_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "처치한 대상의 [Power|위세] 1당 피해 {0}% 증폭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
   ]
  },
  {
@@ -111478,6 +115022,58 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Detonate Living"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
@@ -111508,6 +115104,33 @@
  },
  {
   "stats": [
+   "base_skill_buff_energy_shield_recharge_rate_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Aura|오라]가 [ESRechargeRate|에너지 보호막 재충전 속도]를 {0}% 증가시킴",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Aura|오라]가 [ESRechargeRate|에너지 보호막 재충전 속도]를 {0}% 감소시킴",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Discipline"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_buff_total_maximum_energy_shield_+_to_apply"
   ],
   "rows": [
@@ -111521,6 +115144,36 @@
   ],
   "skill": [
    "Discipline"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Disengage"
   ]
  },
  {
@@ -111545,6 +115198,36 @@
   ],
   "skill": [
    "Disengage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Impending Doom"
   ]
  },
  {
@@ -111803,6 +115486,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "여진 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "여진 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthquake"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#"
     ],
     "t": "균열의 경로를 따라, 그리고 솟아나는 가시의\\n{0}미터 반경 내에 피해를 줌",
@@ -111891,6 +115604,61 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthshatter"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_%_damage_gained_as_extra_lightning_on_debuffed_target"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "고정된 대상에게 추가 [Lightning|번개 피해]로 획득하는 피해@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "막대가 부착된 대상 [Hit|명중] 시 피해의 {0}%를 추가 [Lightning|번개 피해]로 획득",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -111936,6 +115704,41 @@
     "t": "화살 지속시간 {0}초",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "부착된 대상이 받는 피해 증가@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "피뢰침이 부착된 대상이 받는 피해 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "피뢰침이 부착된 대상이 받는 피해 {0}% 감소",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -112003,6 +115806,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_be_trigger_elemental_expression_%"
   ],
   "rows": [
@@ -112034,6 +115867,84 @@
      "100|#"
     ],
     "t": "[Melee|근접] [Critical|치명타 명중] 시 맹렬한 폭발, 지직거리는 번개, 얼어붙은 파동 [Trigger|발동]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Projectile|투사체] {0}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|투사체] {0}개 발사",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "{0}회 [Chain|연쇄]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}회 [Chain|연쇄]",
     "h": []
    }
   ],
@@ -112182,6 +116093,198 @@
     ],
     "t": "[ElementalAilments|상태 이상] 최대 {0} [Consume|소모]",
     "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "elemental_sundering_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n파동의 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n파동의 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -112905,6 +117008,162 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "덩굴이 끊어지기 전까지 {0}미터 길이로 뻗을 수 있음",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_base_movement_speed_+%_final_per_applied_stack"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "덩굴 하나당 [Slow|감속]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "부착된 덩굴 하나당 적 {0}% [Slow|감속]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vine_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "최대 덩굴 부착 시간@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "덩굴 부착이 최대 {0}초 유지됨",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "덩굴 부착이 최대 {0}초 유지됨",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_maximum_number_of_vines_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "부착되는 최대 덩굴 수@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "적마다 덩굴 {0}개 부착 가능",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "적마다 덩굴 최대 {0}개 부착 가능",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_additional_number_of_vines_allowed_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Plant|과성장]한 상태일 때 추가 덩굴 최대치@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Plant|과성장]한 균열이 추가 덩굴 최대 {0}개 부착 가능",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Plant|과성장]한 균열이 추가 덩굴 최대 {0}개 부착 가능",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "충격 반경 {0}미터",
@@ -112926,6 +117185,61 @@
   ],
   "skill": [
    "Escape Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "[Debuff|디버프] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "[Debuff|디버프] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "[Debuff|디버프] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "[Debuff|디버프] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Essence Drain"
   ]
  },
  {
@@ -113074,6 +117388,23 @@
  },
  {
   "stats": [
+   "explosive_concoction_number_of_secondary_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ignite|점화]된 적 최대 {0}마리에게 추가 [Projectile|투사체] 발사",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Explosive Concoction"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -113124,6 +117455,460 @@
   ],
   "skill": [
    "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "꽂힌 창 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "꽂힌 창 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "폭발 길이 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "폭발 길이 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 폭 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 폭 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|점화 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|점화 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "폭발 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
   ]
  },
  {
@@ -113301,6 +118086,142 @@
   ],
   "skill": [
    "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_when_charged"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Charges|권능 충전]을 소모한 경우 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Charges|권능 충전]을 소모한 경우 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Charges|권능 충전]을 소모한 경우 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_base_number_of_projectiles_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 발사하는 [Projectile|투사체]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 [Projectile|투사체] {0}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "소모한 [Charges|권능 충전] 하나당 [Projectile|투사체] {0}개 발사",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 및 [ChilledGround|얼음 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 및 [ChilledGround|얼음 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fangs of Frost"
   ]
  },
  {
@@ -113798,6 +118719,192 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "{0}초마다 충돌 1회",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "화살 {1}개",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "화살 {1}개",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "{0}초마다 충돌 1회",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "화살 {1}개",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "화살 {1}개",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
    "base_fire_damage_to_deal_per_minute"
   ],
   "rows": [
@@ -113980,6 +119087,60 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "균열 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "균열 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "forge_hammer_base_maximum_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "균열 {0}개로 [Limit|제한]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "균열 {0}개로 [Limit|제한]",
+    "h": []
    }
   ],
   "skill": [
@@ -114205,6 +119366,80 @@
     "c": [
      "10"
     ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n폭발의 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n폭발의 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|명중]한 적의 [Freeze|동결]을 [Consume|소모]하여\\n해당 적의 위치에 2번째 폭발 발동\\n2번째 폭발은 [Freeze|동결] [Consume|소모] 불가",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "분출 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -114379,6 +119614,56 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragments Of The Past"
+  ]
+ },
+ {
+  "stats": [
    "freezing_mark_hit_damage_freeze_multiplier_+%_final",
    "quality_display_freezing_mark_is_gem"
   ],
@@ -114535,6 +119820,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frostbolt"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_all_elemental_exposure_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude_cap"
@@ -114678,6 +119993,155 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "1회 추가로 갈라짐",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0}회 추가로 갈라짐",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "1회 추가로 갈라짐",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}회 추가로 갈라짐",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "frost_darts_explode_creates_X_mortars"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "생성되는 얼음덩어리@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "폭발할 때마다 얼음덩어리 1개 생성",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "폭발할 때마다 얼음덩어리 {0}개 생성",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "화살침이 각각 얼음덩어리 {0}개 생성",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -114802,6 +120266,36 @@
      "1|#"
     ],
     "t": "벽 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Wall"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
      "1"
@@ -115017,6 +120511,36 @@
    }
   ],
   "skill": [
+   "Frozen Locus"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Fulminating Concoction"
   ]
  },
@@ -115098,6 +120622,36 @@
     "t": "충격파 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Furious Slam"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[JaggedGround|요철 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[JaggedGround|요철 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -115353,6 +120907,30 @@
  },
  {
   "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "광선이 적 {0}명에게 [Chain|연쇄]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "광선이 적 {0}명에게 [Chain|연쇄]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Galvanic Shards"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -115404,6 +120982,238 @@
   ],
   "skill": [
    "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "구름 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "구름 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "구름 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "구름 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "구름 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "구름 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터\\n[ShockedGround|감전 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터\\n[ShockedGround|감전 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "{1}초당 얼음 격발 최대치@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "0",
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "격발 재사용 대기시간 -{1}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|비무장] [Melee|근접] 피해 [Hit|명중] 시 얼음 격발 생성, {1}초에 {0}번씩만 생성",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|비무장] [Melee|근접] 피해 [Hit|명중] 시 얼음 격발 생성, {1}초에 {0}번씩만 생성",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "얼음 격발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "얼음 격발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
   ]
  },
  {
@@ -115471,6 +121281,101 @@
   ],
   "skill": [
    "Ghost Dance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "{0}초간 벽 지속",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초간 벽 지속",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "frost_wall_maximum_life",
+   "frozen_locus_crystal_display_stat"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "[IceCrystals|얼음 결정]의 최대 생명력 {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "[IceCrystals|얼음 결정]의 최대 생명력 {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "[IceCrystals|얼음 결정]의 최대 생명력 {0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
   ]
  },
  {
@@ -115664,6 +121569,61 @@
     "t": "조각 지속시간 {0}초",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "폭발 길이 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "폭발 길이 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "폭발 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "폭발 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
      "1"
     ]
    }
@@ -116020,6 +121980,36 @@
     "c": [
      "10"
     ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Grim Pillars"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "충격 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116181,6 +122171,80 @@
   ],
   "skill": [
    "Hammer of the Gods"
+  ]
+ },
+ {
+  "stats": [
+   "base_curse_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Curse|저주] 지속시간 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Curse|저주] 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "장착된 [Curse|저주]의 지속시간 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
+  ]
+ },
+ {
+  "stats": [
+   "mark_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "장착된 [Mark|징표]의 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "장착된 [Mark|징표]의 효과 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "장착된 [Mark|징표]의 효과 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
   ]
  },
  {
@@ -116667,6 +122731,55 @@
     "c": [
      "10"
     ],
+    "t": "볼트 충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "볼트 충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "볼트 [Physical|물리] 피해의 {0}%를 [Lightning|번개] 피해로 [Conversion|전환]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "폭발 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116753,6 +122866,58 @@
     "h": [
      "canonical_line"
     ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "갈라진 방어구가 {0}초 동안, 또는 [ArmourBreak|완전히 파괴된 방어구]가 제거될 때까지 지속",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Rarity|고유] 적에게 주는 피해 증폭@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게 주는 피해 {0}% 감폭",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게 주는 피해 {0}% 증폭",
+    "h": []
    }
   ],
   "skill": [
@@ -117303,6 +123468,233 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 및 [ChilledGround|얼음 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 및 [ChilledGround|얼음 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ChilledGround|얼음 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ChilledGround|얼음 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_arming_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "무장까지 남은 시간@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "{0}초 후 파편 무장",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초 후 파편 무장",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_damage_+%_final_after_1_second",
+   "quality_display_permafrost_shard_damage_+%_final_after_1_second_is_gem",
+   "permafrost_shard_bonus_damage_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "무장 {2}초 후 피해 증폭@{0}%",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#",
+     "#"
+    ],
+    "t": "무장 {2}초 후 파편이 주는 피해 {0}% 증폭",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "#|-1",
+     "#",
+     "#"
+    ],
+    "t": "무장 {2}초 후 파편이 주는 피해 {0}% 감폭",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3",
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0",
+     "#",
+     "gem_quality"
+    ],
+    "t": "무장 후 파편이 주는 피해 {0:+d}% 증폭",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "최대 파편@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "활성화되는 파편 최대 {0}개",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "활성화되는 파편 최대 {0}개",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -117722,6 +124114,36 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Exposure|화염 노출] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Exposure|화염 노출] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
    "incinerate_fuel_gain_per_mana_spent"
   ],
   "rows": [
@@ -117816,6 +124238,55 @@
      "#"
     ],
     "t": "0.075초마다 [Fire|화염] 피해를 {0}~{1} 준 것처럼 [Ignite|점화]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|점화 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|점화 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Fire|화염] 피해를 {0}~{1} 준 것처럼 [Ignite|점화]",
     "h": []
    }
   ],
@@ -118759,6 +125230,46 @@
  },
  {
   "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99",
+     "table_only"
+    ],
+    "t": "충돌 시 추가 격발 확률@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#",
+     "table_only"
+    ],
+    "t": "충돌 시 추가 격발",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}% 확률로 충돌 시 추가 격발 유발",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "충돌 시 추가 격발 츄발",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Rod"
+  ]
+ },
+ {
+  "stats": [
    "number_of_lightning_rods_allowed"
   ],
   "rows": [
@@ -118807,6 +125318,69 @@
      "2|#"
     ],
     "t": "[Charges|격분 충전] 소모 시 대상 {0}개를 향해 분할",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}미터 반경 내의 대상에게 번개 줄기 발사",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "0"
+    ],
+    "t": "볼트 {0:+d}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "볼트 {0:+d}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "볼트 {0}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "볼트 {0}개 발사",
     "h": []
    }
   ],
@@ -119220,6 +125794,36 @@
     ],
     "t": "미사일 최대 {0}개 발사",
     "h": []
+   }
+  ],
+  "skill": [
+   "Magnetic Salvo"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -119706,6 +126310,30 @@
  },
  {
   "stats": [
+   "midnight_star_max_ice_crystals"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[IceCrystals|얼음 결정] {0}개로 [Limit|제한]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[IceCrystals|얼음 결정] {0}개로 [Limit|제한]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Midnight Zenith"
+  ]
+ },
+ {
+  "stats": [
    "base_cooldown_modifiable_repeat_interval_ms"
   ],
   "rows": [
@@ -119934,6 +126562,85 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "균열 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "균열 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "균열 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "균열 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
+   "molten_crash_max_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "균열 {0}개로 [Limit|제한]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "균열 {0}개로 [Limit|제한]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120141,6 +126848,66 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Sunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Soaring Midnight"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120225,6 +126992,153 @@
     "c": [
      "10"
     ],
+    "t": "[OilGround|기름 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|기름 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[OilGround|기름 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|기름 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Oil|기름] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Oil|기름] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "electric_spit_empowered_channel_consume_power_charge_per_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "1초마다 [Charges|권능 충전]을 소모하여\\n[Channelling|집중 유지] 지속",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초마다 [Charges|권능 충전]을 소모하여\\n[Channelling|집중 유지] 지속",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "[Hit|피해] 및 [Oil|기름] 뿌리기 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -120266,6 +127180,66 @@
      "#"
     ],
     "t": "[Oil|기름] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[OilGround|기름 지대] {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|기름 지대] {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[OilGround|기름 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|기름 지대] 지속시간 {0}초",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
      "1"
@@ -120763,6 +127737,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Phantasmal Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -120919,6 +127923,66 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Plasma Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear Throw"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_gain_1_more_charge_%"
   ],
   "rows": [
@@ -120947,6 +128011,66 @@
   ],
   "skill": [
    "Power Siphon"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충전 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충전 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충전 폭 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충전 폭 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
   ]
  },
  {
@@ -121327,6 +128451,52 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "화살이 낙하하는 속도@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "화살이 낙하하는 속도@{0:+d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "화살이 낙하하는 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "화살이 낙하하는 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rain of Arrows"
+  ]
+ },
+ {
+  "stats": [
    "rain_of_arrows_delay_per_arrow"
   ],
   "rows": [
@@ -121556,6 +128726,141 @@
   ],
   "skill": [
    "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "좀비 [Empowered|강화] 효과@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "좀비 [Empowered|강화] 효과@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "소환한 좀비의 [Empowered|강화] 효과 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "소환한 좀비의 [Empowered|강화] 효과 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "창날 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "창날 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "rapid_assault_%_chance_to_attach_additional_spear"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "추가 창날 확률@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}% 확률로 대상에게 추가 창날을 남김",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "대상에게 추가 창날을 남김",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
   ]
  },
  {
@@ -122424,6 +129729,86 @@
     "c": [
      "10"
     ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_life_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "2초에 걸쳐 회복되는 생명력@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "2초에 걸쳐 최대 생명력의 {0}% 회복",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_mana_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "2초에 걸쳐 회복되는 마나@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "2초에 걸쳐 최대 마나의 {0}% 회복",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "볼트 충격 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -122574,6 +129959,36 @@
  {
   "stats": [
    "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rolling Slam"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
    {
@@ -123049,6 +130464,100 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "광분 1당 [Buff|버프] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "광분 1당 [Buff|버프] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Buff|버프] 시 부여되는 피해 증폭@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[Buff|버프] 시 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|버프] 시 [Onslaught|맹공] 부여 및 피해 {0}% 증폭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_life_lost_%_per_minute_nonlethal"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Buff|버프] 시 초당 생명력 상실@{0}%",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|버프] 시 1초마다 생명력 최대치의 {0}% 상실",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -123339,6 +130848,41 @@
     "t": "함성 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Seismic Cry"
+  ]
+ },
+ {
+  "stats": [
+   "seismic_cry_slam_skill_aftershock_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Empowered|강화]된 [Attack|공격]의 [Aftershock|여진] 피해 증폭@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Empowered|강화]된 [Attack|공격]의 [Aftershock|여진]이 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Empowered|강화]된 [Attack|공격]의 [Aftershock|여진]이 주는 피해 {0}% 감폭",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -123870,6 +131414,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "파동 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "파동 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shockburst Rounds"
+  ]
+ },
+ {
+  "stats": [
    "shockchain_arrow_X_additional_chains_on_first_hitting_shocked_or_electrocuted_enemy"
   ],
   "rows": [
@@ -123972,6 +131546,36 @@
     ],
     "t": "활성화되는 화살 최대 {0}개",
     "h": []
+   }
+  ],
+  "skill": [
+   "Shockchain Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -124361,6 +131965,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siphoning Strike"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_ward_spent_as_glory"
   ],
   "rows": [
@@ -124573,6 +132207,153 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n폭발의 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n폭발의 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124703,6 +132484,55 @@
      "2|#"
     ],
     "t": "태양의 보주 {0}개로 [Limit|제한]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Ignite|점화] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ignite|점화] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Fire|화염] 피해를 {0}~{1} 준 것처럼 [Ignite|점화]",
     "h": []
    }
   ],
@@ -124922,6 +132752,122 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "0",
+     "#"
+    ],
+    "t": "원형으로 [Projectile|투사체] {0}개 발사",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Projectile|투사체] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|투사체] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_spell_cast_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "시전 시간 {0:+d}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "spark_min_time_between_target_clearing_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "대상 재-[Hit|명중] 간격@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "동시에 발사된 투사체가 동일한 대상에게\\n1초마다 최대 1번 [Hit|명중] 가능",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "동시에 발사된 투사체가 동일한 대상에게\\n{0}초마다 최대 1번 [Hit|명중] 가능",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -124942,6 +132888,93 @@
     "t": "충격 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "파동 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "파동 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|점화 지대] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_ground_expands_to_+%_final_by_skill_end"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "지면의 창 수명에 따라 반경 획득, 창의 수명 종료 시 반경 최대 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "지면의 창 수명에 따라 반경 상실, 창의 수명 종료 시 반경 최대 {0}% 감폭",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -125019,6 +133052,36 @@
     ],
     "t": "활성화되는 창 최대 {0}개",
     "h": []
+   }
+  ],
+  "skill": [
+   "Spearfield"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -125255,6 +133318,56 @@
    }
   ],
   "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "강타 및 폭발한 각 [JaggedGround|요철 지대]의 반경 {0}미터 내에 있는 [JaggedGround|요철 지대] 폭발",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Starborn Onslaught"
   ]
  },
@@ -125352,6 +133465,342 @@
   ],
   "skill": [
    "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}미터 반경 내의 적에게 볼트 발사",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ShockedGround|감전 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ShockedGround|감전 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "꽂힌 창 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "꽂힌 창 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "낙뢰 간격@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "1초마다 낙뢰 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초마다 낙뢰 발사",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}미터 반경 내의 적에게 볼트 발사",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_overcharged_spears_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "꽂힌 창 {0}개로 [Limit|제한]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "꽂힌 창 {0}개로 [Limit|제한]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "꽂힌 창 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "꽂힌 창 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "낙뢰가 적 {0}마리에게 [Chain|연쇄]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "낙뢰가 적 {0}마리에게 [Chain|연쇄]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "낙뢰 간격@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "1초마다 낙뢰 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초마다 낙뢰 발사",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}미터 반경 내의 적에게 볼트 발사",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_detonate_number_of_beams"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "발사하는 낙뢰 수@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "낙뢰 {0}개 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "낙뢰 {0}개 발사",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
   ]
  },
  {
@@ -125526,6 +133975,86 @@
   ],
   "skill": [
    "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "볼트에 [Hit|명중]당한 대상이 [Shock|감전]되면, {0}미터 반경 내의 모든 적 [Shock|감전]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
   ]
  },
  {
@@ -125706,6 +134235,35 @@
   ],
   "skill": [
    "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_area_of_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "큰까마귀 떼의 스킬의 효과 범위 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "큰까마귀 떼의 스킬의 효과 범위 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spiraling Conspiracy"
   ]
  },
  {
@@ -125895,6 +134453,114 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "여진 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "여진 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "aftershock_radius_+_per_previous_aftershock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "연달아 여진이 일어날 때마다 반경@{0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "연달아 여진이 일어날 때마다 반경 {0:+d}미터 획득, 최대 3미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "연달아 여진이 일어날 때마다 반경 {0:+d}미터 획득, 최대 3미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "channelled_slam_damage_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "단계마다 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "단계마다 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "단계마다 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -126051,6 +134717,93 @@
     ],
     "t": "[Strike|타격]한 것처럼 [AncestralBoost|선대의 힘으로 증폭] 가능",
     "h": []
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "bell_shockwave_cooldown_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "충격파가 1초마다 1번씩 발동 가능",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파가 {0}초마다 1번씩 발동 가능",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -126446,6 +135199,36 @@
     "t": "충격 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ChilledGround|얼음 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ChilledGround|얼음 지대] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127349,6 +136132,202 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "회오리가 회오리 안으로 발사된 [Projectile|투사체]를 {0}개 복사하여 방출",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_tornado_shots_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "회오리 [Limit|제한] +{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "회오리 {0}개로 [Limit|제한]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "회오리 {0}개로 [Limit|제한]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "회오리 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "회오리 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_number_of_hits_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "회오리가 1번 [Hit|명중]당한 후 사라짐",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "회오리가 {0}번 [Hit|명중]당한 후 사라짐",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_damage_+%_final",
+   "quality_display_tornado_shot_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "복사된 [Projectile|투사체] 피해 페널티@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "복사된 [Projectile|투사체]가 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "복사된 [Projectile|투사체]가 주는 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "복사된 [Projectile|투사체]가 주는 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "복사된 [Projectile|투사체]가 주는 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_range"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "복사된 [Projectile|투사체]의 최대 이동 거리 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "복사된 [Projectile|투사체]의 최대 이동 거리 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -127470,6 +136449,33 @@
     ],
     "t": "각각의 적에게 최대 1개의 농포가 부착될 수 있음",
     "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_domain_buff_linger_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "맹독성 꽃의 효과가 플레이어에게 1초 동안 지속",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "맹독성 꽃의 효과가 플레이어에게 {0}초 동안 지속",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -127600,6 +136606,199 @@
   "rows": [
    {
     "c": [
+     "10",
+     "table_only"
+    ],
+    "t": "농포 [DetonationTime|기폭] 반경@{0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "농포 [DetonationTime|기폭] 반경@{0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "농포 [DetonationTime|기폭] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "농포 [DetonationTime|기폭] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_detonation_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "table_only"
+    ],
+    "t": "농포 [DetonationTime|기폭 시간]@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "농포 [DetonationTime|기폭 시간]@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "농포가 {0}초 후 [DetonationTime|기폭]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "농포가 {0}초 후 [DetonationTime|기폭]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "농포가 자신에게 유발되는 [Poison|중독]의 예상되는 피해 저장",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_1%_more_damage_per_x_stored_poison",
+   "toxic_pustule_max_burst_damage_+%_final_from_stored_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "[Poison|중독]의 폭발 피해 최대 증폭@{1}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "저장된 [Poison|중독]이 폭발 피해 최대 {1}% 증폭 효과 부여",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_base_radius_+1_per_x_stored_poison",
+   "toxic_pustule_max_additional_burst_base_radius_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "10"
+    ],
+    "t": "저장된 [Poison|중독]이 기본 폭발 반경에 최대 {1}미터 추가",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "저장된 [Poison|중독]이 기본 폭발 반경에 최대 {1}미터 추가",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "저장된 [Poison|중독]이 기본 폭발 반경에 최대 {1}미터 추가",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "충격 반경 {0}미터",
@@ -127615,6 +136814,96 @@
     "t": "충격 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "퓨즈 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "퓨즈 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "구름 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "구름 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "구름 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "구름 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127713,6 +137002,53 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "농포가 자신에게 유발되는 [Poison|중독]의 예상되는 피해 저장",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -127726,6 +137062,53 @@
   ],
   "skill": [
    "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
+  ]
+ },
+ {
+  "stats": [
+   "triggered_by_chaos_frog_explosion_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "이 스킬은 마녀두꺼비가 적에게 도약하면 [Trigger|발동]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
   ]
  },
  {
@@ -127972,6 +137355,30 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "His Winnowing Flame"
+  ]
+ },
+ {
+  "stats": [
+   "unique_flame_pillar_fire_damage_equal_to_%_of_remaining_ignite_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "소름 끼치는 장작이 [Consume|소모]한 [Ignite|점화]의 예상되는 남은 피해의 최고치와 동일한 피해를 줌",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "소름 끼치는 장작이 [Consume|소모]한 [Ignite|점화]의 예상되는 남은 피해의 최고치의 {0}%와 동일한 피해를 줌",
+    "h": []
    }
   ],
   "skill": [
@@ -128270,6 +137677,31 @@
  },
  {
   "stats": [
+   "twister_%_chance_for_additional_twister"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "추가 돌개바람 확률@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% 확률로 추가 돌개바람",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Twister"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -128385,6 +137817,41 @@
  },
  {
   "stats": [
+   "minion_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[Minion|소환수]의 이동 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|소환수]의 이동 속도 {0}% 증가",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|소환수]의 이동 속도 {0}% 감소",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Unearth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -128471,6 +137938,48 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "exploit_debuff_attack_damage_to_convert_to_magnitude_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Daze|혼미]한 적에게 [Hit|명중] 시 [BrokenStance|무너진 태세] 적용",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "broken_stance_hit_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "영향을 받은 적이 {0:+d}회 [Hit|명중]된 후 [BrokenStance|무너진 태세]가 제거됨",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "영향을 받은 적이 {0}회 [Hit|명중]된 후 [BrokenStance|무너진 태세]가 제거됨",
+    "h": []
    }
   ],
   "skill": [
@@ -128578,6 +138087,145 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "덩굴이 {0}미터 반경 내의 적에게 부착됨",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "덩굴이 적의 이동 속도 {0}% [Slow|감속]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "식물 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "식물 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "poison_vine_arrow_vine_stored_poison_damage_+%_final",
+   "display_statset_hide_usage_stats"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "식물 [Poison|중독] 시 식물이 1초마다 [Poison|중독] 피해의 {0}%와 동일한 추가 [Chaos|카오스] 피해를 줌",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "식물 [Poison|중독] 시 식물이 1초마다 [Poison|중독] 피해의 {0}%와 동일한 추가 [Chaos|카오스] 피해를 줌",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "식물 [Poison|중독] 시 식물이 1초마다 [Poison|중독] 피해의 {0}%와 동일한 추가 [Chaos|카오스] 피해를 줌",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "vine_arrow_area_of_effect_+%_final_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Plant|과성장] 범위 증폭@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|과성장] 시 효과 범위 {0}% 증폭",
+    "h": []
    }
   ],
   "skill": [
@@ -128920,6 +138568,75 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "폭발 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Fire|화염] 피해를 {0}~{1} 준 것처럼 [Ignite|점화]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}미터 반경 내에 있는 적 [Ignite|점화]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -129145,6 +138862,154 @@
     "c": [
      "10"
     ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_fires_projectiles_every_x_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "투사체 간격@{0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "1초마다 또는 [Slam|강타] 시 [Projectile|투사체] 발사",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}초마다 또는 [Slam|강타] 시 [Projectile|투사체] 발사",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_initial_explosion_number_of_additional_projectiles_per_additional_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "추가 단계 하나당 최초 [Projectile|투사체] 추가@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "추가 단계 하나당 최초 분출이\\n추가 [Projectile|투사체] {0}개 발사",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_slam_unscalable_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "화산의 [Slam|강타] 최대치@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "화산이 [Slam|강타] {0}회 후 파괴됨",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "화산이 [Slam|강타] {0}회 후 파괴됨",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "벽 길이 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -129258,6 +139123,54 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Voltaic Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "voltaic_barrier_trigger_maximum_number_of_extra_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "table_only"
+    ],
+    "t": "대상에 근접한 적 최대 {0}마리에게 추가로 광선 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "대상에 근접한 적 최대 {0}마리에게 추가로 광선 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "대상에 근접한 적 최대 {0}마리에게 추가로 광선 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "대상에 근접한 적 최대 {0}마리에게 추가로 광선 발사",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "대상에 근접한 적 최대 {0}마리에게 추가로 광선 발사",
+    "h": []
    }
   ],
   "skill": [
@@ -130141,6 +140054,241 @@
     "c": [
      "10"
     ],
+    "t": "[Whirlwind|소용돌이] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|소용돌이] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "추가 단계 하나당 반경@{0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "추가 단계 하나당 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "원소 [Whirlwind|와류]가 피해의 {0}%를 해당하는 [ElementalDamage|유형]의 피해로 [Gain|획득]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "붕괴가 [Melee|근접] 피해",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Whirlwind|소용돌이] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|소용돌이] 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Whirlwind|와류] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|와류] 지속시간 {0}초",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "추가 단계 하나당 반경@{0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "추가 단계 하나당 반경 {0:+d}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_base_maximum_number_of_storms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Whirlwind|와류] {0}개로 제한",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Whirlwind|와류] {0}개로 제한",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "원소 [Whirlwind|와류]가 피해의 +{0}%를 해당하는 [ElementalDamage|유형]의 피해로 [Gain|획득]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "원소 [Whirlwind|와류]가 피해의 {0}%를 해당하는 [ElementalDamage|유형]의 피해로 [Gain|획득]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "부채꼴 길이 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130361,6 +140509,96 @@
     "c": [
      "10"
     ],
+    "t": "독사 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "독사 길이 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "독사 폭 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "독사 폭 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "돌풍 길이 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130401,6 +140639,63 @@
     ],
     "t": "[HeavyStun|강력 기절] 시 [Charges|권능 충전] 부여 [SurpassChance|초과] 확률 {0}%,\\n[Power|몬스터의 위세]에 따라 조정됨",
     "h": []
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "wing_blast_shockwave_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n충격파의 [Hit|명중] 피해 {0}% 증폭",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|고유] 적에게서 비롯되는\\n충격파의 [Hit|명중] 피해 {0}% 감폭",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -130582,6 +140877,34 @@
  },
  {
   "stats": [
+   "skill_wolf_mark_damage_taken_+%_per_nearby_enemy",
+   "skill_wolf_mark_damage_taken_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "6미터(최대) 내에 있는 적 하나당 받는 피해 증가@{0}% (1%)",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "[Mark|징표]가 찍힌 대상으로부터 6미터 내에 있는 대상의 적 하나당 대상이 받는 피해 {0}% 증가, 최대 {1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130712,6 +141035,70 @@
  },
  {
   "stats": [
+   "wolf_lunar_blessing_beam_attack_extra_beams_to_trigger",
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "달의 광선 추가 대상 수@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "10"
+    ],
+    "t": "[Hit|명중]한 대상과 {1}미터 내 다른 대상 최대 {0}마리에게 달의 광선을 불러내림",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "[Hit|명중]한 대상과 {1}미터 내 다른 대상 최대 {0}마리에게 달의 광선을 불러내림",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "10"
+    ],
+    "t": "[Hit|명중]한 대상과 {1}미터 내 다른 대상 최대 {0}마리에게 달의 광선을 불러내림",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "[Hit|명중]한 대상과 {1}미터 내 다른 대상 최대 {0}마리에게 달의 광선을 불러내림",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130749,6 +141136,36 @@
     "c": [
      "10"
     ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "충격파 반경 {0}미터",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "충격 반경 {0}미터",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130764,6 +141181,31 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Devour"
+  ]
+ },
+ {
+  "stats": [
+   "wyvern_devour_flask_charm_charge_gain_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Flask|플라스크] 및 [Charm|호신부] 충전 획득 확률@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Corpse|시신] 소모 시 {0}% 확률로 적을 처치한 것처럼 [Flask|플라스크] 및 [Charm|호신부] 충전 획득",
+    "h": []
    }
   ],
   "skill": [

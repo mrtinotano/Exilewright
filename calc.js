@@ -122,7 +122,7 @@ const BUFF_GRANTS = { 'herald_of_ash_fire_damage_+%': 'fire_damage_+%', 'herald_
   'herald_of_blood_global_physical_damage_granted_+%': 'physical_damage_+%', 'mana_remnants_global_mana_regeneration_rate_granted_+%': 'mana_regeneration_rate_+%',
   'time_of_need_global_life_regeneration_rate_granted_+%': 'life_regeneration_rate_+%', 'magma_barrier_maximum_block_chance_granted_%': 'additional_maximum_block_%',
   'cast_on_crit_global_critical_hit_chance_granted_+%': 'critical_strike_chance_+%', 'cast_on_dodge_dodge_roll_distance_granted_+': 'dodge_roll_base_travel_distance',
-  'sacrifice_minion_life_granted_+%': 'minion_maximum_life_+%', ...Object.fromEntries(['alchemists_boon_attack_speed_granted_+%_during_life_flask', 'alchemists_boon_cast_speed_granted_+%_during_mana_flask', 'charge_regulation_damage_per_charge_granted_+%'].map(k => [k, k])) };
+  'sacrifice_minion_life_granted_+%': 'minion_maximum_life_+%', ...Object.fromEntries(['alchemists_boon_attack_speed_granted_+%_during_life_flask', 'alchemists_boon_cast_speed_granted_+%_during_mana_flask', 'charge_regulation_damage_per_charge_granted_+%', 'base_ward_cost_efficiency_+%'].map(k => [k, k])) };
 export function auraStats(b, sum) {
   const out = {}, k = 1 + v(sum, 'aura_effect_+%') / 100;
   for (const g of b.gems || []) if (GEM[g.name]?.types?.includes('Persistent')) { const aura = GEM[g.name].types.includes('Aura');
@@ -1795,7 +1795,7 @@ export function skill(g, b, treeGear) {
   const djinn = x => { const id = SK.minions[x?.name]?.[0]; return /Djinn$/.test(id || '') && enemy(id) || null; };   // by its monster (not Supporting Fire's artillery, the other undamageable Commanded minion)
   const host = !djinn(g) && GEM[g.name]?.types?.includes('CommandsMinions') && (b.gems || []).find(x => djinn(x)?.skills?.some(k => monSkill(k)?.name === g.name)) || null;
   const DJ = djinn(host || g), ckey = DJ && (host ? DJ.skills.find(k => monSkill(k)?.name === g.name) : DJ.skills[0]);
-  const mid = host ? DJ.id : spectreOf(g.spectre)?.id || SK.minions[g.name]?.[0] || (d.types?.includes('CreatesMinion') ? ENEMIES.find(m => m.en === d.name && m.id.endsWith('PlayerSummoned'))?.id : null);
+  const mid = host ? DJ.id : spectreOf(g.spectre)?.id || SK.minions[g.name]?.[0] || (G.types?.includes('CreatesMinion') ? ENEMIES.find(m => (m.en === g.name || m.en + 's' === g.name) && /PlayerSummoned_?$/.test(m.id))?.id : null);   // by its monster's name (Verisium Manifestations: one Verisium Manifestation each)
   // a Companion also takes the build's "Companions have..." stats, as their "Minions have..." twin (damage, life, attack
   // speed, area, resistances). note: their movement speed is not counted (minions move at their monster's speed here)
   const msum = mid && GEM[g.name]?.types?.includes('Companion') ? companion(sum) : sum;

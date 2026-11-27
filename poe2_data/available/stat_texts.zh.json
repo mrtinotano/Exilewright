@@ -872,6 +872,75 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "來自被輔助技能的投射物分裂額外1次",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "來自被輔助技能的投射物分裂額外{0}次",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "來自被輔助的技能會額外分裂一次",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "來自被輔助的技能會額外分裂{0}次",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "projectiles_return",
+   "projectile_return_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "0",
+     "1|99"
+    ],
+    "t": "投射物有{1}%機率返回你",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "100|#"
+    ],
+    "t": "投射物返回你",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "投射物返回你",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_chain_hit_damage_+%_final"
   ],
   "rows": [
@@ -1198,6 +1267,23 @@
      "1|#"
     ],
     "t": "每秒造成{0}[Physical|物理]傷害",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每秒造成{0}[Cold|冰冷]傷害",
     "h": [
      "per_minute_to_per_second",
      "1"
@@ -2172,6 +2258,52 @@
  },
  {
   "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|獲得]等同於{0}%[Physical|物理]傷害的[Fire|火焰]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_fire_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "造成{0}%更多火焰傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "造成{0}%更多火焰傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "造成{0}%更少火焰傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_life_spent_as_glory"
   ],
   "rows": [
@@ -2181,6 +2313,53 @@
     ],
     "t": "被輔助的技能獲得等同{0}%\\n其他技能生命消耗的[Glory|榮耀]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0}%更多召喚物攻擊速度",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0}%更多[Projectile|投射物]速度",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多[Projectile|投射物]速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少[Projectile|投射物]速度",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -8833,6 +9012,30 @@
  },
  {
   "stats": [
+   "trinity_skill_speed_+%_while_all_resonance_is_at_least_250_to_grant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "當總[Affinity|親和]超過250時，增加{0}%[SkillSpeed|技能速度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "當總[Affinity|親和]超過250時，減少{0}%[SkillSpeed|技能速度]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_unusable_until_moved_X_distance"
   ],
   "rows": [
@@ -15004,6 +15207,38 @@
  },
  {
   "stats": [
+   "triggered_skill_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "被輔助的觸發法型術增加{0}%傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "被輔助的觸發法型術減少{0}%傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "被輔助的觸發技能造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy",
    "consume_shock_of_X_enemies_to_trigger_shocking_rift"
   ],
@@ -15441,6 +15676,23 @@
  },
  {
   "stats": [
+   "skill_main_hand_total_attack_fire_damage_permyriad_to_add_as_unscalable_damage_to_oil_ground_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "被[Ignite|點燃]時，[OilGround|油滑地面]會為[Ignite|點燃]附加等同於此攻擊{0}%[Fire|火焰][Hit|傷害]的無法變動[Hit|傷害]",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15532,6 +15784,30 @@
      "#|-1"
     ],
     "t": "[LowLife|貧血狀態]時減少{0}%施法速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多範圍效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少範圍效果",
     "h": [
      "negate",
      "1"
@@ -15673,6 +15949,30 @@
     "t": "[Withered|凋零]持續{0}秒",
     "h": [
      "milliseconds_to_seconds",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_life_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "召喚物有{0}%更多最大生命",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "召喚物有{0}%更少最大生命",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -16300,6 +16600,30 @@
  },
  {
   "stats": [
+   "accuracy_range_penalty_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "根據距離增加{0}%[Accuracy|命中]懲罰",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "根據距離減少{0}%[Accuracy|命中]懲罰",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_attack_speed_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16315,6 +16639,90 @@
      "#|-1"
     ],
     "t": "[DualWield|雙持]時，兩把武器有\\n{0}%更少攻擊速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_chaos"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "獲得{0}%傷害的額外混沌傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|獲得]等同於{0}%傷害的[Cold|冰冷]傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "獲得{0}%傷害的額外火焰傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "獲得{0}%傷害的額外閃電傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "敵人移動速度[Slow|減緩]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "敵人的移動速度[Slow|減緩]{0}%",
     "h": [
      "negate",
      "1"
@@ -16363,6 +16771,78 @@
      "#|-1"
     ],
     "t": "[Chill|冰緩]敵人如同造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_non_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Consume|消耗][Rarity|非傳奇]敵人身上的[Freeze|冰凍]以造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Consume|消耗][Rarity|非傳奇]敵人身上的[Freeze|冰凍]以造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Consume|消耗][Rarity|傳奇]敵人身上的[Freeze|冰凍]以造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Consume|消耗][Rarity|傳奇]敵人身上的[Freeze|冰凍]以造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_against_heavy_stunned_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%對[HeavyStun|遭沉重暈眩]的敵人的傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%對[HeavyStun|遭沉重暈眩]的敵人的傷害",
     "h": [
      "negate",
      "1"
@@ -16463,6 +16943,159 @@
      "#|-1"
     ],
     "t": "[DualWield|雙持]時，兩把武器有\\n{0}%更少擊中傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_per_time_chained"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "每次[Chain|連鎖]後更多傷害@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "每次[Chain|連鎖]後更少傷害@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每當此技能[Chain|連鎖]時，造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每當此技能[Chain|連鎖]時，造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_burning_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "對[Burning|燃燒]的敵人造成更多[Hit|擊中]傷害@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "對[Burning|燃燒]的敵人造成更少[Hit|擊中]傷害@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[Burning|燃燒]的敵人造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[Burning|燃燒]的敵人造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "對[Chill|受冰緩]的敵人造成更多[Hit|擊中]傷害@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "對[Chill|受冰緩]的敵人造成更少[Hit|擊中]傷害@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[Chill|受冰緩]的敵人造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[Chill|受冰緩]的敵人造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[ArmourBreak|完全破甲]敵人造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[ArmourBreak|完全破甲]敵人造成{0}%更少[Hit|擊中]傷害",
     "h": [
      "negate",
      "1"
@@ -16701,6 +17334,103 @@
  },
  {
   "stats": [
+   "active_skill_ignite_proliferation_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "此技能造成的[Ignite|點燃][AilmentSpread|散播]至\\n周遭{0}公尺的敵人，持續1秒",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "此技能造成的[Ignite|點燃][AilmentSpread|散播]至\\n周遭{0}公尺的敵人，持續1秒",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_knockback_distance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "更多[Knockback|擊退]距離@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多[Knockback|擊退]距離",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_lightning_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Lightning|閃電]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Lightning|閃電]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_hit_damage_stun_multiplier_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "召喚物造成{0}%更多[Stun|暈眩]累積",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "召喚物造成{0}%更少[Stun|暈眩]累積",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_pins_as_though_dealt_damage_+%_final",
    "quality_display_active_skill_pins_as_though_dealt_damage_+%_final_is_gem"
   ],
@@ -16736,6 +17466,54 @@
      "#"
     ],
     "t": "[Pinned|釘身]敵人時，視同造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_for_each_remaining_chain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Projectile|投射物]根據每剩餘的[Chain|連鎖]，造成{0}%更多擊中傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Projectile|投射物]根據每剩餘的[Chain|連鎖]，造成{0}%更少擊中傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_if_pierced_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Pierce|穿透]一名敵人之後，有{0}%更多[Projectile|投射物]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Pierce|穿透]一名敵人之後，有{0}%更少[Projectile|投射物]傷害",
     "h": [
      "negate",
      "1"
@@ -16796,6 +17574,30 @@
  },
  {
   "stats": [
+   "active_skill_shock_as_though_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Shock|感電]敵人如同造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Shock|感電]敵人如同造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_shock_chance_+%_final"
   ],
   "rows": [
@@ -16812,6 +17614,30 @@
     ],
     "t": "{0}%更少[Shock|感電]機率",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_shock_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多[Shock|感電]持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少[Shock|感電]持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -16917,6 +17743,54 @@
     ],
     "t": "拾取[ElementalInfusion|元素灌注]時，會獲得額外一個同類型的[ElementalInfusion|元素灌注]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_attack_speed_granted_+%_during_life_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "任意生命[Flask|藥劑]作用期間內增加{0}%[Attack|攻擊]速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "任意生命[Flask|藥劑]作用期間內減少{0}%[Attack|攻擊]速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_cast_speed_granted_+%_during_mana_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "任意魔力[Flask|藥劑]作用期間內增加{0}%施法速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "任意魔力[Flask|藥劑]作用期間內減少{0}%施法速度",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -17076,6 +17950,30 @@
     "t": "每{0}秒[Trigger|觸發]夏烏拉之志",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "arctic_armour_armour_granted_+%_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每層[Buff|增益]增加{0}%[Armour|護甲]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每層[Buff|增益]減少{0}%[Armour|護甲]",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -17355,6 +18253,20 @@
  },
  {
   "stats": [
+   "base_power_charge_skip_consume_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "技能有{0}%的機率不會移除暴擊[Charges|能量球]，但依然會視為將其消耗",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "bear_skills_additional_base_attack_time_when_performing_from_default_stance"
   ],
   "rows": [
@@ -17377,6 +18289,20 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "berserk_maximum_rage_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]賦予{0:+d}最大[Rage|盛怒]",
+    "h": []
    }
   ]
  },
@@ -17469,6 +18395,49 @@
      "#|-1"
     ],
     "t": "被擊殺的敵人每有一層鮮血沸騰，\\n即擁有{0}%更少[CorruptedBlood|腐化之血]施加範圍效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "bone_offering_damage_taken_+%_final_after_shield_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "有護盾的[Minion|召喚物]在失去護盾後的1秒內承受更多傷害@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "有護盾的[Minion|召喚物]在失去護盾後的1秒內承受更少傷害@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "有護盾的[Minion|召喚物]在失去護盾後的1秒內承受{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "有護盾的[Minion|召喚物]在失去護盾後的1秒內承受{0}%更少傷害",
     "h": [
      "negate",
      "1"
@@ -17668,6 +18637,57 @@
  },
  {
   "stats": [
+   "cast_on_crit_global_critical_hit_chance_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]增加{0}%[Critical|暴擊]率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]減少{0}%[Critical|暴擊]率",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_dodge_roll_distance_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Buff|增益]賦予{0:+d}公尺閃避翻滾距離",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|增益]賦予{0:+d}公尺閃避翻滾距離",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
   ],
   "rows": [
@@ -17830,6 +18850,27 @@
  },
  {
   "stats": [
+   "chance_%_to_spawn_another_infusion_remnant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "有{0}%機率生成一個額外[ElementalInfusion|灌注][Remnant|痕跡]",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "生成一個額外[ElementalInfusion|灌注][Remnant|痕跡]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17838,6 +18879,28 @@
      "#"
     ],
     "t": "技能有{0}%機率不會移除[ElementalInfusion|元素灌注]，但仍視為將其消耗",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_not_consume_parried_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "不消耗[ParriedDebuff|受招架]的機率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "有{0}%的機率不消耗[ParriedDebuff|受招架]減益效果",
     "h": []
    }
   ]
@@ -17914,6 +18977,30 @@
  },
  {
   "stats": [
+   "charge_regulation_damage_per_charge_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]賦予每顆[Charges|能量球]增加{0}%傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]賦予每顆[Charges|能量球]減少{0}%傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "consecrated_ground_effect_+%"
   ],
   "rows": [
@@ -17979,6 +19066,35 @@
      "1|#"
     ],
     "t": "如果可能，消耗{0}[Heat|熱能]來\\n獲得{2}%更多[Ignite|點燃][BuffMagnitude|幅度]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "contagion_number_of_additional_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "施放時額外鎖定的敵人數量@{0:d}名",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "施放瘟疫時額外鎖定{0}名敵人",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "施放瘟疫時額外鎖定{0}名敵人",
     "h": []
    }
   ]
@@ -18210,6 +19326,28 @@
  },
  {
   "stats": [
+   "disengage_%_chance_for_additional_shockwave"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "額外震波機率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "有{0}%機率產生一道額外的震波",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "display_max_ailment_bearer_charges"
   ],
   "rows": [
@@ -18220,6 +19358,38 @@
     ],
     "t": "所需無縛之怒@{0}",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "earthshatter_damage_+%_final_per_spike"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "每個棘刺有更多傷害@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每個棘刺有{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每個棘刺有{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -18488,6 +19658,27 @@
  },
  {
   "stats": [
+   "final_strike_number_of_spirit_strikes"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[FinalStrike|最終打擊]以周遭額外{0}名敵人為目標",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[FinalStrike|最終打擊]以周遭額外{0}名敵人為目標",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18580,6 +19771,30 @@
  },
  {
   "stats": [
+   "fortifying_cry_guard_gained_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多獲得的[Guard|守護]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少獲得的[Guard|守護]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "frozen_monsters_take_increased_damage"
   ],
   "rows": [
@@ -18610,6 +19825,114 @@
     ],
     "t": "[Hit|擊中]時獲得{0}層[Rage|盛怒]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_ancestral_cry_global_fire_damage_granted_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "獲得{0}%更多[Fire|火焰]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "獲得{0}%更少[Fire|火焰]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_earthquake_damaging_ailment_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "施加之[DamagingAilments|傷害型異常狀態]具有{0}%更多[BuffMagnitude|幅度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "施加之[DamagingAilments|傷害型異常狀態]具有{0}%更少[BuffMagnitude|幅度]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_flameblast_damaging_ailment_effect_per_stage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每階段擁有{0}%更多[DamagingAilments|傷害型異常狀態][BuffMagnitude|幅度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每階段擁有{0}%更少[DamagingAilments|傷害型異常狀態][BuffMagnitude|幅度]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_marked_enemy_damage_dealt_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Mark|標記]敵人更少傷害造成@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Mark|被標記]的敵人造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Mark|被標記]的敵人造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
+    ]
    }
   ]
  },
@@ -18771,6 +20094,145 @@
  },
  {
   "stats": [
+   "herald_of_ash_fire_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]增加{0}%[Fire|火焰]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]減少{0}%[Fire|火焰]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_blood_global_physical_damage_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]增加{0}%[Physical|物理]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]減少{0}%[Physical|物理]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_ice_cold_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]增加{0}%[Cold|冰冷]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]減少{0}%[Cold|冰冷]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_thunder_lightning_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]增加{0}%[Lightning|閃電]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]減少{0}%[Lightning|閃電]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hexblast_damage_+%_final_per_second_remaining_curse_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "被移除的[Curse|詛咒]每剩餘1秒持續時間，增加{0}%傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "被移除的[Curse|詛咒]每剩餘1秒持續時間，減少{0}%傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "被移除的[Curse|詛咒]每剩餘1秒持續時間，增加{0}%傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "被移除的[Curse|詛咒]每剩餘1秒持續時間，減少{0}%傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_enemy_chaos_damage_taken_+%"
   ],
   "rows": [
@@ -18922,6 +20384,35 @@
  },
  {
   "stats": [
+   "inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Hit|擊中]時有{0}%機率造成[Exposure|曝曬]",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "[Hit|擊中]時有{0}%機率造成[Exposure|曝曬]",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[Hit|擊中]時造成[Exposure|曝曬]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "infusion_remnants_%_chance_to_spawn_cold_infusion_on_freezing_an_enemy"
   ],
   "rows": [
@@ -19049,6 +20540,58 @@
      "#|-1"
     ],
     "t": "敵人身上每5%[Shock|感電]效果，即擁有{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "首次衝擊有{0}%機率額外爆發1次",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "magma_barrier_maximum_block_chance_granted_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|增益]賦予{0:+d}%[Block|格擋]機率",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_remnants_global_mana_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]增加{0}%魔力回復率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]減少{0}%魔力回復率",
     "h": [
      "negate",
      "1"
@@ -19255,6 +20798,49 @@
     "t": "[Minion|召喚物]每秒回復{0}%最大生命",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_rage_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Rage|盛怒]效果增加@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "[Rage|盛怒]效果減少@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|召喚物]的[Rage|盛怒]效果增加{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|召喚物]的[Rage|盛怒]效果減少{0}%",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -19595,6 +21181,54 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "箭矢掉落加快{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "箭矢掉落減緩{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "殭屍增加{0}%強化效果",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "殭屍減少{0}%強化效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "rhoa_movement_speed_penalty_+%_final_while_performing_action"
   ],
   "rows": [
@@ -19625,6 +21259,110 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_minion_life_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Minion|召喚物]最大生命",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Minion|召喚物]最大生命",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_max_stages"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "疊層上限{0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_damage_+%_final_per_stage",
+   "quality_display_sandstorm_swipe_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "每額外一層更多崩塌傷害@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "每額外一層使崩塌造成{0:+d}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "每額外一層使崩塌造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "每額外一層使崩塌造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "每額外一層範圍@+{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每額外一層{:+d}範圍",
+    "h": []
    }
   ]
  },
@@ -19728,6 +21466,44 @@
     "t": "減少{0}%你以[Critical|暴擊]施加之[Shock|感電]的[BuffMagnitude|幅度]",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skeletal_cleric_revived_skeletons_immune_for_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "骷髏在被復甦後的{0}秒內免疫傷害",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "骷髏在被復甦後的{0}秒內免疫傷害",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "骷髏在被復甦後的{0}秒內免疫傷害",
+    "h": [
+     "milliseconds_to_seconds_1dp",
      "1"
     ]
    }
@@ -19983,6 +21759,28 @@
  },
  {
   "stats": [
+   "base_spell_%_chance_to_echo"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Cascadable|迴響]機率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "有{0}%機率[Cascadable|迴響]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_minimum_base_fire_damage_as_%_of_intelligence",
    "spell_maximum_base_fire_damage_as_%_of_intelligence"
   ],
@@ -20040,6 +21838,30 @@
     ],
     "t": "[Spell|法術]技能有{0}%機率發射額外2個[Projectile|投射物]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellflux_frequency_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多幻象頻率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少幻象頻率",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -20220,6 +22042,95 @@
  },
  {
   "stats": [
+   "tempest_bell_damage_+%_final_per_time_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "每承受一次[Hit|擊中]，鐘就會造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "每承受一次[Hit|擊中]，鐘就會造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "鐘每承受一次[Hit|擊中]，震波就會造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "鐘每承受一次[Hit|擊中]，震波就會造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thunderous_leap_%_chance_for_shocked_ground_when_detonating"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Detonator|引爆]時的[ShockedGround|感電地面]機率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Detonator|引爆]長矛時有{0}%的機率留下[ShockedGround|感電地面]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "time_of_need_global_life_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益]增加{0}%生命回復率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|增益]減少{0}%生命回復率",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "tornado_base_damage_interval_ms"
   ],
   "rows": [
@@ -20285,6 +22196,20 @@
  },
  {
   "stats": [
+   "trinity_%_physical_damage_to_convert_to_random_element_granted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%[Physical|物理]傷害[Conversion|轉化]為一種隨機[ElementalDamage|元素]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "use_time_+_ms_if_shapeshift_required"
   ],
   "rows": [
@@ -20344,6 +22269,38 @@
     "t": "每階段爆炸範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "verisium_infusion_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "增加{0}%[VerisiumInfusion|維里西姆灌注]持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[VerisiumInfusion|維里西姆灌注]持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[VerisiumInfusion|維里西姆灌注]持續時間",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -20792,6 +22749,71 @@
  },
  {
   "stats": [
+   "whirling_slash_knockback_distance_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "每層更多[Knockback|擊退]距離@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每層{0}%更多[Knockback|擊退]距離",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_blast_damage_+%_final_from_distance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "遠距離下的最大更多傷害加成@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "遠距離下的最大更少傷害懲罰@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對距離你1.5公尺內的敵人造成{0}%更多傷害並隨距離減少，達4公尺以上時無加成",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對距離你1.5公尺內的敵人造成{0}%更少傷害並隨距離減少，達4公尺以上時無加成",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "wolf_lunar_blessing_same_target_trigger_beam_attack_prevention_duration_ms"
   ],
   "rows": [
@@ -20918,6 +22940,30 @@
  },
  {
   "stats": [
+   "supplementary_stat_container_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多[Attack|攻擊]速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少[Attack|攻擊]速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final"
   ],
   "rows": [
@@ -21029,6 +23075,27 @@
  },
  {
   "stats": [
+   "number_of_wolves_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "召喚惡狼[Limit|上限]為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "召喚惡狼[Limit|上限]為{0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_raging_spirits_allowed"
   ],
   "rows": [
@@ -21051,6 +23118,20 @@
      "#"
     ],
     "t": "{0:+d}魔像最大上限",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|獲得]等同於{0}%[Physical|物理]傷害的[Cold|冰冷]傷害",
     "h": []
    }
   ]
@@ -21116,6 +23197,54 @@
      "#|-1"
     ],
     "t": "{0}%更少施法速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_critical_strike_chance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多[Critical|暴擊]率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少[Critical|暴擊]率",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_quality_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多技能效果持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少技能效果持續時間",
     "h": [
      "negate",
      "1"
@@ -21754,6 +23883,44 @@
      "#"
     ],
     "t": "插槽中的每個不同的技能會使魂靈容器造成{0}%更多傷害",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_area_of_effect_+%_final_per_1_unit_of_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "觸發的擊中每有0.1公尺的[Knockback|擊退]效果，\\n即擁有{0}%更多範圍效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "觸發的擊中每有0.1公尺的[Knockback|擊退]效果，\\n即擁有{0}%更少範圍效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_physical_damage_%_as_elemental_per_ailment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "鐘每帶有一種[ElementalAilments|元素異常狀態]，獲得等同於{0}%[Physical|物理]傷害、對應其元素種類的[Gain|額外]傷害。",
     "h": []
    }
   ]
@@ -59811,6 +61978,30 @@
  },
  {
   "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "震波[Hit|擊中][Rarity|傳奇]敵人時，有{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "震波[Hit|擊中][Rarity|傳奇]敵人時，有{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "bow_attacks_have_culling_strike"
   ],
   "rows": [
@@ -69297,6 +71488,30 @@
     "t": "若敵人在過去5秒內沒有失去[Concentration|集中]，便恢復{0}%[Concentration|集中]",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "爆炸[Hit|擊中][Rarity|傳奇]敵人時，有{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "爆炸[Hit|擊中][Rarity|傳奇]敵人時，有{0}%更少傷害",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -91095,6 +93310,20 @@
  },
  {
   "stats": [
+   "maximum_caltrops_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0:+d}可投出的最大蒺藜數量",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_chance_to_evade_is_50%"
   ],
   "rows": [
@@ -92664,6 +94893,30 @@
     ],
     "t": "[Minion|召喚物]將承受傷害的{0}%[Recoup|補償]為生命",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "召喚物增加{0}%承受傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "召喚物減少{0}%承受傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -97163,6 +99416,27 @@
  },
  {
   "stats": [
+   "rapid_assault_attached_spear_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "每個目標的利鋒卡住[Limit|上限]為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每個目標的利鋒卡住[Limit|上限]為{0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "real_weapon_attack_added_physical_damage_%_of_weapon_item_accuracy"
   ],
   "rows": [
@@ -99075,6 +101349,60 @@
     "t": "爆發[Hit|擊中][Rarity|傳奇]敵人時，有{0}%更少傷害",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "爆炸[Hit|擊中][Rarity|傳奇]敵人時，有{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "爆炸[Hit|擊中][Rarity|傳奇]敵人時，有{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_pulse_delay_ms",
+   "solaris_spear_number_of_pulses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "地面長矛每{0}秒釋放一道脈衝，最多{1}次",
+    "h": [
+     "milliseconds_to_seconds",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "地面長矛每{0}秒釋放一道脈衝，最多{1}次",
+    "h": [
+     "milliseconds_to_seconds",
      "1"
     ]
    }
@@ -107517,6 +109845,57 @@
  },
  {
   "stats": [
+   "poison_concoction_poison_burst_physical_damage_equal_to_%_of_strongest_active_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "敵人損失等同於所[Consume|消耗][Poison|中毒]預期剩餘傷害的生命",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "敵人損失等同於所[Consume|消耗][Poison|中毒]預期剩餘傷害{0}%的生命",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
+   "poisonous_concoction_area_of_effect_+%_final_per_active_poison_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每有一層[Poison|中毒]影響敵人，有{0}%更多範圍效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每有一層[Poison|中毒]影響敵人，有{0}%更少範圍效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
    "recovery_from_flasks_applies_to_allies_in_presence_%"
   ],
   "rows": [
@@ -107811,6 +110190,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "足跡範圍為@{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "足跡範圍為@{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#",
      "table_only"
     ],
@@ -107863,6 +110272,56 @@
      "#"
     ],
     "t": "將{0}%的[Physical|物理]傷害[Conversion|轉換]為[Fire|火焰]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#",
+     "0",
+     "gem_quality"
+    ],
+    "t": "射出{0}個熔岩[Projectile|投射物]",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "0",
+     "gem_quality"
+    ],
+    "t": "射出{0}個熔岩[Projectile|投射物]",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#",
+     "#"
+    ],
+    "t": "射出{0}個熔岩[Projectile|投射物]",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "#"
+    ],
+    "t": "射出{0}個熔岩[Projectile|投射物]",
     "h": []
    }
   ],
@@ -108195,6 +110654,46 @@
  },
  {
   "stats": [
+   "unleash_the_elements_trigger_frequency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "減少{0}%[Trigger|觸發]頻率",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "增加{0}%[Trigger|觸發]頻率",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Trigger|觸發]頻率",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Trigger|觸發]頻率",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108309,6 +110808,36 @@
  },
  {
   "stats": [
+   "unleash_meteor_time_till_impact_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "隕石會在{0}秒後落地",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "隕石會在{0}秒後落地",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108329,6 +110858,60 @@
     "t": "崩裂閃電的半徑為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_number_of_pluses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "最終轟擊前會脈動{0}次",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最終轟擊前會脈動{0}次",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_time_till_final_strike_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "最終轟擊會在{0}秒後出現",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最終轟擊會在{0}秒後出現",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -108537,6 +111120,31 @@
      "#"
     ],
     "t": "[Buff|增益效果]使[Allies|友方]附加{0}至{1}[Attack|攻擊][Cold|冰冷]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Arctic Howl"
+  ]
+ },
+ {
+  "stats": [
+   "wolf_warcry_buff_freeze_buildup_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Buff|增益效果]增加[Freeze|凍結]累積@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|增益效果]增加[Allies|友軍]{0}%[Freeze|凍結]累積",
     "h": []
    }
   ],
@@ -108969,6 +111577,186 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[ElementalInfusion|火焰灌注]爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ElementalInfusion|火焰灌注]爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "ball_lightning_infused_burning_ground_interval_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "每{0}秒創造出[IgnitedGround|點燃地面]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每{0}秒創造出[IgnitedGround|點燃地面]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[ElementalInfusion|火焰灌注]爆炸造成{0}至{1}[Fire|火焰]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|點燃地面]的半徑增加{0:+d}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|點燃地面]的半徑增加{0:+d}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|點燃地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|點燃地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|點燃地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|點燃地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|點燃]造成等同於{0}至{1}[Fire|火焰]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
    "barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits"
   ],
   "rows": [
@@ -109274,6 +112062,174 @@
  },
  {
   "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "造成{0}至{1}[Cold|冰冷]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Chill|冰緩]視同對敵人造成{0}至{1}[Cold|冰冷]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Chill|冰緩]半徑{0}公尺內的敵人",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每秒造成{0}[Cold|冰冷]傷害",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "符文半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "符文半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "符文持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "符文持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -109409,6 +112365,122 @@
   ],
   "skill": [
    "Blood Boil"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "爆炸範圍{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "爆炸範圍增加{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[BloodLoss|失血]的生命損失@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[BloodLoss|失血]的生命損失@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "敵人損失等同於{0}%所[Consume|消耗][BloodLoss|失血]的生命",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%",
+   "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "每[Consume|消耗]{1}[BloodLoss|失血]的更多範圍效果@{0}%（上限為500%）",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "每[Consume|消耗]{1}[BloodLoss|失血]，有{0}%更多範圍效果，最多500%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
   ]
  },
  {
@@ -109794,6 +112866,63 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "源自於[Rarity|傳奇]敵人的震波造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "源自於[Rarity|傳奇]敵人的震波造成{0}%更多[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_allowed_bone_storm_projectiles"
   ],
   "rows": [
@@ -109811,6 +112940,112 @@
     ],
     "t": "最多可發射{0}個[Projectile|投射物]",
     "h": []
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+%_final_per_additional_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，更多範圍幅度@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，有{0}%更多範圍效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，有{0}%更少範圍效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "消耗[Charges|暴擊球]的範圍加成@+{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "若消耗一顆[Charges|暴擊球]，\\n爆炸範圍+{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若消耗一顆[Charges|暴擊球]，\\n爆炸範圍+{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110275,6 +113510,36 @@
     "c": [
      "10"
     ],
+    "t": "波動長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "波動長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Charged Staff"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "爆炸範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110288,6 +113553,52 @@
     "t": "爆炸範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Cluster Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "skill_detonation_time_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "增加{0}%[DetonationTime|引爆時間]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "減少{0}%[DetonationTime|引爆時間]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[DetonationTime|引爆時間]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[DetonationTime|引爆時間]",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -110369,6 +113680,36 @@
   ],
   "skill": [
    "Comet"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Concussive Runes"
   ]
  },
  {
@@ -110579,6 +113920,63 @@
     ],
     "t": "創造{0}個符文",
     "h": []
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_electrocutes_as_though_dealt_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%更多[Electrocute|觸電]累積",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%更少[Electrocute|觸電]累積",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "符文爆炸半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "符文爆炸半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110961,6 +114359,93 @@
  },
  {
   "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "每{1}秒最大雷彈數量@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "0",
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "雷彈冷卻時間-{1}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "1|#"
+    ],
+    "t": "當你以[UnarmedDamage|空手][Melee|近戰]傷害[Hit|擊中]時，創造1顆雷彈，每{1}秒不超過{0}次",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "當你以[UnarmedDamage|空手][Melee|近戰]傷害[Hit|擊中]時，創造1顆雷彈，每{1}秒不超過{0}次",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "弩箭衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "弩箭衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -111012,6 +114497,47 @@
   ],
   "skill": [
    "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "幻影之體持續時間{0:+d}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "幻影之體持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "幻影之體持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Mirage Deadeye"
   ]
  },
  {
@@ -111097,6 +114623,40 @@
   ],
   "skill": [
    "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "根據擊殺目標的每一[Power|強度]擁有{0}%更多範圍效果",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_damage_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "根據擊殺目標的每一[Power|強度]擁有{0}%更多傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
   ]
  },
  {
@@ -111497,6 +115057,58 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆炸半徑{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆炸半徑{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Detonate Living"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
@@ -111527,6 +115139,33 @@
  },
  {
   "stats": [
+   "base_skill_buff_energy_shield_recharge_rate_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Aura|光環]會增加{0}%的[ESRechargeRate|能量護盾充能速度]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Aura|光環]會減少{0}%的[ESRechargeRate|能量護盾充能速度]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Discipline"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_buff_total_maximum_energy_shield_+_to_apply"
   ],
   "rows": [
@@ -111540,6 +115179,36 @@
   ],
   "skill": [
    "Discipline"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Disengage"
   ]
  },
  {
@@ -111564,6 +115233,36 @@
   ],
   "skill": [
    "Disengage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Impending Doom"
   ]
  },
  {
@@ -111822,6 +115521,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "餘震範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "餘震範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthquake"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#"
     ],
     "t": "對裂痕路徑以及冒出的尖刺周圍\\n{0}公尺範圍造成傷害",
@@ -111910,6 +115639,61 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthshatter"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_%_damage_gained_as_extra_lightning_on_debuffed_target"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "對被插入的目標獲得的額外[Lightning|閃電傷害]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Hit|擊中]附帶電極棒的目標時獲得等同於傷害{0}%的額外[Lightning|閃電傷害]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -111955,6 +115739,41 @@
     "t": "箭矢持續時間為{0}秒",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "增加傷害承受來自擊中目標@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%被電極棒附著目標承受的傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%被電極棒附著目標承受的傷害",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -112020,6 +115839,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_be_trigger_elemental_expression_%"
   ],
   "rows": [
@@ -112051,6 +115900,84 @@
      "100|#"
     ],
     "t": "[Melee|近戰][Critical|暴擊]時[Trigger|觸發]烈炎爆炸、電能弩箭或冰之波動",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "射出{0}個[Projectile|投射物]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "射出{0}個[Projectile|投射物]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Chain|連鎖]{0}次",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Chain|連鎖]{0}次",
     "h": []
    }
   ],
@@ -112199,6 +116126,198 @@
     ],
     "t": "[Consume|消耗]最多{0}個[ElementalAilments|異常狀態]",
     "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "elemental_sundering_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次脈衝造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次脈衝造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -112921,6 +117040,162 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "藤蔓在斷裂之前可以延伸至{0}公尺的長度",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_base_movement_speed_+%_final_per_applied_stack"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "每條藤蔓的[Slow|緩速]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每條附加的藤蔓[Slow|緩速]敵人{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vine_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "最大藤蔓附著時間@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "藤蔓會保持附著最多{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "藤蔓會保持附著最多{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_maximum_number_of_vines_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "可附加的最大藤蔓數量@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "可以對每個敵人附加{0}條藤蔓",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最多可以對每個敵人附加{0}條藤蔓",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_additional_number_of_vines_allowed_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "當[Plant|過度生長]時額外藤蔓數量@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Plant|過度生長]的根鬚可以額外附加{0}道藤蔓",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Plant|過度生長]的根鬚可以額外附加{0}道藤蔓",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "衝擊範圍為{0}公尺",
@@ -112942,6 +117217,61 @@
   ],
   "skill": [
    "Escape Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "[Debuff|減益效果]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "[Debuff|減益效果]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "[Debuff|減益效果]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "[Debuff|減益效果]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Essence Drain"
   ]
  },
  {
@@ -113090,6 +117420,23 @@
  },
  {
   "stats": [
+   "explosive_concoction_number_of_secondary_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對最多{0}個受[Ignite|點燃]敵人投擲額外的[Projectile|投射物]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Explosive Concoction"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -113140,6 +117487,460 @@
   ],
   "skill": [
    "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "附著長矛的持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "附著長矛的持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆炸長度增加{0:+d}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆炸長度增加{0:+d}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸寬度為{0}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸寬度為{0}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|點燃地面]的半徑增加{0:+d}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|點燃地面]的半徑增加{0:+d}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|點燃地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|點燃地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|點燃地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|點燃地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
   ]
  },
  {
@@ -113317,6 +118118,138 @@
   ],
   "skill": [
    "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_when_charged"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "若消耗一顆[Charges|暴擊球]，造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "若消耗一顆[Charges|暴擊球]，造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "若消耗一顆[Charges|暴擊球]，造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_base_number_of_projectiles_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，發射{0}個[Projectile|投射物]",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，發射{0}個[Projectile|投射物]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "每消耗一顆[Charges|暴擊球]，發射{0}個[Projectile|投射物]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸和[ChilledGround|冰緩地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸和[ChilledGround|冰緩地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fangs of Frost"
   ]
  },
  {
@@ -113818,6 +118751,200 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "0",
+     "table_only"
+    ],
+    "t": "每{0}秒撞擊一次",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "{1}顆球",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "發彈數{1}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "0",
+     "table_only"
+    ],
+    "t": "每{0}秒撞擊一次",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "{1}顆球",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "發彈數{1}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
    "base_fire_damage_to_deal_per_minute"
   ],
   "rows": [
@@ -114000,6 +119127,60 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "裂縫持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "裂縫持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "forge_hammer_base_maximum_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|限制]{0}道裂縫",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|限制]{0}道裂縫",
+    "h": []
    }
   ],
   "skill": [
@@ -114225,6 +119406,80 @@
     "c": [
      "10"
     ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次爆炸造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次爆炸造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|擊中]會[Consume|消耗]敵人身上的[Freeze|冰凍]，\\n並在他們所在的位置觸發二次爆炸\\n二次爆炸不會消耗[Freeze|冰凍]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "噴發範圍為@{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -114399,6 +119654,58 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragments Of The Past"
+  ]
+ },
+ {
+  "stats": [
    "freezing_mark_hit_damage_freeze_multiplier_+%_final",
    "quality_display_freezing_mark_is_gem"
   ],
@@ -114553,6 +119860,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frostbolt"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_all_elemental_exposure_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude_cap"
@@ -114696,6 +120033,155 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "額外分岔1次",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "額外分岔{0}次",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "額外分岔1次",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "額外分岔{0}次",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "frost_darts_explode_creates_X_mortars"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "創造的冰岩@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "每次爆炸創造1個冰岩",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "每次爆炸創造{0}個冰岩",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "每一飛鏢創造出{0}塊冰岩",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -114821,6 +120307,36 @@
      "1|#"
     ],
     "t": "牆壁長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Wall"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
      "1"
@@ -115037,6 +120553,36 @@
    }
   ],
   "skill": [
+   "Frozen Locus"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Fulminating Concoction"
   ]
  },
@@ -115118,6 +120664,36 @@
     "t": "震波範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Furious Slam"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[JaggedGround|碎裂地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[JaggedGround|碎裂地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -115372,6 +120948,30 @@
  },
  {
   "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "光束會[Chain|連鎖]至{0}個敵人",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "光束會[Chain|連鎖]至{0}個敵人",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Galvanic Shards"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -115423,6 +121023,238 @@
   ],
   "skill": [
    "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "雲霧範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "雲霧範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "雲霧範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "雲霧範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "雲霧持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "雲霧持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺\\n[ShockedGround|感電地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺\\n[ShockedGround|感電地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "最大寒冰爆破每{1}秒@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "0",
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "-{1}爆破冷卻時間",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "1|#"
+    ],
+    "t": "以[UnarmedDamage|空手][Melee|近戰]傷害[Hit|擊中]時創造一片寒冰爆破，每{1}秒不超過{0}次",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "以[UnarmedDamage|空手][Melee|近戰]傷害[Hit|擊中]時創造一片寒冰爆破，每{1}秒不超過{0}次",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "寒冰爆破半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "寒冰爆破半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
   ]
  },
  {
@@ -115490,6 +121322,102 @@
   ],
   "skill": [
    "Ghost Dance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "牆壁持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "牆壁持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "frost_wall_maximum_life",
+   "frozen_locus_crystal_display_stat"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "[IceCrystals|冰晶]具有{0}最大生命",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "[IceCrystals|冰晶]具有{0}最大生命",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "[IceCrystals|冰晶]具有{0}最大生命",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
   ]
  },
  {
@@ -115684,6 +121612,61 @@
     "t": "碎片持續時間為{0}秒",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "爆炸長度增加{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "爆炸長度增加{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆炸長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆炸長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
      "1"
     ]
    }
@@ -116040,6 +122023,36 @@
     "c": [
      "10"
     ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Grim Pillars"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "衝擊範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116201,6 +122214,76 @@
   ],
   "skill": [
    "Hammer of the Gods"
+  ]
+ },
+ {
+  "stats": [
+   "base_curse_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "插槽中的[Curse|詛咒]技能持續時間增加{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%插槽中[Curse|詛咒]的持續時間",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%插槽中[Curse|詛咒]的持續時間",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
+  ]
+ },
+ {
+  "stats": [
+   "mark_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "插槽中的[Mark|印記]增加{0:+d}%效果",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "插槽中的[Mark|印記]增加{0}%效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "插槽中的[Mark|印記]減少{0}%效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
   ]
  },
  {
@@ -116690,6 +122773,55 @@
     "c": [
      "10"
     ],
+    "t": "弩箭衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "弩箭衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%的雷擊[Physical|物理]傷害[Conversion|轉換]為[Lightning|閃電]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "爆炸範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116776,6 +122908,58 @@
     "h": [
      "canonical_line"
     ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "碎甲具有{0}秒持續時間，或直到[ArmourBreak|完全破甲]移除",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "對[Rarity|傳奇]敵人造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[Rarity|傳奇]敵人造成{0}%更少傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[Rarity|傳奇]敵人造成{0}%更多傷害",
+    "h": []
    }
   ],
   "skill": [
@@ -117326,6 +123510,233 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸和[ChilledGround|冰緩地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸和[ChilledGround|冰緩地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ChilledGround|冰緩地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ChilledGround|冰緩地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_arming_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "武裝時間@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "碎片在{0}秒後武裝",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "碎片在{0}秒後武裝",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_damage_+%_final_after_1_second",
+   "quality_display_permafrost_shard_damage_+%_final_after_1_second_is_gem",
+   "permafrost_shard_bonus_damage_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "在武裝{2}秒後造成更多傷害@{0}%",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#",
+     "#"
+    ],
+    "t": "碎片在武裝{2}秒後造成{0}%更多傷害",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "#|-1",
+     "#",
+     "#"
+    ],
+    "t": "碎片在武裝{2}秒後造成{0}%更少傷害",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3",
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0",
+     "#",
+     "gem_quality"
+    ],
+    "t": "碎片在武裝後造成{0:+d}%更多傷害",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "生效的碎片上限為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "生效的碎片上限為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "生效的碎片上限為{0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -117756,6 +124167,36 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Exposure|火焰曝曬]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Exposure|火焰曝曬]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
    "incinerate_fuel_gain_per_mana_spent"
   ],
   "rows": [
@@ -117850,6 +124291,55 @@
      "#"
     ],
     "t": "[Ignite|點燃]每0.075秒造成{0}to{1}[Fire|火焰]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|點燃地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|點燃地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|點燃]造成等同於{0}至{1}[Fire|火焰]傷害",
     "h": []
    }
   ],
@@ -118794,6 +125284,46 @@
  },
  {
   "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99",
+     "table_only"
+    ],
+    "t": "衝擊時額外爆發1次的機率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#",
+     "table_only"
+    ],
+    "t": "衝擊時額外爆發1次",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "衝擊時有{0}%機率造成1次額外爆發",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "衝擊時造成1次額外爆發",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Rod"
+  ]
+ },
+ {
+  "stats": [
    "number_of_lightning_rods_allowed"
   ],
   "rows": [
@@ -118842,6 +125372,69 @@
      "2|#"
     ],
     "t": "消耗1顆[Charges|狂怒球]，便會分裂並攻擊{0}個目標",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "對{0}公尺範圍內的目標發射電彈",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "0"
+    ],
+    "t": "發射{0:+d}支弩箭",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "發射{0:+d}支弩箭",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "發射{0}支弩箭",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "發射{0}支弩箭",
     "h": []
    }
   ],
@@ -119255,6 +125848,36 @@
     ],
     "t": "發射最多{0}枚飛彈",
     "h": []
+   }
+  ],
+  "skill": [
+   "Magnetic Salvo"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -119742,6 +126365,30 @@
  },
  {
   "stats": [
+   "midnight_star_max_ice_crystals"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[IceCrystals|冰晶][Limit|上限]為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[IceCrystals|冰晶][Limit|上限]為{0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Midnight Zenith"
+  ]
+ },
+ {
+  "stats": [
    "base_cooldown_modifiable_repeat_interval_ms"
   ],
   "rows": [
@@ -119970,6 +126617,85 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "裂痕持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "裂痕持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "裂縫持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "裂縫持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
+   "molten_crash_max_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|限制]{0}道裂縫",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|限制]{0}道裂縫",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120177,6 +126903,66 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Sunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Soaring Midnight"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120261,6 +127047,153 @@
     "c": [
      "10"
     ],
+    "t": "[OilGround|油滑地面]的半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|油滑地面]的半徑為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[OilGround|油滑地面]持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|油滑地面]持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Oil|焦油]持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Oil|焦油]持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "electric_spit_empowered_channel_consume_power_charge_per_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "每秒消耗一顆[Charges|暴擊球]以\\n持續[Channelling|引導]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每{0}秒消耗一顆[Charges|暴擊球]以\\n持續[Channelling|引導]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "[Hit|傷害]與[Oil|油]噴灑半徑為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -120302,6 +127235,66 @@
      "#"
     ],
     "t": "[Oil|油]持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[OilGround|油滑地面]的為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|油滑地面]的為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[OilGround|油滑地面]持續{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|油滑地面]持續{0}秒",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
      "1"
@@ -120797,6 +127790,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Phantasmal Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -120955,6 +127978,66 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Plasma Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear Throw"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_gain_1_more_charge_%"
   ],
   "rows": [
@@ -120983,6 +128066,66 @@
   ],
   "skill": [
    "Power Siphon"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝鋒長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝鋒長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝鋒寬度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝鋒寬度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
   ]
  },
  {
@@ -121363,6 +128506,52 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "箭矢掉落速度@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "箭矢掉落速度@{0:+d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "箭矢掉落加快{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "箭矢掉落減緩{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rain of Arrows"
+  ]
+ },
+ {
+  "stats": [
    "rain_of_arrows_delay_per_arrow"
   ],
   "rows": [
@@ -121592,6 +128781,141 @@
   ],
   "skill": [
    "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "殭屍[Empowered|強化]效果@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "殭屍[Empowered|強化]效果@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "殭屍增加{0}%[Empowered|強化]效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "殭屍減少{0}%[Empowered|強化]效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "利鋒持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "利鋒持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "rapid_assault_%_chance_to_attach_additional_spear"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "額外利鋒機率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "有{0}%機率在目標身上留下一個額外的利鋒",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "會在目標身上留下一個額外的利鋒",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
   ]
  },
  {
@@ -122460,6 +129784,86 @@
     "c": [
      "10"
     ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_life_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "2秒內恢復的生命@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "在2秒內恢復{0}%最大生命",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_mana_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "2秒內恢復的魔力@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "在2秒內恢復{0}%最大魔力",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "弩箭衝擊範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -122610,6 +130014,36 @@
  {
   "stats": [
    "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rolling Slam"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
    {
@@ -123085,6 +130519,100 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "每1怒氣擁有{0}秒[Buff|增益效果]持續時間",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每1怒氣擁有{0}秒[Buff|增益效果]持續時間",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Buff|增益效果]賦予@{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[Buff|增益效果]賦予{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|增益效果]賦予{0}%更多傷害以及[Onslaught|猛攻]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_life_lost_%_per_minute_nonlethal"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Buff|增益效果]每秒損失@{0}%生命",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|增益效果]使你每秒損失@{0}%最大生命",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -123377,6 +130905,41 @@
     "t": "戰吼範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Seismic Cry"
+  ]
+ },
+ {
+  "stats": [
+   "seismic_cry_slam_skill_aftershock_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "更多[Empowered|強化][Attack|攻擊][Aftershock|餘震]傷害@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Empowered|強化][Attack|攻擊][Aftershock|餘震]造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Empowered|強化][Attack|攻擊][Aftershock|餘震]造成{0}%更少傷害",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -123909,6 +131472,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "脈衝範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "脈衝範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shockburst Rounds"
+  ]
+ },
+ {
+  "stats": [
    "shockchain_arrow_X_additional_chains_on_first_hitting_shocked_or_electrocuted_enemy"
   ],
   "rows": [
@@ -124011,6 +131604,36 @@
     ],
     "t": "最大{0}支生效箭矢",
     "h": []
+   }
+  ],
+  "skill": [
+   "Shockchain Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -124400,6 +132023,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siphoning Strike"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_ward_spent_as_glory"
   ],
   "rows": [
@@ -124612,6 +132265,153 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次爆炸造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次爆炸造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124742,6 +132542,55 @@
      "2|#"
     ],
     "t": "日耀球[Limit|上限]為{0}顆",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Ignite|點燃]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ignite|點燃]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|點燃]造成等同於{0}至{1}[Fire|火焰]傷害",
     "h": []
    }
   ],
@@ -124962,6 +132811,122 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "0",
+     "#"
+    ],
+    "t": "以環形射出{0}個[Projectile|投射物]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Projectile|投射物]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|投射物]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_spell_cast_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "施放時間{0:+d}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "spark_min_time_between_target_clearing_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "再度[Hit|擊中]目標間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "同時發射的投射物每秒\\n不得[Hit|擊中]同一目標超過一次",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "同時發射的投射物每{0}秒\\n不得[Hit|擊中]同一目標超過一次",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -124982,6 +132947,93 @@
     "t": "衝擊範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "脈衝範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "脈衝範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|點燃地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|點燃地面]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_ground_expands_to_+%_final_by_skill_end"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "在地面長矛的持續時間內增加範圍，於其結束前最多獲得{0}%更多範圍",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "在地面長矛的持續時間內失去範圍，於其結束前最多獲得{0}%更少範圍",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -125059,6 +133111,36 @@
     ],
     "t": "生效的長峰上限為{0}",
     "h": []
+   }
+  ],
+  "skill": [
+   "Spearfield"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -125295,6 +133377,56 @@
    }
   ],
   "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "引爆重擊{0}公尺範圍內的[JaggedGround|碎裂地面]，以及每個引爆的[JaggedGround|碎裂地面]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Starborn Onslaught"
   ]
  },
@@ -125392,6 +133524,342 @@
   ],
   "skill": [
    "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "對{0}公尺範圍內的敵人發射弩箭",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ShockedGround|感電地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ShockedGround|感電地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "附著長矛的持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "附著長矛的持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "弩箭間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "每秒發射一支弩箭",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每{0}秒發射一支弩箭",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "對{0}公尺範圍內的敵人發射弩箭",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_overcharged_spears_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "附著長矛[Limit|上限]為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "附著長矛[Limit|上限]為{0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "附著長矛的持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "附著長矛的持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "弩箭會[Chain|連鎖]至{0}名敵人",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "弩箭會[Chain|連鎖]至{0}名敵人",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "弩箭間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "每秒發射一支弩箭",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每{0}秒發射一支弩箭",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "對{0}公尺範圍內的敵人發射弩箭",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_detonate_number_of_beams"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "弩箭發射數量@{0}支",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "發射{0}支弩箭",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "發射{0}支弩箭",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
   ]
  },
  {
@@ -125567,6 +134035,86 @@
   ],
   "skill": [
    "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "若任何被閃電[Hit|擊中]的目標受到[Shock|感電]，也會[Shock|感電]{0}公尺範圍內的所有敵人",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
   ]
  },
  {
@@ -125747,6 +134295,35 @@
   ],
   "skill": [
    "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_area_of_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[Raven|渡鴉]鴉群技能增加{0}%範圍效果",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "[Raven|渡鴉]鴉群技能減少{0}%範圍效果",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spiraling Conspiracy"
   ]
  },
  {
@@ -125934,6 +134511,112 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "餘震範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "餘震範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "aftershock_radius_+_per_previous_aftershock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "每次連續餘震的範圍@{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "每次連續餘震的範圍增加{0:+d}公尺，最大3公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每次連續餘震的範圍增加{0:+d}公尺，最大3公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "channelled_slam_damage_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "每層造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "每層造成{0}%更少[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "每層造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -126090,6 +134773,93 @@
     ],
     "t": "可被視同[Strike|打擊]而被[AncestralBoost|先祖強化]",
     "h": []
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "bell_shockwave_cooldown_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "每秒可觸發一次震波",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每{0}秒可觸發一次震波",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -126485,6 +135255,36 @@
     "t": "衝擊範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ChilledGround|冰緩地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ChilledGround|冰緩地面]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127392,6 +136192,201 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "龍捲風會分裂出{0}個射入其中的[Projectile|投射物]複製體",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_tornado_shots_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "龍捲風[Limit|上限]為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "龍捲風[Limit|上限]為{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "龍捲風[Limit|上限]為{0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "最大龍捲風持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最大龍捲風持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_number_of_hits_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "龍捲風被[Hit|擊中]1次後消失",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "龍捲風被[Hit|擊中]{0}次後消失",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_damage_+%_final",
+   "quality_display_tornado_shot_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "複製[Projectile|投射物]傷害懲罰@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "複製[Projectile|投射物]造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "複製[Projectile|投射物]造成{0:+d}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "複製[Projectile|投射物]造成{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "複製[Projectile|投射物]造成{0}%更少傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_range"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "複製的[Projectile|投射物]的飛行距離最遠為{0}米",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "複製[Projectile|投射物]的飛行距離最遠為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -127513,6 +136508,33 @@
     ],
     "t": "每一名敵人可以被最多1個膿包附著",
     "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_domain_buff_linger_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "劇毒之花在你身上的效果停留1秒",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "劇毒之花在你身上的效果停留{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -127643,6 +136665,200 @@
   "rows": [
    {
     "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "膿包[DetonationTime|引爆]範圍增加{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "膿包[DetonationTime|引爆]範圍增加{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "膿包[DetonationTime|引爆]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿包[DetonationTime|引爆]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_detonation_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "table_only"
+    ],
+    "t": "膿包[DetonationTime|引爆時間]@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "膿包[DetonationTime|引爆時間]@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "膿包在{0}秒後[DetonationTime|引爆]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿包在{0}秒後[DetonationTime|引爆]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿包保存對其施加的[Poison|中毒]的預期傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_1%_more_damage_per_x_stored_poison",
+   "toxic_pustule_max_burst_damage_+%_final_from_stored_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "儲存的[Poison|毒素]給予至多@{1}%更多爆炸傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "儲存的[Poison|毒素]給予至多{1}%更多爆炸傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_base_radius_+1_per_x_stored_poison",
+   "toxic_pustule_max_additional_burst_base_radius_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "儲存的[Poison|中毒]使基礎爆炸範圍最多增加{1}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "10"
+    ],
+    "t": "儲存的[Poison|中毒]使基礎爆炸範圍最多增加{1}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "儲存的[Poison|中毒]使基礎爆炸範圍最多增加{1}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "衝擊範圍為{0}公尺",
@@ -127658,6 +136874,96 @@
     "t": "衝擊範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "引線持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "引線持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "雲霧範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "雲霧範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "雲霧持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "雲霧持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127756,6 +137062,53 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿包保存對其施加的[Poison|中毒]的預期傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -127769,6 +137122,53 @@
   ],
   "skill": [
    "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
+  ]
+ },
+ {
+  "stats": [
+   "triggered_by_chaos_frog_explosion_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "此技能會於咒蟾躍向敵人時[Trigger|觸發]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
   ]
  },
  {
@@ -128015,6 +137415,30 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "His Winnowing Flame"
+  ]
+ },
+ {
+  "stats": [
+   "unique_flame_pillar_fire_damage_equal_to_%_of_remaining_ignite_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "深淵烈炎會造成剩餘[Consume|效果消耗]中的最高期望[Ignite|點燃]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "深淵烈炎會造成剩餘[Consume|效果消耗]中的最高期望[Ignite|點燃]傷害的{0}%",
+    "h": []
    }
   ],
   "skill": [
@@ -128313,6 +137737,31 @@
  },
  {
   "stats": [
+   "twister_%_chance_for_additional_twister"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "有{0}%機率產生一個額外的龍捲風",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "有{0}%機率產生一個額外的龍捲風",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Twister"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -128428,6 +137877,41 @@
  },
  {
   "stats": [
+   "minion_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "增加{0}%[Minion|召喚物]移動速度",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "增加{0}%[Minion|召喚物]移動速度",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "減少{0}%[Minion|召喚物]移動速度",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Unearth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -128514,6 +137998,48 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "exploit_debuff_attack_damage_to_convert_to_magnitude_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|擊中][Daze|目眩]敵人時附加[BrokenStance|卸防姿態]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "broken_stance_hit_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "陷入[BrokenStance|卸防姿態]的敵人會在承受{0:+d}[Hit|擊中]後解除",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "陷入[BrokenStance|卸防姿態]的敵人會在承受{0}[Hit|擊中]後解除",
+    "h": []
    }
   ],
   "skill": [
@@ -128621,6 +138147,143 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "藤蔓會附著於{0}公尺範圍內的敵人",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "藤蔓使敵人的移動速度[Slow|減緩]{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "植物持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "植物持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "poison_vine_arrow_vine_stored_poison_damage_+%_final",
+   "display_statset_hide_usage_stats"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "儲存的[Poison|中毒]@{0}%",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "植物每秒造成額外[Chaos|混沌]傷害，傷害量等同於每秒[Poison|中毒]傷害的{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "對植物[Poison|施毒]會使其每秒造成額外[Chaos|混沌]傷害，傷害量等同於每秒[Poison|中毒]傷害的{0}%",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "vine_arrow_area_of_effect_+%_final_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Plant|過度生長]@{0}%更多傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|過度生長]時有{0}%更多範圍效果",
+    "h": []
    }
   ],
   "skill": [
@@ -128963,6 +138626,75 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆炸範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|點燃]造成等同於{0}至{1}[Fire|火焰]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ignite|點燃]{0}公尺範圍內的敵人",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -129186,6 +138918,156 @@
   "rows": [
    {
     "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝擊範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_fires_projectiles_every_x_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "投射物間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "每秒或[Slam|重擊時]發射[Projectile|投射物]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每{0}秒或[Slam|重擊時]發射[Projectile|投射物]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_initial_explosion_number_of_additional_projectiles_per_additional_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "每一額外階段@{0}發射額外[Projectile|投射物]",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最初的噴發每有一額外階段\\n即發射額外{0}個[Projectile|投射物]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_slam_unscalable_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "火山最大[Slam|重擊]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "火山會在{0}次[Slam|重擊]後被破壞",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "火山會在{0}次[Slam|重擊]後被破壞",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "牆體長度為{0}公尺",
@@ -129301,6 +139183,54 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Voltaic Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "voltaic_barrier_trigger_maximum_number_of_extra_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "對目標附近最多{0}個額外敵人射出光束",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "對目標附近最多{0}個額外敵人射出光束",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "對目標附近最多{0:+d}個額外敵人射出光束",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "對目標附近最多{0}個額外敵人射出光束",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "對目標附近最多{0}個額外敵人射出光束",
+    "h": []
    }
   ],
   "skill": [
@@ -130184,6 +140114,241 @@
     "c": [
      "10"
     ],
+    "t": "[Whirlwind|旋風]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|旋風]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "每個額外疊層的範圍@{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每個額外疊層{0:+d}公尺的範圍",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "元素[Whirlwind|旋風][Gain|獲得]等同於{0}%傷害的對應[ElementalDamage|元素種類]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "崩塌造成[Melee|近戰]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Whirlwind|旋風]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|旋風]範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Whirlwind|旋風]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|旋風]持續時間為{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "每個額外疊層的範圍@{0:+d}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "每個額外疊層{0:+d}公尺的範圍",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_base_maximum_number_of_storms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "上限{0}個[Whirlwind|旋風]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "上限{0}個[Whirlwind|旋風]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "元素[Whirlwind|旋風][Gain|獲得]等同於+{0}%傷害的對應[ElementalDamage|元素種類]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "元素[Whirlwind|旋風][Gain|獲得]等同於{0}%傷害的對應[ElementalDamage|元素種類]傷害",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "扇形長度為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130405,6 +140570,96 @@
     "c": [
      "10"
     ],
+    "t": "蝮蛇長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "蝮蛇長度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "蝮蛇寬度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "蝮蛇寬度為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "猛襲範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130445,6 +140700,63 @@
     ],
     "t": "[HeavyStun|沉重暈眩]有{0}%[SurpassChance|滿溢]機率\\n獲得[Charges|暴擊球]，受到[Power|怪物效用]影響",
     "h": []
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "wing_blast_shockwave_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次震波造成{0}%更多[Hit|擊中]傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "對[Rarity|傳奇]敵人的二次震波造成{0}%更少[Hit|擊中]傷害",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -130628,6 +140940,34 @@
  },
  {
   "stats": [
+   "skill_wolf_mark_damage_taken_+%_per_nearby_enemy",
+   "skill_wolf_mark_damage_taken_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "6公尺(最大)範圍內的每名敵人增加@{0}%(1%)傷害",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "擁有[Mark|印記]的目標根據其6公尺內的每名敵人增加{0}%承受傷害，最高可增加至{1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130758,6 +141098,70 @@
  },
  {
   "stats": [
+   "wolf_lunar_blessing_beam_attack_extra_beams_to_trigger",
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "映月光束額外@{0}索敵數量",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "10"
+    ],
+    "t": "[Hit|擊中]時在目標以及{1}公尺內{0}名其他目標上召喚一道映月光束",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "[Hit|擊中]時在目標以及{1}公尺內{0}名其他目標上召喚一道映月光束",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "10"
+    ],
+    "t": "[Hit|擊中]時在目標以及{1}公尺內{0}名其他目標上召喚一道映月光束",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "[Hit|擊中]時在目標以及{1}公尺內{0}名其他目標上召喚一道映月光束",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130795,6 +141199,36 @@
     "c": [
      "10"
     ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "震波範圍為{0}公尺",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "衝擊範圍為{0}公尺",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130810,6 +141244,31 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Devour"
+  ]
+ },
+ {
+  "stats": [
+   "wyvern_devour_flask_charm_charge_gain_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Flask|藥劑]和[Charm|護符]充能獲得機率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "吞噬[Corpse|屍體]時有{0}%機率獲得視為打倒敵人的[Flask|藥劑]和[Charm|護符]充能",
+    "h": []
    }
   ],
   "skill": [

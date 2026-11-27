@@ -58,7 +58,7 @@ function details(g, b, sum, geo, view) {
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
   const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
   const sups = (g.supports || []).filter(n => GEM[n]);
-  const lines = P ? shownLines({ ...P.constant, ...P.levels?.[st._level] }, sub.key) : shownLines({ ...st, ...st._mods }, g.name), spirit = reservation(g, sum, b), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
+  const lines = P ? shownLines({ ...P.constant, ...P.levels?.[st._level] }, sub.key) : shownLines({ ...st, ...st._mods, ...Object.fromEntries(Object.entries({ ...SK.skills[g.name]?.part, ...SK.skills[g.name]?.part_levels?.[st._level] }).filter(([k]) => st[k] ?? st._mods?.[k]).map(([k, v]) => [k, v + (st[k] ?? st._mods[k])])) }, g.name), spirit = reservation(g, sum, b), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats); the part's stats with what quality adds to them (Vaulting Impact's Broken Stance hits: 10 + 2)
   return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(gemName(g))}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
     ${tabs}${desc ? `<p class="ddesc">${kwHtml(desc)}</p>` : ''}
     ${sec('Damage', [

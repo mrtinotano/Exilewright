@@ -103,7 +103,7 @@ export function profile(gem, d = {}) {
     || (has('Triggers') && has('Meta') ? 'meta'
     : has('ModifiesNextSkill') ? 'buff'
     : has('SummonsTotem') ? 'totem'
-    : has('CreatesMinion') && !has('Offering') ? (corpse ? 'raise' : 'minion')
+    : has('CreatesMinion') && !has('Offering') ? (corpse && !has('Persistent') ? 'raise' : 'minion')   /* Kelari's Malediction: persistent, its corpses consumed while on (scene.js beetles) */
     : has('Herald') ? 'herald'
     : has('Persistent') ? 'aura'
     : has('AppliesCurse') ? 'curse'

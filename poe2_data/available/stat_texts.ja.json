@@ -872,6 +872,75 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "追加で1回分岐する",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "追加で{0}回分岐する",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "サポートされたスキルによる投射物は追加1回で分岐する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "サポートされたスキルによる投射物は追加で{0}回分岐する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "projectiles_return",
+   "projectile_return_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "0",
+     "1|99"
+    ],
+    "t": "投射物は{1}%の確率でプレイヤーの元に回帰する",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "100|#"
+    ],
+    "t": "投射物はプレイヤーの元に回帰する",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "投射物はプレイヤーの元に回帰する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_chain_hit_damage_+%_final"
   ],
   "rows": [
@@ -1198,6 +1267,23 @@
      "1|#"
     ],
     "t": "毎秒{0}の[Physical|物理]ダメージを与える",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "毎秒{0}の[Cold|冷気]ダメージを与える",
     "h": [
      "per_minute_to_per_second",
      "1"
@@ -2171,6 +2257,52 @@
  },
  {
   "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Physical|物理]ダメージの{0}%を[Fire|火]ダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_fire_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "火ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "火ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "火ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_life_spent_as_glory"
   ],
   "rows": [
@@ -2180,6 +2312,53 @@
     ],
     "t": "サポートされたスキルは他のスキルで使用したライフの{0}%と\\n同量の[Glory|グローリー]を獲得する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "ミニオンアタックスピードが{0}%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[Projectile|投射物]スピードが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Projectile|投射物]スピードが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Projectile|投射物]スピードが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -8832,6 +9011,30 @@
  },
  {
   "stats": [
+   "trinity_skill_speed_+%_while_all_resonance_is_at_least_250_to_grant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "合計[Affinity|アフィニティ]が250以上の間[SkillSpeed|スキルスピード]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "合計[Affinity|アフィニティ]が250以上の間[SkillSpeed|スキルスピード]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_unusable_until_moved_X_distance"
   ],
   "rows": [
@@ -15003,6 +15206,38 @@
  },
  {
   "stats": [
+   "triggered_skill_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "ソケットされたスペルは[Trigger|トリガー]された時にダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "サポートされたスペルがトリガーされた時のダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "サポートされたスペルがトリガーされた時のダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy",
    "consume_shock_of_X_enemies_to_trigger_shocking_rift"
   ],
@@ -15440,6 +15675,23 @@
  },
  {
   "stats": [
+   "skill_main_hand_total_attack_fire_damage_permyriad_to_add_as_unscalable_damage_to_oil_ground_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Ignite|発火]状態になると、[OilGround|オイル領域]はこのアタックの[Fire|火][Hit|ダメージ]の{0}%スケールしない[Hit|ダメージ]として[Ignite|発火]に追加する",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15531,6 +15783,30 @@
      "#|-1"
     ],
     "t": "[LowLife|低ライフ]時にキャストスピードが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "効果範囲が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "効果範囲が{0}%低下する",
     "h": [
      "negate",
      "1"
@@ -15672,6 +15948,30 @@
     "t": "[Withered|衰弱]は{0}秒間持続する",
     "h": [
      "milliseconds_to_seconds",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_life_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ミニオンの最大ライフが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ミニオンの最大ライフが{0}%低下する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -16299,6 +16599,30 @@
  },
  {
   "stats": [
+   "accuracy_range_penalty_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "距離に応じた[Accuracy|命中]ペナルティが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "距離に応じた[Accuracy|命中]ペナルティが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_attack_speed_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16314,6 +16638,90 @@
      "#|-1"
     ],
     "t": "[DualWield|二刀流]中、両方の武器のヒットは\\nアタックスピードが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_chaos"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ダメ―ジの{0}%を追加[Chaos|混沌]ダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ダメ―ジの{0}%を追加[Cold|冷気]ダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ダメ―ジの{0}%を追加[Fire|火]ダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ダメ―ジの{0}%を追加[Lightning|雷]ダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "敵移動スピードの[Slow|減速]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "敵の移動スピードを{0}%[Slow|減速]させる",
     "h": [
      "negate",
      "1"
@@ -16362,6 +16770,78 @@
      "#|-1"
     ],
     "t": "{0}%低下したダメージを与えたと仮定して敵を[Chill|冷却]する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_non_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク以外]の敵の[Freeze|凍結]を[Consume|消費]しダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク以外]の敵の[Freeze|凍結]を[Consume|消費]しダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵の[Freeze|凍結]を[Consume|消費]しダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵の[Freeze|凍結]を[Consume|消費]しダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_against_heavy_stunned_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[HeavyStun|ヘビースタン]状態の敵に対するダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[HeavyStun|ヘビースタン]状態の敵に対するダメージが{0}%低下する",
     "h": [
      "negate",
      "1"
@@ -16465,6 +16945,159 @@
      "#|-1"
     ],
     "t": "[DualWield|二刀流]中、両方の武器のヒットは\\nダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_per_time_chained"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Chain|連鎖]するたびのダメージ上昇@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "[Chain|連鎖]するたびのダメージ低下@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "このスキルが[Chain|連鎖]するたびに[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "このスキルが[Chain|連鎖]するたびに[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_burning_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Burning|燃焼]状態の敵に対する[Hit|ヒット]ダメージ上昇@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "[Burning|燃焼]状態の敵に対する[Hit|ヒット]ダメージ低下@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Burning|燃焼]状態の敵に対する[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Burning|燃焼]状態の敵に対する[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Chill|冷却]状態の敵に対する[Hit|ヒット]ダメージ上昇@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "[Chill|冷却]状態の敵に対する[Hit|ヒット]ダメージ低下@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Chill|冷却]状態の敵に対する[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Chill|冷却]状態の敵に対する[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[ArmourBreak|アーマーが完全に破壊された]敵に対する[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[ArmourBreak|アーマーが完全に破壊された]敵に対する[Hit|ヒット]ダメージが{0}%低下する",
     "h": [
      "negate",
      "1"
@@ -16703,6 +17336,103 @@
  },
  {
   "stats": [
+   "active_skill_ignite_proliferation_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "このスキルで付与された[Ignite|発火]は\\n{0}m以内の他の敵に1秒間[AilmentSpread|伝染]する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "このスキルで付与された[Ignite|発火]は\\n{0}m以内の他の敵に1秒間[AilmentSpread|伝染]する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_knockback_distance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Knockback|ノックバック]距離上昇量@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Knockback|ノックバック]距離が{0}%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_lightning_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Lightning|雷]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Lightning|雷]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_hit_damage_stun_multiplier_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ミニオンが引き起こす[Stun|スタン]蓄積が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ミニオンが引き起こす[Stun|スタン]蓄積が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_pins_as_though_dealt_damage_+%_final",
    "quality_display_active_skill_pins_as_though_dealt_damage_+%_final_is_gem"
   ],
@@ -16738,6 +17468,54 @@
      "#"
     ],
     "t": "{0}%低下したダメージを与えたと仮定して敵を[Pinned|足止め]する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_for_each_remaining_chain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Projectile|投射物]は残りの[Chain|連鎖]回数ごとにダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Projectile|投射物]は残りの[Chain|連鎖]回数ごとにダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_if_pierced_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "敵を[Pierce|貫通]した後に[Projectile|投射物]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "敵を[Pierce|貫通]した後に[Projectile|投射物]ダメージが{0}%低下する",
     "h": [
      "negate",
      "1"
@@ -16798,6 +17576,30 @@
  },
  {
   "stats": [
+   "active_skill_shock_as_though_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%上昇したダメージを与えたと仮定して敵を[Shock|感電]させる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}%低下したダメージを与えたと仮定して敵を[Shock|感電]させる",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_shock_chance_+%_final"
   ],
   "rows": [
@@ -16814,6 +17616,30 @@
     ],
     "t": "敵への[Shock|感電]付与確率が{0}%上昇する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_shock_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Shock|感電]の持続時間が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Shock|感電]の持続時間が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -16919,6 +17745,54 @@
     ],
     "t": "[ElementalInfusion|エレメンタルインフュージョン]を拾った時に同じ属性の[ElementalInfusion|エレメンタルインフュージョン]を追加で1個獲得する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_attack_speed_granted_+%_during_life_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "いずれかのライフ[Flask|フラスコ]効果中は[Attack|アタック]スピード{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "いずれかのライフ[Flask|フラスコ]効果中は[Attack|アタック]スピード{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_cast_speed_granted_+%_during_mana_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "いずれかのマナ[Flask|フラスコ]効果中はキャストスピード{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "いずれかのマナ[Flask|フラスコ]効果中はキャストスピード{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -17078,6 +17952,30 @@
     "t": "チャユラズウィルを{0}秒ごとに[Trigger|トリガー]する",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "arctic_armour_armour_granted_+%_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]はステージごとに[Armour|アーマー]{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]はステージごとに[Armour|アーマー]{0}%減少を付与する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -17357,6 +18255,20 @@
  },
  {
   "stats": [
+   "base_power_charge_skip_consume_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スキルは{0}%の確率でパワー[Charges|チャージ]を取り除かないがそれを消費したと見なされる",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "bear_skills_additional_base_attack_time_when_performing_from_default_stance"
   ],
   "rows": [
@@ -17379,6 +18291,20 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "berserk_maximum_rage_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Rage|憤怒]の最大数 {0:+d}を付与する",
+    "h": []
    }
   ]
  },
@@ -17470,6 +18396,49 @@
      "#|-1"
     ],
     "t": "倒した敵に付与していた煮えたぎる血のスタックごとに\\n[CorruptedBlood|穢れた血]の付与効果範囲が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "bone_offering_damage_taken_+%_final_after_shield_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "シールドで守られた[Minion|ミニオン]のシールドが失われた後1秒間受けるダメージ上昇量@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "シールドで守られた[Minion|ミニオン]のシールドが失われた後1秒間受けるダメージ低下量@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "シールドで守られた[Minion|ミニオン]はシールドが失われた後1秒間受けるダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "シールドで守られた[Minion|ミニオン]はシールドが失われた後1秒間受けるダメージが{0}%低下する",
     "h": [
      "negate",
      "1"
@@ -17669,6 +18638,57 @@
  },
  {
   "stats": [
+   "cast_on_crit_global_critical_hit_chance_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Critical|クリティカルヒット]率{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]は[Critical|クリティカルヒット]率{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_dodge_roll_distance_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Buff|バフ]はドッジロール距離 {0:+d}mを付与する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|バフ]はドッジロール距離 {0:+d}mを付与する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
   ],
   "rows": [
@@ -17831,6 +18851,27 @@
  },
  {
   "stats": [
+   "chance_%_to_spawn_another_infusion_remnant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}%の確率で[ElementalInfusion|インフュージョン][Remnant|レムナント]を追加で1個スポーンする",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[ElementalInfusion|インフュージョン][Remnant|レムナント]を追加で1個スポーンする",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17839,6 +18880,28 @@
      "#"
     ],
     "t": "スキルは{0}%の確率で[ElementalInfusion|エレメンタルインフュージョン]を取り除かないがそれでもそれを消費したと見なす",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_not_consume_parried_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[ParriedDebuff|パリィのデバフ]を消費しない確率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%の確率で[ParriedDebuff|パリィのデバフ]を消費しない",
     "h": []
    }
   ]
@@ -17915,6 +18978,30 @@
  },
  {
   "stats": [
+   "charge_regulation_damage_per_charge_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Charges|チャージ]ごとにダメージの{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]は[Charges|チャージ]ごとにダメージの{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "consecrated_ground_effect_+%"
   ],
   "rows": [
@@ -17980,6 +19067,35 @@
      "1|#"
     ],
     "t": "可能ならば{0}の[Heat|ヒート]を消費し\\n[Ignite|発火][BuffMagnitude|強度]{2}%上昇を獲得する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "contagion_number_of_additional_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "キャストした時の追加で対象となる敵の数@{0:d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "コンテ―ジョンはキャストされた時に追加で{0}体の敵を対象にする",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "コンテ―ジョンはキャストされた時に追加で{0}体の敵を対象にする",
     "h": []
    }
   ]
@@ -18211,6 +19327,28 @@
  },
  {
   "stats": [
+   "disengage_%_chance_for_additional_shockwave"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "追加のショックウェーブ確率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%の確率でショックウェーブを追加で1回放つ",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "display_max_ailment_bearer_charges"
   ],
   "rows": [
@@ -18221,6 +19359,37 @@
     ],
     "t": "必要なアンバウンドフューリー@{0}",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "earthshatter_damage_+%_final_per_spike"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スパイク1個ごとに[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スパイク1個ごとに[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "スパイク1個ごとに[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -18489,6 +19658,27 @@
  },
  {
   "stats": [
+   "final_strike_number_of_spirit_strikes"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[FinalStrike|最終ストライク]は近くの敵追加で{0}体を対象にする",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[FinalStrike|最終ストライク]は近くの敵追加で{0}体を対象にする",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18581,6 +19771,30 @@
  },
  {
   "stats": [
+   "fortifying_cry_guard_gained_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "獲得[Guard|ガード]が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "獲得[Guard|ガード]が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "frozen_monsters_take_increased_damage"
   ],
   "rows": [
@@ -18611,6 +19825,114 @@
     ],
     "t": "[Hit|ヒット]時に[Rage|憤怒]を{0}獲得する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_ancestral_cry_global_fire_damage_granted_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Fire|火]ダメージ{0}%上昇を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Fire|火]ダメージ{0}%低下を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_earthquake_damaging_ailment_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "付与した[DamagingAilments|ダメージ性状態異常]の[BuffMagnitude|強度]が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "付与した[DamagingAilments|ダメージ性状態異常]の[BuffMagnitude|強度]が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_flameblast_damaging_ailment_effect_per_stage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ステージごとの[DamagingAilments|ダメージ性状態異常]の[BuffMagnitude|強度]が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ステージごとの[DamagingAilments|ダメージ性状態異常]の[BuffMagnitude|強度]が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_marked_enemy_damage_dealt_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Mark|呪印]を付与された敵の与えるダメージ低下@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Mark|呪印]を付与された敵はダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Mark|呪印]を付与された敵はダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
+    ]
    }
   ]
  },
@@ -18772,6 +20094,145 @@
  },
  {
   "stats": [
+   "herald_of_ash_fire_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Fire|火]ダメージ{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]は[Fire|火]ダメージ{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_blood_global_physical_damage_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Physical|物理]ダメージ{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]は[Physical|物理]ダメージ{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_ice_cold_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Cold|冷気]ダメージ{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]は[Cold|冷気]ダメージ{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_thunder_lightning_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Lightning|雷]ダメージ{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]は[Lightning|雷]ダメージ{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hexblast_damage_+%_final_per_second_remaining_curse_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "取り除かれた[Curse|呪い]の残存持続時間1秒ごとのダメージ上昇量@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "取り除かれた[Curse|呪い]の残存持続時間1秒ごとのダメージ低下量@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "取り除かれた[Curse|呪い]の残存持続時間1秒ごとにダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "取り除かれた[Curse|呪い]の残存持続時間1秒ごとにダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_enemy_chaos_damage_taken_+%"
   ],
   "rows": [
@@ -18923,6 +20384,35 @@
  },
  {
   "stats": [
+   "inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Hit|ヒット]時に[Exposure|曝露]を付与する確率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "[Hit|ヒット]時に{0}%の確率で[Exposure|曝露]を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "[Hit|ヒット]時に[Exposure|曝露]を付与する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "infusion_remnants_%_chance_to_spawn_cold_infusion_on_freezing_an_enemy"
   ],
   "rows": [
@@ -19050,6 +20540,58 @@
      "#|-1"
     ],
     "t": "敵に付与した[Shock|感電]の効果5%ごとに[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最初の衝突時に{0}%の確率で追加のバーストを起こす",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "magma_barrier_maximum_block_chance_granted_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|バフ]は[Block|ブロック]率の最大値 {0:+d}%を付与する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_remnants_global_mana_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]はマナ自動回復レート{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]はマナ自動回復レート{0}%減少を付与する",
     "h": [
      "negate",
      "1"
@@ -19256,6 +20798,49 @@
     "t": "[Minion|ミニオン]は毎秒ライフの{0}%を自動回復する",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_rage_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Rage|憤怒]効果増加量@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "[Rage|憤怒]効果減少量@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|ミニオン]の[Rage|憤怒]の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|ミニオン]の[Rage|憤怒]の効果が{0}%減少する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -19596,6 +21181,54 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "矢の落下が{0}%速くなる",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "矢の落下が{0}%遅くなる",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "蘇生されたゾンビに与える強化の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "蘇生されたゾンビに与える強化の効果が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "rhoa_movement_speed_penalty_+%_final_while_performing_action"
   ],
   "rows": [
@@ -19626,6 +21259,110 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_minion_life_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|ミニオン]の最大ライフが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|ミニオン]の最大ライフが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_max_stages"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ステージの最大数 {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_damage_+%_final_per_stage",
+   "quality_display_sandstorm_swipe_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "追加ステージごとの崩壊ダメージ上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "追加ステージごとに崩壊のダメージが{0:+d}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "追加ステージごとに崩壊のダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "追加ステージごとに崩壊のダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "追加ステージごとの半径@+{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "追加ステージごとに半径 {0:+d}",
+    "h": []
    }
   ]
  },
@@ -19729,6 +21466,44 @@
     "t": "プレイヤーが[Critical|クリティカルヒット]で付与した[Shock|感電]の[BuffMagnitude|強度]が{0}%減少する",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skeletal_cleric_revived_skeletons_immune_for_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "復活したスケルトンのダメージ完全無効化持続時間@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "復活したスケルトンは復活した後{0}秒間はダメージに対して完全無効化になる",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "復活したスケルトンは復活した後{0}秒間はダメージに対して完全無効化になる",
+    "h": [
+     "milliseconds_to_seconds_1dp",
      "1"
     ]
    }
@@ -19984,6 +21759,28 @@
  },
  {
   "stats": [
+   "base_spell_%_chance_to_echo"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Cascadable|エコー]発生確率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}%の確率で[Cascadable|エコー]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_minimum_base_fire_damage_as_%_of_intelligence",
    "spell_maximum_base_fire_damage_as_%_of_intelligence"
   ],
@@ -20041,6 +21838,30 @@
     ],
     "t": "{0}%の確率で[Spell|スペル]スキルは[Projectile|投射物]を追加で2個放つ",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellflux_frequency_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "幻影の頻度が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "幻影の頻度が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -20221,6 +22042,95 @@
  },
  {
   "stats": [
+   "tempest_bell_damage_+%_final_per_time_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "鐘が受けた[Hit|ヒット]ごとのダメージ上昇量@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "鐘が受けた[Hit|ヒット]ごとのダメージ低下量@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ショックウェーブは鐘が受けた[Hit|ヒット]の回数ごとにダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ショックウェーブは鐘が受けた[Hit|ヒット]の回数ごとにダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thunderous_leap_%_chance_for_shocked_ground_when_detonating"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Detonator|起爆]時に[ShockedGround|感電領域]を残す確率@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スピアを[Detonator|起爆]した時に{0}%の確率で[ShockedGround|感電領域]を残す",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "time_of_need_global_life_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]はライフ自動回復レート{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|バフ]はライフ自動回復レート{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "tornado_base_damage_interval_ms"
   ],
   "rows": [
@@ -20286,6 +22196,20 @@
  },
  {
   "stats": [
+   "trinity_%_physical_damage_to_convert_to_random_element_granted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Physical|物理]ダメージの{0}%をランダムな[ElementalDamage|元素属性]に[Conversion|変換]する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "use_time_+_ms_if_shapeshift_required"
   ],
   "rows": [
@@ -20345,6 +22269,38 @@
     "t": "爆発半径はステージごとに{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "verisium_infusion_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[VerisiumInfusion|ヴェリシウムインフュージョン]の持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[VerisiumInfusion|ヴェリシウムインフュージョン]の持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[VerisiumInfusion|ヴェリシウムインフュージョン]の持続時間が{0}%減少する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -20793,6 +22749,71 @@
  },
  {
   "stats": [
+   "whirling_slash_knockback_distance_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "ステージごとの[Knockback|ノックバック]距離上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ステージごとに[Knockback|ノックバック]距離が{0}%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_blast_damage_+%_final_from_distance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "距離によるダメージ上昇ボーナス最大値@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "距離によるダメージ低下ペナルティ最大値@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "プレイヤーの1.5m以内の敵にダメージが{0}%上昇し、4m以上離れるとボーナスが0になるまでスケールダウンする",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "プレイヤーの1.5m以内の敵にダメージが{0}%低下し、4m以上離れるとペナルティが0になるまでスケールダウンする",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "wolf_lunar_blessing_same_target_trigger_beam_attack_prevention_duration_ms"
   ],
   "rows": [
@@ -20919,6 +22940,30 @@
  },
  {
   "stats": [
+   "supplementary_stat_container_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Attack|アタック]スピードが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Attack|アタック]スピードが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final"
   ],
   "rows": [
@@ -21030,6 +23075,27 @@
  },
  {
   "stats": [
+   "number_of_wolves_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ウルフの召喚[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ウルフの召喚[Limit|上限] {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_raging_spirits_allowed"
   ],
   "rows": [
@@ -21052,6 +23118,20 @@
      "#"
     ],
     "t": "ゴーレム最大召喚数 {0:+d}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Physical|物理]ダメージの{0}%を[Cold|冷気]ダメージとして[Gain|獲得]する",
     "h": []
    }
   ]
@@ -21117,6 +23197,54 @@
      "#|-1"
     ],
     "t": "キャストスピードが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_critical_strike_chance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Critical|クリティカルヒット]率が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Critical|クリティカルヒット]率が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_quality_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "スキル効果持続時間が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "スキル効果持続時間が{0}%低下する",
     "h": [
      "negate",
      "1"
@@ -21755,6 +23883,44 @@
      "#"
     ],
     "t": "スプリットヴェセルは異なる種類のソケットされたスキルの数ごとにダメージが{0}%上昇する",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_area_of_effect_+%_final_per_1_unit_of_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "トリガーしたヒットが起こしたはずの[Knockback|ノックバック]0.1mごとに効果範囲が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "トリガーしたヒットが起こしたはずの[Knockback|ノックバック]0.1mごとに効果範囲が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_physical_damage_%_as_elemental_per_ailment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Physical|物理]ダメージの{0}%を鐘に付与した[ElementalAilments|元素系状態異常]と一致する属性の[Gain|追加]ダメージとして獲得する",
     "h": []
    }
   ]
@@ -59812,6 +61978,30 @@
  },
  {
   "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したショックウェーブの[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したショックウェーブの[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "bow_attacks_have_culling_strike"
   ],
   "rows": [
@@ -69298,6 +71488,30 @@
     "t": "過去5秒間に敵が[Concentration|コンセントレーション]を失っていなければ敵は[Concentration|コンセントレーション]の{0}%を毎秒再獲得する",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -91099,6 +93313,20 @@
  },
  {
   "stats": [
+   "maximum_caltrops_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "設置できるマキビシの最大数 {0:+d}個",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_chance_to_evade_is_50%"
   ],
   "rows": [
@@ -92668,6 +94896,30 @@
     ],
     "t": "[Minion|ミニオン]は受けたダメージの{0}%をライフとして[Recoup|回収]する",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ミニオンの受けるダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ミニオンの受けるダメージが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -97167,6 +99419,27 @@
  },
  {
   "stats": [
+   "rapid_assault_attached_spear_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "それぞれの対象に刺さった状態でいられるスピアヘッドの[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "それぞれの対象に刺さった状態でいられるスピアヘッドの[Limit|上限] {0}",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "real_weapon_attack_added_physical_damage_%_of_weapon_item_accuracy"
   ],
   "rows": [
@@ -99079,6 +101352,60 @@
     "t": "[Rarity|ユニーク]の敵から発生したブラストの[Hit|ヒット]ダメージが{0}%低下する",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_pulse_delay_ms",
+   "solaris_spear_number_of_pulses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "グラウンドスピアは{0}秒ごとに、最大{1}回までパルスを放つ",
+    "h": [
+     "milliseconds_to_seconds",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "グラウンドスピアは{0}秒ごとに、最大{1}回までパルスを放つ",
+    "h": [
+     "milliseconds_to_seconds",
      "1"
     ]
    }
@@ -107501,6 +109828,57 @@
  },
  {
   "stats": [
+   "poison_concoction_poison_burst_physical_damage_equal_to_%_of_strongest_active_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "敵は[Consume|消費]された[Poison|毒]の期待残存ダメージと同量のライフを失う",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "敵は[Consume|消費]された[Poison|毒]の期待残存ダメージの{0}%と同量のライフを失う",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
+   "poisonous_concoction_area_of_effect_+%_final_per_active_poison_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "敵に影響している[Poison|毒]のスタック数ごとに効果範囲が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "敵に影響している[Poison|毒]のスタック数ごとに効果範囲が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
    "recovery_from_flasks_applies_to_allies_in_presence_%"
   ],
   "rows": [
@@ -107795,6 +110173,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "足跡の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "足跡の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#",
      "table_only"
     ],
@@ -107847,6 +110255,56 @@
      "#"
     ],
     "t": "[Physical|物理]ダメージの{0}%を[Fire|火]ダメージに[Conversion|変換]する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#",
+     "0",
+     "gem_quality"
+    ],
+    "t": "マグマの[Projectile|投射物]を{0:+d}個放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "0",
+     "gem_quality"
+    ],
+    "t": "マグマの[Projectile|投射物]を{0:+d}個放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#",
+     "#"
+    ],
+    "t": "マグマの[Projectile|投射物]を{0}個放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "#"
+    ],
+    "t": "マグマの[Projectile|投射物]を{0}個放つ",
     "h": []
    }
   ],
@@ -108179,6 +110637,46 @@
  },
  {
   "stats": [
+   "unleash_the_elements_trigger_frequency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "[Trigger|トリガー]の頻度が{0}%減少する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[Trigger|トリガー]の頻度が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Trigger|トリガー]の頻度が{0}%減少する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Trigger|トリガー]の頻度が{0}%増加する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108293,6 +110791,36 @@
  },
  {
   "stats": [
+   "unleash_meteor_time_till_impact_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "隕石は{0}秒後に着弾する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "隕石は{0}秒後に着弾する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108313,6 +110841,60 @@
     "t": "クラッシュライトニングの半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_number_of_pluses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "{0}回パルスを放ってから最終ストライクを与える",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}回パルスを放ってから最終ストライクを与える",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_time_till_final_strike_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "最終ストライクは{0}秒後に起きる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "最終ストライクは{0}秒後に起きる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -108521,6 +111103,31 @@
      "#"
     ],
     "t": "[Buff|バフ]は[Allies|味方]の[Attack|アタック]に{0}から{1}の追加[Cold|冷気]ダメージを追加する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Arctic Howl"
+  ]
+ },
+ {
+  "stats": [
+   "wolf_warcry_buff_freeze_buildup_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Buff|バフ]による[Freeze|凍結]蓄積増加@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|バフ]は[Allies|味方]に[Freeze|凍結]蓄積の{0}%増加を付与する",
     "h": []
    }
   ],
@@ -108953,6 +111560,186 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[ElementalInfusion|ファイヤーインフュージョン]を受けた爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ElementalInfusion|ファイヤーインフュージョン]を受けた爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "ball_lightning_infused_burning_ground_interval_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "{0}秒ごとに[IgnitedGround|発火領域]を生成する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}秒ごとに[IgnitedGround|発火領域]を生成する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[ElementalInfusion|ファイヤーインフュージョン]を受けた爆発は{0}から{1}の[Fire|火]ダメージを与える",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|発火領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|発火領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の[Fire|火]ダメージを与えたと仮定して[Ignite|発火]させる",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
    "barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits"
   ],
   "rows": [
@@ -109258,6 +112045,174 @@
  },
  {
   "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の[Cold|冷気]ダメージを与える",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の[Cold|冷気]ダメージを与えたと仮定して敵に[Chill|冷却]を付与する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "半径{0}m以内の敵に[Chill|冷却]を付与する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "毎秒{0}の[Cold|冷気]ダメージを与える",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ルーンの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ルーンの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ルーンの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ルーンの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -109393,6 +112348,122 @@
   ],
   "skill": [
    "Blood Boil"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "爆発の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "爆発の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "敵は[Consume|消費]された[BloodLoss|失血]の+{0}%と同量のライフを失う",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[BloodLoss|失血]によるライフ喪失@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "敵は[Consume|消費]した[BloodLoss|失血]の{0}%と同量のライフを失う",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%",
+   "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "[Consume|消費]した[BloodLoss|失血]{1}ごとの効果範囲上昇@{0}% (最大 500%)",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Consume|消費]した[BloodLoss|失血]{1}ごとに効果範囲が{0}%、最大500%上昇する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
   ]
  },
  {
@@ -109778,6 +112849,63 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したショックウェーブの[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したショックウェーブの[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_allowed_bone_storm_projectiles"
   ],
   "rows": [
@@ -109795,6 +112923,112 @@
     ],
     "t": "最大{0}個の[Projectile|投射物]を放てる",
     "h": []
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+%_final_per_additional_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "消費された[Charges|パワーチャージ]ごとの効果範囲上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "消費された[Charges|パワーチャージ]ごとに効果範囲が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "消費された[Charges|パワーチャージ]ごとに効果範囲が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charges|パワーチャージ]を消費していた場合のボーナス半径@+{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Charges|パワーチャージ]を消費していた場合の爆発半径 +{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Charges|パワーチャージ]を消費していた場合の爆発半径 +{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110259,6 +113493,36 @@
     "c": [
      "10"
     ],
+    "t": "ウェーブの長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ウェーブの長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Charged Staff"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "爆発の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110272,6 +113536,52 @@
     "t": "爆発の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Cluster Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "skill_detonation_time_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[DetonationTime|起爆時間]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "[DetonationTime|起爆時間]が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[DetonationTime|起爆時間]が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[DetonationTime|起爆時間]が{0}%減少する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -110357,6 +113667,36 @@
   ],
   "skill": [
    "Comet"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Concussive Runes"
   ]
  },
  {
@@ -110567,6 +113907,63 @@
     ],
     "t": "{0}個のルーンを生成する",
     "h": []
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_electrocutes_as_though_dealt_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Electrocute|麻痺]蓄積が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Electrocute|麻痺]蓄積が{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ルーンの爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ルーンの爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110949,6 +114346,93 @@
  },
  {
   "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "{1}秒ごとのボルトの最大数@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "0",
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "[Unarmed|素手][Melee|近接]ダメージで[Hit|ヒット]を与えた時に稲妻のボルトを1個生成する、{1}秒に{0}回起きる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|素手][Melee|近接]ダメージで[Hit|ヒット]を与えた時に稲妻のボルトを1個生成する、{1}秒に{0}回起きる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|素手][Melee|近接]ダメージで[Hit|ヒット]を与えた時に稲妻のボルトを1個生成する、{1}秒に{0}回起きる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ボルトの衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ボルトの衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -111000,6 +114484,47 @@
   ],
   "skill": [
    "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "ミラージュの持続時間 {0:+d}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ミラージュの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ミラージュの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Mirage Deadeye"
   ]
  },
  {
@@ -111085,6 +114610,40 @@
   ],
   "skill": [
    "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "倒した対象の[Power|パワー]ごとに効果範囲が{0}%上昇する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_damage_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "倒した対象の[Power|パワー]ごとにダメージが{0}%上昇する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
   ]
  },
  {
@@ -111485,6 +115044,58 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Detonate Living"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
@@ -111515,6 +115126,33 @@
  },
  {
   "stats": [
+   "base_skill_buff_energy_shield_recharge_rate_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Aura|オーラ]は[ESRechargeRate|エナジーシールドリチャージレート]{0}%増加を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Aura|オーラ]は[ESRechargeRate|エナジーシールドリチャージレート]{0}%減少を付与する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Discipline"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_buff_total_maximum_energy_shield_+_to_apply"
   ],
   "rows": [
@@ -111528,6 +115166,36 @@
   ],
   "skill": [
    "Discipline"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Disengage"
   ]
  },
  {
@@ -111552,6 +115220,36 @@
   ],
   "skill": [
    "Disengage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ブラストの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ブラストの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Impending Doom"
   ]
  },
  {
@@ -111810,6 +115508,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "余震の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "余震の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthquake"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#"
     ],
     "t": "亀裂の道のりに沿って、および出現したスパイクの周囲{0}mにダメージを与える",
@@ -111898,6 +115626,61 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthshatter"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_%_damage_gained_as_extra_lightning_on_debuffed_target"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "ロッドが刺さった対象に対してダメージの何%を追加[Lightning|雷]ダメージとして獲得するか@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ロッドが刺さった対象に対する[Hit|ヒット]はダメージの{0}%を追加[Lightning|雷]ダメージとして獲得する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -111943,6 +115726,41 @@
     "t": "矢の持続時間は{0}秒",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "ロッドが刺さった対象が受けるダメージ増加@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ロッドが刺さった対象が受けるダメージが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ロッドが刺さった対象が受けるダメージが{0}%減少する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -112008,6 +115826,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_be_trigger_elemental_expression_%"
   ],
   "rows": [
@@ -112039,6 +115887,84 @@
      "100|#"
     ],
     "t": "[Melee|近接][Critical|クリティカルヒット]時に炎の爆発、アークのボルト、氷のウェーブを[Trigger|トリガー]する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "{0}個の[Projectile|投射物]を放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}個の[Projectile|投射物]を放つ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "{0}回[Chain|連鎖]する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}回[Chain|連鎖]する",
     "h": []
    }
   ],
@@ -112187,6 +116113,198 @@
     ],
     "t": "最大{0}種類の[ElementalAilments|状態異常]を[Consume|消費]する",
     "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "elemental_sundering_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したパルスの[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したパルスの[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -112908,6 +117026,162 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "ツタは破壊される前に{0}mまで伸びることができる",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_base_movement_speed_+%_final_per_applied_stack"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "ツタの数ごとの[Slow|減速]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "付着したツタの数ごとに敵を{0}%[Slow|減速]させる",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vine_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ツタの最大付着時間@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ツタは最大{0}秒間付着したままになる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ツタは最大{0}秒間付着したままになる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_maximum_number_of_vines_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "付着できるツタの最大数@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "それぞれの敵に{0}本のツタを付着できる",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "それぞれの敵に最大{0}本のツタを付着できる",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_additional_number_of_vines_allowed_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Plant|生い茂った]時のツタの最大数@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Plant|生い茂った]亀裂はツタを追加で最大{0}本付与できる",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Plant|生い茂った]亀裂はツタを追加で最大{0}本付与できる",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "衝撃の半径は{0}m",
@@ -112929,6 +117203,61 @@
   ],
   "skill": [
    "Escape Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "[Debuff|デバフ]の持続時間は{0:+d}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "[Debuff|デバフ]の持続時間は{0:+d}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "[Debuff|デバフ]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "[Debuff|デバフ]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Essence Drain"
   ]
  },
  {
@@ -113077,6 +117406,23 @@
  },
  {
   "stats": [
+   "explosive_concoction_number_of_secondary_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最大{0}体の[Ignite|発火]状態の敵に追加の[Projectile|投射物]を投げる",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Explosive Concoction"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -113127,6 +117473,460 @@
   ],
   "skill": [
    "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "地面に刺さるスピアの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "地面に刺さるスピアの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆発の長さ {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆発の長さ {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の幅は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の幅は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|発火領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|発火領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
   ]
  },
  {
@@ -113304,6 +118104,138 @@
   ],
   "skill": [
    "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charges|パワーチャージ]1個ごとのダメージ上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Charges|パワーチャージ]1個ごとにダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Charges|パワーチャージ]1個ごとにダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_when_charged"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Charges|パワーチャージ]を消費していた場合のダメージ上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Charges|パワーチャージ]が1個消費されていればダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Charges|パワーチャージ]が1個消費されていればダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_base_number_of_projectiles_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "消費された[Charges|パワーチャージ]ごとに放たれる[Projectile|投射物]の数@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "消費した[Charges|パワーチャージ]ごとに{0}個の[Projectile|投射物]を放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "消費した[Charges|パワーチャージ]ごとに{0}個の[Projectile|投射物]を放つ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発と[ChilledGround|冷却領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発と[ChilledGround|冷却領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fangs of Frost"
   ]
  },
  {
@@ -113805,6 +118737,200 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "衝撃の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "衝撃の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "0",
+     "table_only"
+    ],
+    "t": "衝撃の間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "{0}秒ごとに一回の衝撃",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "{1}本のボルト",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "衝撃の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "衝撃の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "0",
+     "table_only"
+    ],
+    "t": "衝撃の間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "{0}秒ごとに一回の衝撃",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "{1}本のボルト",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
    "base_fire_damage_to_deal_per_minute"
   ],
   "rows": [
@@ -113987,6 +119113,60 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "亀裂の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "亀裂の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "forge_hammer_base_maximum_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "亀裂の[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "亀裂の[Limit|上限] {0}",
+    "h": []
    }
   ],
   "skill": [
@@ -114212,6 +119392,80 @@
     "c": [
      "10"
     ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|ヒット]を与えた敵の[Freeze|凍結]を[Consume|消費]しその場所に二次的な爆発をトリガーする\\n二次的な爆発は[Freeze|凍結]を[Consume|消費]できない",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "噴出の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -114386,6 +119640,56 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragments Of The Past"
+  ]
+ },
+ {
+  "stats": [
    "freezing_mark_hit_damage_freeze_multiplier_+%_final",
    "quality_display_freezing_mark_is_gem"
   ],
@@ -114540,6 +119844,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frostbolt"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_all_elemental_exposure_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude_cap"
@@ -114683,6 +120017,155 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "追加で1回分岐する",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "追加で{0}回分岐する",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "追加で1回分岐する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "追加で{0}回分岐する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "frost_darts_explode_creates_X_mortars"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "生成される氷の塊の数@{0}個",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "それぞれの爆発で氷の塊を1個生成する",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "それぞれの爆発で氷の塊を{0}個生成する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "それぞれのダーツは氷の塊を{0}個生成する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -114808,6 +120291,36 @@
      "1|#"
     ],
     "t": "壁の長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Wall"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
      "1"
@@ -115024,6 +120537,36 @@
    }
   ],
   "skill": [
+   "Frozen Locus"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Fulminating Concoction"
   ]
  },
@@ -115105,6 +120648,36 @@
     "t": "ショックウェーブの半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Furious Slam"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[JaggedGround|ギザギザ領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[JaggedGround|ギザギザ領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -115359,6 +120932,30 @@
  },
  {
   "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ビームは{0}体の敵に[Chain|連鎖]する",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ビームは{0}体の敵に[Chain|連鎖]する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Galvanic Shards"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -115410,6 +121007,238 @@
   ],
   "skill": [
    "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "雲の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "雲の半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "雲の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "雲の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "雲の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "雲の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m\\n[ShockedGround|感電領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m\\n[ShockedGround|感電領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "{1}秒ごとの氷の爆発の最大数@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "0",
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "爆発のクールダウン -{1}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|素手][Melee|近接]ダメージで[Hit|ヒット]を与えた時に氷の爆発を起こす、{1}秒に{0}回だけ起きる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "[UnarmedDamage|素手][Melee|近接]ダメージで[Hit|ヒット]を与えた時に氷の爆発を起こす、{1}秒に{0}回だけ起きる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "氷の爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "氷の爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
   ]
  },
  {
@@ -115477,6 +121306,102 @@
   ],
   "skill": [
    "Ghost Dance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "壁は{0}秒持続する",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "壁は{0}秒持続する",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "frost_wall_maximum_life",
+   "frozen_locus_crystal_display_stat"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "[IceCrystals|氷の結晶]の最大ライフ@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "[IceCrystals|氷の結晶]は{0}の最大ライフを持つ",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "[IceCrystals|氷の結晶]は{0}の最大ライフを持つ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
   ]
  },
  {
@@ -115671,6 +121596,61 @@
     "t": "フラグメントの持続時間は{0}秒",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "爆発の長さが{0:+d}mされる",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "爆発の長さが{0:+d}mされる",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "爆発の長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "爆発の長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
      "1"
     ]
    }
@@ -116027,6 +122007,36 @@
     "c": [
      "10"
     ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Grim Pillars"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "衝撃の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116188,6 +122198,76 @@
   ],
   "skill": [
    "Hammer of the Gods"
+  ]
+ },
+ {
+  "stats": [
+   "base_curse_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "ソケットされた[Curse|呪い]持続時間が{0:+d}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ソケットされた[Curse|呪い]持続時間が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ソケットされた[Curse|呪い]持続時間が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
+  ]
+ },
+ {
+  "stats": [
+   "mark_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "ソケットされた[Mark|呪印]の効果が{0:+d}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ソケットされた[Mark|呪印]の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ソケットされた[Mark|呪印]の効果が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
   ]
  },
  {
@@ -116677,6 +122757,55 @@
     "c": [
      "10"
     ],
+    "t": "ボルトの衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ボルトの衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ボルトの[Physical|物理]ダメージの{0}%を[Lightning|雷]ダメージに変換する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "爆発の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116763,6 +122892,58 @@
     "h": [
      "canonical_line"
     ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Hit|ヒット]時に[RivenArmour|アーマー切断]を付与する\\n[RivenArmour|アーマー切断]は{0}秒の持続時間を持つ\\nまたは[ArmourBreak|完全][ArmourBreak|アーマー破壊]が取り除かれるまで持続する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Rarity|ユニーク]の敵に対するダメージ上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵に対してダメージが{0}%低下する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵に対してダメージが{0}%上昇する",
+    "h": []
    }
   ],
   "skill": [
@@ -117313,6 +123494,233 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発と[ChilledGround|冷却領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発と[ChilledGround|冷却領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ChilledGround|冷却領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ChilledGround|冷却領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_arming_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "武装状態になるまでの時間@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "シャードは{0}秒後に武装状態になる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "シャードは{0}秒後に武装状態になる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_damage_+%_final_after_1_second",
+   "quality_display_permafrost_shard_damage_+%_final_after_1_second_is_gem",
+   "permafrost_shard_bonus_damage_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "起動状態になってから{2}秒間のダメージ上昇@{0}%",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#",
+     "#"
+    ],
+    "t": "シャードは起動状態になってから{2}秒間ダメージが{0}%上昇する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "#|-1",
+     "#",
+     "#"
+    ],
+    "t": "シャードは起動状態になってから{2}秒間ダメージが{0}%低下する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3",
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0",
+     "#",
+     "gem_quality"
+    ],
+    "t": "シャードは起動状態になった後ダメージが{0:+d}%上昇する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "シャードの最大数@{0}個",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "アクティブなシャードの最大数 {0}個",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "アクティブなシャードの最大数 {0}個",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -117743,6 +124151,36 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Exposure|火の曝露]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Exposure|火の曝露]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
    "incinerate_fuel_gain_per_mana_spent"
   ],
   "rows": [
@@ -117836,6 +124274,55 @@
      "#"
     ],
     "t": "{0}から{1}の[Fire|火]ダメージを与えたと仮定して[Ignite|発火]させる、0.075秒ごとに起きる",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[IgnitedGround|発火領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|発火領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の[Fire|火]ダメージを与えたと仮定して[Ignite|発火]させる",
     "h": []
    }
   ],
@@ -118780,6 +125267,46 @@
  },
  {
   "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99",
+     "table_only"
+    ],
+    "t": "着弾時に追加でバーストを起こす確率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#",
+     "table_only"
+    ],
+    "t": "着弾時に追加でバーストを起こす",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "着弾時に{0}%の確率で追加でバーストを起こす",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "着弾時に追加でバーストを起こす",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Rod"
+  ]
+ },
+ {
+  "stats": [
    "number_of_lightning_rods_allowed"
   ],
   "rows": [
@@ -118828,6 +125355,69 @@
      "2|#"
     ],
     "t": "[Charges|フレンジーチャージ]を消費した時に{0}体の対象に向かって分裂する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "半径{0}m以内の対象にライトニングボルトを放つ",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "0"
+    ],
+    "t": "放たれるボルトの数 {0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "放たれるボルトの数 {0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "{0}本のボルトを放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "{0}本のボルトを放つ",
     "h": []
    }
   ],
@@ -119241,6 +125831,36 @@
     ],
     "t": "最大{0}個のミサイルを放つ",
     "h": []
+   }
+  ],
+  "skill": [
+   "Magnetic Salvo"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -119728,6 +126348,30 @@
  },
  {
   "stats": [
+   "midnight_star_max_ice_crystals"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[IceCrystals|氷の結晶]の[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[IceCrystals|氷の結晶]の[Limit|上限] {0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Midnight Zenith"
+  ]
+ },
+ {
+  "stats": [
    "base_cooldown_modifiable_repeat_interval_ms"
   ],
   "rows": [
@@ -119956,6 +126600,85 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "亀裂の持続時間が{0:+d}秒される",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "亀裂の持続時間が{0:+d}秒される",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "亀裂の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "亀裂の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
+   "molten_crash_max_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "亀裂の[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "亀裂の[Limit|上限] {0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120163,6 +126886,66 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Sunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Soaring Midnight"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120247,6 +127030,153 @@
     "c": [
      "10"
     ],
+    "t": "[OilGround|オイル領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|オイル領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[OilGround|オイル領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|オイル領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Oil|オイル]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Oil|オイル]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "electric_spit_empowered_channel_consume_power_charge_per_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "1秒ごとに[Charges|パワーチャージ]を1個消費して\\n[Channelling|チャネリング]を持続する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}秒ごとに[Charges|パワーチャージ]を1個消費して\\n[Channelling|チャネリング]を持続する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "[Hit|ダメージ]および[Oil|オイル]の散布半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -120288,6 +127218,66 @@
      "#"
     ],
     "t": "[Oil|オイル]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[OilGround|オイル領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|オイル領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[OilGround|オイル領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[OilGround|オイル領域]の持続時間は{0}秒",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
      "1"
@@ -120783,6 +127773,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Phantasmal Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -120941,6 +127961,66 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Plasma Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear Throw"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_gain_1_more_charge_%"
   ],
   "rows": [
@@ -120969,6 +128049,66 @@
   ],
   "skill": [
    "Power Siphon"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "突撃の長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "突撃の長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "突撃の幅は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "突撃の幅は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
   ]
  },
  {
@@ -121349,6 +128489,52 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "矢の落下スピード@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "矢の落下スピード@{0:+d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "矢の落下が{0}%速くなる",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "矢の落下が{0}%遅くなる",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rain of Arrows"
+  ]
+ },
+ {
+  "stats": [
    "rain_of_arrows_delay_per_arrow"
   ],
   "rows": [
@@ -121578,6 +128764,141 @@
   ],
   "skill": [
    "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "ゾンビ[Empowered|強化]効果@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "ゾンビ[Empowered|強化]効果@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ゾンビ蘇生に対する[Empowered|強化]の効果が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ゾンビ蘇生に対する[Empowered|強化]の効果が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "スピアヘッドの持続時間 {0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スピアヘッドの持続時間 {0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "rapid_assault_%_chance_to_attach_additional_spear"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "追加のスピアヘッド確率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}%の確率で追加のスピアヘッドを対象に残す",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "追加のスピアヘッドを対象に残す",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
   ]
  },
  {
@@ -122446,6 +129767,86 @@
     "c": [
      "10"
     ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_life_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "2秒かけて最大ライフの何%を回復するか@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最大ライフの{0}%を2秒かけて回復する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_mana_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "2秒かけて最大マナの何%を回復するか@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "最大マナの{0}%を2秒かけて回復する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "ボルトの衝撃の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -122596,6 +129997,36 @@
  {
   "stats": [
    "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rolling Slam"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
    {
@@ -123071,6 +130502,100 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "フューリーごとの[Buff|バフ]持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "フューリーごとの[Buff|バフ]持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Buff|バフ]によるダメージ上昇付与@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[Buff|バフ]はダメージ{0}%上昇を付与する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|バフ]は[Onslaught|猛攻]とダメージ{0}%上昇を付与する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_life_lost_%_per_minute_nonlethal"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Buff|バフ]による毎秒のライフ喪失@{0}%",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|バフ]は毎秒最大ライフの{0}%喪失を引き起こす",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -123363,6 +130888,41 @@
     "t": "ウォークライの半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Seismic Cry"
+  ]
+ },
+ {
+  "stats": [
+   "seismic_cry_slam_skill_aftershock_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Empowered|強化]された[Attack|アタック]の[Aftershock|余震]のダメージ上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Empowered|強化]された[Attack|アタック]の[Aftershock|余震]のダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Empowered|強化]された[Attack|アタック]の[Aftershock|余震]のダメージが{0}%低下する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -123895,6 +131455,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "パルスの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "パルスの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shockburst Rounds"
+  ]
+ },
+ {
+  "stats": [
    "shockchain_arrow_X_additional_chains_on_first_hitting_shocked_or_electrocuted_enemy"
   ],
   "rows": [
@@ -123997,6 +131587,36 @@
     ],
     "t": "アクティブな矢の最大数 {0}",
     "h": []
+   }
+  ],
+  "skill": [
+   "Shockchain Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -124386,6 +132006,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siphoning Strike"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_ward_spent_as_glory"
   ],
   "rows": [
@@ -124598,6 +132248,153 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生した爆発の[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124728,6 +132525,55 @@
      "2|#"
     ],
     "t": "ソーラーオーブの[Limit|上限] {0}個",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Ignite|発火]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ignite|発火]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の[Fire|火]ダメージを与えたと仮定して[Ignite|発火]させる",
     "h": []
    }
   ],
@@ -124948,6 +132794,122 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "0",
+     "#"
+    ],
+    "t": "{0}個の[Projectile|投射物]を放射状に放つ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Projectile|投射物]持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|投射物]持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_spell_cast_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "キャストタイム {0:+d}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "spark_min_time_between_target_clearing_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "対象に対する再[Hit|ヒット間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "同じタイミングで放った投射物は同一の対象に\\n1秒に一度だけ[Hit|ヒット]できる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "同じタイミングで放った投射物は同一の対象に\\n{0}秒に一度だけ[Hit|ヒット]できる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -124968,6 +132930,93 @@
     "t": "衝撃の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "パルスの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "パルスの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[IgnitedGround|発火領域]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_ground_expands_to_+%_final_by_skill_end"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "地面にスピアが刺さっている間半径を獲得し、スピアの持続時間の終わりには半径が{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "地面にスピアが刺さっている間半径を獲得し、スピアの持続時間の終わりには半径が{0}%低下する",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -125045,6 +133094,36 @@
     ],
     "t": "アクティブなスピアの最大数 {0}本",
     "h": []
+   }
+  ],
+  "skill": [
+   "Spearfield"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -125281,6 +133360,56 @@
    }
   ],
   "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "スラムと起爆された[JaggedGround|ギザギザ領域]のそれぞれのパッチの{0}m以内の[JaggedGround|ギザギザ領域]を起爆する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Starborn Onslaught"
   ]
  },
@@ -125378,6 +133507,342 @@
   ],
   "skill": [
    "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "半径{0}m以内の敵にボルトを放つ",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ShockedGround|感電領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ShockedGround|感電領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "地面に刺さるスピアの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "地面に刺さるスピアの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ボルトの間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "1秒ごとにボルトを放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}秒ごとにボルトを放つ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "半径{0}m以内の敵にボルトを放つ",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_overcharged_spears_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "地面に刺さる槍の[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "地面に刺さる槍の[Limit|上限] {0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "地面に刺さるスピアの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "地面に刺さるスピアの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ボルトは{0}体の敵に[Chain|連鎖]する",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ボルトは{0}体の敵に[Chain|連鎖]する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ボルトの間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "1秒ごとにボルトを放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}秒ごとにボルトを放つ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "半径{0}m以内の敵にボルトを放つ",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_detonate_number_of_beams"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "放たれるボルトの数@{0}本",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "{0}本のボルトを放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "{0}本のボルトを放つ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
   ]
  },
  {
@@ -125552,6 +134017,86 @@
   ],
   "skill": [
    "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ボルトによる[Hit|ヒット]を受けたいずれかの対象が[Shock|感電]状態になったら、半径{0}m以内の全ての敵も[Shock|感電]状態にする",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
   ]
  },
  {
@@ -125732,6 +134277,35 @@
   ],
   "skill": [
    "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_area_of_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "レイヴンフロックスキルの効果範囲が{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "レイヴンフロックスキルの効果範囲が{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spiraling Conspiracy"
   ]
  },
  {
@@ -125919,6 +134493,112 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "余震の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "余震の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "aftershock_radius_+_per_previous_aftershock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "連続した余震ごとの半径@{0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "連続した余震ごとに半径に{0:+d}mを獲得し、最大3mになる",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "連続した余震ごとに半径に{0:+d}mを獲得し、最大3mになる",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "channelled_slam_damage_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ステージごとの[Hit|ヒット]ダメージ上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ステージごとに[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ステージごとに[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -126068,6 +134748,93 @@
     ],
     "t": "[Strike|ストライク]あると仮定して[AncestralBoost|先祖の加護]を受けられる",
     "h": []
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "bell_shockwave_cooldown_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ショックウェーブは1秒ごとにトリガーできる",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブは{0}秒ごとにトリガーできる",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -126463,6 +135230,36 @@
     "t": "衝撃の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[ChilledGround|冷却領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ChilledGround|冷却領域]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127371,6 +136168,200 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "トルネードはその中に向けて放たれた[Projectile|投射物]を{0}個のコピーに分裂させる",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_tornado_shots_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "トルネードの[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "トルネードの[Limit|上限] {0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "トルネードの[Limit|上限] {0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "トルネードの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トルネードの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_number_of_hits_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "トルネードは1回[Hit|ヒット]を受けた後で消える",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "トルネードは{0}回[Hit|ヒット]を受けた後で消える",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_damage_+%_final",
+   "quality_display_tornado_shot_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "コピーされた[Projectile|投射物]のダメージペナルティ@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "コピーされた[Projectile|投射物]のダメージペナルティ@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "コピーされた[Projectile|投射物]はダメージが{0:+d}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "コピーされた[Projectile|投射物]はダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "コピーされた[Projectile|投射物]はダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_range"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "コピーされた[Projectile|投射物]の範囲@{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "コピーされた[Projectile|投射物]は{0}mの最大トラベル距離を持つ",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -127492,6 +136483,33 @@
     ],
     "t": "それぞれの敵には最大1個の膿疱を付着できる",
     "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_domain_buff_linger_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "トキシックブルームの効果はプレイヤーに1秒間残存する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "トキシックブルームの効果はプレイヤーに{0}秒間残存する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -127622,6 +136640,220 @@
   "rows": [
    {
     "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "膿疱の[DetonationTime|起爆]半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "膿疱の[DetonationTime|起爆]半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "膿疱の[DetonationTime|起爆]半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿疱の[DetonationTime|起爆]半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "膿疱の[DetonationTime|起爆]半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿疱の[DetonationTime|起爆]半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_detonation_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "table_only"
+    ],
+    "t": "膿疱の[DetonationTime|起爆時間]@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "膿疱の[DetonationTime|起爆時間]@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "膿疱は{0}秒後に[DetonationTime|起爆]する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿疱は{0}秒後に[DetonationTime|起爆]する",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿疱はそれに付与された[Poison|毒]の期待ダメージを貯める",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_1%_more_damage_per_x_stored_poison",
+   "toxic_pustule_max_burst_damage_+%_final_from_stored_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "[Poison|毒]による爆発の上昇量最大値{1}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "貯められた[Poison|毒]は爆発のダメージ最大{1}%上昇を付与する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_base_radius_+1_per_x_stored_poison",
+   "toxic_pustule_max_additional_burst_base_radius_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "[Poison|毒]スタック数による追加爆発半径の最大値@+{1}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "貯められた[Poison|毒]は基礎爆発範囲に最大{1}mを追加する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "貯められた[Poison|毒]は基礎爆発範囲に最大{1}mを追加する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "衝撃の半径は{0}m",
@@ -127637,6 +136869,96 @@
     "t": "衝撃の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "フューズの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "フューズの持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "雲の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "雲の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "雲の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "雲の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127735,6 +137057,53 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "膿疱はそれに付与された[Poison|毒]の期待ダメージを貯める",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -127748,6 +137117,53 @@
   ],
   "skill": [
    "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
+  ]
+ },
+ {
+  "stats": [
+   "triggered_by_chaos_frog_explosion_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "このスキルはウィッチトードが敵に向かってジャンプした時に[Trigger|トリガー]される",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
   ]
  },
  {
@@ -127994,6 +137410,30 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "His Winnowing Flame"
+  ]
+ },
+ {
+  "stats": [
+   "unique_flame_pillar_fire_damage_equal_to_%_of_remaining_ignite_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "グリスリーパイアは[Consume|消費]した[Ignite|発火]の最大期待残存ダメージと同量のダメージを与える",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "グリスリーパイアは[Consume|消費]した[Ignite|発火]の最大期待残存ダメージの{0}%と同量のダメージを与える",
+    "h": []
    }
   ],
   "skill": [
@@ -128292,6 +137732,31 @@
  },
  {
   "stats": [
+   "twister_%_chance_for_additional_twister"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "追加のツイスターを放つ確率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}%の確率でツイスターを追加で1個放つ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Twister"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -128407,6 +137872,41 @@
  },
  {
   "stats": [
+   "minion_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[Minion|ミニオン]の移動スピードが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|ミニオン]の移動スピードが{0}%増加する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|ミニオン]の移動スピードが{0}%減少する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Unearth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -128493,6 +137993,48 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "exploit_debuff_attack_damage_to_convert_to_magnitude_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Daze|眩暈]状態の敵に対して[Hit|ヒット]時に[BrokenStance|姿勢崩し]を適用する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "broken_stance_hit_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[BrokenStance|姿勢崩し]の影響を受けた敵が{0:+d}回の[Hit|ヒット]を受けた後[BrokenStance|姿勢崩し]は取り除かれる",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[BrokenStance|姿勢崩し]の影響を受けた敵が{0}回の[Hit|ヒット]を受けた後[BrokenStance|姿勢崩し]は取り除かれる",
+    "h": []
    }
   ],
   "skill": [
@@ -128600,6 +138142,143 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ツタは半径{0}m以内の敵に付着する",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ツタは敵の移動スピードを{0}%[Slow|減速]する",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "植物の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "植物の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "poison_vine_arrow_vine_stored_poison_damage_+%_final",
+   "display_statset_hide_usage_stats"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "受ける[Poison|毒]の蓄積量@{0}%",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "植物は[Poison|毒]の秒間ダメージの{0}%と同量の追加[Chaos|混沌]ダメージを毎秒与える",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "植物に[Poison|毒]を付与すると、[Poison|毒]の毎秒のダメージの{0}%と同量の追加[Chaos|混沌]ダメージを毎秒与える",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "vine_arrow_area_of_effect_+%_final_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Plant|生い茂った]プラントの効果範囲上昇@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Plant|生い茂った]時に効果範囲が{0}%上昇する",
+    "h": []
    }
   ],
   "skill": [
@@ -128942,6 +138621,75 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "爆発の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}から{1}の[Fire|火]ダメージを与えたと仮定して[Ignite|発火]させる",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "半径{0}m以内の敵を[Ignite|発火]させる",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -129167,6 +138915,154 @@
     "c": [
      "10"
     ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "衝撃の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_fires_projectiles_every_x_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "投射物の間隔@{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Projectile|投射物]を1秒ごと、または[Slam|スラム]を受けた時に放つ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|投射物]を{0}秒ごと、または[Slam|スラム]を受けた時に放つ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_initial_explosion_number_of_additional_projectiles_per_additional_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "追加のステージごとの追加の初期[Projectile|投射物]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "初期の噴出は追加のステージごとに\\n[Projectile|投射物]を追加で{0}個放つ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_slam_unscalable_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ボルケーノの最大[Slam|スラム]数@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ボルケーノは[Slam|スラム]{0}回の後、破壊される",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ボルケーノは[Slam|スラム]{0}回の後、破壊される",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "壁の長さは{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -129280,6 +139176,54 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Voltaic Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "voltaic_barrier_trigger_maximum_number_of_extra_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "放たれるビーム数@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "ビームを放つ対象の近くの敵の追加最大数 {0:+d}体",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "ビームを放つ対象の近くの敵の追加最大数 {0:+d}体",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "対象の近くの敵追加で最大{0}体にビームを放つ",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "対象の近くの敵追加で最大{0}体にビームを放つ",
+    "h": []
    }
   ],
   "skill": [
@@ -130163,6 +140107,241 @@
     "c": [
      "10"
     ],
+    "t": "[Whirlwind|ワールウィンド]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|ワールウィンド]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "追加ステージごとの半径@{0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "追加ステージごとに半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "エレメンタル[Whirlwind|ワールウィンド]はダメージの{0}%を対応する[ElementalDamage|元素属性]のダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "崩壊は[Melee|近接]ダメージを与える",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Whirlwind|ワールウィンド]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|ワールウィンド]の半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Whirlwind|ワールウィンド]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|ワールウィンド]の持続時間は{0}秒",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "追加ステージごとの半径@{0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "追加ステージごとに半径 {0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_base_maximum_number_of_storms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Whirlwind|ワールウィンド]の[Limit|上限]は{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Whirlwind|ワールウィンド]の[Limit|上限]は{0}",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "エレメンタル[Whirlwind|ワールウィンド]はダメージの+{0}%を対応する[DamageTypes|元素属性]のダメージとして[Gain|獲得]する",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "エレメンタル[Whirlwind|ワールウィンド]はダメージの{0}%を対応する[ElementalDamage|元素属性]のダメージとして[Gain|獲得]する",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "コーンの長さは{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130384,6 +140563,96 @@
     "c": [
      "10"
     ],
+    "t": "サーペントの長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "サーペントの長さは{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "サーペントの幅は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "サーペントの幅は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "爆発の長さは{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130424,6 +140693,63 @@
     ],
     "t": "[HeavyStun|ヘビースタン]付与時に{0}%の[SurpassChance|超過可能確率]で\\n[Charges|パワーチャージ]を1個付与する。[Power|モンスターパワー]でスケールする",
     "h": []
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "wing_blast_shockwave_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したショックウェーブの[Hit|ヒット]ダメージが{0}%上昇する",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Rarity|ユニーク]の敵から発生したショックウェーブの[Hit|ヒット]ダメージが{0}%低下する",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -130607,6 +140933,34 @@
  },
  {
   "stats": [
+   "skill_wolf_mark_damage_taken_+%_per_nearby_enemy",
+   "skill_wolf_mark_damage_taken_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "6m以内にいる敵ごとに受けるダメージ増加 (最大)@{0}% (1%)",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "[Mark|呪印]を付与された敵はその6m以内にいる敵ごとに受けるダメージが{0}%増加する、最大{1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130737,6 +141091,70 @@
  },
  {
   "stats": [
+   "wolf_lunar_blessing_beam_attack_extra_beams_to_trigger",
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "ムーンビームの追加の対象の数@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "10"
+    ],
+    "t": "[Hit|ヒット]を受けた対象と{1}m以内の対象最大{0}体にムーンビームを落とす",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "[Hit|ヒット]を受けた対象と{1}m以内の対象最大{0}体にムーンビームを落とす",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "10"
+    ],
+    "t": "[Hit|ヒット]を受けた対象と{1}m以内の対象最大{0}体にムーンビームを落とす",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "[Hit|ヒット]を受けた対象と{1}m以内の対象最大{0}体にムーンビームを落とす",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130774,6 +141192,36 @@
     "c": [
      "10"
     ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ショックウェーブの半径は{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "衝撃の半径は{0}m",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130789,6 +141237,31 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Devour"
+  ]
+ },
+ {
+  "stats": [
+   "wyvern_devour_flask_charm_charge_gain_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Flask|フラスコ]と[Charm|チャーム]チャージ獲得確率@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Corpse|死体]消費時に敵を倒したと仮定して{0}%の確率で[Flask|フラスコ]と[Charm|チャーム]のチャージを獲得する",
+    "h": []
    }
   ],
   "skill": [

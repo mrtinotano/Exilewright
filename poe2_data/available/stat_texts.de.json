@@ -872,6 +872,75 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "Gabelt sich ein zusätzliches Mal auf",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Gabelt sich {0} zusätzliche Male auf",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Projektile von unterstützten Fertigkeiten gabeln sich ein zusätzliches Mal auf",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Projektile von unterstützten Fertigkeiten gabeln sich {0} zusätzliche Male auf",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "projectiles_return",
+   "projectile_return_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "0",
+     "1|99"
+    ],
+    "t": "Projektile haben {1}% Chance, zu Euch zurückzukehren",
+    "h": []
+   },
+   {
+    "c": [
+     "0",
+     "100|#"
+    ],
+    "t": "Projektile kehren zu Euch zurück",
+    "h": []
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "Projektile kehren zu Euch zurück",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "support_chain_hit_damage_+%_final"
   ],
   "rows": [
@@ -1198,6 +1267,23 @@
      "1|#"
     ],
     "t": "Verursacht {0} [Physical|physischen] Schaden pro Sekunde",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Verursacht {0} [Cold|Kälte]schaden pro Sekunde",
     "h": [
      "per_minute_to_per_second",
      "1"
@@ -2172,6 +2258,52 @@
  },
  {
   "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Verursacht] {0}% des [Physical|physischen] Schadens als [Fire|Feuer]schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_fire_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Verursacht {0}% mehr Feuerschaden",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Verursacht {0}% mehr Feuerschaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Verursacht {0}% weniger Feuerschaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_life_spent_as_glory"
   ],
   "rows": [
@@ -2181,6 +2313,53 @@
     ],
     "t": "Unterstützte Fertigkeiten erhalten [Glory|Ruhm] in Höhe von {0}% des Lebens,\\ndas für andere Fertigkeiten verbraucht wird",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0}% mehr Kreaturen-Angriffsgeschwindigkeit",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0}% mehr [Projectile|Projektil]geschwindigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Projectile|Projektil]geschwindigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Projectile|Projektil]geschwindigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -8833,6 +9012,30 @@
  },
  {
   "stats": [
+   "trinity_skill_speed_+%_while_all_resonance_is_at_least_250_to_grant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte [SkillSpeed|Fertigkeitengeschwindigkeit], während gesamte [Affinity|Affinität] über 250 beträgt",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerte [SkillSpeed|Fertigkeitengeschwindigkeit], während gesamte [Affinity|Affinität] über 250 beträgt",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "skill_unusable_until_moved_X_distance"
   ],
   "rows": [
@@ -15004,6 +15207,38 @@
  },
  {
   "stats": [
+   "triggered_skill_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Unterstützte ausgelöste Zauber verursachen {0}% erhöhten Schaden, wenn sie [Trigger|ausgelöst] werden",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Unterstützte ausgelöste Zauber verursachen {0}% erhöhten Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Unterstützte ausgelöste Zauber verursachen {0}% verringerten Schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "try_consuming_shock_to_trigger_shocking_rift_in_radius_on_shocking_enemy",
    "consume_shock_of_X_enemies_to_trigger_shocking_rift"
   ],
@@ -15441,6 +15676,23 @@
  },
  {
   "stats": [
+   "skill_main_hand_total_attack_fire_damage_permyriad_to_add_as_unscalable_damage_to_oil_ground_ignite"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Sobald er [Ignite|entzündet] ist, fügt [OilGround|öliger Boden] dem [Ignite|Entzünden] {0}% des [Fire|Feuer][Hit|schadens] dieses Angriffs als nicht skalierbaren [Hit|Schaden] hinzu",
+    "h": [
+     "divide_by_one_hundred",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "corpse_explosion_monster_life_%"
   ],
   "rows": [
@@ -15532,6 +15784,30 @@
      "#|-1"
     ],
     "t": "{0}% verringerte Zaubergeschwindigkeit bei [LowLife|niedrigem Leben]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Wirkungsbereich",
     "h": [
      "negate",
      "1"
@@ -15673,6 +15949,30 @@
     "t": "[Withered|Verkümmerung] hält {0} Sekunden an",
     "h": [
      "milliseconds_to_seconds",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_life_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Kreaturen haben {0}% mehr maximales Leben",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Kreaturen haben {0}% weniger maximales Leben",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -16300,6 +16600,30 @@
  },
  {
   "stats": [
+   "accuracy_range_penalty_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhter Malus auf die [Accuracy|Treffgenauigkeit] basierend auf der Reichweite",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerter Malus auf die [Accuracy|Treffgenauigkeit] basierend auf der Reichweite",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_attack_speed_+%_final_while_dual_wielding"
   ],
   "rows": [
@@ -16315,6 +16639,90 @@
      "#|-1"
     ],
     "t": "Während des [DualWield|Tragens zweier Waffen] treffen beide Waffen\\nmit{0}% weniger Angriffsgeschwindigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_chaos"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Verursacht] {0}% des Schadens als extra [Chaos|Chaos]schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Verursacht] {0}% des Schadens als [Cold|Kälte]schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Verursacht] {0}% des Schadens als extra [Fire|Feuer]schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_all_damage_%_to_gain_as_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Verursacht] {0}% des Schadens als extra [Lightning|Blitz]schaden",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Gegnerische Bewegungsgeschwindigkeit-[Slow|Verlangsamung]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Slow|Verlangsamt] gegnerische Bewegungsgeschwindigkeit um {0}%",
     "h": [
      "negate",
      "1"
@@ -16363,6 +16771,78 @@
      "#|-1"
     ],
     "t": "[Chill|Unterkühlt] Gegner, was {0}% weniger verursachtem Schaden entspricht",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_non_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Consume|Verbraucht] [Freeze|Einfrieren] bei Gegnern ([Rarity|einzigartige ausgenommen]), um {0}% mehr Schaden zu verursachen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Consume|Verbraucht] [Freeze|Einfrieren] bei Gegnern ([Rarity|einzigartige ausgenommen]), um {0}% weniger Schaden zu verursachen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_consume_enemy_freeze_to_gain_damage_against_unique_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Consume|Verbraucht] [Freeze|Einfrieren] bei [Rarity|einzigartigen] Gegnern, um {0}% mehr Schaden zu verursachen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Consume|Verbraucht] [Freeze|Einfrieren] bei [Rarity|einzigartigen] Gegnern, um {0}% weniger Schaden zu verursachen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_against_heavy_stunned_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden gegen [HeavyStun|schwer betäubte] Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden gegen [HeavyStun|schwer betäubte] Gegner",
     "h": [
      "negate",
      "1"
@@ -16463,6 +16943,159 @@
      "#|-1"
     ],
     "t": "Während des [DualWield|Tragens zweier Waffen] treffen beide Waffen mit {0}% weniger Schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_per_time_chained"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden nach jeder [Chain|Verkettung]@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Weniger Schaden nach jeder [Chain|Verkettung]@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] für jedes Mal, das sich diese Fertigkeit [Chain|verkettet] hat",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] für jedes Mal, das sich diese Fertigkeit [Chain|verkettet] hat",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_burning_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden mit [Hit|Treffern] gegen [Burning|brennende] Gegner@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Weniger Schaden mit [Hit|Treffern] gegen [Burning|brennende] Gegner@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] gegen [Burning|brennende] Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] gegen [Burning|brennende] Gegner",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_chilled_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden mit [Hit|Treffern] gegen [Chill|unterkühlte] Gegner@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Weniger Schaden mit [Hit|Treffern] gegen [Chill|unterkühlte] Gegner@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] gegen [Chill|unterkühlte] Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] gegen [Chill|unterkühlte] Gegner",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_fully_broken_armour"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] gegen Gegner mit [ArmourBreak|vollständig zerbrochener Rüstung]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] gegen Gegner mit [ArmourBreak|vollständig zerbrochener Rüstung]",
     "h": [
      "negate",
      "1"
@@ -16701,6 +17334,103 @@
  },
  {
   "stats": [
+   "active_skill_ignite_proliferation_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Von dieser Fertigkeit verursachte [Ignite|Entzündungen] [AilmentSpread|übertragen] sich auf andere\\nGegner, die sich 1 Sekunde innerhalb von {0} Meter darin aufhalten",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Von dieser Fertigkeit verursachte [Ignite|Entzündungen] [AilmentSpread|übertragen] sich auf andere\\nGegner, die sich 1 Sekunde innerhalb von {0} Metern darin aufhalten",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_knockback_distance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr [Knockback|Rückstoß]distanz@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Knockback|Rückstoß]distanz",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_lightning_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Lightning|Blitz]schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Lightning|Blitz]schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_minion_hit_damage_stun_multiplier_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Kreaturen bewirken {0}% mehr [Stun|Betäubungs]aufbau",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Kreaturen bewirken {0}% weniger [Stun|Betäubungs]aufbau",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_pins_as_though_dealt_damage_+%_final",
    "quality_display_active_skill_pins_as_though_dealt_damage_+%_final_is_gem"
   ],
@@ -16736,6 +17466,54 @@
      "#"
     ],
     "t": "Setzt Gegner [Pinned|fest], was {0}% weniger verursachtem Schaden entspricht",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_for_each_remaining_chain"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Projectile|Projektile] verursachen {0}% mehr Schaden mit Treffern für jede verbleibende [Chain|Verkettung]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Projectile|Projektile] verursachen {0}% weniger Schaden mit Treffern für jede verbleibende [Chain|Verkettung]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_projectile_damage_+%_final_if_pierced_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Projectile|Projektil]schaden nach dem [Pierce|Durchbohren] eines Gegners",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Projectile|Projektil]schaden nach dem [Pierce|Durchbohren] eines Gegners",
     "h": [
      "negate",
      "1"
@@ -16796,6 +17574,30 @@
  },
  {
   "stats": [
+   "active_skill_shock_as_though_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Shock|Schockt] Gegner, was {0}% mehr verursachtem Schaden entspricht",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Shock|Schockt] Gegner, was {0}% weniger verursachtem Schaden entspricht",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_shock_chance_+%_final"
   ],
   "rows": [
@@ -16812,6 +17614,30 @@
     ],
     "t": "{0}% weniger Chance auf [Shock|Schocken]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_shock_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Shock|Schock]dauer",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Shock|Schock]dauer",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -16917,6 +17743,54 @@
     ],
     "t": "Erhaltet beim Einsammeln einer [ElementalInfusion|Elementarinfusion] eine zusätzliche [ElementalInfusion|Elementarinfusion] desselben Typs",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_attack_speed_granted_+%_during_life_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Gewährt {0}% erhöhte [Attack|Angriffs]geschwindigkeit während beliebiger Lebens[Flask|fläschchen]wirkung",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Gewährt {0}% verringerte [Attack|Angriffs]geschwindigkeit während beliebiger Lebens[Flask|fläschchen]wirkung",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "alchemists_boon_cast_speed_granted_+%_during_mana_flask"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Gewährt {0}% erhöhte Zaubergeschwindigkeit während beliebiger Mana[Flask|fläschchen]wirkung",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Gewährt {0}% verringerte Zaubergeschwindigkeit während beliebiger Mana[Flask|fläschchen]wirkung",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -17076,6 +17950,30 @@
     "t": "[Trigger|Löst] alle {0} Sekunden Chayulas Wille aus",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "arctic_armour_armour_granted_+%_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhte [Armour|Rüstung] pro Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerte [Armour|Rüstung] pro Phase",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -17355,6 +18253,20 @@
  },
  {
   "stats": [
+   "base_power_charge_skip_consume_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Fertigkeiten haben {0}% Chance, Energie-[Charges|Ladungen] nicht zu entfernen, aber sie trotzdem als verbraucht zu zählen",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "bear_skills_additional_base_attack_time_when_performing_from_default_stance"
   ],
   "rows": [
@@ -17377,6 +18289,20 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "berserk_maximum_rage_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0:+d} zu maximalem [Rage|Rausch]",
+    "h": []
    }
   ]
  },
@@ -17469,6 +18395,49 @@
      "#|-1"
     ],
     "t": "{0}% weniger Wirkungsbereich für das Verursachen von [CorruptedBlood|Verderbtem Blut]\\npro Blutpustel auf dem getöteten Gegner",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "bone_offering_damage_taken_+%_final_after_shield_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr erlittener Schaden von durch Schild geschützten [Minion|Kreaturen] für 1 Sekunde, nachdem der Schild verloren wurde@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Weniger erlittener Schaden von durch Schild geschützten [Minion|Kreaturen] für 1 Sekunde, nachdem der Schild verloren wurde@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Durch Schild geschützte [Minion|Kreaturen] erleiden {0}% mehr Schaden für 1 Sekunde, nachdem der Schild verloren wurde",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Durch Schild geschützte [Minion|Kreaturen] erleiden {0}% weniger Schaden für 1 Sekunde, nachdem der Schild verloren wurde",
     "h": [
      "negate",
      "1"
@@ -17668,6 +18637,57 @@
  },
  {
   "stats": [
+   "cast_on_crit_global_critical_hit_chance_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhte [Critical|kritische Treffer]chance",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerte [Critical|kritische Treffer]chance",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "cast_on_dodge_dodge_roll_distance_granted_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0:+d} Meter zur Ausweichrollen-Distanz",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0:+d} Meter zur Ausweichrollen-Distanz",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "cast_on_dodge_roll_gain_X_centienergy_per_unit_travelled_while_dodge_rolling"
   ],
   "rows": [
@@ -17830,6 +18850,27 @@
  },
  {
   "stats": [
+   "chance_%_to_spawn_another_infusion_remnant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}% Chance, einen zusätzlichen [ElementalInfusion|Infusions]-[Remnant|Überrest] zu beschwören",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "Beschwört einen zusätzlichen [ElementalInfusion|Infusions]-[Remnant|Überrest]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "chance_to_not_consume_infusion_%"
   ],
   "rows": [
@@ -17838,6 +18879,28 @@
      "#"
     ],
     "t": "Fertigkeiten haben {0}% Chance, [ElementalInfusion|Elementarinfusionen] nicht zu entfernen, aber sie trotzdem als verbraucht zu zählen",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "chance_to_not_consume_parried_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Chance, [ParriedDebuff|Pariert] nicht zu verbrauchen@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% Chance, [ParriedDebuff|Pariert-Schwächung] nicht zu verbrauchen",
     "h": []
    }
   ]
@@ -17914,6 +18977,30 @@
  },
  {
   "stats": [
+   "charge_regulation_damage_per_charge_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhten Schaden pro [Charges|Ladung]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerten Schaden pro [Charges|Ladung]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "consecrated_ground_effect_+%"
   ],
   "rows": [
@@ -17979,6 +19066,35 @@
      "1|#"
     ],
     "t": "Verbraucht wenn möglich {0} [Heat|Hitze], um\\n{2}% mehr [BuffMagnitude|Magnitude] von [Ignite|Entzünden] zu erhalten",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "contagion_number_of_additional_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Beim Wirken zusätzliche ins Ziel genommene Gegner@{0:d}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Verseuchung zielt beim Wirken auf {0} zusätzlichen Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verseuchung zielt beim Wirken auf {0} zusätzliche Gegner",
     "h": []
    }
   ]
@@ -18210,6 +19326,28 @@
  },
  {
   "stats": [
+   "disengage_%_chance_for_additional_shockwave"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Chance auf zusätzliche Schockwelle@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% Chance auf zusätzliche Schockwelle",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "display_max_ailment_bearer_charges"
   ],
   "rows": [
@@ -18220,6 +19358,38 @@
     ],
     "t": "Erforderlicher Unbändiger Zorn@{0}",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "earthshatter_damage_+%_final_per_spike"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden pro Stachel@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] für jeden Stachel",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] für jeden Stachel",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -18488,6 +19658,27 @@
  },
  {
   "stats": [
+   "final_strike_number_of_spirit_strikes"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[FinalStrike|Finaler Schlag] zielt auf {0} zusätzlichen Gegner im Umkreis",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[FinalStrike|Finaler Schlag] zielt auf {0} zusätzliche Gegner im Umkreis",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "fire_beam_length_+%"
   ],
   "rows": [
@@ -18580,6 +19771,30 @@
  },
  {
   "stats": [
+   "fortifying_cry_guard_gained_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr erhaltener [Guard|Schutz]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger erhaltener [Guard|Schutz]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "frozen_monsters_take_increased_damage"
   ],
   "rows": [
@@ -18610,6 +19825,114 @@
     ],
     "t": "Erhaltet {0} [Rage|Rausch] bei [Hit|Treffer]",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_ancestral_cry_global_fire_damage_granted_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Gewährt {0}% mehr [Fire|Feuer]schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Gewährt {0}% weniger [Fire|Feuer]schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_earthquake_damaging_ailment_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [BuffMagnitude|Magnitude] von verursachten [DamagingAilments|schädigenden Beeinträchtigungen]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [BuffMagnitude|Magnitude] von verursachten [DamagingAilments|schädigenden Beeinträchtigungen]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_flameblast_damaging_ailment_effect_per_stage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [BuffMagnitude|Magnitude] von [DamagingAilments|schädigenden Beeinträchtigungen] pro Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [BuffMagnitude|Magnitude] von [DamagingAilments|schädigenden Beeinträchtigungen] pro Phase",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "gem_quality_marked_enemy_damage_dealt_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Weniger verursachter Schaden von [Mark|Maltragenden] Gegnern@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Mark|Maltragender] Gegner verursacht {0}% mehr Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Mark|Maltragender] Gegner verursacht {0}% weniger Schaden",
+    "h": [
+     "negate",
+     "1",
+     "canonical_line"
+    ]
    }
   ]
  },
@@ -18771,6 +20094,145 @@
  },
  {
   "stats": [
+   "herald_of_ash_fire_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhten [Fire|Feuer]schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerten [Fire|Feuer]schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_blood_global_physical_damage_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhten [Physical|physischen] Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerten [Physical|physischen] Schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_ice_cold_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhten [Cold|Kälte]schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerten [Cold|Kälte]schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "herald_of_thunder_lightning_damage_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhten [Lightning|Blitz]schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerten [Lightning|Blitz]schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "hexblast_damage_+%_final_per_second_remaining_curse_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden pro 1 Sekunde verbleibender Dauer des entfernten [Curse|Fluchs]@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Weniger Schaden pro 1 Sekunde verbleibender Dauer des entfernten [Curse|Fluchs]@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden pro 1 Sekunde verbleibender Dauer des entfernten [Curse|Fluchs]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden pro 1 Sekunde verbleibender Dauer des entfernten [Curse|Fluchs]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "hinder_enemy_chaos_damage_taken_+%"
   ],
   "rows": [
@@ -18922,6 +20384,35 @@
  },
  {
   "stats": [
+   "inflict_exposure_on_hit_%_chance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Chance, bei [Hit|Treffer] [Exposure|Anfälligkeit] zu verursachen@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}% Chance, bei [Hit|Treffer] [Exposure|Anfälligkeit] zu verursachen",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "Verursacht bei [Hit|Treffer] [Exposure|Anfälligkeit]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "infusion_remnants_%_chance_to_spawn_cold_infusion_on_freezing_an_enemy"
   ],
   "rows": [
@@ -19049,6 +20540,58 @@
      "#|-1"
     ],
     "t": "{0}% weniger Schaden mit [Hit|Treffern] pro 5% [Shock|Schock]wirkung auf dem Gegner",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% Chance auf eine zusätzliche Explosion beim ersten Aufprall",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "magma_barrier_maximum_block_chance_granted_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0:+d}% zu maximaler [Block|Block]chance",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "mana_remnants_global_mana_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhte Manaregenerations-Rate",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerte Manaregenerations-Rate",
     "h": [
      "negate",
      "1"
@@ -19255,6 +20798,49 @@
     "t": "[Minion|Kreaturen] regenerieren {0}% des maximalen Lebens pro Sekunde",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_rage_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Erhöhte [Rage|Rausch]wirkung@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Verringerte [Rage|Rausch]wirkung@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Kreaturen] haben {0}% erhöhte [Rage|Rausch]wirkung",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|Kreaturen] haben {0}% verringerte [Rage|Rausch]wirkung",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -19595,6 +21181,54 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Pfeile fallen {0}% schneller",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "Pfeile fallen {0}% langsamer",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte Wirkung von Ermächtigung bei erweckten Zombies",
+    "h": []
+   },
+   {
+    "c": [
+     "-1|#"
+    ],
+    "t": "{0}% verringerte Wirkung von Ermächtigung bei erweckten Zombies",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "rhoa_movement_speed_penalty_+%_final_while_performing_action"
   ],
   "rows": [
@@ -19625,6 +21259,110 @@
      "negate",
      "1"
     ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sacrifice_minion_life_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Kreaturen] haben {0}% erhöhtes maximales Leben",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|Kreaturen] haben {0}% verringertes maximales Leben",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_max_stages"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Maximal {0} Phasen",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_damage_+%_final_per_stage",
+   "quality_display_sandstorm_swipe_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Kollaps-Schaden pro zusätzlicher Phase@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "Kollaps verursacht {0:+d}% mehr Schaden pro zusätzlicher Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "Kollaps verursacht {0}% mehr Schaden pro zusätzlicher Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "Kollaps verursacht {0}% weniger Schaden pro zusätzlicher Phase",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Radius pro zusätzlicher Phase@+{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0:+d} zu Radius pro zusätzlicher Phase",
+    "h": []
    }
   ]
  },
@@ -19728,6 +21466,44 @@
     "t": "{0}% verringerte [BuffMagnitude|Magnitude] von [Shock|Schock], den Ihr mit [Critical|kritischen Treffern] verursacht",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "skeletal_cleric_revived_skeletons_immune_for_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Dauer der Immunität wiederbelebter Skelette@{0}s",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Wiederbelebte Skelette sind immun gegen Schaden für {0} Sekunde, nachdem sie wiederbelebt wurden",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wiederbelebte Skelette sind immun gegen Schaden für {0} Sekunden, nachdem sie wiederbelebt wurden",
+    "h": [
+     "milliseconds_to_seconds_1dp",
      "1"
     ]
    }
@@ -19983,6 +21759,28 @@
  },
  {
   "stats": [
+   "base_spell_%_chance_to_echo"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Chance zu [Cascadable|echoen]@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% Chance zu [Cascadable|echoen]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "spell_minimum_base_fire_damage_as_%_of_intelligence",
    "spell_maximum_base_fire_damage_as_%_of_intelligence"
   ],
@@ -20040,6 +21838,30 @@
     ],
     "t": "{0}% Chance, dass [Spell|Zauber]fertigkeiten 2 zusätzliche [Projectile|Projektile] feuern",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "spellflux_frequency_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Antlitz-Frequenz",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Antlitz-Frequenz",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -20220,6 +22042,95 @@
  },
  {
   "stats": [
+   "tempest_bell_damage_+%_final_per_time_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden pro erlittenem [Hit|Treffer] der Glocke@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Weniger Schaden pro erlittenem [Hit|Treffer] der Glocke@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Schockwelle verursacht {0}% mehr Schaden pro erlittenem [Hit|Treffer] der Glocke",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Schockwelle verursacht {0}% weniger Schaden pro erlittenem [Hit|Treffer] der Glocke",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "thunderous_leap_%_chance_for_shocked_ground_when_detonating"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Chance auf [ShockedGround|schockenden Boden] beim [Detonator|Detonieren]@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% Chance, beim [Detonator|Detonieren] von Speeren [ShockedGround|schockenden Boden] zu hinterlassen",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "time_of_need_global_life_regeneration_rate_granted_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% erhöhte Lebensregenerations-Rate",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% verringerte Lebensregenerations-Rate",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "tornado_base_damage_interval_ms"
   ],
   "rows": [
@@ -20285,6 +22196,20 @@
  },
  {
   "stats": [
+   "trinity_%_physical_damage_to_convert_to_random_element_granted"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% des [Physical|physischen] Schadens werden in ein zufälliges [ElementalDamage|Element] [Conversion|umgewandelt]",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "use_time_+_ms_if_shapeshift_required"
   ],
   "rows": [
@@ -20344,6 +22269,38 @@
     "t": "Explosionsradius beträgt {0} Meter pro Phase",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "verisium_infusion_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "{0}% verlängerte Dauer der [VerisiumInfusion|Verisium-Infusion]",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% verlängerte Dauer der [VerisiumInfusion|Verisium-Infusion]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verkürzte Dauer der [VerisiumInfusion|Verisium-Infusion]",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -20792,6 +22749,71 @@
  },
  {
   "stats": [
+   "whirling_slash_knockback_distance_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr [Knockback|Rückstoß]distanz pro Phase@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Knockback|Rückstoß]distanz pro Phase",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "wind_blast_damage_+%_final_from_distance"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Maximal mehr Schadensbonus durch Distanz@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Maximal weniger Schadensmalus durch Distanz@{0:d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden bei Gegnern innerhalb von 1.5 Metern von Euch, bis runter zu keinem Bonus bei 4 Metern oder weiter",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden bei Gegnern innerhalb von 1.5 Metern von Euch, bis runter zu keinem Bonus bei 4 Metern oder weiter",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "wolf_lunar_blessing_same_target_trigger_beam_attack_prevention_duration_ms"
   ],
   "rows": [
@@ -20918,6 +22940,30 @@
  },
  {
   "stats": [
+   "supplementary_stat_container_attack_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Attack|Angriffs]geschwindigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Attack|Angriffs]geschwindigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "active_skill_damage_+%_final"
   ],
   "rows": [
@@ -21029,6 +23075,27 @@
  },
  {
   "stats": [
+   "number_of_wolves_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} beschworener Wolf",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|Maximal] {0} beschworene Wölfe",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_raging_spirits_allowed"
   ],
   "rows": [
@@ -21051,6 +23118,20 @@
      "#"
     ],
     "t": "{0:+d} zu maximaler Anzahl beschworener Golems",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_gain_as_cold"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Gain|Verursacht] {0}% des [Physical|physischen] Schadens als [Cold|Kälte]schaden",
     "h": []
    }
   ]
@@ -21116,6 +23197,54 @@
      "#|-1"
     ],
     "t": "{0}% weniger Zaubergeschwindigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_critical_strike_chance_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Critical|kritische Treffer]chance",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Critical|kritische Treffer]chance",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_quality_duration_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Fertigkeitseffektdauer",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Fertigkeitseffektdauer",
     "h": [
      "negate",
      "1"
@@ -21754,6 +23883,44 @@
      "#"
     ],
     "t": "Geistergefäß verursacht {0}% mehr Schaden pro unterschiedlicher eingefasster Fertigkeit",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_area_of_effect_+%_final_per_1_unit_of_knockback"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich pro 0.1 Meter des\\n[Knockback|Zurückstoßens], das der auslösende Treffer bewirkt hätte",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Wirkungsbereich pro 0.1 Meter des\\n[Knockback|Zurückstoßens], das der auslösende Treffer bewirkt hätte",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "tempest_bell_physical_damage_%_as_elemental_per_ailment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verursacht {0}% des [Physical|physischen] Schadens als [Gain|extra] Schaden jedes Typs, der mit einer [ElementalAilments|elementaren Beeinträchtigung] auf der Glocke übereinstimmt",
     "h": []
    }
   ]
@@ -59811,6 +61978,30 @@
  },
  {
   "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Schockwellen, die von einem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Schockwellen, die von einem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
    "bow_attacks_have_culling_strike"
   ],
   "rows": [
@@ -69297,6 +71488,30 @@
     "t": "Gegner erhalten jede Sekunde {0}% der [Concentration|Konzentration] wieder, wenn sie in den letzten 5 Sekunden keine [Concentration|Konzentration] verloren haben",
     "h": [
      "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Explosionen, die von einem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Explosionen, die von einem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -91098,6 +93313,20 @@
  },
  {
   "stats": [
+   "maximum_caltrops_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0:+d} zu maximaler Anzahl erlaubter Wurfeisen",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "maximum_chance_to_evade_is_50%"
   ],
   "rows": [
@@ -92667,6 +94896,30 @@
     ],
     "t": "[Minion|Kreaturen] [Recoup|gewinnen] {0}% des erlittenen Schadens als Leben wieder",
     "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
+   "minion_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Kreaturen erleiden {0}% erhöhten Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Kreaturen erleiden {0}% verringerten Schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ]
  },
@@ -97166,6 +99419,27 @@
  },
  {
   "stats": [
+   "rapid_assault_attached_spear_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} feststeckende Speerspitze in jedem Ziel",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Limit|Maximal] {0} feststeckende Speerspitzen in jedem Ziel",
+    "h": []
+   }
+  ]
+ },
+ {
+  "stats": [
    "real_weapon_attack_added_physical_damage_%_of_weapon_item_accuracy"
   ],
   "rows": [
@@ -99078,6 +101352,60 @@
     "t": "{0}% weniger Schaden mit [Hit|Treffern] von Explosionen, die von einem [Rarity|einzigartigen] Gegner ausgehen",
     "h": [
      "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Explosionen, die von einem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Explosionen, die von einem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_pulse_delay_ms",
+   "solaris_spear_number_of_pulses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "Bodenspeer pulsiert jede {0} Sekunde, bis zu {1} Mal",
+    "h": [
+     "milliseconds_to_seconds",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Bodenspeer pulsiert alle {0} Sekunden, bis zu {1} Mal",
+    "h": [
+     "milliseconds_to_seconds",
      "1"
     ]
    }
@@ -107500,6 +109828,57 @@
  },
  {
   "stats": [
+   "poison_concoction_poison_burst_physical_damage_equal_to_%_of_strongest_active_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "Gegner verlieren Leben in Höhe des erwarteten verbleibenden Schadens des [Consume|verbrauchten] [Poison|Gifts]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gegner verlieren Leben in Höhe von {0}% des erwarteten verbleibenden Schadens des [Consume|verbrauchten] [Poison|Gifts]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
+   "poisonous_concoction_area_of_effect_+%_final_per_active_poison_consumed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich pro [Poison|Gift] auf dem Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Wirkungsbereich pro [Poison|Gift] auf dem Gegner",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Acidic Concoction"
+  ]
+ },
+ {
+  "stats": [
    "recovery_from_flasks_applies_to_allies_in_presence_%"
   ],
   "rows": [
@@ -107794,6 +110173,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "Schrittradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schrittradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#",
      "table_only"
     ],
@@ -107846,6 +110255,56 @@
      "#"
     ],
     "t": "[Conversion|Wandelt] {0}% des [Physical|physischen] Schadens in [Fire|Feuer]schaden um",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "#",
+     "0",
+     "gem_quality"
+    ],
+    "t": "Feuert {0:+d} geschmolzenes [Projectile|Projektil]",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "0",
+     "gem_quality"
+    ],
+    "t": "Feuert {0:+d} geschmolzene [Projectile|Projektile]",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#",
+     "#"
+    ],
+    "t": "Feuert {0} geschmolzenes [Projectile|Projektil]",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "#"
+    ],
+    "t": "Feuert {0} geschmolzene [Projectile|Projektile]",
     "h": []
    }
   ],
@@ -108178,6 +110637,46 @@
  },
  {
   "stats": [
+   "unleash_the_elements_trigger_frequency_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "{0}% verringerte Frequenz von [Trigger|Auslösungen]",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "{0}% erhöhte Frequenz von [Trigger|Auslösungen]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerte Frequenz von [Trigger|Auslösungen]",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte Frequenz von [Trigger|Auslösungen]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108292,6 +110791,36 @@
  },
  {
   "stats": [
+   "unleash_meteor_time_till_impact_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Meteor landet nach {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Meteor landet nach {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -108312,6 +110841,60 @@
     "t": "Blitzeinschlag-Radius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_number_of_pluses"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Pulsiert {0} Mal vor dem finalen Schlag",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Pulsiert {0} Mal vor dem finalen Schlag",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_static_field_time_till_final_strike_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Finaler Schlag tritt nach {0} Sekunde auf",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Finaler Schlag tritt nach {0} Sekunden auf",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -108520,6 +111103,31 @@
      "#"
     ],
     "t": "[Buff|Stärkung] fügt [Attack|Angriffen] von [Allies|Verbündeten] {0} bis {1} [Cold|Kälte]schaden hinzu",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Arctic Howl"
+  ]
+ },
+ {
+  "stats": [
+   "wolf_warcry_buff_freeze_buildup_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Durch [Buff|Stärkung] erhöhter [Freeze|Einfrierungs]aufbau@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkung] gewährt [Allies|Verbündeten] {0}% erhöhten [Freeze|Einfrierungs]aufbau",
     "h": []
    }
   ],
@@ -108952,6 +111560,186 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[ElementalInfusion|Feuerinfusionierter] Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[ElementalInfusion|Feuerinfusionierter] Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "ball_lightning_infused_burning_ground_interval_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Erzeugt jede {0} Sekunde [IgnitedGround|entzündeten Boden]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Erzeugt alle {0} Sekunden [IgnitedGround|entzündeten Boden]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[ElementalInfusion|Feuerinfusionierte] Explosion verursacht {0} bis {1} [Fire|Feuer]schaden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Radius von [IgnitedGround|entzündetem Boden]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Radius von [IgnitedGround|entzündetem Boden]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Radius von [IgnitedGround|entzündetem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Radius von [IgnitedGround|entzündetem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [IgnitedGround|entzündetem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [IgnitedGround|entzündetem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|Entzündet], was {0} bis {1} verursachtem [Fire|Feuer]schaden entspricht",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ball Lightning"
+  ]
+ },
+ {
+  "stats": [
    "barkskin_armour_to_gain_as_%_of_energy_shield_lost_to_enemy_hits"
   ],
   "rows": [
@@ -109257,6 +112045,174 @@
  },
  {
   "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Verursacht {0} bis {1} [Cold|Kälte]schaden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_cold_damage",
+   "spell_maximum_base_cold_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Chill|Unterkühlt] Gegner, was {0} bis {1} verursachtem [Cold|Kälte]schaden entspricht",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Chill|Unterkühlt] Gegner innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_cold_damage_to_deal_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Verursacht {0} [Cold|Kälte]schaden pro Sekunde",
+    "h": [
+     "per_minute_to_per_second",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Runenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Runenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Runendauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Runendauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bitter Dead"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -109392,6 +112348,122 @@
   ],
   "skill": [
    "Blood Boil"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_explosion_%_blood_loss_to_deal_as_life_loss"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Gegner verlieren Leben in Höhe von +{0}% des [Consume|verbrauchten] [BloodLoss|Blutverlusts]",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Lebensverlust durch [BloodLoss|Blutverlust]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gegner verlieren Leben in Höhe von {0}% des [Consume|verbrauchten] [BloodLoss|Blutverlusts]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
+  ]
+ },
+ {
+  "stats": [
+   "blood_hunt_skill_area_of_effect_+%_final_per_X_blood_loss_consumed_up_to_500%",
+   "blood_hunt_X_blood_loss_consumed_for_skill_area_of_effect_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Wirkungsbereich pro {1} [Consume|verbrauchtem] [BloodLoss|Blutverlust]@{0}% (max. 500%)",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich pro {1} [Consume|verbrauchtem] [BloodLoss|Blutverlust], bis zu 500%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Blood Hunt"
   ]
  },
  {
@@ -109777,6 +112849,63 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
+   "boneshatter_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Schockwellen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Schockwellen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Boneshatter"
+  ]
+ },
+ {
+  "stats": [
    "base_number_of_allowed_bone_storm_projectiles"
   ],
   "rows": [
@@ -109794,6 +112923,112 @@
     ],
     "t": "Kann bis zu {0} [Projectile|Projektile] abfeuern",
     "h": []
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+%_final_per_additional_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Wirkungsbereich pro verbrauchter [Charges|Energie-Ladung]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich pro verbrauchter [Charges|Energie-Ladung]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Wirkungsbereich pro verbrauchter [Charges|Energie-Ladung]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bonestorm"
+  ]
+ },
+ {
+  "stats": [
+   "bone_spear_power_charged_aoe_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Bonusradius bei verbrauchter [Charges|Energie-Ladung]@+{0}",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "+{0} Meter zum Explosionsradius, wenn eine\\n[Charges|Energie-Ladung] verbraucht wurde",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "+{0} Meter zum Explosionsradius, wenn eine\\n[Charges|Energie-Ladung] verbraucht wurde",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110258,6 +113493,36 @@
     "c": [
      "10"
     ],
+    "t": "Wellenlänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wellenlänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Charged Staff"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Explosionsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -110271,6 +113536,52 @@
     "t": "Explosionsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Cluster Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "skill_detonation_time_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "{0}% verlängerte [DetonationTime|Detonationszeit]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "{0}% verkürzte [DetonationTime|Detonationszeit]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% verlängerte [DetonationTime|Detonationszeit]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verkürzte [DetonationTime|Detonationszeit]",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -110356,6 +113667,36 @@
   ],
   "skill": [
    "Comet"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Concussive Runes"
   ]
  },
  {
@@ -110566,6 +113907,63 @@
     ],
     "t": "Erzeugt {0} Runen",
     "h": []
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_electrocutes_as_though_dealt_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Electrocute|Elektrisierungs]aufbau von [Hit|Treffern] mit dieser Fertigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Electrocute|Elektrisierungs]aufbau von [Hit|Treffern] mit dieser Fertigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Conductive Runes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Runen-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Runen-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -110948,6 +114346,93 @@
  },
  {
   "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "Maximale Bolzen pro {1} Sekunden@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "0",
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "-{1} Sekunden zur Bolzen-Abklingzeit",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "Erzeugt einen Blitzbolzen, wenn Ihr mit [UnarmedDamage|unbewaffnetem] [Melee|Nahkampf]schaden [Hit|trefft], nicht mehr als {0} Mal alle {1} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "Erzeugt einen Blitzbolzen, wenn Ihr mit [UnarmedDamage|unbewaffnetem] [Melee|Nahkampf]schaden [Hit|trefft], nicht mehr als {0} Mal alle {1} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Bolzen-Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bolzen-Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Crackling Palm"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -110999,6 +114484,47 @@
   ],
   "skill": [
    "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Sekunden zur Phantomdauer",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Phantomdauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Phantomdauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Mirage Deadeye"
   ]
  },
  {
@@ -111084,6 +114610,40 @@
   ],
   "skill": [
    "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_area_of_effect_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich pro [Power|Stärkegrad] des getöteten Ziels",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
+  ]
+ },
+ {
+  "stats": [
+   "crushing_fear_damage_+%_final_per_power_of_culled_enemy"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% mehr Schaden pro [Power|Stärkegrad] des getöteten Ziels",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Crushing Fear"
   ]
  },
  {
@@ -111484,6 +115044,58 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Detonate Living"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
@@ -111514,6 +115126,33 @@
  },
  {
   "stats": [
+   "base_skill_buff_energy_shield_recharge_rate_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Aura|Aura] gewährt {0}% erhöhte [ESRechargeRate|Energieschild-Wiederaufladungsrate]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Aura|Aura] gewährt {0}% verringerte [ESRechargeRate|Energieschild-Wiederaufladungsrate]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Discipline"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_buff_total_maximum_energy_shield_+_to_apply"
   ],
   "rows": [
@@ -111527,6 +115166,36 @@
   ],
   "skill": [
    "Discipline"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Disengage"
   ]
  },
  {
@@ -111551,6 +115220,36 @@
   ],
   "skill": [
    "Disengage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Impending Doom"
   ]
  },
  {
@@ -111809,6 +115508,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "Nachbebenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Nachbebenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthquake"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "#"
     ],
     "t": "Verursacht Schaden entlang des Risses und innerhalb von\\n{0} Meter Radius um den hervortretenden Stachel",
@@ -111897,6 +115626,61 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Earthshatter"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_%_damage_gained_as_extra_lightning_on_debuffed_target"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Schaden als extra [Lightning|Blitzschaden] gegen angeheftete Ziele@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Hit|Treffer] gegen Ziele mit angehefteten Ableitern verursachen {0}% des Schadens als extra [Lightning|Blitzschaden]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -111942,6 +115726,41 @@
     "t": "Pfeildauer beträgt {0} Sekunden",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Electrocuting Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "electrocuting_arrow_damage_taken_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Erhöhter erlittener Schaden von angehefteten Zielen@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Ziele mit angehefteten Ableitern erleiden {0}% erhöhten Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Ziele mit angehefteten Ableitern erleiden {0}% verringerten Schaden",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -112007,6 +115826,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_be_trigger_elemental_expression_%"
   ],
   "rows": [
@@ -112038,6 +115887,84 @@
      "100|#"
     ],
     "t": "[Trigger|Löst] bei [Critical|kritischem] [Melee|Nahkampftreffer] Feurige Explosion, Wölbenden Blitz oder Eisige Welle aus",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Feuert {0} [Projectile|Projektil]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert {0} [Projectile|Projektile]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Expression"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Chain|Verkettet] sich {0} Mal",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Chain|Verkettet] sich {0} Mal",
     "h": []
    }
   ],
@@ -112186,6 +116113,198 @@
     ],
     "t": "[Consume|Verbraucht] bis zu {0} [ElementalAilments|Beeinträchtigungen]",
     "h": []
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "elemental_sundering_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Impulsen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Impulsen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Elemental Sundering"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -112908,6 +117027,162 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "Ranken können sich bis zur Länge von {0} Meter ausstrecken, bevor sie zerbrechen",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_base_movement_speed_+%_final_per_applied_stack"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "[Slow|Verlangsamung] pro Ranke@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Jede angeheftete Ranke [Slow|verlangsamt] den Gegner um {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vine_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Maximale Ranken-Anheftungszeit@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Ranken bleiben für bis zu {0} Sekunde angeheftet",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ranken bleiben für bis zu {0} Sekunden angeheftet",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_maximum_number_of_vines_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Maximal angeheftete Ranken@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Kann {0} Ranke an jeden Gegner anheften",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Kann bis zu {0} Ranken an jeden Gegner anheften",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "entangle_vines_additional_number_of_vines_allowed_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Zusätzliche maximale Ranken, wenn [Plant|überwachsen]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Plant|Überwachsene] Spalten können bis zu {0} zusätzliche Ranke anheften",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Plant|Überwachsene] Spalten können bis zu {0} zusätzliche Ranken anheften",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Entangle"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "Wirkungsradius beträgt {0} Meter",
@@ -112929,6 +117204,61 @@
   ],
   "skill": [
    "Escape Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "{0:+d} Sekunde zur [Debuff|Schwächungs]dauer",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Sekunden zur [Debuff|Schwächungs]dauer",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "[Debuff|Schwächungs]dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "!0",
+     "#"
+    ],
+    "t": "[Debuff|Schwächungs]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Essence Drain"
   ]
  },
  {
@@ -113077,6 +117407,23 @@
  },
  {
   "stats": [
+   "explosive_concoction_number_of_secondary_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Werft zusätzliche [Projectile|Projektile] auf bis zu {0} [Ignite|entzündete] Gegner",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Explosive Concoction"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -113127,6 +117474,460 @@
   ],
   "skill": [
    "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer des feststeckenden Speers beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer des feststeckenden Speers beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zur Explosionslänge",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zur Explosionslänge",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionslänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionslänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsbreite beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsbreite beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_tertiary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Radius von [IgnitedGround|entzündetem Boden]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Radius von [IgnitedGround|entzündetem Boden]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Radius von [IgnitedGround|entzündetem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Radius von [IgnitedGround|entzündetem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [IgnitedGround|entzündetem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [IgnitedGround|entzündetem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
   ]
  },
  {
@@ -113304,6 +118105,138 @@
   ],
   "skill": [
    "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden pro verbrauchter [Charges|Energie-Ladung]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden pro verbrauchter [Charges|Energie-Ladung]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden pro verbrauchter [Charges|Energie-Ladung]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_damage_+%_final_when_charged"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden bei verbrauchter [Charges|Energie-Ladung]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden, wenn eine [Charges|Energie-Ladung] verbraucht wurde",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden, wenn eine [Charges|Energie-Ladung] verbraucht wurde",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "lightning_strike_base_number_of_projectiles_per_power_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Abgefeuerte [Projectile|Projektile] pro verbrauchter [Charges|Energie-Ladung]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Feuert {0} [Projectile|Projektil] pro verbrauchter [Charges|Energie-Ladung]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Feuert {0} [Projectile|Projektile] pro verbrauchter [Charges|Energie-Ladung]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Falling Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Radius der Explosion und von [ChilledGround|unterkühlendem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Radius der Explosion und von [ChilledGround|unterkühlendem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fangs of Frost"
   ]
  },
  {
@@ -113805,6 +118738,200 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "0",
+     "table_only"
+    ],
+    "t": "Aufprall-Intervall@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "Ein Aufprall alle {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "{1} Kugeln",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
+   "fire_storm_fireball_delay_ms",
+   "vaal_firestorm_number_of_meteors"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "0",
+     "table_only"
+    ],
+    "t": "Aufprall-Intervall@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "Ein Aufprall alle {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "{1} Kugeln",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Firestorm"
+  ]
+ },
+ {
+  "stats": [
    "base_fire_damage_to_deal_per_minute"
   ],
   "rows": [
@@ -113987,6 +119114,60 @@
      "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Spaltendauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Spaltendauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Forge Hammer"
+  ]
+ },
+ {
+  "stats": [
+   "forge_hammer_base_maximum_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} Spalte",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|Maximal] {0} Spalten",
+    "h": []
    }
   ],
   "skill": [
@@ -114210,6 +119391,80 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "frag_rounds_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Explosionen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Explosionen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Consume|Verbraucht] [Freeze|Einfrieren] bei [Hit|getroffenen] Gegnern,\\num an ihrem Standort eine sekundäre Explosion auszulösen\\nSekundäre Explosionen können kein [Freeze|Einfrieren] [Consume|verbrauchen]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10",
      "gem_quality"
     ],
@@ -114388,6 +119643,58 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragments Of The Past"
+  ]
+ },
+ {
+  "stats": [
    "freezing_mark_hit_damage_freeze_multiplier_+%_final",
    "quality_display_freezing_mark_is_gem"
   ],
@@ -114542,6 +119849,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frostbolt"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_all_elemental_exposure_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude",
    "active_skill_all_elemental_exposure_compounding_magnitude_cap"
@@ -114685,6 +120022,155 @@
  },
  {
   "stats": [
+   "number_of_additional_forks_base"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "Gabelt sich ein zusätzliches Mal auf",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Gabelt sich {0} zusätzliche Male auf",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Gabelt sich ein zusätzliches Mal auf",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Gabelt sich {0} zusätzliche Male auf",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "frost_darts_explode_creates_X_mortars"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Erzeugte Eisbrocken@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Jede Explosion erzeugt einen Eisbrocken",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Jede Explosion erzeugt {0} Eisbrocken",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Jeder Frostpfeil erzeugt {0} Eisbrocken",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Frost Darts"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -114810,6 +120296,36 @@
      "1|#"
     ],
     "t": "Mauer ist {0} Meter lang",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Frost Wall"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
      "1"
@@ -115026,6 +120542,36 @@
    }
   ],
   "skill": [
+   "Frozen Locus"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Fulminating Concoction"
   ]
  },
@@ -115107,6 +120653,36 @@
     "t": "Schockwellenradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Furious Slam"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [JaggedGround|zerklüftetem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [JaggedGround|zerklüftetem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -115361,6 +120937,30 @@
  },
  {
   "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Strahl [Chain|verkettet] sich auf {0} Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Strahl [Chain|verkettet] sich auf {0} Gegner",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Galvanic Shards"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -115412,6 +121012,238 @@
   ],
   "skill": [
    "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wolkenradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wolkenradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Wolkenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Wolkenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Wolkendauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wolkendauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter\\nRadius von [ShockedGround|schockendem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter\\nRadius von [ShockedGround|schockendem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gathering Storm"
+  ]
+ },
+ {
+  "stats": [
+   "thunderfist_number_of_bolts_delays",
+   "thunderfist_bolt_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "Maximale Eis-Explosionen pro {1} Sekunden@{0}",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "0",
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "-{1} Sekunden zur Explosions-Abklingzeit",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "1|#"
+    ],
+    "t": "Erzeugt eine Eis-Explosion, wenn Ihr mit [UnarmedDamage|unbewaffnetem] [Melee|Nahkampf]schaden [Hit|trefft], nicht mehr als {0} Mal alle {1} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "1|#"
+    ],
+    "t": "Erzeugt eine Eis-Explosion, wenn Ihr mit [UnarmedDamage|unbewaffnetem] [Melee|Nahkampf]schaden [Hit|trefft], nicht mehr als {0} Mal alle {1} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Eis-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Eis-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gelid Palm"
   ]
  },
  {
@@ -115479,6 +121311,102 @@
   ],
   "skill": [
    "Ghost Dance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Mauer hält {0} Sekunde an",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Mauer hält {0} Sekunden an",
+    "h": [
+     "milliseconds_to_seconds_1dp",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
+  ]
+ },
+ {
+  "stats": [
+   "frost_wall_maximum_life",
+   "frozen_locus_crystal_display_stat"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "Maximales Leben von [IceCrystals|Eiskristallen]@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "[IceCrystals|Eiskristalle] haben {0} maximales Leben",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "[IceCrystals|Eiskristall] hat {0} maximales Leben",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Glacial Bolt"
   ]
  },
  {
@@ -115673,6 +121601,61 @@
     "t": "Fragmentdauer beträgt {0} Sekunden",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Glacial Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zur Explosionslänge",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zur Explosionslänge",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Explosionslänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Explosionslänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
      "1"
     ]
    }
@@ -116029,6 +122012,36 @@
     "c": [
      "10"
     ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Grim Pillars"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Wirkungsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116190,6 +122203,76 @@
   ],
   "skill": [
    "Hammer of the Gods"
+  ]
+ },
+ {
+  "stats": [
+   "base_curse_duration_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "{0:+d}% verlängerte Dauer eingefasster [Curse|Flüche]",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% verlängerte Dauer eingefasster [Curse|Flüche]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verkürzte Dauer eingefasster [Curse|Flüche]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
+  ]
+ },
+ {
+  "stats": [
+   "mark_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d}% erhöhte Wirkung von eingefassten [Mark|Malen]",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte Wirkung von eingefassten [Mark|Malen]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerte Wirkung von eingefassten [Mark|Malen]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hand of Chayula"
   ]
  },
  {
@@ -116679,6 +122762,55 @@
     "c": [
      "10"
     ],
+    "t": "Bolzen-Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bolzen-Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_physical_damage_%_to_convert_to_lightning"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% des [Physical|physischen] Schadens mit Bolzen wird in [Lightning|Blitz]schaden [Conversion|umgewandelt]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Herald of Thunder",
+   "Herald of Thunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Explosionsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116765,6 +122897,58 @@
     "h": [
      "canonical_line"
     ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wendet bei [Hit|Treffer] [RivenArmour|Beschädigte Rüstung] an\\n[RivenArmour|Beschädigte Rüstung] hat eine Dauer von {0} Sekunde, oder bis\\n[ArmourBreak|vollständig] [ArmourBreak|zerbrochene Rüstung] entfernt wurde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_damage_+%_final_vs_unique_enemies"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden gegen [Rarity|einzigartige] Gegner@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Verursacht {0}% weniger Schaden gegen [Rarity|einzigartige] Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Verursacht {0}% mehr Schaden gegen [Rarity|einzigartige] Gegner",
+    "h": []
    }
   ],
   "skill": [
@@ -117315,6 +123499,233 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Radius der Explosion und von [ChilledGround|unterkühlendem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Radius der Explosion und von [ChilledGround|unterkühlendem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [ChilledGround|unterkühlendem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [ChilledGround|unterkühlendem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Nova"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_arming_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Zeit bis zur Scharfstellung@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Splitter sind nach {0} Sekunde scharf gestellt",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Splitter sind nach {0} Sekunden scharf gestellt",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_damage_+%_final_after_1_second",
+   "quality_display_permafrost_shard_damage_+%_final_after_1_second_is_gem",
+   "permafrost_shard_bonus_damage_delay_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden nach {2} Sekunden nach dem Scharfstellen@{0}%",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#",
+     "#"
+    ],
+    "t": "Splitter verursachen {2} Sekunden nach dem Scharfstellen {0}% mehr Schaden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   },
+   {
+    "c": [
+     "#|-1",
+     "#",
+     "#"
+    ],
+    "t": "Splitter verursachen {2} Sekunden nach dem Scharfstellen {0}% weniger Schaden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3",
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0",
+     "#",
+     "gem_quality"
+    ],
+    "t": "Splitter verursachen nach dem Scharfstellen {0:+d}% mehr Schaden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "3"
+    ]
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
+   "permafrost_shard_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Maximale Splitter@{0}s",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Maximal {0} aktiver Splitter",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Maximal {0} aktive Splitter",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ice Shards"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -117746,6 +124157,36 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [Exposure|Feuer-Anfälligkeit] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [Exposure|Feuer-Anfälligkeit] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
    "incinerate_fuel_gain_per_mana_spent"
   ],
   "rows": [
@@ -117840,6 +124281,55 @@
      "#"
     ],
     "t": "[Ignite|Entzündet], was {0} bis {1} verursachtem [Fire|Feuer]schaden entspricht, alle 0.075 Sekunden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [IgnitedGround|entzündetem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [IgnitedGround|entzündetem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incinerate"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|Entzündet], was {0} bis {1} verursachtem [Fire|Feuer]schaden entspricht",
     "h": []
    }
   ],
@@ -118784,6 +125274,46 @@
  },
  {
   "stats": [
+   "lightning_rod_%_chance_for_additional_burst_on_landing"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|99",
+     "table_only"
+    ],
+    "t": "Chance auf eine zusätzliche Explosion bei Aufprall@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#",
+     "table_only"
+    ],
+    "t": "Hat eine zusätzliche Explosion bei Aufprall",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}% Chance, bei Aufprall eine zusätzliche Explosion zu verursachen",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "Verursacht eine zusätzliche Explosion bei Aufprall",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Rod"
+  ]
+ },
+ {
+  "stats": [
    "number_of_lightning_rods_allowed"
   ],
   "rows": [
@@ -118832,6 +125362,69 @@
      "2|#"
     ],
     "t": "Teilt sich beim Verbrauch einer [Charges|Raserei-Ladung] auf {0} Ziele auf",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert Blitzbolzen auf Ziele innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Lightning Spear"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1",
+     "0"
+    ],
+    "t": "Feuert {0:+d} Bolzen",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "Feuert {0:+d} Bolzen",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "Feuert {0} Bolzen",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "Feuert {0} Bolzen",
     "h": []
    }
   ],
@@ -119245,6 +125838,36 @@
     ],
     "t": "Feuert bis zu {0} Geschosse",
     "h": []
+   }
+  ],
+  "skill": [
+   "Magnetic Salvo"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -119732,6 +126355,30 @@
  },
  {
   "stats": [
+   "midnight_star_max_ice_crystals"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} [IceCrystals|Eiskristall]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|Maximal] {0} [IceCrystals|Eiskristalle]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Midnight Zenith"
+  ]
+ },
+ {
+  "stats": [
    "base_cooldown_modifiable_repeat_interval_ms"
   ],
   "rows": [
@@ -119960,6 +126607,85 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "{0:+d} Sekunde zur Spaltendauer",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Sekunden zur Spaltendauer",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "Spaltendauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Spaltendauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
+   "molten_crash_max_number_of_fissures"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} Spalte",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|Maximal] {0} Spalten",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Molten Crash"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120167,6 +126893,66 @@
  },
  {
   "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Sunder"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Soaring Midnight"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120251,6 +127037,153 @@
     "c": [
      "10"
     ],
+    "t": "Radius von [OilGround|öligem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Radius von [OilGround|öligem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [OilGround|öligem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [OilGround|öligem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Oil|Öl]dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Oil|Öl]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "electric_spit_empowered_channel_consume_power_charge_per_X_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Verbraucht jede Sekunde eine [Charges|Energie-Ladung], um weiter\\nzu [Channelling|kanalisieren]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verbraucht alle {0} Sekunden eine [Charges|Energie-Ladung], um weiter\\nzu [Channelling|kanalisieren]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Barrage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "[Hit|Schadens]- und [Oil|Öl]-Verteilungsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -120292,6 +127225,66 @@
      "#"
     ],
     "t": "[Oil|Öl]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Radius von [OilGround|öligem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Radius von [OilGround|öligem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Oil Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [OilGround|öligem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [OilGround|öligem Boden] beträgt {0} Sekunden",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
      "1"
@@ -120787,6 +127780,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Phantasmal Arrow"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -120945,6 +127968,66 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Plasma Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear Throw"
+  ]
+ },
+ {
+  "stats": [
    "chance_to_gain_1_more_charge_%"
   ],
   "rows": [
@@ -120973,6 +128056,66 @@
   ],
   "skill": [
    "Power Siphon"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Länge des Stürmens beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Länge des Stürmens beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Breite des Stürmens beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Breite des Stürmens beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Primal Strikes"
   ]
  },
  {
@@ -121353,6 +128496,52 @@
  },
  {
   "stats": [
+   "rain_of_arrows_arrow_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Pfeil-Fallgeschwindigkeit@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Pfeil-Fallgeschwindigkeit@{0:+d}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Pfeile fallen {0}% schneller",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Pfeile fallen {0}% langsamer",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rain of Arrows"
+  ]
+ },
+ {
+  "stats": [
    "rain_of_arrows_delay_per_arrow"
   ],
   "rows": [
@@ -121582,6 +128771,141 @@
   ],
   "skill": [
    "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "raise_zombie_empowerment_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Wirkung von [Empowered|Ermächtigung] bei Zombies@{0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "table_only"
+    ],
+    "t": "Wirkung von [Empowered|Ermächtigung] bei Zombies@{0:d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte Wirkung von [Empowered|Ermächtigung] bei erweckten Zombies",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerte Wirkung von [Empowered|Ermächtigung] bei erweckten Zombies",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Speerspitzendauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Speerspitzendauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
+  ]
+ },
+ {
+  "stats": [
+   "rapid_assault_%_chance_to_attach_additional_spear"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Chance auf zusätzliche Speerspitzen@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|99"
+    ],
+    "t": "{0}% Chance, eine zusätzliche Speerspitze im Ziel zu hinterlassen",
+    "h": []
+   },
+   {
+    "c": [
+     "100|#"
+    ],
+    "t": "Hinterlasst eine zusätzliche Speerspitze im Ziel",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Rapid Assault"
   ]
  },
  {
@@ -122450,6 +129774,86 @@
     "c": [
      "10"
     ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_life_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Wiederhergestelltes Leben über 2 Sekunden@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Stellt {0}% des maximalen Lebens über 2 Sekunden wieder her",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "recover_%_of_mana_over_2_seconds_when_consuming_a_divine_fragment"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Wiederhergestelltes Mana über 2 Sekunden@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Stellt {0}% des maximalen Manas über 2 Sekunden wieder her",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Bolzen-Wirkungsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -122600,6 +130004,36 @@
  {
   "stats": [
    "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rolling Slam"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
   ],
   "rows": [
    {
@@ -123075,6 +130509,100 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunde pro Wut",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunden pro Wut",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr gewährter Schaden durch [Buff|Stärkung]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0}% mehr Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Buff|Stärkung] gewährt [Onslaught|Ansturm] und {0}% mehr Schaden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
+   "wild_beast_life_lost_%_per_minute_nonlethal"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Lebensverlust pro Sekunde durch [Buff|Stärkung]@{0}%",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkung] lässt Euch {0}% des maximalen Lebens pro Sekunde verlieren",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Savage Fury"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -123367,6 +130895,41 @@
     "t": "Kriegsschrei-Radius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Seismic Cry"
+  ]
+ },
+ {
+  "stats": [
+   "seismic_cry_slam_skill_aftershock_damage_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr [Empowered|ermächtigter] Schaden von [Aftershock|Nachbeben] mit [Attack|Angriffen]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Aftershock|Nachbeben] von [Empowered|ermächtigten] [Attack|Angriffen] verursachen {0}% mehr Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Aftershock|Nachbeben] von [Empowered|ermächtigten] [Attack|Angriffen] verursachen {0}% weniger Schaden",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -123899,6 +131462,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Impulsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Impulsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shockburst Rounds"
+  ]
+ },
+ {
+  "stats": [
    "shockchain_arrow_X_additional_chains_on_first_hitting_shocked_or_electrocuted_enemy"
   ],
   "rows": [
@@ -124001,6 +131594,36 @@
     ],
     "t": "Maximal {0} aktive Pfeile",
     "h": []
+   }
+  ],
+  "skill": [
+   "Shockchain Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -124390,6 +132013,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siphoning Strike"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_generates_%_of_ward_spent_as_glory"
   ],
   "rows": [
@@ -124602,6 +132255,153 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
+   "snipe_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Explosionen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Explosionen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Snipe"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124732,6 +132532,55 @@
      "2|#"
     ],
     "t": "[Limit|Maximal] {0} Sonnensphären",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Ignite|Entzünden]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ignite|Entzünden]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Solar Orb"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|Entzündet], was {0} bis {1} verursachtem [Fire|Feuer]schaden entspricht",
     "h": []
    }
   ],
@@ -124952,6 +132801,122 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "0",
+     "#"
+    ],
+    "t": "Feuert {0} [Projectile|Projektile] in einem Kreis",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Projectile|Projektil]dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Projectile|Projektil]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "base_spell_cast_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d} Sekunden zur Zauberzeit",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
+   "spark_min_time_between_target_clearing_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Intervall zwischen erneutem [Hit|Treffen] des Ziels@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Zur gleichen Zeit abgefeuerte Projektile können dasselbe Ziel [Hit|treffen],\\nnicht mehr als einmal pro Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Zur gleichen Zeit abgefeuerte Projektile können dasselbe Ziel [Hit|treffen],\\nnicht mehr als einmal alle {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spark",
+   "Spark"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -124972,6 +132937,93 @@
     "t": "Wirkungsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Impulsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Impulsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Radius von [IgnitedGround|entzündetem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Radius von [IgnitedGround|entzündetem Boden] beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spear of Solaris"
+  ]
+ },
+ {
+  "stats": [
+   "solaris_spear_ground_expands_to_+%_final_by_skill_end"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Gewinnt über die Lebensdauer des Bodenspeers an Radius, bis zu {0}% mehr am Ende der Lebensdauer des Speers",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Gewinnt über die Lebensdauer des Bodenspeers an Radius, bis zu {0}% weniger am Ende der Lebensdauer des Speers",
+    "h": [
+     "negate",
      "1"
     ]
    }
@@ -125049,6 +133101,36 @@
     ],
     "t": "Maximal {0} aktive Speere",
     "h": []
+   }
+  ],
+  "skill": [
+   "Spearfield"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -125285,6 +133367,56 @@
    }
   ],
   "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Detoniert [JaggedGround|zerklüfteten Boden] innerhalb eines Radius von {0} Meter des Hiebs und jeder Fläche detonierten [JaggedGround|zerklüfteten Bodens]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stampede"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
    "Starborn Onslaught"
   ]
  },
@@ -125382,6 +133514,342 @@
   ],
   "skill": [
    "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Starborn Onslaught"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert Bolzen auf Gegner innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_secondary_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [ShockedGround|schockendem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [ShockedGround|schockendem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer des feststeckenden Speers beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer des feststeckenden Speers beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Bolzen-Intervall@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Feuert jede Sekunde einen Bolzen",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert alle {0} Sekunden einen Bolzen",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert Bolzen auf Gegner innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_overcharged_spears_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} feststeckender Speer",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|Maximal] {0} feststeckende Speere",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer des feststeckenden Speers beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer des feststeckenden Speers beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "number_of_chains"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Bolzen [Chain|verketten] sich auf {0} Gegner",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Bolzen [Chain|verketten] sich auf {0} Gegner",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_base_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Bolzen-Intervall@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Feuert jede Sekunde einen Bolzen",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert alle {0} Sekunden einen Bolzen",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert Bolzen auf Gegner innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Storm Lance"
+  ]
+ },
+ {
+  "stats": [
+   "overcharged_spear_detonate_number_of_beams"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Anzahl der abgefeuerten Bolzen@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Feuert {0} Bolzen",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Feuert {0} Bolzen",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Storm Lance"
   ]
  },
  {
@@ -125556,6 +134024,86 @@
   ],
   "skill": [
    "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wenn ein durch einen Bolzen [Hit|getroffenes] Ziel [Shock|geschockt] wird, werden auch Gegner innerhalb eines Radius von {0} Meter [Shock|geschockt]",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormcaller Arrow"
   ]
  },
  {
@@ -125736,6 +134284,35 @@
   ],
   "skill": [
    "Spell Totem"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_area_of_effect_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "Rabenschar-Fertigkeiten haben {0}% vergrößerten Wirkungsbereich",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "gem_quality"
+    ],
+    "t": "Rabenschar-Fertigkeiten haben {0}% verkleinerten Wirkungsbereich",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Spiraling Conspiracy"
   ]
  },
  {
@@ -125923,6 +134500,112 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Nachbebenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Nachbebenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "aftershock_radius_+_per_previous_aftershock"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Radius pro erfolgreichem Nachbeben@{0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Jedes folgende Nachbeben erhält {0:+d} Meter zum Radius, bis zu 3 Metern",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Jedes folgende Nachbeben erhält {0:+d} Meter zum Radius, bis zu 3 Metern",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
+   "channelled_slam_damage_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden mit [Hit|Treffern] pro Phase@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] für jede Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] für jede Phase",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Supercharged Slam"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -126072,6 +134755,93 @@
     ],
     "t": "Kann [AncestralBoost|durch Ahnen verstärkt] werden, als ob es ein [Strike|Schlag] wäre",
     "h": []
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tempest Bell"
+  ]
+ },
+ {
+  "stats": [
+   "bell_shockwave_cooldown_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Schockwelle kann einmal jede Sekunde ausgelöst werden",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwelle kann einmal alle {0} Sekunden ausgelöst werden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -126467,6 +135237,36 @@
     "t": "Wirkungsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer von [ChilledGround|unterkühlendem Boden] beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer von [ChilledGround|unterkühlendem Boden] beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127376,6 +136176,201 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "Tornado entfesselt {0} Kopien von [Projectile|Projektilen], die auf ihn gefeuert wurden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_tornado_shots_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "+{0} zum [Limit|Maximum] an Tornados",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} Tornado",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|Maximal] {0} Tornados",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Tornado-Dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Tornado-Dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_number_of_hits_allowed"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Tornado verschwindet, nachdem er einmal [Hit|getroffen] wurde",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Tornado verschwindet, nachdem er {0} Mal [Hit|getroffen] wurde",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_damage_+%_final",
+   "quality_display_tornado_shot_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "Schadensmalus von kopierten [Projectile|Projektilen]@{0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "Schadensbonus von kopierten [Projectile|Projektilen]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "0"
+    ],
+    "t": "Kopierte [Projectile|Projektile] verursachen {0:+d}% mehr Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "#"
+    ],
+    "t": "Kopierte [Projectile|Projektile] verursachen {0}% mehr Schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1",
+     "#"
+    ],
+    "t": "Kopierte [Projectile|Projektile] verursachen {0}% weniger Schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
+   "tornado_shot_projectile_range"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Maximale Reichweite kopierter [Projectile|Projektile]@{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Kopierte [Projectile|Projektile] haben eine maximale Fortbewegungsdistanz von {0} Metern",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Tornado Shot"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -127497,6 +136492,33 @@
     ],
     "t": "Jeder Gegner kann bis zu 1 angeheftete Pustel haben",
     "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_domain_buff_linger_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Effekte von 'Giftige Blüte' halten bei Euch für 1 Sekunde an",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Effekte von 'Giftige Blüte' halten bei Euch {0} Sekunden an",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -127627,6 +136649,200 @@
   "rows": [
    {
     "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Pustel-[DetonationTime|Detonations]radius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Pustel-[DetonationTime|Detonations]radius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Pustel-[DetonationTime|Detonations]radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Pustel-[DetonationTime|Detonations]radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_detonation_time"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "table_only"
+    ],
+    "t": "Pustel-[DetonationTime|Detonationszeit]@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Pustel-[DetonationTime|Detonationszeit]@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Pustel [DetonationTime|detoniert] nach {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Pustel [DetonationTime|detoniert] nach {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Pusteln speichern den erwarteten Schaden von dem auf sie angewendeten [Poison|Gift]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_1%_more_damage_per_x_stored_poison",
+   "toxic_pustule_max_burst_damage_+%_final_from_stored_poison"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "Maximal mehr Explosionsschaden von [Poison|Gift]@{1}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "Gespeichertes [Poison|Gift] gewährt bis zu {1}% mehr Explosionsschaden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "toxic_pustule_burst_base_radius_+1_per_x_stored_poison",
+   "toxic_pustule_max_additional_burst_base_radius_+"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "#",
+     "table_only"
+    ],
+    "t": "Maximaler zusätzlicher Explosionsradius von [Poison|Gift]@+{1}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "10"
+    ],
+    "t": "Gespeichertes [Poison|Gift] fügt bis zu {1} Meter zum Basis-Explosionsradius hinzu",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "Gespeichertes [Poison|Gift] fügt bis zu {1} Meter zum Basis-Explosionsradius hinzu",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Domain"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "Wirkungsradius beträgt {0} Meter",
@@ -127642,6 +136858,96 @@
     "t": "Wirkungsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Zünddauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Zünddauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wolkenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wolkenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Gas Grenade"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Wolkendauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wolkendauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
      "1"
     ]
    }
@@ -127740,6 +137046,53 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Pusteln speichern den erwarteten Schaden von dem auf sie angewendeten [Poison|Gift]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Toxic Growth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -127753,6 +137106,53 @@
   ],
   "skill": [
    "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
+  ]
+ },
+ {
+  "stats": [
+   "triggered_by_chaos_frog_explosion_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Diese Fertigkeit wird [Trigger|ausgelöst], wenn Hexenkröten auf Gegner springen",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Doedre's Undoing"
   ]
  },
  {
@@ -127999,6 +137399,30 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "His Winnowing Flame"
+  ]
+ },
+ {
+  "stats": [
+   "unique_flame_pillar_fire_damage_equal_to_%_of_remaining_ignite_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "100"
+    ],
+    "t": "Grausige Scheiterhaufen verursachen Schaden in Höhe des höchsten erwarteten verbleibenden Schadens der [Consume|verbrauchten] [Ignite|Entzündungen]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Grausige Scheiterhaufen verursachen Schaden in Höhe von {0}% des höchsten erwarteten verbleibenden Schadens der [Consume|verbrauchten] [Ignite|Entzündungen]",
+    "h": []
    }
   ],
   "skill": [
@@ -128297,6 +137721,31 @@
  },
  {
   "stats": [
+   "twister_%_chance_for_additional_twister"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Chance auf zusätzliche Wirbelstürme@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% Chance auf einen zusätzlichen Wirbelsturm",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Twister"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -128412,6 +137861,41 @@
  },
  {
   "stats": [
+   "minion_movement_speed_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[Minion|Kreaturen] haben {0}% erhöhte Bewegungsgeschwindigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "[Minion|Kreaturen] haben {0}% erhöhte Bewegungsgeschwindigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "[Minion|Kreaturen] haben {0}% verringerte Bewegungsgeschwindigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Unearth"
+  ]
+ },
+ {
+  "stats": [
    "skill_specific_stat_description_mode"
   ],
   "rows": [
@@ -128498,6 +137982,48 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "exploit_debuff_attack_damage_to_convert_to_magnitude_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wendet bei [Hit|Treffer] gegen [Daze|benommene] Gegner [BrokenStance|gebrochene Haltung] an",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "broken_stance_hit_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[BrokenStance|Gebrochene Haltung] wird entfernt, nachdem der betroffene Gegner {0:+d} [Hit|Treffer] erlitten hat",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[BrokenStance|Gebrochene Haltung] wird entfernt, nachdem der betroffene Gegner {0} [Hit|Treffer] erlitten hat",
+    "h": []
    }
   ],
   "skill": [
@@ -128605,6 +138131,143 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Ranken heften sich an Gegner innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_slow_debuff_movement_speed_+%_final"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Ranken [Slow|verlangsamen] gegnerische Bewegungsgeschwindigkeit um {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Pflanzendauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Pflanzendauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "poison_vine_arrow_vine_stored_poison_damage_+%_final",
+   "display_statset_hide_usage_stats"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "Gespeichertes [Poison|Gift]@{0}%",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "Pflanze verursacht zusätzlichen [Chaos|Chaos]schaden pro Sekunde in Höhe von {0}% des [Poison|Gift]schadens pro Sekunde",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "1|#"
+    ],
+    "t": "Das [Poison|Vergiften] der Pflanze lässt diese zusätzlich [Chaos|Chaos]schaden pro Sekunde in Höhe von {0}% des [Poison|Gift]schadens pro Sekunde verursachen",
+    "h": [
+     "multiplicative_damage_modifier",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Vine Arrow"
+  ]
+ },
+ {
+  "stats": [
+   "vine_arrow_area_of_effect_+%_final_when_wet"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Wirkungsbereich wenn [Plant|überwachsen]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich wenn [Plant|überwachsen]",
+    "h": []
    }
   ],
   "skill": [
@@ -128947,6 +138610,75 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "spell_minimum_base_fire_damage",
+   "spell_maximum_base_fire_damage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Ignite|Entzündet], was {0} bis {1} verursachtem [Fire|Feuer]schaden entspricht",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Ignite|Entzündet] Gegner innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volatile Dead"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration",
    "quality_display_base_skill_effect_duration_is_gem"
   ],
@@ -129172,6 +138904,156 @@
   "rows": [
    {
     "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_fires_projectiles_every_x_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Projektil-Intervall@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Feuert jede Sekunde [Projectile|Projektile], oder bei ausgeführtem [Slam|Hieb]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert alle {0} Sekunden [Projectile|Projektile], oder bei ausgeführtem [Slam|Hieb]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_initial_explosion_number_of_additional_projectiles_per_additional_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Zusätzliche primäre [Projectile|Projektile] pro zusätzlicher Phase@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Primäre Eruption feuert {0} zusätzliche\\n[Projectile|Projektile] pro zusätzlicher Phase",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "volcano_slam_unscalable_limit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Maximale [Slam|Hiebe] des Vulkans@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Vulkan wird nach {0} [Slam|Hieb] zerstört",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Vulkan wird nach {0} [Slam|Hieben] zerstört",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Volcano"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "Mauerlänge beträgt {0} Meter",
@@ -129287,6 +139169,54 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Voltaic Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "voltaic_barrier_trigger_maximum_number_of_extra_targets"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Abgefeuerte Strahlen@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "gem_quality"
+    ],
+    "t": "Feuert Strahlen auf bis zu {0:+d} zusätzlichen Gegner im Umkreis des Ziels",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Feuert Strahlen auf bis zu {0:+d} zusätzliche Gegner im Umkreis des Ziels",
+    "h": []
+   },
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Feuert Strahlen auf bis zu {0} zusätzlichen Gegner im Umkreis des Ziels",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Feuert Strahlen auf bis zu {0} zusätzliche Gegner im Umkreis des Ziels",
+    "h": []
    }
   ],
   "skill": [
@@ -130170,6 +140100,241 @@
     "c": [
      "10"
     ],
+    "t": "[Whirlwind|Wirbelwind]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|Wirbelwind]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Radius pro zusätzlicher Phase@{0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}m zum Radius pro zusätzlicher Phase",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Elementar-[Whirlwind|Wirbelwinde] [Gain|verursachen] {0}% des Schadens als Schaden des zugehörigen [ElementalDamage|Typs]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirling Slash"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Kollabieren verursacht [Melee|Nahkampf]schaden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Whirlwind|Wirbelwind]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|Wirbelwind]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Whirlwind|Wirbelwind]-Dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Whirlwind|Wirbelwind]-Dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "sandstorm_swipe_storm_radius_+_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Radius pro zusätzlicher Phase@{0:+d}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0:+d}m zum Radius pro zusätzlicher Phase",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_base_maximum_number_of_storms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "[Limit|Maximal] {0} [Whirlwind|Wirbelwind]",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Limit|Maximal] {0} [Whirlwind|Wirbelwinde]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "windstorm_gain_all_damage_%_as_corresponding_element_if_empowered"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Elementar-[Whirlwind|Wirbelwinde] [Gain|verursachen] +{0}% des Schadens als Schaden des zugehörigen [DamageTypes|Typs]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Elementar-[Whirlwind|Wirbelwinde] [Gain|verursachen] {0}% des Schadens als Schaden des zugehörigen [ElementalDamage|Typs]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Whirlwind Lance"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Kegellänge beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130391,6 +140556,96 @@
     "c": [
      "10"
     ],
+    "t": "Schlangenlänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schlangenlänge beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schlangenbreite beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schlangenbreite beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Serpent's Fury"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Schockwellenlänge beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130431,6 +140686,63 @@
     ],
     "t": "{0}% [SurpassChance|übertreffende] Chance, bei [HeavyStun|heftiger Betäubung] eine\\n[Charges|Energie-Ladung] zu erhalten, modifiziert durch den [Power|Stärkegrad]",
     "h": []
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wing Blast"
+  ]
+ },
+ {
+  "stats": [
+   "wing_blast_shockwave_damage_+%_final_if_created_from_unique"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden mit [Hit|Treffern] von Schockwellen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden mit [Hit|Treffern] von Schockwellen, die von\\neinem [Rarity|einzigartigen] Gegner ausgehen",
+    "h": [
+     "negate",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -130614,6 +140926,34 @@
  },
  {
   "stats": [
+   "skill_wolf_mark_damage_taken_+%_per_nearby_enemy",
+   "skill_wolf_mark_damage_taken_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "Erhöhter erlittener Schaden pro Gegner innerhalb von 6m (max.)@{0}% (1%)",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "[Mark|Maltragendes] Ziel erleidet {0}% erhöhten Schaden für jeden seiner Gegner innerhalb von 6 Metern, bis zu {1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130744,6 +141084,70 @@
  },
  {
   "stats": [
+   "wolf_lunar_blessing_beam_attack_extra_beams_to_trigger",
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "#",
+     "table_only"
+    ],
+    "t": "Anzahl von zusätzlichen Mondstrahl-Zielen@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "1",
+     "10"
+    ],
+    "t": "Beschwört einen Mondstrahl auf das [Hit|getroffene] Ziel und auf bis zu {0} weiteres Ziel innerhalb von {1} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "1",
+     "#"
+    ],
+    "t": "Beschwört einen Mondstrahl auf das [Hit|getroffene] Ziel und auf bis zu {0} weiteres Ziel innerhalb von {1} Metern",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "10"
+    ],
+    "t": "Beschwört einen Mondstrahl auf das [Hit|getroffene] Ziel und auf bis zu {0} weitere Ziele innerhalb von {1} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   },
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "Beschwört einen Mondstrahl auf das [Hit|getroffene] Ziel und auf bis zu {0} weitere Ziele innerhalb von {1} Metern",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "2"
+    ]
+   }
+  ],
+  "skill": [
+   "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -130781,6 +141185,36 @@
     "c": [
      "10"
     ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Pounce"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Wirkungsradius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -130796,6 +141230,31 @@
      "divide_by_ten_1dp_if_required",
      "1"
     ]
+   }
+  ],
+  "skill": [
+   "Devour"
+  ]
+ },
+ {
+  "stats": [
+   "wyvern_devour_flask_charm_charge_gain_chance_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Chance auf Erhalt von [Flask|Fläschchen]- und [Charm|Phiolen]-Füllungen@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% Chance, [Flask|Fläschchen]- und [Charm|Phiolen]-Füllungen zu erhalten, als ob der Gegner bei Verbrauch der [Corpse|Leiche] getötet werden würde",
+    "h": []
    }
   ],
   "skill": [

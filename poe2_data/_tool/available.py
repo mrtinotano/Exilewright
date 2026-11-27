@@ -395,7 +395,7 @@ for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietie
 skills, skill_csd = {}, {}
 labels, labels_tr = load('GrantedEffectLabels'), load_langs('GrantedEffectLabels')
 PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|projectiles_fork|support_double_number_of_cooldown_uses|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin|minions_are_gigantic|companions_are_gigantic)')
-PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge')
+PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge|exploit_debuff|broken_stance|wolf_mark')
 def stat_levels(effects, sets):
     """the constant stats of these stat sets and every other one per gem level (the effects' cooldown, uses, cost...)"""
     const = {sid(a): v for i in sets for a, v in zip(ss_tab[i]['ConstantStats'], ss_tab[i]['ConstantStatsValues'])}
@@ -549,7 +549,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     own_act = [active_skills[e['ActiveSkill']]] if e['ActiveSkill'] is not None else []
     csds = [a['StatDescription'] for a in own_act + acts + [active_skills[x['ActiveSkill']] for x in allfx if x['ActiveSkill'] is not None] if a['StatDescription']]
     csd = next((a['StatDescription'] for a in acts if a['StatDescription']), '')   # its radius rule (below): the skill whose numbers the gem's are
-    for c in dict.fromkeys(c.lower() for c in csds if 'specific_skill_stat_descriptions' in c.lower()):
+    own_csds = [c.lower() for c in csds if 'specific_skill_stat_descriptions' in c.lower()]
+    own_csds += [f'{os.path.dirname(c)}/{f}' for c in own_csds if '/statset_' in c and os.path.isdir(d := os.path.join(ROOT, 'files', os.path.dirname(c)))
+                 for f in sorted(os.listdir(d)) if f.startswith('statset_')]   # its other stat sets' (Vaulting Impact's Broken Stance)
+    for c in dict.fromkeys(own_csds):
         skill_csd.setdefault(c, []).append(g['name'])
     if 'specific_skill_stat_descriptions' in csd.lower():
         # the radius the game's skill window shows is the one the skill's .csd gives a table_only row ("Orb radius@{0}m"):
@@ -677,7 +680,8 @@ for f in ('gem_stat_descriptions.csd', 'skill_stat_descriptions.csd', 'active_sk
           'stat_descriptions.csd', 'passive_skill_stat_descriptions.csd'):  # later file overrides
     if os.path.exists(os.path.join(sd, f)):
         parse_csd(os.path.join(sd, f), descs)
-skill_keys = lambda sk: set(sk['constant']) | {k for lv in (sk['levels'] or {}).values() for k in lv}
+skill_keys = lambda sk: (set(sk['constant']) | {k for lv in (sk['levels'] or {}).values() for k in lv} | set(sk.get('quality') or {}) | set(sk.get('alt_quality') or {})   # its quality's too (Arctic Armour's armour per stage)
+                         | set(sk.get('part') or {}) | {k for lv in (sk.get('part_levels') or {}).values() for k in lv} | {k for P in (sk.get('parts') or {}).values() for k in skill_keys(P)})   # and its other parts' (Broken Stance's hits)
 used = {s for n in nodes.values() for s in n['stats']} | {s for m in mods for k in range(1, 9) if m[f'Stat{k}'] is not None for s in [stats[m[f'Stat{k}']]['Id']]}
 used |= {k for sk in skills.values() for k in skill_keys(sk)}
 used |= {stats[x]['Id'] for r in load('SoulCoreStats') for x in [*r['Stats'], *r['BondedStats']]}   # runes, soul cores, idols (the item editor's sockets)
