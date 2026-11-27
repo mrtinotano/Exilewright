@@ -1498,8 +1498,6 @@ export function initScene(el, api) {
     const TS = X.support_thrill_of_the_kill_buff_base_duration_ms / 1000;
     if (TS && d.st.shock > 0) { me.thrill = { X, until: time + TS }; setBuff({ label: api.info({ name: S.g.supports.find(n => /^Thrill of the Kill/.test(n)) }).label, c: css('lightning'), s: TS }); }
     me.culledAt = time; cullUp(S); if (sheet().uEv?.fearCull) me.fear = { n: Math.min(FEAR.max, (time < me.fear?.until ? me.fear.n : 0) + sheet().uEv.fearCull), until: time + FEAR.time };   /* Horror's Flight */ fx.text(over(d), t('Culling Strike'), css('blood'), .4); damage(d, d.life + d.es, S);
-    const CF = X[`skill_grant_X_frenzy_charges_against_${d.stat.rarity === 'unique' ? 'unique' : d.stat.rarity === 'rare' ? 'rare' : 'normal_and_magic'}_monsters`] || 0;   // Cull The Weak: frenzy charges by the culled one's rarity
-    for (let k = 0; k < CF; k++) chargeBy('frenzy', S);
     me.life = Math.min(me.maxL, me.life + me.maxL * (X['recover_%_maximum_life_on_cull'] || 0) / 100 + (X.active_skill_life_gained_on_cull || 0)); me.mana = Math.min(me.maxM, me.mana + me.maxM * (X['recover_%_maximum_mana_on_cull'] || 0) / 100);
     return true;
   }
@@ -2053,6 +2051,47 @@ export function initScene(el, api) {
   // and sphere at 0.1 s for 0.5-0.65 s (0.74 / 0.6 / 1), glass shards flung for 1-2 s (0.76 / 0.56 / 0.76) and more on the
   // ground for 3-4 s, blue embers for 1-2 s and the glassy cracks it leaves for 4.5 s (VFX_FrozenLake02: 77 / 95 / 109).
   // note: the counts, speeds and sizes are the scene's; its blurs and distortions are left out
+  // Cull The Weak's look (spear_frenzystab; its tutorial video). Its lunge (frenzied_lunge.atl: weaponCharge.ao) gathers
+  // wind about the spear, 24 ribbons for 0.5 s (0.63 / 1 / 0.38) and a gust off the blade for 0.12 s (0.46 / 1 / 0.2); its
+  // stab (stabStrike.ao) a pale sonic boom for 0.25 s, a spike cone for 0.25 s (0.63 / 1 / 0.25) and a wind cone for
+  // 0.17 s (0.86 / 1 / 0.3) from 0.04-0.08 s, a warm core at 0.1 s for 0.13 s (1 / 0.85 / 0.55). Its hit (hitImpact)
+  // spikes for 0.06-0.13 s (0.84 / 1 / 0.5), a wave back for 0.1-0.2 s (0.91 / 1 / 0.35) and embers for 0.4-1.2 s (0.53 /
+  // 1 / 0.3); a cull (culling_impact.ao: frenzyImpact) the same, brighter, with a 0.075 s shake. note: the counts,
+  // speeds and sizes are the scene's
+  const CTW = { wind: 0xa1ff61, gust: 0x75ff33, boom: 0xe6ecf2, spike: 0xa0ff40, cone: 0xdbff4d, core: 0xffd98c, hit: 0xd6ff80, wave: 0xe8ff59, ember: 0x87ff4d };
+  function ctwLunge(a, b) {
+    const l = dist(a, b) || 1, dx = (b.x - a.x) / l, dz = (b.z - a.z) / l;
+    fx.strip(a, b, .35, CTW.boom, .25, { a: .4, k: 1.4, y: 1 });
+    for (let i = 0; i < 8; i++) { const k = i / 7, q = { x: a.x + (b.x - a.x) * k, y: 1, z: a.z + (b.z - a.z) * k }; fx.emit(3, { p: q, r: .25, h: .3, v: .8, dir: V(dx * 2, 0, dz * 2), life: .5, size: .06, c: CTW.wind, c2: 'white', k: 1.8, drag: 2 }); }
+    fx.emit(6, { p: { x: b.x, y: 1.1, z: b.z }, r: .1, dir: V(dx * 4, 0, dz * 4), v: 1, life: .12, size: .1, c: CTW.gust, k: 2.2, drag: 3 });
+  }
+  function ctwStab(from, dx, dz) {
+    const q = { x: from.x + dx * .4, y: 1.05, z: from.z + dz * .4 }, tip = V(from.x + dx * 2.2, 1.05, from.z + dz * 2.2);
+    fx.ring(q, .1, .9, CTW.boom, .25, { a: .5, y: 1.05 });
+    later(.04, () => fx.streak(V(q.x, q.y, q.z), tip, CTW.spike, .25, .09, 1.6));
+    later(.08, () => fx.strip(q, tip, .35, CTW.cone, .17, { a: .4, k: 1.4, y: 1.05 }));
+    later(.1, () => fx.glow(tip, .45, CTW.core, .13, 2));
+  }
+  function ctwHit(p, culled) {
+    const q = { x: p.x, y: 1, z: p.z }, k = culled ? 1.4 : 1;
+    fx.glow(q, .4 * k, CTW.hit, .13, 2); fx.emit(culled ? 12 : 7, { p: q, r: .1, v: 4 * k, life: .1, size: .07, c: CTW.hit, c2: 'white', k: 2.6, drag: 3 });   // its spikes
+    fx.ring(q, .1, .8 * k, CTW.wave, .2, { a: .6, y: 1 }); fx.emit(culled ? 16 : 9, { p: q, r: .15, v: 2, up: .6, life: .9, size: .05, c: CTW.ember, k: 2.2, g: 2, drag: 1.5 });
+    if (culled) shake = Math.max(shake, .1);
+  }
+  // Killing Palm, Crushing Fear, Cull The Weak: the enemies around you they can Cull are highlighted (their description),
+  // a blue soul over each (monk_killingpalm culling_indicator.ao: cullSoul.pet's core 0.35 / 0.65 / 4, its flames rising
+  // 0.33 / 0.45 / 1, its sparks 1 / 1.25 / 3 for 1.85-3.5 s, a white flash for 0.32 s as it shows). note: how far around
+  // you is not in the data: the skill's dash range here
+  const CSOUL = { core: 0x1729ff, flame: 0x5373ff, spark: 0x556bff };
+  let cullHL = { at: -9, S: null };
+  const cullSkill = () => { if (time - cullHL.at > .5) { const j = api.build().gems.findIndex(g => /Culled\] will be highlighted/.test(api.info(g).gem?.description || '')); cullHL = { at: time, S: j >= 0 && base(j) }; } return cullHL.S; };
+  function cullSoul(d, dt) {
+    const S = cullSkill(), on = !!S && !d.dead && dist(d.pos, pp) <= (S.dmg?.stats?.base_melee_dash_range || 0) / 10 && cullable(d, S), q = { x: d.pos.x, y: 2.1 * d.sc, z: d.pos.z };
+    if (on && !d.souled) { fx.glow(q, 1.1, 'white', .32, 2); fx.emit(6, { p: q, r: .2, v: .8, up: .4, life: 2.5, size: .05, c: CSOUL.spark, c2: 'white', k: 2, drag: 1.5 }); }
+    d.souled = on; if (!on) return;
+    if (Math.random() < dt * 16) fx.emit(1, { p: q, r: .12, v: .1, life: .5, size: .6, c: CSOUL.core, c2: CSOUL.flame, k: 2.4 });
+    if (Math.random() < dt * 20) fx.emit(1, { p: q, r: .2, v: .15, up: 1.1, life: .6, size: .18, c: CSOUL.flame, c2: CSOUL.spark, k: 1.8, drag: .5 });
+  }
   const CFEAR = { wind: 0x737373, boom: 0xb599e6, mote: 0x1a1cff, glass: 0xc28fc2, feather: 0x543636, spark: 0x7538ff, ribbon: 0xc28fff, flash: 0x8f52ff, streak: 0x4233ff, ring: 0x5e36ff, ringHot: 0xede6ff, flame: 0x3b1cff, push: 0x7a52ff, light: 0xbd99ff, crack: 0x4d5f6d, dark: 0x0a0614 };
   const feathers = (p, n, r) => fx.emit(n, { p, r, h: .6, v: .5, life: 2.5, size: .09, c: CFEAR.feather, smoke: true, a: .9, g: .6, drag: 2 });
   function cfDash(a, b) {
@@ -4045,12 +4084,13 @@ export function initScene(el, api) {
         if (d.dead) return;
         if (P.dash || dist(d.pos, pp) > meleeR(S) + SIM.body) {   // strikes that carry you to the target
           const a = Math.atan2(pp.x - d.pos.x, pp.z - d.pos.z) + (k ? rnd(-2, 2) : 0), q = { x: d.pos.x + Math.sin(a) * 1.1, z: d.pos.z + Math.cos(a) * 1.1 };
-          if (S.name === 'Crushing Fear') cfDash(pp, q); else fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1);
+          if (S.name === 'Crushing Fear') cfDash(pp, q); else if (S.name === 'Cull The Weak') ctwLunge(pp, q); else fx.bolt(V(pp.x, 1, pp.z), V(q.x, 1, q.z), S.el, .2, .04, .1);
           pp.x = q.x; pp.z = q.z;
         }
         const dx = d.pos.x - pp.x, dz = d.pos.z - pp.z, l = Math.hypot(dx, dz) || 1;
-        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Boneshatter') bsSurge(d); if (S.name === 'Crushing Fear') cfHit(d.pos); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
+        facing = Math.atan2(dx, dz); castAt = time; me.act = actMove(S); if (S.name === 'Blood Hunt') bhStab(d, dx / l, dz / l); else if (S.name === 'Cull The Weak') ctwStab(pp, dx / l, dz / l); else if (S.name !== 'Axe Slash') slash(S, dx / l, dz / l); if (S.name === 'Boneshatter') bsSurge(d); if (S.name === 'Crushing Fear') cfHit(d.pos); if (S.name === 'Armour Breaker' && !S.src) breakLook(d, dx / l, dz / l);
         if (S.R) { pop(d.pos, S.R, S.el); area(d.pos, S.R, S); } else { hit(d, S); touch(d.pos, .6, S); if (!S.src && Math.random() * 100 < (sheet().splash || 0)) for (const e of inside(d.pos, 1.5)) if (e !== d) hit(e, { ...S, src: 'splash' }); }   // Splash Damage: a hit to the others within 1.5 m (keywords.json)
+        if (S.name === 'Cull The Weak') ctwHit(d.pos, d.dead);   // after its hit: culled or not
         if (k + 1 < n) later(.13, () => go(near(d.pos, 6, e => e !== d) || d, k + 1));
       };
       // Staggering Palm: its strike Heavy Stuns an enemy Primed for Stun (keywords.json PrimedStun) and, if it did, dashes on
@@ -6699,6 +6739,7 @@ export function initScene(el, api) {
     else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (ct) e.setRGB(...CONTAGION.skin); else if (st.poison > 0 || xd) e.setRGB(.1, .28, .04);
     else if (st.chill > 0) e.setRGB(.05, .2, .35); else if (d.boils > 0) e.setRGB(...BOIL.skin).multiplyScalar(Math.min(1, .4 + d.boils * .15)); else e.setRGB(0, 0, 0);
     const p = { x: d.pos.x, y: .9 * d.sc, z: d.pos.z };
+    cullSoul(d, dt);
     if (st.ignite > 0 && Math.random() < dt * 22) fx.emit(1, { p, r: .25, h: .8, v: .2, up: 1.8, life: .5, size: .32, c: 'fire', c2: 'ember' });
     if (st.shock > 0 && Math.random() < dt * 9) fx.emit(2, { p, r: .3, h: 1, v: 1.6, life: .18, size: .13, c: 'lightning', c2: 'white', k: 3 });
     if (st.poison > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .8, life: .9, size: .16, c: 'poison' });
