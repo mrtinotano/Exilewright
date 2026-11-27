@@ -81,7 +81,7 @@ function details(g, b, sum, geo, view) {
       ['Critical hit chance', s.crit != null ? fmt(s.crit, 2) + '%' : '—'],
       ['Critical Damage Bonus', s.critBonus != null ? '+' + fmt(s.critBonus) + '%' : '—'],
     ])}
-    ${sec('Accuracy', s.hitAt ? [['Main Hand Accuracy Rating', fmt(s.accuracy)], ...s.hitAt.map((h, i) => [t('Estimated main hand Chance to Hit at {0}m', [2, 5, 9][i]), h + '%'])] : [])}
+    ${sec('Accuracy', s.hitAt ? [['Main Hand Accuracy Rating', fmt(s.accuracy)], ...s.hitAt.map(([m, h]) => [t('Estimated main hand Chance to Hit at {0}m', m), h + '%'])] : [])}
     ${sec('Ailments', [
       s.ignite && ['Ignite damage per second', `${fmt(s.ignite.perSecond[0], 1)} – ${fmt(s.ignite.perSecond[1], 1)}`],
       s.ignite && ['Ignite duration', fmt(s.ignite.duration, 1) + ' s'],

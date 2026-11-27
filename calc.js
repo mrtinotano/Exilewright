@@ -284,9 +284,10 @@ export function attributes(sum, ascName) {
 // unarmed = 6 x 90 levels + 65 + 6 x 65 Dexterity, 1151 with a crossbow of +26 Dexterity; Path of Building 2's AccuracyPerDexBase)
 function perAttr(attr) {
   const t = SK.attribute_text?.[attr] || '', out = {};
-  for (const [k, re] of [['life', /\+(\d+) \[?Life/], ['mana', /\+(\d+) \[?Mana/], ['accuracy', /\+(\d+) \[?Accuracy/]]) {
-    const m = t.match(re); if (m) out[k] = k === 'accuracy' ? 6 : +m[1];
+  for (const [k, re] of [['life', /\+(\d+) \[?Life/], ['mana', /\+(\d+) \[?Mana/]]) {
+    const m = t.match(re); if (m) out[k] = +m[1];
   }
+  if (/Accuracy/.test(t)) out.accuracy = 6;
   return out;
 }
 // the share of their most accuracy loss (accuracyFalloff) player attacks lose at m metres: none within 2 m, then 9% of
@@ -1897,7 +1898,7 @@ export function skill(g, b, treeGear) {
   // min(character, 82)'s evasion, as the character panel's estimates, with accuracy's loss at that distance (accLoss)
   if (attack && w && !out.ail?.alwaysHit && !sum.global_always_hit) {
     const ch = character(b, sum), acc = out.accuracy = ch.accuracy, ev = estMonster(b.level || 1, 'Evasion');
-    out.hitAt = [2, 5, 9].map(m => playerHitChance(Math.floor(acc * (1 - accLoss(m) * ch.accuracyFalloff / 100)), ev));
+    out.hitAt = [2, 5, 9].map(m => [m, playerHitChance(Math.floor(acc * (1 - accLoss(m) * ch.accuracyFalloff / 100)), ev)]);   // [metres, %]
   }
   if (out.avg != null) {
     const c = (out.crit || 0) / 100, cb = (out.critBonus || 0) / 100, IC = c > 0 && c < 1 && sum['oracle_hits_eventually_crit_with_critical_strike_multiplier_+%_final_per_failed_roll'];
@@ -1906,7 +1907,7 @@ export function skill(g, b, treeGear) {
     if (IC) { k = c * (1 + cb); let q = 1 - c; for (let n = 1; n < 99; n++, q *= 1 - c) k += q * c * (1 + cb * Math.max(0, 1 + IC * n / 100)); k += q * (1 + cb * Math.max(0, 1 + IC * .99)); }
     // a skill the gem sets off itself (Volcanic Steps): its average per hit, as the game's window, with no rate of its own.
     // An attack's counts its chance to hit at 2 m (the game's window, 17/11: unarmed, 97%, 570.74 = 553 x 1.064 x .97)
-    out.perHit = out.avg * k * (out.hitAt ? out.hitAt[0] / 100 : 1); out.triggered = !!PT && gt.includes('Triggered');
+    out.perHit = out.avg * k * (out.hitAt ? out.hitAt[0][1] / 100 : 1); out.triggered = !!PT && gt.includes('Triggered');
     if (!out.triggered && out.speed) out.dps = out.perHit * out.speed;
   } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
   // a gem whose own skill deals no damage (a warcry, a buff) with a skill that does laid over its numbers (Ancestral Cry's
