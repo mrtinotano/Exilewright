@@ -2793,6 +2793,26 @@ export function initScene(el, api) {
   // orange embers and glinting steel pieces flung out (steelPieces), a pale blue flash when it pierces (1.12 / 1.23 / 1.5);
   // the armour it Fully Breaks shatters in a golden burst with floating shards (riven_shatter 1 / 0.58 / 0.15,
   // riven_floating_shards 1 / 0.88 / 0.79 by 1 / 0.63 / 0.25)
+  // Crossbow Shot's bolt (crossbow_basic: PowerShotDefaultBolt, bolt_basic.ao power_01 and impact_power_01): at the muzzle
+  // a warm head (power_head 1 / 0.63 / 0.39 by 1.2 / 1.2 / 1) and a gust for 0.1-0.35 s, pale wind swirling over the ground
+  // for 0.5 s (grdWind); the bolt trails a warm streak for 0.6 s (power_shot.trl, power_shot_trail 1 / 0.78 / 0.36); where it
+  // hits a flash for 0.05 s (1 / 0.63 / 0.47 by 1.2 / 1.1 / 1), embers for 0.4-1.2 s (1.15 / 0.79 / 0.63 by 1.25 / 1.2 / 1),
+  // 4 puffs of smoke for 0.5-0.8 s (0.3 / 0.29 / 0.27) and a shimmering ring for 0.2 s; piercing, its own flash (1 / 0.69
+  // / 0.47) and sparks for 0.15-0.3 s (1 / 0.71 / 0.51). note: the gusts and shimmer are distortions, drawn faint here
+  const XBOLT = { head: 0xffa163, trail: 0xffc75c, wind: 0x736f6a, flash: 0xff9463, ember: 0xffa870, smoke: 0x4d4a45, ring: 0xffa06b, spark: 0xffa66c, shoot: xbMuzzle, hit: xbHit };
+  function xbMuzzle(dx, dz) {
+    const H = hand(), q = { x: H.x + dx * .3, y: H.y, z: H.z + dz * .3 };
+    fx.glow(q, .35, XBOLT.head, .1, 1.8); fx.ring(q, .05, .5, XBOLT.wind, .35, { a: .3, y: q.y });
+    fx.emit(10, { p: { x: pp.x, y: .1, z: pp.z }, r: .3, v: 1.6, up: .2, life: .5, size: .35, grow: 1.8, c: XBOLT.wind, smoke: true, a: .18, drag: 2, flat: true });
+  }
+  function xbHit(p, through) {
+    const q = { x: p.x, y: 1.05, z: p.z };
+    fx.glow(q, .8, through ? XBOLT.head : XBOLT.flash, .05, 2.6);
+    fx.emit(through ? 5 : 8, { p: q, r: .1, v: 2.6, up: .8, life: .8, size: .05, c: XBOLT.ember, c2: 'white', k: 2.2, drag: 1.5, g: 3 });
+    if (through) return void fx.emit(8, { p: q, dir: V(0, .2, 0), r: .05, v: 4, life: .25, size: .05, c: XBOLT.spark, c2: 'white', k: 2.4, drag: 3 });
+    later(.025, () => fx.emit(4, { p: q, r: .15, v: .6, up: .4, life: .65, size: .4, grow: 2, c: XBOLT.smoke, smoke: true, a: .4, drag: 1.5 }));
+    later(.05, () => fx.ring(q, .1, .7, XBOLT.ring, .2, { a: .5, y: q.y }));
+  }
   // Bow Shot's arrow (default_ranged: DefaultArrow, base_arrow_attack arrow_base): its head glowing warm (basic_arrow_head
   // up to 1 / 0.61 / 0.25), a pale trail (basic_arrow_trail 0.35 / 0.32 / 0.3), stuck where it hits (arrow_base_stuck);
   // its shaft the mean colour of its texture (basearrow_clr: 87 / 79 / 72)
@@ -2812,7 +2832,7 @@ export function initScene(el, api) {
     fx.glow(c, .9, L.spiral, .2, 2.6); fx.ring(c, .1, .6, L.spiral, .3, { a: .8, y: p.y });
     fx.emit(10, { p: c, r: .1, v: 2, life: .4, size: .05, c: L.ember, k: 2.4, drag: 2 });
   }
-  const APR = { muzzle: 0xbfcfff, ring: 0xff5c36, head: 0xabdcff, trail: 0xff3e24, flash: 0xff784f, ember: 0xff825c, steel: 0xff4d1f, pierce: 0x9fbfff, shatter: 0xff9426, shard: 0xff8c33 };
+  const APR = { muzzle: 0xbfcfff, ring: 0xff5c36, head: 0xabdcff, trail: 0xff3e24, flash: 0xff784f, ember: 0xff825c, steel: 0xff4d1f, pierce: 0x9fbfff, shatter: 0xff9426, shard: 0xff8c33, shoot: aprMuzzle, hit: aprHit };
   function aprMuzzle(dx, dz) {
     const H = hand(), q = { x: H.x + dx * .3, y: H.y, z: H.z + dz * .3 };
     fx.glow(q, .3, APR.muzzle, .08, 1.5); fx.glow(q, .45, APR.ring, .1, 1.6);
@@ -2895,7 +2915,8 @@ export function initScene(el, api) {
     const BW = S.name === 'Bow Shot'; if (BW) { m.children[0].material.color.copy(fx.color(BOW.shaft, 1)); m.children[1].material.color.copy(fx.color(BOW.head, 1.2)); m.children[1].scale.setScalar(.3); }
     const CB = S.name === 'Chaos Bolt'; if (CB) tint(m, CBOLT.trail);
     const CO = S.name === 'Coiling Bolts' && (S.dmg?.parts ? COIL.physical : COIL.chaos); if (CO) tint(m, CO.trail);   // the skill's own bolt is the physical one, its part the chaos one
-    const AP = S.name === 'Armour Piercing Rounds'; if (AP) { tint(m, APR.trail); m.children[1].material.color.copy(fx.color(APR.head, 1.5)); m.children[1].scale.setScalar(.3); if (!o.forked && !o.split && !o.back) aprMuzzle(dx, dz); }
+    const XS = S.name === 'Crossbow Shot', AP = S.name === 'Armour Piercing Rounds', ROUND = XS ? XBOLT : AP && APR; let xp = XS && m.position.clone();   // a crossbow's bolt: its colours, muzzle and hit
+    if (ROUND) { tint(m, ROUND.trail); m.children[1].material.color.copy(fx.color(ROUND.head, 1.5)); m.children[1].scale.setScalar(.3); if (!o.forked && !o.split && !o.back) ROUND.shoot(dx, dz); }
     // Pierce, then Fork, then Chain (calc.js shape): a fractional pierce is a chance, rolled per projectile. The forks
     // part at an angle the data does not give (a look only); they keep the targets already hit and the less damage
     // Ulaman's Vision: each projectile you fire does one of these at random: Fork once more (0), Chain once more (1), Chain
@@ -2958,7 +2979,7 @@ export function initScene(el, api) {
           if (cur.P.spell) for (const w of objs) if (w.mirror && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.shatter(cur, o);
           if (FR) for (const w of objs) if (w.ice && !w.dead && dist(w.pos, m.position) <= cr + w.r) w.touch(cur);
           for (const d of dummies) if (!EW && UL !== 3 && !d.dead && !seen.has(d) && dist(d.pos, m.position) <= cr + SIM.body) {
-            seen.add(d); shrapnel(cur, d); if (AP) aprHit(m.position, pierced < pierceN); if (CO) coilHit(m.position, CO); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
+            seen.add(d); shrapnel(cur, d); if (ROUND) ROUND.hit(m.position, pierced < pierceN); if (CO) coilHit(m.position, CO); if (cur.icetip) iceFrags(cur.icetip, { x: d.pos.x, z: d.pos.z }, a0);
             // Split: its first hit splits it toward that many other enemies around; the split ones split no more
             const N = !o.split && (D.split || 0) + (empowered(S)?.dmg.stats.mana_tempest_empowered_spells_split_to_X_additional_targets || 0);   // Mana Tempest
             if (N) {
@@ -2981,7 +3002,7 @@ export function initScene(el, api) {
         if (surged.some(s => s.el === 'chaos')) { fx.emit(1, { p: m.position, r: .06, v: .2, life: .8, size: .05, c: CSURGE.string, k: 2.4 }); fx.emit(1, { p: m.position, r: .02, v: .05, life: .47, size: .1, c: CSURGE.ribbon, k: 2.2 }); }   // Chaotic Surge's
         const TB = CO || (CB && CBOLT);
         if (TB) { fx.trail(m.position, TB.trail, slow); fx.emit(1, { p: m.position, r: .05, v: .3, life: CO ? .62 : .45, size: .05, c: TB.ember, k: 2.4 }); }
-        else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
+        else if (XS) { fx.strip(xp, m.position, .07, XBOLT.trail, .6, { a: .7, k: 2, y: m.position.y }); xp = m.position.clone(); } else if (AP) fx.emit(3, { p: m.position, r: .02, v: .05, life: .22, size: .08, c: APR.trail, c2: APR.ring, k: 2.4 }); else if (BW) fx.emit(2, { p: m.position, r: .01, v: .05, life: .2, size: .06, c: BOW.trail, k: 1 }); else if (every) ballTrail(m, fi); else fx.trail(m.position, cur.el, slow);
         if (slow) {
           if (P.absorbs && !S.dmg?.parts?.WhirlwindLanceStormPlayer) { const n = absorb(cur, m.position, Math.max(S.R, .6)), EG = bst['eye_of_winter_damage_%_to_gain_as_element_per_ground_effect_type']; if (n !== cur) { cur = EG ? gainAs(n, n.got, EG) : n; tint(m, cur.el); } }
           if (P.ground && trail > 1.4) { trail = 0; ground(P.ground, m.position, .8, 4, cur); }
@@ -3438,7 +3459,7 @@ export function initScene(el, api) {
       const n = S.P.single ? 1 : (sh(S).projectiles || S.P.count || 1) + S.spent * 2 + (S.addProj || 0) + moreProj(S), a0 = Math.atan2(S.dx, S.dz), spread = S.circle ? TAU / n : S.P.wander ? .45 : .13, h = hand();
       for (let i = 0; i < n; i++) { const a = a0 + (i - (n - 1) / 2) * spread; shoot(S, S.from, Math.sin(a), Math.cos(a)); }
       const CB = partOf(S, 'CoilingBoltsChaosPlayer'); if (CB) shoot(CB, S.from, Math.sin(a0 + spread), Math.cos(a0 + spread));   // Coiling Bolts: its Chaos projectile, fired with its Physical one
-      if (S.name !== 'Armour Piercing Rounds' && S.name !== 'Bow Shot') fx.glow(h, .9, S.el, .2);   // its own muzzle flash (aprMuzzle); Bow Shot's arrow has none (arrow_base)
+      if (!['Armour Piercing Rounds', 'Crossbow Shot', 'Bow Shot'].includes(S.name)) fx.glow(h, .9, S.el, .2);   // its own muzzle flash (aprMuzzle, xbMuzzle); Bow Shot's arrow has none (arrow_base)
     },
     chain(S) {
       const d = near(S.at, SIM.snap) || near(S.at, 6, e => dist(e.pos, S.from) <= SIM.castRange), h = hand(), n = (sh(S).chains || 0) + (S.addChains || 0);   // Arc's chains from a Lightning Infusion
