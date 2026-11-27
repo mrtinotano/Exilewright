@@ -153,7 +153,8 @@ export function fromXML(xml, ctx, blank, at) {
   b.quests = {};
   for (const q of ctx.quests || []) b.quests[q.key] = q.pick ? q.options.findIndex(o => flat(o.text) === flat(input[q.key]?.getAttribute('string'))) + 1
     : +(input[q.key]?.getAttribute('boolean') !== 'false');
-  return { build: b, warn, specs: specs.map(s => s.getAttribute('title') || ''), active: openSpec };
+  return { build: b, warn, specs: specs.map(s => s.getAttribute('title') || ''), active: openSpec,
+    granted: [...doc.querySelectorAll('Skill[source]')].map(s => s.querySelector('Gem')?.getAttribute('nameSpec')) };   // the tree's and items' skills, in Path of Building's order
 }
 
 // ---------- the game's own build planner (0.5): a .build JSON file, read from Documents/My Games/Path of Exile 2/BuildPlanner

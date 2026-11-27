@@ -583,8 +583,7 @@ const openShare = async (exporting, again) => {
   };
   // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
   const importXML = (xml, name, order) => {
-    const granted = [...new DOMParser().parseFromString(xml, 'text/xml').querySelectorAll('Skill[source]')].map(s => s.querySelector('Gem')?.getAttribute('nameSpec'));
-    const ctx = shareCtx(), { build, warn, specs, active } = fromXML(xml, ctx, blank);
+    const ctx = shareCtx(), { build, warn, specs, active, granted } = fromXML(xml, ctx, blank);
     if (name) build.name = name;
     // one from a Path of Building file replaces the build that came from that file (the newest, if several; before builds
     // kept their file, the one of the same name), so changing it there and importing it again updates it; Undo brings it back
