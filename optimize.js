@@ -203,7 +203,7 @@ export async function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets
   const walk = from => {
     if (names.length) {
       const more = n => names.flatMap(m => m === n ? [] : GEM[m].adds || []);   // a support may change the skill's types for the others
-      if (names.every(n => !more(n).length || fitsGem(GEM[n], types.map(T => new Set([...T, ...more(n)]))))) list.push([...names]);
+      if (names.every(n => fitsGem(GEM[n], types.map(T => new Set([...T, ...more(n)]))))) list.push([...names]);
     }
     if (names.length >= sockets) return;
     for (let i = from; i < top.length; i++) {

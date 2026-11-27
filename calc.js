@@ -1841,7 +1841,7 @@ export function skill(g, b, treeGear) {
       if (w.what === 'damage') { for (const t in w.w) if (H[t]) H[t] = H[t].map(x => x * (1 + pct / 100 * w.w[t])); }
       else if (w.what === 'pen') out.pen[w.el] = (out.pen[w.el] || 0) + pct;
       else if (w.what === 'gain') ex.push([w.from, w.to, pct]);
-      else if (w.what === 'duration') { if (out.shape?.duration) out.shape.duration *= 1 + pct / 100; }
+      else if (w.what === 'duration' && out.shape?.duration) out.shape.duration *= 1 + pct / 100;
       else if (out[w.what] != null) out[w.what] *= 1 + pct / 100 * w.w;
     }
     for (const [from, to, p] of ex) if (H[from]) H[to] = H[from].map((x, i) => (H[to]?.[i] || 0) + x * p / 100);   // gained as extra: of the damage after the rest, as the scene's

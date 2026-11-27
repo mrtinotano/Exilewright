@@ -88,7 +88,7 @@ function details(g, b, sum, geo, view) {
     ${(c => c ? `<h4>${t('Conditions')}</h4><p class="note">${t('Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.')}</p><div class="conds">${c}</div>` : '')(condRows(s, b, sum))}
     ${sub ? '' : sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]]) + sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
-      (s.shape?.duration || SK.skills[g.name]?.duration_ms) && ['Duration', fmt(s.shape?.duration || SK.skills[g.name].duration_ms / 1000, 2) + ' s'],   // with its modifiers and the charges it consumes (Conditions)
+      (d => d && ['Duration', fmt(d, 2) + ' s'])(s.shape?.duration || SK.skills[g.name]?.duration_ms / 1000),   // with its modifiers and the charges it consumes (Conditions)
       geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
     ])}
     ${T ? sec('Totem', [
