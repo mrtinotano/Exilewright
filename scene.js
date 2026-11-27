@@ -5312,14 +5312,13 @@ export function initScene(el, api) {
     fx.emit(n * 2, { p: { x: p.x, y: .1, z: p.z }, r: R * .5, v: 1.5, up: .3, life: 1.5, size: .5, grow: 1.8, c: DEVOUR.dust, smoke: true, a: .35, drag: 1.5, flat: true });
     later(.04, () => fx.emit(n, { p: { x: p.x, y: .2, z: p.z }, r: R * .3, v: 1, up: 1, life: 1.75, size: .15, c: DEVOUR.powder, smoke: true, a: .5, g: .5, drag: 1 }));
   }
-  const dvLeap = () => { dvDust(pp, 8, 1); shake = Math.max(shake, .15); };
   function dvLand(p, R) {
     dvDust(p, 16, R); fx.ring(p, .2, R, DEVOUR.ring, .3, { a: .8 }); shake = Math.max(shake, .3);
     later(.1, () => fx.emit(12, { p: { x: p.x, y: .2, z: p.z }, r: R * .4, v: 2.5, up: 2.5, life: 6, size: .1, c: DEVOUR.dust, smoke: true, a: .9, g: 9, drag: .3 }));
   }
   function dvEat(d, corpse) {   // corpse: one it consumes (a culled enemy is left)
-    const q = { x: d.pos.x, y: .4, z: d.pos.z }, f = d.fig;
-    if (corpse) { eat(d); f.group.visible = true; later(.6, () => { if (!d.corpse) f.group.visible = false; }); }
+    const q = { x: d.pos.x, y: .4, z: d.pos.z };
+    if (corpse) { eat(d); d.fig.group.visible = true; later(.6, () => { if (!d.corpse) d.fig.group.visible = false; }); }
     fx.emit(32, { p: q, r: .2, v: 2, up: 2, life: 5, size: .07, c: DEVOUR.blood, smoke: true, a: .9, g: 9, drag: .4 });
     later(.5, () => { fx.emit(12, { p: q, r: .3, v: 1, up: .6, life: 5, size: .09, c: DEVOUR.blood, smoke: true, a: .9, g: 9, drag: .6 }); fx.disc(q, .8, DEVOUR.blood, 8, { dark: true, a: .9, tex: 'patch', hold: .8, y: .02 }); });
     later(.6, () => fx.emit(10, { p: q, r: .3, v: 1.5, up: 2, life: 5, size: .08, c: DEVOUR.bone, g: 9, drag: .4 }));
@@ -5340,7 +5339,7 @@ export function initScene(el, api) {
       me.life = gain(me.life, me.maxL, st.wyvern_devour_life_restoration); chargeBy('power', S); if (Math.random() * 100 < (st['wyvern_devour_flask_charm_charge_gain_chance_%'] || 0)) killCharges(d);   // its quality: charges as though killing it
     });
     if (l <= reach) eatAll();
-    else if (l <= reach + st.base_melee_dash_range / 10) { dvLeap(); move = { from: { x: pp.x, z: pp.z }, to: p, k: 0, dur: .35, h: 1.6, S, seen: new Set(), land: at => { dvLand(at, S.A); area(at, S.A, S); eatAll(); } }; }
+    else if (l <= reach + st.base_melee_dash_range / 10) { dvDust(pp, 8, 1); shake = Math.max(shake, .15); move = { from: { x: pp.x, z: pp.z }, to: p, k: 0, dur: .35, h: 1.6, S, seen: new Set(), land: at => { dvLand(at, S.A); area(at, S.A, S); eatAll(); } }; }
   };
   // Thrashing Vines: its growth area at the target (its limit, its duration), a vine crashing in it every its share of the
   // cast time, onto an enemy in it if there is one, hitting its secondary area
