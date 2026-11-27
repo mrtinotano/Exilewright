@@ -2,7 +2,7 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, esc, tn, fmt, lang, kwPlain, kwHtml, fold } from './i18n.js';
-import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, condKey, GEM, gemName, subsOf, subDamage, typeSets, fitsGem } from './calc.js';
+import { attributes, skill, reservation, totem, usedBy, nthOfName, metasFor, linkMetas, condKey, GEM, gemName, subsOf, subDamage, typeSets, fitsGem } from './calc.js';
 import { BINDABLE, enemy } from './enemies.js';
 // a bindable monster as the picker lists it: varieties of one name (their skills differ) by the tail of their game id
 const spLabel = m => m ? m.variant ? `${m.name} (${m.variant})` : m.name : '';
@@ -127,7 +127,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
       // Bind Spectre: the monster whose spirit it holds (the game's: bound from a corpse, the gem then "Spectre: <monster>")
       const spec = g.name === 'Bind Spectre' || g.spectre ? `<label class="smeta">${t('Its monster')} <input list="spectreNames" data-gi="${gi}" data-k="spectre" value="${esc(spLabel(enemy(g.spectre)))}" placeholder="${t('Search enemy…')}"></label>` : '';
       // which of them: by name and, for two of the same name (two Mortar Cannons), which one (calc.js usedBy g.metaN), numbered
-      const nth = m => b.gems.filter(x => x.name === m.name).indexOf(m), twins = m => metas.filter(x => x.name === m.name).length > 1;
+      const nth = m => nthOfName(b, m), twins = m => metas.filter(x => x.name === m.name).length > 1;
       const inMeta = metas.length ? `<label class="smeta">${t('Socketed in')} <select data-gi="${gi}" data-k="meta"><option value="">${t('None')}</option>${metas.map(m => `<option value="${esc(m.name)}#${nth(m)}"${holder === m ? ' selected' : ''}>${esc(tn(GEM[m.name]))}${twins(m) ? ' ' + (nth(m) + 1) : ''}</option>`).join('')}</select></label>` : '';
       const heldHtml = held.map(x => `<span class="sockw"><button class="sock held" data-pick="${b.gems.indexOf(x)}" title="${esc(tn(GEM[x.name]))}"><img src="${img(GEM[x.name].icon)}" alt=""></button></span>`).join('');
       const sockets = holder ? `<small class="note">${t('Uses the supports of {0}', esc(tn(GEM[holder.name])))}</small>` : G.cannot_be_supported ? `<small class="note">${t('Cannot be supported')}</small>` : heldHtml + Array.from({ length: room }, (_, si) => {
@@ -151,7 +151,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
           <div class="suplist">${g.supports[open[1]] ? `<button class="supopt" data-sup=""><span><b>${t('— empty —')}</b><small>${t('Remove support')}</small>${gain(null)}</span></button>` : ''}${opts.map(item).join('')}</div></div>`;
       }
       return `<div class="skill${gi === sel ? ' sel' : ''}${holder ? ' inmeta' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
-        <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level">${d.stats?._level > g.level ? ` <b class="slv" title="${t('With the levels your passives and gear add')}">${d.stats._level}</b>` : ''} <span title="${t('Quality')}">Q:</span> <input type="number" min="0" max="40" value="${g.quality || 0}" data-gi="${gi}" data-k="quality" title="${t('Quality')}"> <label class="scor"><input type="checkbox"${g.corrupted ? ' checked' : ''} data-gi="${gi}" data-k="corrupted">${t('Corrupted')}</label> <b>${esc(gemName(g))}${(n => G.holds && n.length > 1 ? ' ' + (n.indexOf(g) + 1) : '')(b.gems.filter(x => x.name === g.name))}</b>
+        <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level">${d.stats?._level > g.level ? ` <b class="slv" title="${t('With the levels your passives and gear add')}">${d.stats._level}</b>` : ''} <span title="${t('Quality')}">Q:</span> <input type="number" min="0" max="40" value="${g.quality || 0}" data-gi="${gi}" data-k="quality" title="${t('Quality')}"> <label class="scor"><input type="checkbox"${g.corrupted ? ' checked' : ''} data-gi="${gi}" data-k="corrupted">${t('Corrupted')}</label> <b>${esc(gemName(g))}${G.holds && b.gems.filter(x => x.name === g.name).length > 1 ? ' ' + (nthOfName(b, g) + 1) : ''}</b>
           ${spec}${inMeta}<span class="sockn"${holder ? ' hidden' : ''}>${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
           ${GEM[g.name]?.types?.includes('Persistent') ? `<label class="scor"><input type="checkbox"${g.enabled !== false ? ' checked' : ''} data-gi="${gi}" data-k="enabled">${t('Enabled')}</label>` : ''}
           <label class="smeta"${holder ? ' hidden' : ''}>${t('Used with weapon set:')} <select data-gi="${gi}" data-k="wset">${[['', 'I + II'], [1, 'I'], [2, 'II']].map(([v, l]) => `<option value="${v}"${(g.wset || '') == v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
@@ -207,7 +207,6 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
     render();
   });
   el.addEventListener('change', e => {
-    if (e.target.id === 'gemSearch') return;   // added from its list (input, keydown)
     const t = e.target, g = getBuild().gems[t.dataset.gi]; if (!g) return;
     if (!t.dataset.k) return;
     if (t.dataset.k === 'spectre') {   // its monster: the gem is its Spectre; none: Bind Spectre again
@@ -228,7 +227,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
   el.addEventListener('keydown', e => {
     if (e.target.id !== 'gemSearch') return;
     if (e.key === 'Escape') el.querySelector('.gemsug').hidden = true;
-    if (e.key === 'Enter') { const n = sugs(e.target.value)[0]; if (n && addGem(n)) { render(); el.querySelector('#gemSearch')?.focus(); } }
+    if (e.key === 'Enter') el.querySelector('.gemsug button')?.click();   // the first in the list
   });
   el.addEventListener('input', e => {   // filter the support list, or the skills to add, in place (keeps the focus in the box)
     if (e.target.id === 'gemSearch') { const L = sugs(e.target.value), box = el.querySelector('.gemsug'); box.innerHTML = L.map(n => `<button data-addgem="${esc(n)}">${esc(n)}</button>`).join(''); box.hidden = !L.length; return; }

@@ -63,6 +63,8 @@ export const metasFor = (b, g) => { const types = new Set(GEM[g?.name]?.types ||
 // the meta gem that uses the build's i-th gem: the one it was put in (g.meta, as in the game: the skill sits in one of
 // the meta gem's sockets; g.metaN: which of the build's meta gems of that name, two Mortar Cannons). A build from before
 // that field: the gem before it, with the same supports.
+// which of the build's gems of its name g is (0: the first): two Mortar Cannons
+export const nthOfName = (b, g) => (b.gems || []).filter(x => x.name === g.name).indexOf(g);
 export const usedBy = (b, i) => { const g = b.gems?.[i]; if (!g) return null;
   if ('meta' in g) { const same = g.meta ? metasFor(b, g).filter(m => m.name === g.meta) : []; return same[g.metaN || 0] || same[0] || null; }
   const m = i > 0 && b.gems[i - 1];
@@ -86,7 +88,7 @@ export function linkMetas(b) {
   const inside = new Map();
   for (const [i, g] of (b.gems || []).entries()) {
     const m = usedBy(b, i);
-    if (m) { g.meta = m.name; const k = b.gems.filter(x => x.name === m.name).indexOf(m); if (k > 0) g.metaN = k; else delete g.metaN; inside.set(m, [...inside.get(m) || [], g]); }
+    if (m) { g.meta = m.name; const k = nthOfName(b, m); if (k > 0) g.metaN = k; else delete g.metaN; inside.set(m, [...inside.get(m) || [], g]); }
     else if (g.meta) { g.meta = ''; delete g.metaN; }
   }
   for (const [m, list] of inside) {
