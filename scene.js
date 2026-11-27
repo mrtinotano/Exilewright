@@ -2027,6 +2027,23 @@ export function initScene(el, api) {
     return p;
   }
 
+  // A Sceptre's aura as the game's (aura_<name>.ao: aura_zone.pet, looping each second): a thin broken ring at your feet
+  // in its colour (its AuraMesh: Noise_006 masking it, turning) and sparks streaking up off it, 32 a second for 0.35-1.5 s.
+  // Discipline's blue (aura_discipline: disciplineBase 0.15 / 0.59 / 1, its sparks 0.03 / 0.12 / 1). note: the ring's size
+  // (about 1 m, as the game shows it) and its texture (the noise read round a circle) are the scene's; the counts, speeds
+  // and sizes too
+  const AURA_LOOK = { Discipline: { base: 0x2696ff, spark: 0x081fff } }, AURA_R = 1;
+  const auraD = {};
+  function auraLook(dt) {
+    for (const k in AURA_LOOK) {
+      const L = AURA_LOOK[k], on = !!tog[k];
+      if (on && !auraD[k]) auraD[k] = fx.decal(pp, AURA_R, artTex('aura_ring', 'particles/fxlib/tileables/aura_ring_006'), L.base, { a: .9, k: 2.4, spin: .4 });
+      const D = auraD[k]; if (!D) continue;
+      if (!on) { D.remove(); delete auraD[k]; continue; }
+      D.move(pp);
+      if (Math.random() < dt * 32) { const a = rnd(TAU), p = V(pp.x + Math.cos(a) * AURA_R * .88, .05, pp.z + Math.sin(a) * AURA_R * .88); fx.streak(p, V(p.x, .6, p.z), L.spark, rnd(.35, 1.5), .012, .15); }
+    }
+  }
   // Crackling Palm, Gelid Palm: an unarmed melee attack hit calls down a bolt on the enemy, no more than its number every
   // its delay, hitting the enemies within its radius for its own damage. Crackling Palm's look (thunder_bolt.ao: its
   // lightning_bolt ribbons falling from 15 m above for 0.35-0.55 s, impact.pet: a flash 0.12 s, sparks, rings and a ring out
@@ -5842,7 +5859,7 @@ export function initScene(el, api) {
   function kaomLook(dt) {
     const on = me.kaom && time < me.kaom.until, k = kaomK = Math.max(0, Math.min(1, kaomK + (on ? dt * 4 : -dt * 2))), sk = me.skin, ch = time < (me.chayula?.until ?? -9);
     let w = sk ? Math.max(0, 1 - (time - sk.at) / sk.dur) : 0;
-    const bz = berserkLook(); convLook(dt); palmLook(dt);
+    const bz = berserkLook(); convLook(dt); palmLook(dt); auraLook(dt);
     if (w) WG.set(sk.hex); else if (ch) { w = .6; WG.set(CHAYULA.skin); }   // Archon of Chayula's
     else if (bz) { w = bz; WG.set(BERSERK.skin); }   // Berserk: red over you while you have Rage
     orbiters(dt);
