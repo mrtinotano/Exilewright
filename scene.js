@@ -3240,7 +3240,7 @@ export function initScene(el, api) {
       if (on && !d.erodM) { d.erodM = fx.arrow(EAR.glow); d.erodM.children[1].scale.setScalar(.35); d.fig.group.add(d.erodM); d.erodM.position.set(0, 1.2, 0); d.erodM.rotation.set(-.9, rnd(TAU), 0); }   // in its figure, gone with it
       if (!d.erodM) continue;
       if (!on) { fx.drop(d.erodM); d.erodM = null; continue; }
-      if (Math.random() < dt * 10) { const h = rnd(.3, 1.8) * d.sc, a = rnd(TAU); fx.bolt(V(d.pos.x + Math.cos(a) * .25, h, d.pos.z + Math.sin(a) * .25), V(d.pos.x - Math.cos(a) * .25, h + rnd(-.5, .5), d.pos.z - Math.sin(a) * .25), EAR.zap, rnd(.15, .55) * .5, .015, .12); }
+      if (Math.random() < dt * 10) { const h = rnd(.3, 1.8) * d.sc, a = rnd(TAU); fx.bolt(V(d.pos.x + Math.cos(a) * .25, h, d.pos.z + Math.sin(a) * .25), V(d.pos.x - Math.cos(a) * .25, h + rnd(-.5, .5), d.pos.z - Math.sin(a) * .25), EAR.zap, rnd(.15, .55), .015, .12); }
     }
   }
   // Detonating Arrow's look (bow_detonating_arrow; its tutorial video). Channelled, a fire head grows on the arrow's tip
