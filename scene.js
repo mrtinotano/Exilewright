@@ -3007,16 +3007,64 @@ export function initScene(el, api) {
     else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, chainsOf(X));
     else { const a0 = Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), n = X.dmg.stats.base_number_of_projectiles; for (let k = 0; k < n; k++) { const q = a0 + (k - (n - 1) / 2) * .25; shoot(X, pp, Math.sin(q), Math.cos(q)); } }
   }
+  // Elemental Storm's look (stormweaver/elemental_storm.ao, its element's storm_X.pet, looping; no tutorial video): its core
+  // of torn rings spinning a turn a second for 1-1.5 s (fire 1 / 0.37 / 0.1 through 1 / 0.72 / 0.61, cold 0.5 / 0.7 / 1
+  // through 0.79 / 0.87 / 1, lightning 0.1 / 0.19 / 1 through 0.61 / 0.65 / 1), ribbons whirling round it for 1.4-2 s (fire's
+  // flames, cold's 0.5 / 0.55 / 1; lightning's are bolts for 0.5-0.7 s, 0.4 / 0.4 / 1), 128 embers circling it 1.5 m out at
+  // 4.2-5.2 rad/s for 1.5-4 s, and as it starts a wave for 0.5 s from 0.35 s (fire 1 / 0.37 / 0.1, cold 0.4 / 0.64 /
+  // 1, lightning 0.15 / 0.24 / 1). note: its ring's width and height, how fast its embers rise and its ribbons' rate are the scene's
+  const ESTORM = { fire: { core: 0xff5e1a, hi: 0xffb89c, ribbon: 0xff5e1a, wave: 0xff5e1a }, cold: { core: 0x80b3ff, hi: 0xc9deff, ribbon: 0x808cff, wave: 0x66a3ff },
+    lightning: { core: 0x1a30ff, hi: 0x9ca6ff, ribbon: 0x6666ff, wave: 0x263dff, bolt: true } };
+  function stormStart(el, c, R) {
+    const L = ESTORM[el];
+    later(.35, () => { fx.ring(c, R * .2, R, L.wave, .5, { a: .7 }); fx.glow({ x: c.x, y: .6, z: c.z }, R * .8, L.wave, .5, 2.2); });
+  }
+  const STORM_ARC = new THREE.TorusGeometry(1, .09, 6, 32, 2.4).rotateX(Math.PI / 2);
+  // its storm is a ring round its area spinning low over the ground (as the game's): its core's torn rings (8, each
+  // spinning and fading in and out over its life, at its own radius and height in the ring) and its 128 embers circling it,
+  // built in the storm's holder g; stormLook moves them
+  function stormBody(el, g, R) {
+    const L = ESTORM[el], arcs = [], n = 128, pos = new Float32Array(n * 3), col = new Float32Array(n * 3), em = [];
+    for (let i = 0; i < 8; i++) {
+      const m = new THREE.Mesh(STORM_ARC, fx.glowMat(i % 4 ? L.core : L.hi, 1, 0)); g.add(m);
+      arcs.push({ m, life: rnd(1.2, 1.5), age: rnd(1.2) }); stormArc(arcs[i], R);
+    }
+    for (let i = 0; i < n; i++) em.push({ a: rnd(TAU), w: rnd(4.2, 5.2), y: rnd(.1, .7), life: rnd(1.5, 4), age: rnd(4) });
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: .09, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+    pts.userData.own = true; g.add(pts);
+    return { arcs, em, pos, col, geo, R, c: fx.color(L.core, 2) };
+  }
+  function stormArc(A, R) { const r = R * rnd(.7, 1); A.m.position.y = rnd(.15, .6); A.m.scale.set(r, rnd(.8, 1.6), r); A.m.rotation.y = rnd(TAU); }
+  function stormLook(el, c, s, dt, B) {
+    const L = ESTORM[el], R = B.R;
+    for (const A of B.arcs) {
+      if ((A.age += dt) > A.life) { A.age = 0; A.life = rnd(1.2, 1.5); stormArc(A, R); }
+      A.m.rotation.y -= TAU * dt; A.m.material.opacity = Math.sin(Math.PI * A.age / A.life) * .5;
+    }
+    B.em.forEach((E, i) => {
+      if ((E.age += dt) > E.life) { E.age = 0; E.life = rnd(1.5, 4); E.y = rnd(.1, .4); E.a = rnd(TAU); }
+      E.a += E.w * dt; E.y += .2 * dt; const f = Math.sin(Math.PI * E.age / E.life);
+      B.pos.set([Math.cos(E.a) * 1.5, E.y, Math.sin(E.a) * 1.5], i * 3); B.col.set([B.c.r * f, B.c.g * f, B.c.b * f], i * 3);
+    });
+    B.geo.attributes.position.needsUpdate = B.geo.attributes.color.needsUpdate = true;
+    const at = (a, r, h) => V(c.x + Math.cos(a) * r, h, c.z + Math.sin(a) * r);
+    if (L.bolt) { if (Math.random() < dt * 13) { const a = rnd(TAU); fx.bolt(at(a, R * rnd(.7, 1), rnd(.2, .8)), at(a + rnd(.6, 1.2), R * rnd(.7, 1), rnd(.2, .8)), L.ribbon, rnd(.5, .7), .03, .2); } }
+    else for (let n = dt * 30; n > 0; n--) if (n >= 1 || Math.random() < n) { const a = rnd(TAU), r = R * rnd(.7, 1);
+      fx.emit(1, { p: at(a, r, rnd(.15, .7)), dir: V(-Math.sin(a) * r * 4, .2, Math.cos(a) * r * 4), life: rnd(.5, .8), size: .22, c: L.ribbon, c2: L.hi, k: 2.2, drag: 3 }); }
+  }
   // Elemental Storm (the Stormweaver's Tempest Caller): a spell critical hit triggers it, within its cooldown: a stationary
   // storm at the enemy for its duration, of the hit's highest elemental damage type (none from a hit with no elemental
-  // damage), hitting the enemies in its area every its interval
+  // damage), hitting the enemies in its area every its interval (stormLook)
   function storm(d, S, raw) {
     const el = ['fire', 'cold', 'lightning'].reduce((a, e) => (raw[e] || 0) > (raw[a] || 0) ? e : a, 'fire');
     const D = raw[el] > 0 && sheet().storm && granted('Elemental Storm', S.g?.level);
     if (!D || !spend({ id: 'Elemental Storm', cooldown: D.cooldown, uses: D.uses })) return;
     const T = asTrig(S, { ...D, id: 'Elemental Storm' }), X = partOf(T, `ElementalStorm${cap(el)}Player`); if (!X) return;
     const c = { x: d.pos.x, z: d.pos.z }, st = D.stats; let tk = 0;
-    thing(holder(c), st.base_skill_effect_duration / 1000, { tick(dt) { if ((tk -= dt) <= 0) { tk = st.tornado_base_damage_interval_ms / 1000; fx.ring(c, T.A * .3, T.A, el, .3, { a: .45 }); area(c, T.A, X); } } });
+    stormStart(el, c, T.A);
+    const g = holder(c), B = stormBody(el, g, T.A);
+    thing(g, st.base_skill_effect_duration / 1000, { tick(dt, e) { stormLook(el, c, e.s, dt, B); if ((tk -= dt) <= 0) { tk = st.tornado_base_damage_interval_ms / 1000; area(c, T.A, X); } } });
   }
   // Bursting Fen Toad's toad (exploding_poison_toad: Murkshaft UniqueExplodingToadHeld, GiantUglyToadCritter): it
   // emerges, hops at 0.79, 1.25 and 1.8 s and bursts at 2.1 s (its animation's hop and contact events), swelling first
