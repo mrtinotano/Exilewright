@@ -101,7 +101,8 @@ granted_by_mod = {x['Skill'] for x in load('ModGrantedSkills')}
 granted_by_unique = {s for x in load('SkillGemsForUniqueStat') for s in x['SkillGems']}
 # a cannon's own attack is Grenade (its implicit local_crossbow_no_ammo_skills_and_give_alternate_grenade_default_attack)
 GRENADE_STAT = 'local_crossbow_no_ammo_skills_and_give_alternate_grenade_default_attack'
-weapon_default = {s for x in load('CharacterMeleeSkills') for s in x['SkillGems']} | {i for i, g in enumerate(skill_gems) if bases[g['BaseItemType']]['Id'].endswith('/SkillGemPlayerDefaultGrenadeLauncher')}
+grenade_ids = {i for i, g in enumerate(skill_gems) if bases[g['BaseItemType']]['Id'].endswith('/SkillGemPlayerDefaultGrenadeLauncher')}
+weapon_default = {s for x in load('CharacterMeleeSkills') for s in x['SkillGems']} | grenade_ids
 
 # what exists in the live patch: GGG's official trade list. Downloaded again on every run so removed gems/uniques/bases
 # drop out after a patch; the cached copy is only used when offline.
@@ -768,7 +769,7 @@ inherent = {x['BaseItemType']: [gem_name(sg) for sg in x['SkillsGranted']] for x
 # a weapon's own attack, by its class in the main hand with nothing in the other (CharacterMeleeSkills: Mace Strike, a
 # spear's Spear Stab and Spear Throw); a cannon's Grenade instead (GRENADE_STAT)
 own_attack = {classes[wieldable[r['MainHand']]['ItemClass']]['Name']: [gem_name(sg) for sg in r['SkillGems']] for r in load('CharacterMeleeSkills') if r['OffHand'] == 0}
-grenade = [gem_name(i) for i in weapon_default if base_types[skill_gems[i]['BaseItemType']]['Id'].endswith('GrenadeLauncher')]
+grenade = [gem_name(i) for i in grenade_ids]
 attacks_of = lambda b, cls: grenade if any(GRENADE_STAT in (s[0] for s in mod_stats(mods[m])) for m in b['Implicit_Mods']) else own_attack.get(cls)
 for i, b in enumerate(base_types):
     cls = classes[b['ItemClass']]['Name']
