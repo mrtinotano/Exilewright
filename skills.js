@@ -50,7 +50,7 @@ export const tabName = (x, G) => x?.['label_' + lang] || x?.label || tn(G);
 // side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill
 // details window, with a tab for each skill it sets off that deals damage (view: its key; Ancestral Cry's Volcanic Steps)
 function details(g, b, sum, geo, view) {
-  const G = GEM[g.name] || {}, main = skill(g, b, sum), subs = subsOf(g, main), sub = subs.find(x => x.key === view), s = sub?.s || main, st = s.stats, P = sub && SK.skills[g.name]?.parts?.[sub.key], geom = sub && !P ? {} : geo?.(P ? { ...g, part: sub.key } : g) || {};   // a part's own radius; the gem's hit (Volcanic Steps) has none in the data
+  const G = GEM[g.name] || {}, main = skill(g, b, sum), subs = subsOf(g, main, true), sub = subs.find(x => x.key === view), s = sub?.s || main, st = s.stats, P = sub && SK.skills[g.name]?.parts?.[sub.key], geom = sub && !P ? {} : geo?.(P ? { ...g, part: sub.key } : g) || {};   // a part's own radius; the gem's hit (Volcanic Steps) has none in the data
   const desc = sub ? sub.tab?.['description_' + lang] || sub.tab?.description || '' : descOf(G);
   const tabs = subs.length ? `<div class="dtabs">${[{ key: '', tab: SK.skills[g.name]?.tab }, ...subs].map(x => `<button data-dtab="${esc(x.key)}"${(sub?.key || '') === x.key ? ' class="on"' : ''}>${esc(tabName(x.tab, G))}</button>`).join('')}</div>` : '';
   const sec = (title, rows) => (rows = rows.filter(Boolean)).length

@@ -1885,14 +1885,15 @@ export function skill(g, b, treeGear) {
   // a gem whose own skill deals no damage (a warcry, a buff) with a skill that does laid over its numbers (Ancestral Cry's
   // Volcanic Steps, Temper Weapon's Combust): that skill's hits as the gem's other tab
   if (!g.part && !g.asHit && d.hit?.types?.some(x => x === 'Attack' || x === 'Spell') && !dealt(out) && !out.minion) {
-    const H = skill({ ...g, asHit: true }, b, treeGear); if (dealt(H)) out.hitAs = H;
+    const H = skill({ ...g, asHit: true }, b, treeGear); if (dealt(H) || H.reason) out.hitAs = H;   // or why it deals none (no weapon): its tab still shows
   }
   return out;
 }
 // the skills of a gem that deal damage besides its own (the game's skill window: a tab each): { key, tab (available.py:
 // label, label_<lang>, description, types), s (skill() of it) }
-export const subsOf = (g, s) => { const d = SK.skills[g.name] || {};
-  return [...dealt(s.hitAs) ? [{ key: 'hit', tab: d.hit, s: s.hitAs }] : [], ...Object.entries(s.parts || {}).filter(([, p]) => dealt(p)).map(([k, p]) => ({ key: k, tab: d.parts[k], s: p }))]; };
+// all: also those that deal nothing now and say why (no weapon equipped): the details panel's tabs, as the game's skill window
+export const subsOf = (g, s, all) => { const d = SK.skills[g.name] || {}, ok = x => dealt(x) || all && x?.reason;
+  return [...ok(s.hitAs) ? [{ key: 'hit', tab: d.hit, s: s.hitAs }] : [], ...Object.entries(s.parts || {}).filter(([, p]) => ok(p)).map(([k, p]) => ({ key: k, tab: d.parts[k], s: p }))]; };
 // what a gem without damage of its own deals through them: the DPS of those with a rate of their own, else (all set off
 // by the gem: Volcanic Steps) their damage per hit (perHit). ponytail: one number of either kind, as the game gives no rate for those
 export function subDamage(s) {
