@@ -188,7 +188,6 @@ export function initScene(el, api) {
   const toast = text => { toastEl.textContent = text; toastEl.classList.add('on'); toastT = 2.2; };
   const later = (sec, fn) => { timers.push({ s: sec, fn }); };
   const hand = () => player.hand(V());
-  const palms = () => { const a = V(), b = V(); player.palms(a, b); return [a, b]; };
   // the character of the build (calc.js): defences, accuracy and recovery
   let shC = { at: -9, v: {} };
   // The Hammer of Faith's lesser Shrine buff and the modifiers Headhunter took from rare monsters, while they last, and the
@@ -1943,7 +1942,6 @@ export function initScene(el, api) {
     return p;
   }
 
-  // Every enemy in a circle, plus whatever lies there and reacts (grenades, crystals, rods, gas, oil).
   // Crackling Palm, Gelid Palm: an unarmed melee attack hit calls down a bolt on the enemy, no more than its number every
   // its delay, hitting the enemies within its radius for its own damage. Crackling Palm's look (thunder_bolt.ao: its
   // lightning_bolt ribbons falling from 15 m above for 0.35-0.55 s, impact.pet: a flash 0.12 s, sparks, rings and a ring out
@@ -1954,13 +1952,13 @@ export function initScene(el, api) {
     const st = X.dmg?.stats || {}, k = 'palm' + X.name, L = me[k] = (me[k] || []).filter(t0 => time - t0 < st.thunderfist_bolt_delay_ms / 1000);
     if (L.length >= st.thunderfist_number_of_bolts_delays) return;
     L.push(time);
-    const c = { x: d.pos.x, z: d.pos.z }, cp = X.name === 'Crackling Palm', col = cp ? TFIST.bolt : X.el;
-    for (let j = 0; j < 3; j++) fx.bolt(V(c.x + rnd(-.3, .3), 15, c.z + rnd(-.3, .3)), V(c.x, 0, c.z), col, rnd(.35, .55), j ? .05 : .09, .5);
+    const c = { x: d.pos.x, z: d.pos.z }, C = X.name === 'Crackling Palm' ? TFIST : { bolt: X.el, flash: X.el, ring: X.el };
+    for (let j = 0; j < 3; j++) fx.bolt(V(c.x + rnd(-.3, .3), 15, c.z + rnd(-.3, .3)), V(c.x, 0, c.z), C.bolt, rnd(.35, .55), j ? .05 : .09, .5);
     later(.1, () => {
-      fx.glow({ x: c.x, y: .4, z: c.z }, 1.8, cp ? TFIST.flash : X.el, .12, 3);
-      fx.emit(24, { p: { x: c.x, y: .2, z: c.z }, r: .2, v: 6, up: 2, life: rnd(.2, .4), size: .05, c: cp ? TFIST.ring : X.el, c2: 'white', k: 2.6, drag: 2 });
-      fx.ring(c, .2, X.A, cp ? TFIST.ring : X.el, rnd(.35, .55), { a: .8 });
-      for (let j = 0; j < 8; j++) { const a = rnd(TAU), r = rnd(.5, 1) * X.A; fx.bolt(V(c.x + Math.cos(a) * r, .1, c.z + Math.sin(a) * r), V(c.x, .3, c.z), col, rnd(.4, .8), .025, .25); }
+      fx.glow({ x: c.x, y: .4, z: c.z }, 1.8, C.flash, .12, 3);
+      fx.emit(24, { p: { x: c.x, y: .2, z: c.z }, r: .2, v: 6, up: 2, life: rnd(.2, .4), size: .05, c: C.ring, c2: 'white', k: 2.6, drag: 2 });
+      fx.ring(c, .2, X.A, C.ring, rnd(.35, .55), { a: .8 });
+      for (let j = 0; j < 8; j++) { const a = rnd(TAU), r = rnd(.5, 1) * X.A; fx.bolt(V(c.x + Math.cos(a) * r, .1, c.z + Math.sin(a) * r), V(c.x, .3, c.z), C.bolt, rnd(.4, .8), .025, .25); }
       area(c, X.A, { ...X, src: 'palm' });
     });
   }
@@ -1968,12 +1966,14 @@ export function initScene(el, api) {
   // of lightning, 0.15-0.4 s; 3.85 / 3 / 20)
   function palmLook(dt) {
     if (!tog['Crackling Palm']) return;
-    for (const h of palms()) {
+    const a = V(), b = V(); player.palms(a, b);
+    for (const h of [a, b]) {
       if (Math.random() < dt * 30) fx.bolt(h.clone().add(V(rnd(-.08, .08), rnd(-.08, .08), rnd(-.08, .08))), h.clone().add(V(rnd(-.12, .12), rnd(-.12, .12), rnd(-.12, .12))), TFIST.hand, rnd(.2, .4), .01, .06);
       if (Math.random() < dt * 10) fx.emit(1, { p: h, r: .05, v: .1, up: -1, life: rnd(.15, .25), size: .06, c: TFIST.hand, c2: 'white', k: 2.6 });
       if (Math.random() < dt * 8) fx.glow(h, .35, TFIST.hand, rnd(.15, .3), 2.4);
     }
   }
+  // Every enemy in a circle, plus whatever lies there and reacts (grenades, crystals, rods, gas, oil).
   function area(c, R, S, o = {}) {
     let n = 0;
     for (const d of dummies) if (!d.dead && dist(d.pos, c) <= R + SIM.body && hit(d, S, o)) n++;
