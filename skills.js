@@ -127,8 +127,8 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
       // Bind Spectre: the monster whose spirit it holds (the game's: bound from a corpse, the gem then "Spectre: <monster>")
       const spec = g.name === 'Bind Spectre' || g.spectre ? `<label class="smeta">${t('Its monster')} <input list="spectreNames" data-gi="${gi}" data-k="spectre" value="${esc(spLabel(enemy(g.spectre)))}" placeholder="${t('Search enemy…')}"></label>` : '';
       // which of them: by name and, for two of the same name (two Mortar Cannons), which one (calc.js usedBy g.metaN), numbered
-      const nth = m => nthOfName(b, m), twins = m => metas.filter(x => x.name === m.name).length > 1;
-      const inMeta = metas.length ? `<label class="smeta">${t('Socketed in')} <select data-gi="${gi}" data-k="meta"><option value="">${t('None')}</option>${metas.map(m => `<option value="${esc(m.name)}#${nth(m)}"${holder === m ? ' selected' : ''}>${esc(tn(GEM[m.name]))}${twins(m) ? ' ' + (nth(m) + 1) : ''}</option>`).join('')}</select></label>` : '';
+      const twins = m => metas.filter(x => x.name === m.name).length > 1;
+      const inMeta = metas.length ? `<label class="smeta">${t('Socketed in')} <select data-gi="${gi}" data-k="meta"><option value="">${t('None')}</option>${metas.map(m => `<option value="${esc(m.name)}#${nthOfName(b, m)}"${holder === m ? ' selected' : ''}>${esc(tn(GEM[m.name]))}${twins(m) ? ' ' + (nthOfName(b, m) + 1) : ''}</option>`).join('')}</select></label>` : '';
       const heldHtml = held.map(x => `<span class="sockw"><button class="sock held" data-pick="${b.gems.indexOf(x)}" title="${esc(tn(GEM[x.name]))}"><img src="${img(GEM[x.name].icon)}" alt=""></button></span>`).join('');
       const sockets = holder ? `<small class="note">${t('Uses the supports of {0}', esc(tn(GEM[holder.name])))}</small>` : G.cannot_be_supported ? `<small class="note">${t('Cannot be supported')}</small>` : heldHtml + Array.from({ length: room }, (_, si) => {
         const s = sups[si];
