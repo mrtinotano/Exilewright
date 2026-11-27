@@ -1380,7 +1380,9 @@ export function skill(g, b, treeGear) {
   // Rage effect" (gem level and quality) scales that bonus, and its Gemling alt quality grants maximum Rage: the game's
   // window with Berserk 17, 6% quality (59%, +2 Rage: 46), 16/11, gives x1.730 (46 x 1.59% = x1.731)
   const R = rageOf(b, treeGear);
-  const rage = out.rage = attack && !byTotem && R.regen && !R.noEffect ?   // your Rage: not a totem's attacks
+  // your totems' attacks too: the game's Shockwave Totem window, 27/11: its slam's every damage type x1.44 with 44 Rage
+  // (the totem itself shows 0 maximum Rage)
+  const rage = out.rage = attack && R.regen && !R.noEffect ?
     (CHAR.base_maximum_rage || 0) + v(sum, 'maximum_rage') + (R.berserk?.max || 0) : 0;
   const rageEffect = out.rageEffect = R.berserk?.effect || 0;
   // mana per use (per second for a channelled skill), as Path of Building 2 works it out (CalcOffence): the gem's cost at
@@ -1556,7 +1558,7 @@ export function skill(g, b, treeGear) {
   // holding a shield, dual wielding, per 25 Dexterity or per 200 Accuracy
   const tagSp = (tags.includes('lightning') ? v(sum, 'attack_and_cast_speed_+%_with_lightning_skills') : 0) + (tags.some(x => x === 'fire' || x === 'cold' || x === 'lightning') ? v(sum, 'attack_and_cast_speed_+%_with_elemental_skills') : 0)
     + (tags.includes('channelling') ? v(sum, 'skill_speed_+%_with_channelling_skills') : 0) + (tags.includes('warcry') ? v(sum, 'warcry_speed_+%') : 0) + (tags.includes('mark') ? v(sum, 'mark_use_speed_+%') : 0)   // Warcry Speed: its use time
-    + (byTotem ? v(sum, attack ? 'totem_skill_attack_speed_+%' : 'totem_skill_cast_speed_+%') : 0);   // attacks / spells used by totems
+    + (byTotem && !tags.includes('totem') ? v(sum, attack ? 'totem_skill_attack_speed_+%' : 'totem_skill_cast_speed_+%') : 0);   // attacks / spells used by totems (a totem gem's own: inc() has it by its tag; the game's Shockwave Totem window, 27/11: 1.449 x (1 - 10% + 8%) x 50% = 0.71)
   const per = attack && (v(sum, 'attack_speed_+%_per_25_dex') || v(sum, 'attack_speed_+%_per_200_accuracy_rating')) && character(b, sum);
   const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
     + (per ? Math.floor((per.attrs?.dex || 0) / 25) * v(sum, 'attack_speed_+%_per_25_dex') + Math.floor((per.accuracy || 0) / 200) * v(sum, 'attack_speed_+%_per_200_accuracy_rating') : 0);
