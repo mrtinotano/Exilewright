@@ -3777,7 +3777,7 @@ export function initScene(el, api) {
           const s = sheet().curseForever ? Infinity : (sh(S).duration || SIM.curseTime) * (S.curseX || 1);   // Lich: curses never expire
           hexOld(d, S.name, S.dmg?.sum?.curse_ignores_curse_limit);
           if (sheet().cursed?.hinder) d.slows.push({ until: time + s, pct: -sheet().cursed.hinder * slowK(S) });   // the tree's: Hindered while cursed
-          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); if (L) hexOrb(L, d); else fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
+          d.curse = { s, full: s, label: S.label, name: S.name, S, C, k: (C?.effect ?? 1) * d.stat.curseEffect * (1 + (sheet().coil?.zero || 0) / 100) }; hexMe(S.name, C, s); trigger(S, 'curse', d); if (L) { const q = { x: d.pos.x, y: 2.05 * d.sc + .9, z: d.pos.z }; fx.ball(q, .2, L.orb, 2, .5); fx.glow(q, .9, L.orb, .35, 2.4); } else fx.emit(6, { p: chest(d), r: .3, v: .4, up: -1, life: .6, size: .2, c: 'curse' });
         };
         inside(c, R).forEach(d => curseOn(d));
         if (n) say(t('{0}: {1} enemies cursed', S.label, n), 'curse');
@@ -6554,10 +6554,6 @@ export function initScene(el, api) {
     fx.ring(c, R * .5, R, L.ring, 1.5, { a: .8, tex: 'outline' }); fx.disc(c, R, 0x000000, 2, { dark: true, a: .35 });
     fx.emit(24, { p: { x: c.x, y: .1, z: c.z }, r: R * .9, v: .2, up: 1.5, life: 1, size: .06, c: L.spark, c2: 'white', k: 2.2, drag: 1 });
   }
-  function hexOrb(L, d) {
-    const q = { x: d.pos.x, y: 2.05 * d.sc + .9, z: d.pos.z };
-    fx.ball(q, .2, L.orb, 2, .5); fx.glow(q, .9, L.orb, .35, 2.4);
-  }
   // Blasphemy's look (Metadata/Effects/Spells/supports/blasphemy, art/particles/supports/blasphemy): each curse in it a
   // ring of its own runes on the ground round you, as wide as its area, in its colour (its aura_<curse> mat's albedo),
   // turning slowly; turned on, its symbol (blasphemy_BC1, its base rune colour 0.7 / 1 / 6) surges round you.
@@ -6898,8 +6894,8 @@ export function initScene(el, api) {
     d.lunge = Math.max(0, d.lunge - dt * 3.2);
     f.upper.rotation.x = frozen ? 0 : Math.sin(time * 22 + d.ph) * d.wob * .16 + Math.sin(d.lunge * Math.PI) * .42; f.upper.rotation.z = frozen ? 0 : Math.cos(time * 17 + d.ph) * d.wob * .1;
     // over its head: its Mark's rune, else its curse's symbol (one with its own look: no ring under it then)
-    const MR = d.mark && MARK_RUNE[d.mark.name], CL = !MR && d.curse && CURSE_LOOK[d.curse.name], RN = MR ? [artTex('rune_' + MR[0], `particles/curses_02/marks/mark_runes/${MR[0]}`), MR[1]] : CL ? [curseTex(CL, ''), CL.orb] : null;
-    f.ice.visible = frozen; f.curse.visible = !!d.curse && !(d.curse && CURSE_LOOK[d.curse.name]); f.mark.visible = !!d.mark && !MR; f.rune.visible = !!RN;
+    const MR = d.mark && MARK_RUNE[d.mark.name], CK = d.curse && CURSE_LOOK[d.curse.name], CL = !MR && CK, RN = MR ? [artTex('rune_' + MR[0], `particles/curses_02/marks/mark_runes/${MR[0]}`), MR[1]] : CL ? [curseTex(CL, ''), CL.orb] : null;
+    f.ice.visible = frozen; f.curse.visible = !!d.curse && !CK; f.mark.visible = !!d.mark && !MR; f.rune.visible = !!RN;
     if (RN) { const m = f.rune.material, T = fx.T[RN[0]]; if (m.map !== T) { m.map = T; m.color.set(RN[1]).multiplyScalar(2.5); m.needsUpdate = true; } m.opacity = .8 + Math.sin(time * 4) * .2; }
     if (d.curse) f.curse.rotation.y += dt * .8;
     if (d.mark) { f.mark.rotation.y += dt * 2.5; f.mark.scale.setScalar(1 + Math.sin(time * 5) * .08); }
