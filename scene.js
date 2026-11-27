@@ -15,7 +15,7 @@ import * as THREE from 'three';
 import { t, esc, tn, fmt, cap } from './i18n.js';
 import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, mapGround, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection, armourNow } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
-import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem, makeEffigy, makeBanner } from './scenefx.js';
+import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem, makeEffigy, makeBanner, makeWings } from './scenefx.js';
 import { makeHumanoid, clipOf } from './humanoid.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
@@ -5539,8 +5539,6 @@ export function initScene(el, api) {
     const q = me.leech.mana; q.left += st.mana_drain_base_mana_leech_amount * (1 - (d.stat.leechRes || 0)); q.rate = q.left * (1 + st['base_mana_leech_rate_+%'] / 100);
     d.slows.push({ until: time + HINDER.time * (sheet().hinderTime || 1), pct: -HINDER.slow * slowK(S) });
   };
-  // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
-  // each second in it (up to Demonic Possession's most, 10 in its description; no most with Mastered Darkness), each its more spell damage and its Life lost per minute; its cast speed
   // Ancestral Cry's Kaom (ancestralcrykaom*.ao: Kaom's skin on you): the figure a fifth larger, its skin dark red
   // glowing as embers (warcry_ancestral's red-orange) and sparks rising off it, while it lasts
   const KAOM_SKIN = new THREE.Color(0x6e2414), KAOM_GLOW = 0xff5a1e, KG = new THREE.Color(KAOM_GLOW);
@@ -5550,24 +5548,67 @@ export function initScene(el, api) {
   // cracks (scrolling caustic noise, 0.67 / 1 / 0.2 by 1.9). note: the bark's tiling and the glow's strength are the scene's
   const barkTex = new THREE.TextureLoader().load('poe2_data/available/img/art/particles/fxlib/pbr/bark_clr.webp');
   barkTex.wrapS = barkTex.wrapT = THREE.RepeatWrapping; barkTex.colorSpace = THREE.SRGBColorSpace;
-  const barkU = { barkK: { value: 0 }, barkT: { value: 0 }, barkMap: { value: barkTex } };
+  const barkU = { barkK: { value: 0 }, barkT: { value: 0 }, barkMap: { value: barkTex }, demK: { value: 0 }, demS: { value: 0 }, demO: { value: 0 } };   // and Demon Form's skin
   function barkSkin(M) {
     M.onBeforeCompile = sh => {
       Object.assign(sh.uniforms, barkU);
       sh.vertexShader = 'varying vec3 vBark, vBarkN;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\n vBark = position; vBarkN = normal;');
-      sh.fragmentShader = 'uniform float barkK, barkT; uniform sampler2D barkMap; varying vec3 vBark, vBarkN;\n' + sh.fragmentShader
+      sh.fragmentShader = 'uniform float barkK, barkT, demK, demS, demO; uniform sampler2D barkMap; varying vec3 vBark, vBarkN;\n' + sh.fragmentShader
         .replace('#include <map_fragment>', `#include <map_fragment>
           vec3 bw = pow(abs(normalize(vBarkN)), vec3(4.)); bw /= bw.x + bw.y + bw.z; vec3 bp = vBark * 2.2;
           vec3 bark = texture2D(barkMap, bp.zy).rgb * bw.x + texture2D(barkMap, bp.xz).rgb * bw.y + texture2D(barkMap, bp.xy).rgb * bw.z;
           float bl = pow(dot(bark, vec3(.333)), 1. / 2.2), bm = smoothstep(barkK * 1.35, barkK * 1.35 - .12, length(vBark - vec3(0., 1.1, 0.)));
-          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(.36, .14, .03) * smoothstep(0., .21, bl) * (.15 + 1.6 * smoothstep(.2, .5, bl)), bm);`)
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(.36, .14, .03) * smoothstep(0., .21, bl) * (.15 + 1.6 * smoothstep(.2, .5, bl)), bm);
+          float dd = length(vBark - vec3(0., 1.1, 0.)), dm = smoothstep(demK * 1.35, demK * 1.35 - .12, dd);
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(.047, .04, .044), dm);`)
         .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
           float bf = .5 + .5 * sin(vBark.y * 7. + vBark.x * 3. - barkT * 1.6);
-          totalEmissiveRadiance = mix(totalEmissiveRadiance, vec3(.42, 1., .03) * 1.9 * .5 * bf * smoothstep(.3, .22, bl), bm);`);
+          totalEmissiveRadiance = mix(totalEmissiveRadiance, vec3(.42, 1., .03) * 1.9 * .5 * bf * smoothstep(.3, .22, bl), bm);
+          float fr = pow(1. - clamp(dot(normal, normalize(vViewPosition)), 0., 1.), 1.2), de = smoothstep(.1, 0., abs(dd - demK * 1.35 + .06));
+          totalEmissiveRadiance = mix(totalEmissiveRadiance, vec3(0.), dm) + vec3(1., .09, .03) * (de * 2.5 * step(.001, demK) + fr * fr * fr * dm * demS * .8) + vec3(1., .35, .15) * fr * demO * (1. - dm) * 3.;`);
     };
     M.needsUpdate = true;
   }
   let kaomK = 0, apoK = 0, barkK = 0;
+  // Demon Form's look (infernalist_demonform; DemonForm.ao: InfernalistAscendancyForm with its wings). As you shift,
+  // darkness is drawn into you for 0.45-0.75 s (transform_IN: 0.6 / 0.5 / 1 by 0.45), your human skin burns away at its
+  // edges (humanOut_Skin: 1 / 0.35 / 0.15) and the demon's spreads out from your chest (its sphere mask), dark (its
+  // texture's mean 61 / 57 / 59) with a red burning edge (1 / 0.09 / 0.03), its wings (68 / 50 / 59) growing with it;
+  // their blast (wingBlast: a bright dome for 1.5 s, 0.92 / 0.88 / 1; wind waves for 0.25-0.35 s, 0.24 / 0.23 / 0.26; a
+  // ring of smoke for 2-2.5 s, 0.08) and darkness left about you for 0.35-1.15 s (transform_Remains). In it, its wings
+  // beat (idle_01: two flaps 1.02 s apart), wisps of darkness and red embers rise off you (demonWisps_Idle: 1-1.25 s,
+  // 0.5-2 s; 1 / 0.24 / 0.21) and its red glow at your edges grows with your Demonflame (GameplayDrivenMultiplier). As
+  // you revert (transform_deactivate) blood gushes out of you (shift_BLOOD, 10 s). note: the wisps' colour is not in the
+  // data (darkness here); the wings' blast is at your shift here; the counts, speeds and sizes are the scene's
+  const DEMON = { wing: 0x44323b, dark: 0x453873, violet: 0x9980ff, ember: 0xff3d36, edge: 0xff1708, blast: 0xebe0ff, wind: 0x7a7684, smoke: 0x333333, blood: 0x8a0008, stain: 0x5a0006, flap: 1.02 };
+  let demK = 0, wings = null;
+  function demonIn(grow) {
+    const c = { x: pp.x, y: 1.1, z: pp.z }, g = { x: pp.x, z: pp.z };
+    barkU.demO.value = 1;
+    for (let i = 0; i < 28; i++) { const a = rnd(TAU), r = rnd(1.2, 2), y = rnd(.2, 2.2); fx.emit(1, { p: { x: pp.x + Math.cos(a) * r, y, z: pp.z + Math.sin(a) * r }, dir: V(-Math.cos(a) * r * 1.6, (c.y - y) * 1.6, -Math.sin(a) * r * 1.6), v: .1, life: .6, size: .35, c: DEMON.dark, smoke: true, a: .6 }); }
+    for (let i = 0; i < 8; i++) { const a = rnd(TAU), r = rnd(1.2, 2); fx.streak(V(pp.x + Math.cos(a) * r, rnd(.2, 2.2), pp.z + Math.sin(a) * r), V(c.x, c.y, c.z), DEMON.violet, rnd(.45, .75), .015, .35); }
+    later(.02, () => { fx.ball({ x: pp.x, y: 0, z: pp.z }, 1.4, DEMON.blast, 1.5, .05); fx.emit(60, { p: { x: pp.x, y: .15, z: pp.z }, r: .5, v: 3, life: 2.2, size: .5, grow: 2, c: DEMON.smoke, smoke: true, a: .4, drag: 1.5, flat: true }); });
+    later(.06, () => { for (let i = 0; i < 3; i++) later(i * .04, () => fx.ring(g, .3, 2.4, DEMON.wind, .3, { a: .5, y: 1 })); });
+    later(grow, () => fx.emit(16, { p: c, r: .4, h: 1.6, v: .3, up: .4, life: .75, size: .4, grow: 1.4, c: DEMON.dark, smoke: true, a: .5, drag: 1 }));
+  }
+  function demonBlood() {
+    const c = { x: pp.x, y: 1.1, z: pp.z };
+    fx.emit(14, { p: c, r: .25, h: .5, v: 1.4, up: 1.2, life: 1.2, size: .08, c: DEMON.blood, g: 9, drag: .6 });
+    fx.disc({ x: pp.x, z: pp.z }, .6, DEMON.stain, 10, { dark: true, a: .9, tex: 'patch', hold: .8, y: .03 });
+  }
+  function demonLook(dt) {
+    const on = !!me.demon, k = demK = clamp(demK + (on ? dt / me.demon.grow : -dt * 2), 0, 1), M = me.demon?.max;
+    barkU.demK.value = k; barkU.demS.value = on ? Math.min(1, demon() / (M < Infinity ? M : 10)) : 0; barkU.demO.value = Math.max(0, barkU.demO.value - dt / (.45 * (me.demon?.grow || 1)));
+    if (k && !wings) { wings = makeWings(DEMON.wing); player.chest.add(wings.group); wings.group.position.set(0, .14, -.12); }
+    if (!wings) return k;
+    const f = Math.sin(time * TAU / DEMON.flap);
+    wings.group.scale.setScalar(Math.max(1e-3, k));
+    for (const [w, s] of [[wings.R, 1], [wings.L, -1]]) { w.rotation.y = s * (.45 + .3 * f); w.rotation.z = s * .12 * f; }
+    if (!k) { wings.dispose(); wings = null; return 0; }
+    if (on && Math.random() < dt * 8) fx.emit(1, { p: { x: pp.x, y: rnd(.4, 1.8), z: pp.z }, r: .35, v: .15, up: .8, life: 1.1, size: .3, grow: 1.4, c: DEMON.dark, smoke: true, a: .4, drag: 1 });
+    if (on && Math.random() < dt * 12) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .4, v: .3, up: 1, life: 1.25, size: .05, c: DEMON.ember, c2: 'white', k: 2.4, drag: 1 });
+    return k;
+  }
   // (and a skill's glow on your skin for a moment, w: me.skin = { at, hex, dur }: Animus Exchange's Runic Ward blue for
   // 1.5 s, Apocalypse's orange for 1 s; note: how long is not in the data)
   // Arctic Howl's look (werewolf_warcry: warCry_01.pet, tundraHunter_buff.epk, exertedPower_01): its howl a wave of
@@ -5682,17 +5723,20 @@ export function initScene(el, api) {
       if (Math.random() < .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.7), z: pp.z }, r: .3, up: 1.4, v: .25, life: .8, size: .14, c: CHAYULA.string, c2: CHAYULA.violet, k: 2, drag: 1 });
     }
     const bk = barkK = Math.max(0, Math.min(1, barkK + (onS('Barkskin') ? dt : -dt * 2)));   // grows over you in a second
-    if (!k && !w && !bk && !player.kaomed) return;
-    player.kaomed = k > 0 || w > 0 || bk > 0; barkU.barkK.value = bk; barkU.barkT.value = time; player.group.scale.setScalar(1 + .2 * k);
+    const dk = demonLook(dt);
+    if (!k && !w && !bk && !dk && !player.kaomed) return;
+    player.kaomed = k > 0 || w > 0 || bk > 0 || dk > 0; barkU.barkK.value = bk; barkU.barkT.value = time; player.group.scale.setScalar(1 + .2 * k);
     player.group.traverse(m => { if (!m.isSkinnedMesh || !m.material?.emissive) return; const M = m.material, u = M.userData;
       if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; } if (!u.bark) { u.bark = true; barkSkin(M); }
       M.color.copy(u.c0).lerp(KAOM_SKIN, k).lerp(WG, w * .6); M.emissive.copy(u.e0).lerp(KG, k).lerp(WG, w); M.emissiveIntensity = u.i0 * (1 - Math.max(k, w)) + k * (.22 + .08 * Math.sin(time * 7)) + w * .9; });
     if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: WG.getHex(), k: 1.8, drag: 1 });   // its runes, embers rising off you
     if (k && Math.random() < k * .6) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 2), z: pp.z }, r: .35, up: 1.2, v: .3, life: .6, size: .12, c: 'fire', c2: 'ember', k: 1.6, drag: 1 });
   }
+  // Demon Form: a shapeshift until used again, a skill that isn't a spell is used or you reach 1 Life; a Demonflame
+  // each second in it (up to Demonic Possession's most, 10 in its description; no most with Mastered Darkness), each its more spell damage and its Life lost per minute; its cast speed
   const demon = () => me.demon ? Math.min(me.demon.max, Math.floor(time - me.demon.at)) : 0;
-  const demonOff = () => { say(t('{0} off', me.demon.label), 'dust'); me.demon = null; };
-  K.demon = S => { if (me.demon) return demonOff(); const sm = S.dmg.sum || {}; me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name, max: sm.demon_form_has_no_max_stacks ? Infinity : sm.max_demon_form_stacks || 10 }; say(t('{0} on', S.label), 'fire'); };
+  const demonOff = () => { say(t('{0} off', me.demon.label), 'dust'); (cdReady[me.demon.name] ||= []).push(time + me.demon.cd / 1000); me.demon = null; demonBlood(); };
+  K.demon = S => { if (me.demon) return demonOff(); const sm = S.dmg.sum || {}; me.demon = { st: S.dmg.stats, at: time, label: S.label, name: S.name, max: sm.demon_form_has_no_max_stacks ? Infinity : sm.max_demon_form_stacks || 10, grow: useTime(S), cd: S.dmg.cooldown || 0 }; demonIn(me.demon.grow); say(t('{0} on', S.label), 'fire'); };
   // Inevitable Agony: the enemies in its area record its share of the damage hits deal them, for its duration; once it
   // ends, or once what it recorded could kill them, they lose that much life at once
   K.agony = S => {
@@ -5863,6 +5907,8 @@ export function initScene(el, api) {
     const FD = !auto && S.name === 'Righteous Descent' && divine.find(f => dist(f.p, pp) <= S.A || dist(f.p, o.at || cursor) <= S.A), FB = FD && partOf(S, 'RighteousDescentPlayerBoosted');
     if (FB) { divine = divine.filter(f => f !== FD || f.dec.remove()); fx.ring(FD.p, .2, 1.2, 'lightning', .35); S = { ...FB, label: S.label, g: S.g }; const st = FB.dmg.stats || {};
       for (const [k, M, r] of [['life', me.maxL, 'recover_%_of_life_over_2_seconds_when_consuming_a_divine_fragment'], ['mana', me.maxM, 'recover_%_of_mana_over_2_seconds_when_consuming_a_divine_fragment']]) { const n = M * (st[r] || 0) / 100; if (n) me.recoup.push({ k, left: n, rate: n / 2 }); } }
+    // Demon Form (ManualCooldownConsumption): used again in it, it reverts you; its cooldown starts as you revert (demonOff), not as you shift. note: without cooldown recovery there
+    if (!auto && S.name === 'Demon Form' && me.demon) { demonOff(); return true; }
     const C = !auto && !FB && !(S.kind === 'warcry' && sheet().bellow.free) && !(S.kind === 'grenade' && time < me.fervour) /* Explosive Fervour: no cooldown */ && S.dmg?.cooldown, ready = C && (cdReady[S.name] = (cdReady[S.name] || []).filter(at => at > time));
     // one whose game text says a charge can bypass its cooldown (Ice-Tipped Arrows a Frenzy Charge, Fortifying Cry an
     // Endurance Charge: the charge its types say it consumes) spends one instead of waiting
@@ -6192,7 +6238,7 @@ export function initScene(el, api) {
     }
     // Explosive Rhythm: its increased cooldown recovery of Grenade skills, with the skill's own increased
     const RH = S.kind === 'grenade' && me.rhythm ? RHYTHM.cd * me.rhythm / Math.max(1, 100 + (S.dmg?.cdInc || 0)) : 0;
-    if (C && !BY && !RG) ready.push(time + C / 1000 / (1 + RH) / (uarch() && isCmd(S) ? 1 + UARCHON.cd * sheet().overgrow.archonEffect / 100 : 1));   // Archon of Undeath: more command cooldown recovery
+    if (C && !BY && !RG && S.name !== 'Demon Form') ready.push(time + C / 1000 / (1 + RH) / (uarch() && isCmd(S) ? 1 + UARCHON.cd * sheet().overgrow.archonEffect / 100 : 1));   // Archon of Undeath: more command cooldown recovery
     // Redemption: an Explosive Rhythm every that many Grenade skills you use (none in Explosive Fervour); at their most they are all removed for it
     const RD = !auto && S.kind === 'grenade' && !(time < me.fervour) && S.dmg?.sum?.gain_stack_of_disorderly_conduct_every_x_grenade_skills_used;
     if (RD && (me.gren = (me.gren || 0) + 1) % RD === 0 && (me.rhythm = (me.rhythm || 0) + 1) >= RHYTHM.max) { me.rhythm = 0; me.fervour = time + FERVOUR.time; }
@@ -6362,7 +6408,7 @@ export function initScene(el, api) {
     if (b.kind === 'totem' && b.dmg?.placeTime) return b.dmg.placeTime;
     const c = b.dmg?.clip, sp = c ? c.fire : b.dmg?.useTime ? 1 / b.dmg.useTime : b.dmg?.speed;   // with a cooldown: its own speed, the uses limit it
     let t = (sp > 0 ? clamp(1 / sp, .15, 3) : SIM.castTime) / nextCdX / regulate('frenzy', 'charge_mastery_skill_speed_+%_with_frenzy_charges') / (1 + (me.cad?.[b.name]?.n || 0) * (b.dmg?.sum?.['support_measured_speed_attack_speed_+%_final_per_stack'] || 0) / 100)
-      / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1) / (isCmd(b) ? 1 + PUPPET.cmdSpeed * pup() / 100 : 1)   /* Puppet Master. note: as more here */
+      / (me.demon && b.P.spell ? 1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100 : 1) / (isCmd(b) ? 1 + PUPPET.cmdSpeed * pup() / 100 : 1)   /* Demon Form's increased cast speed, Puppet Master. note: both as more here */
       // Onslaught (Savage Fury's frenzy). note: the game adds it to your increased skill speed, a factor of its own here
       / (time - (me.totemAt ?? -99) <= RECENT ? 1 + (sheet().totemSpeed || 0) / 100 : 1) /* Ancestral Alacrity. note: as more here */ / (onsl() ? 1 + ONSLAUGHT.speed / 100 : 1) / (1 + (me.tail || 0) * TAILWIND.speed / 100) / (1 + souls() * SOUL.speed / 100) / (time < me.fervour && b.P.attack ? 1 + FERVOUR.speed * new Set(used.filter(u => u.gren && time - u.t <= RECENT).map(u => u.name)).size / 100 : 1) /* Explosive Fervour. note: as more here */ / (openWeak(topD) ? 1 + sheet().weakness.speed / 100 : 1) /* In for the Kill: against your target with an Open Weakness */ / (b.P.spell ? 1 + ARCANE.cast * surge() / 100 : 1) / speedWhile(b)
       // Medved's Felling: its attack speed per 5 Rage. note: the game adds it to the skill's increased attack speed, a factor of its own here
@@ -7492,9 +7538,10 @@ export function initScene(el, api) {
       physDR: w.physDR || c.physDR ? [w.physDR || 0, c.physDR || 0] : null,
       rage: rageMax() ? [rageNow(), 0] : null, ward: me.maxW ? [me.ward, 0] : null, guard: me.guard > 0 || charms().some(f => f?.guard) ? [me.guard, 0] : null,
       berserk: bz ? { v: [raging ? me.maxL * bz.lifePerRage / 100 * me.rage : 0, 0], name: api.info(api.build().gems.find(g => g.name === bz.name) || { name: bz.name }).label } : null,
-      // the share of its damage per second a skill you use deals now: action speed, Rage on attacks, a mark's buff (not a
+      demon: me.demon ? { v: [demon() * me.demon.st.demon_form_life_loss_per_minute_per_stack / 60, 0], name: me.demon.label } : null,   // Demon Form's Life lost per Demonflame
+      // the share of its damage per second a skill you use deals now: action speed, Rage on attacks, a mark's buff, Demon Form on spells (not a
       // totem's or a minion's, nor one a meta gem uses: those act by themselves)
-      dps: i => { const S = base(i), D = S?.dmg; return D && api.byHand(i) && !['totem', 'minion', 'raise'].includes(S.kind) ? act * (D.attack ? rageX(D) : 1) * (gain ? 1 + gain.pct / 100 : 1) : 1; },
+      dps: i => { const S = base(i), D = S?.dmg; return D && api.byHand(i) && !['totem', 'minion', 'raise'].includes(S.kind) ? act * (D.attack ? rageX(D) : 1) * (gain ? 1 + gain.pct / 100 : 1) * (me.demon && S.P.spell ? (1 + demon() * me.demon.st['demon_form_spell_damage_+%_final_per_stack'] / 100) * (1 + me.demon.st['demon_form_grants_cast_speed_+%'] / 100) : 1) : 1; },
     };
   }
   // your resistances with those of the charms in use

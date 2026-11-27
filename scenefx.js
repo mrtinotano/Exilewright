@@ -666,6 +666,26 @@ export function makeEffigy(fx, c) {
   return { group: g, draw: P.draw, dispose() { g.parent?.remove(g); eyes.forEach(o => o.traverse(m => m.material?.dispose())); P.dispose(); } };
 }
 
+// Demon Form's wings (Art/Models/CharactersFour/Witch/InfernalistAscendancy/attachments/Wings): a bat's, an arm to its
+// wrist and three fingers with the membrane between them, in the mean of their texture (c). note: their shape and span
+// are the scene's
+export function makeWings(c) {
+  const group = new THREE.Group(), skin = new THREE.MeshStandardMaterial({ color: c, roughness: .8, side: THREE.DoubleSide });
+  const bone = new THREE.MeshStandardMaterial({ color: new THREE.Color(c).multiplyScalar(.55), roughness: .7 }), up = new THREE.Vector3(0, 1, 0);
+  const P = [[0, 0], [.3, .25], [.6, .42], [1.05, .26], [.86, .08], [.95, -.12], [.72, -.2], [.66, -.46], [.42, -.3], [.15, -.36]].map(([x, y]) => new THREE.Vector2(x, y));
+  const geo = [new THREE.ShapeGeometry(new THREE.Shape(P))];
+  const wing = s => {
+    const g = new THREE.Group(); g.add(new THREE.Mesh(geo[0], skin)); g.scale.x = s; group.add(g);
+    for (const [a, b] of [[0, 1], [1, 2], [2, 3], [2, 5], [2, 7]]) {
+      const A = new THREE.Vector3(P[a].x, P[a].y, 0), B = new THREE.Vector3(P[b].x, P[b].y, 0), cy = new THREE.CylinderGeometry(.012, .02, A.distanceTo(B), 5);
+      const m = new THREE.Mesh(cy, bone); m.position.copy(A).add(B).multiplyScalar(.5); m.quaternion.setFromUnitVectors(up, B.sub(A).normalize()); g.add(m); geo.push(cy);
+    }
+    return g;
+  };
+  const L = wing(-1), R = wing(1);
+  return { group, L, R, dispose() { group.parent?.remove(group); geo.forEach(o => o.dispose()); skin.dispose(); bone.dispose(); } };
+}
+
 // A Banner as the game's (Art/Models/Effects/BannerSkill, 2.2 m): a pole with a crossbar, its 0.74 m pennant hanging
 // from it, quartered in the banner's colours with a trim and a fringe (L: its look, the means of its textures)
 export function makeBanner(fx, L) {

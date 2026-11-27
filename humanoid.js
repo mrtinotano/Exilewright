@@ -441,6 +441,7 @@ export function makeHumanoid(fx) {
   setLook();
   return {
     group: root,
+    chest: jt.chest,
     setLook,
     family: () => fam,
     // a second figure (Abyssal Apparition) takes its weapon trail out of the scene with it

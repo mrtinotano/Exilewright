@@ -1512,7 +1512,7 @@ function onLive(L) {
     ${row(t('Armour'), L.armour, '')}${row(t('Evasion Rating'), L.evasion, '')}${L.deflect ? row(t('Deflection Rating'), L.deflect, '') : ''}${L.block ? row(t('Block'), L.block, '%') : ''}${L.physDR ? row(t('Additional physical damage reduction'), L.physDR, '%') : ''}
     ${row(t('Movement speed'), L.move, ' m/s', true, 1)}${row(t('Action speed'), L.action, '%')}${row(t('Damage taken'), L.taken, '%', false)}
     ${row(t('Total Life Recovery per second'), L.life, '', true, 1)}${row(t('Mana Recovery per second'), L.mana, '', true, 1)}${row(t('Damage over time taken per second'), L.dot, '', false, 1)}
-    ${L.berserk ? row(t('{0}: life lost per second', esc(L.berserk.name)), L.berserk.v, '', false, 1) : ''}
+    ${L.berserk ? row(t('{0}: life lost per second', esc(L.berserk.name)), L.berserk.v, '', false, 1) : ''}${L.demon ? row(t('{0}: life lost per second', esc(L.demon.name)), L.demon.v, '', false, 1) : ''}
     ${L.rage ? row(t('Attack damage from Rage'), L.rage, '%') : ''}${L.ward ? row(t('Runic Ward'), L.ward, '') : ''}${L.guard ? row(t('Guard'), L.guard, '') : ''}</table>`;
   if (html !== liveHtml) $('simChar').innerHTML = liveHtml = html;
   B().gems.forEach((g, i) => {   // the cards' damage per second, as it is now
