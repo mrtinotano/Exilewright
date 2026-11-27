@@ -697,7 +697,7 @@ export function initScene(el, api) {
     if (crit && !S.src && Math.random() * 100 < (sheet().arcaneSurge?.crit || 0)) arcaneSurge(SK.skills['Arcane Surge'].constant.support_arcane_surge_base_duration_ms / 1000);   // the tree's chance (note: the support's duration)
     if (Math.random() * 100 < D?.stats?.['%_chance_to_apply_hounded_by_wisps_on_hit']) d.ff = [...(d.ff || []).filter(u => u > time).slice(1 - FAERIE.max), time + FAERIE.time];   // Azmerian Swarms: a Swarm's hit inflicts Faerie Fire
     if (!S.src && sheet().wasting) d.wasting = time + WASTING.time;   // Grip of Kulemak: Abyssal Wasting on hit
-    if (own && !D?.sum?.cannot_inflict_blind && Math.random() * 100 < (S.P.attack ? D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0 : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade); not with Blindside
+    if (own && !D?.sum?.cannot_inflict_blind && Math.random() * 100 < (S.P.attack ? (D?.stats?.['attacks_chance_to_blind_on_hit_%'] || 0) + (D?.sum?.['attacks_chance_to_blind_on_hit_%'] || 0) : 0) + (D?.sum?.['global_chance_to_blind_on_hit_%'] || 0) + (D?.stats?.['global_chance_to_blind_on_hit_%'] || 0)) { if (!(d.st.blind > 0)) fx.text(over(d), t(STATE.blind), css(PIP.blind), .36); d.st.blind = BLIND.time; }   // Blind (Flash Grenade); not with Blindside
     const UH = own && sheet().uHit, r = p => Math.random() * 100 < p;   // uniques' on hit (Intimidate and Withered for their text's 4 s)
     const UE = own && sheet().uEv;   // uniques: Critical Weakness from spell crits, Volatility on crits, thorns on melee hits
     if (!S.src && crit && sheet().tailwind?.crit && time - (me.tailAt ?? -9) >= 1) { me.tailAt = time; me.tail = Math.min(TAILWIND.max, (me.tail || 0) + 1); }   // The Black Insignia: Tailwind on Critical Hit, once a second
@@ -1139,7 +1139,7 @@ export function initScene(el, api) {
   function afflict0(d, S, raw, o = {}) {
     const A = S.dmg.ail, N = A.never, AL = A.always, E = A.expo, thr = Math.max(1, d.stat.ail * awe(d, 'ailment')), x = e => raw[e] || 0, UB = !S.src && time < me.unbound?.until && me.unbound, roll = c => Math.random() * 100 < c, eroll = c => roll(c * (UB ? UB.chance : 1));
     const ex = (els, ms) => ms && expo(d, els, EXPO.res * E.effect, ms / 1000);
-    if (roll((S.dmg.stats?.['base_chance_to_daze_%'] || 0) + (S.P.projectile && dist(d.pos, pp) > 6 ? S.dmg.sum?.['projectile_daze_chance_%_vs_enemies_further_than_6m'] || 0 : 0))) daze(d, DAZE.time, S);   // Wind Blast, Siphoning Strike; the tree's projectiles from further than 6 m
+    if (roll((S.dmg.stats?.['base_chance_to_daze_%'] || 0) + (S.dmg.sum?.['base_chance_to_daze_%'] || 0) + (S.P.projectile && dist(d.pos, pp) > 6 ? S.dmg.sum?.['projectile_daze_chance_%_vs_enemies_further_than_6m'] || 0 : 0))) daze(d, DAZE.time, S);   // Wind Blast, Siphoning Strike; the tree's projectiles from further than 6 m
     // the damage of the hit that counts for an ailment: its own type's, every type's with "all damage can <ailment>" (the
     // build's; Pinnacle of Power's buff: every Elemental Ailment, BuffDefinitions elemental_power; all damage to bleeding /
     // poisoned enemies contributing to chill), and the types the build's "<type> damage can <ailment>" add (EXTRA)
@@ -1213,7 +1213,7 @@ export function initScene(el, api) {
     // Aggravate (keywords.json): the attack's chance on hit (Rake, Bleeding Concoction), Herald of Blood's explosion's
     // chance, Rusted Spikes' chance when the hit Pins aggravate the bleeding the enemy has, treated as moving for the rest
     // of it: its damage doubled (AGGRAVATED), as a moving enemy's is (tickDummy)
-    const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? (st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (S.dmg?.wHit?.aggr || 0) : 0) + (S.aggX || 0)
+    const st0 = S.dmg?.stats || {}, AG = (S.P.attack ? (st0['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (S.dmg?.sum?.['base_aggravate_bleeding_on_attack_hit_chance_%'] || 0) + (S.dmg?.wHit?.aggr || 0) : 0) + (S.aggX || 0)
       + (S.P.attack && sheet().aggOld && time - (d.bleedAt ?? time) > sheet().aggOld ? 100 : 0)   /* the tree's: bleeding older than its seconds (since it began) */
       + (!wasPinned && d.st.pin > 0 ? S.dmg?.sum?.['aggravate_bleeding_on_pin_chance_%'] || 0 : 0) + (d.curse && S.dmg?.sum?.aggravate_bleeding_when_inflicted_vs_cursed_enemy ? 100 : 0) + (d.st.pin > 0 && SU.aggravate_bleeding_when_inflicted_vs_pinned_enemy ? 100 : 0) + (A.bleedAgg ? 100 : 0) + (S.P.attack && o.crit ? S.dmg?.sum?.['aggravate_bleeding_on_attack_crit_chance_%'] || 0 : 0) + (S.empd ? S.dmg?.sum?.['aggravate_bleeding_on_exerted_attack_hit_chance_%'] || 0 : 0) + (d.jag > time ? S.dmg?.sum?.['aggravate_bleeding_when_inflicted_vs_enemies_on_jagged_ground_chance_%'] || 0 : 0);   // Blood Mage's Blood Barbs: on Cursed enemies; the tree's on attack critical hits
     if (AG && d.st.bleed > 0 && d.burn.bleed && !d.burn.bleed.agg && roll(AG)) { d.burn.bleed.agg = true; fx.text(over(d), t('Aggravated Bleeding'), css('blood'), .32);
@@ -1563,7 +1563,7 @@ export function initScene(el, api) {
   // lightning to up to its most other enemies within its radius of the one hit, each beam chaining its number of times
   function discharge(X, d) {
     const n = X.dmg.stats.voltaic_barrier_trigger_maximum_number_of_extra_targets, seen = new Set([d]);
-    for (const e of nearest(d.pos, n, e => e !== d && dist(e.pos, d.pos) <= X.A)) chain(chest(d), e, { ...X, src: 'discharge' }, X.dmg.stats.number_of_chains || 0, seen);
+    for (const e of nearest(d.pos, n, e => e !== d && dist(e.pos, d.pos) <= X.A)) chain(chest(d), e, { ...X, src: 'discharge' }, X.dmg.shape?.chains ?? X.dmg.stats.number_of_chains ?? 0, seen);
   }
   // Lunar Blessing: it spends all your Rage, its buff longer by its time per Rage spent, gaining its % of all damage as
   // extra cold. While on, a melee hit of yours calls down Moonbeams (its part) after its delay: the first on the enemy
@@ -2537,7 +2537,7 @@ export function initScene(el, api) {
     const a = sheet().attrs || {}, r = Math.random() * ((a.str || 0) + (a.dex || 0) + (a.int || 0)), el = r < a.str ? 'Fire' : r < a.str + a.dex ? 'Lightning' : 'Cold';
     const X = partOf(asTrig(S, { ...D, id: 'Elemental Expression' }), `ElementalExpression${el}Player`); if (!X) return;
     if (el === 'Fire') boom(d.pos, X.A, X);
-    else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, X.dmg.stats.number_of_chains);
+    else if (el === 'Lightning') chain(V(pp.x, 1.2, pp.z), d, X, X.dmg.shape?.chains ?? X.dmg.stats.number_of_chains);
     else { const a0 = Math.atan2(d.pos.x - pp.x, d.pos.z - pp.z), n = X.dmg.stats.base_number_of_projectiles; for (let k = 0; k < n; k++) { const q = a0 + (k - (n - 1) / 2) * .25; shoot(X, pp, Math.sin(q), Math.cos(q)); } }
   }
   // Elemental Storm (the Stormweaver's Tempest Caller): a spell critical hit triggers it, within its cooldown: a stationary
@@ -5404,7 +5404,7 @@ export function initScene(el, api) {
       if (d.dead) { e.dead = true; return; }
       m.position.set(d.pos.x, 2.4, d.pos.z); if ((tk -= dt) > 0) return;
       const q = near(d.pos, radOf(S)); if (!q) return;
-      tk = st.base_galvanic_field_beam_delay_ms / 1000; chain(m.position.clone(), q, { ...S, self: e, src: 'orb' }, st.number_of_chains);
+      tk = st.base_galvanic_field_beam_delay_ms / 1000; chain(m.position.clone(), q, { ...S, self: e, src: 'orb' }, S.dmg.shape?.chains ?? st.number_of_chains);
     } });
   }
   // what the Banners you stand in grant: their buff's stat, summed

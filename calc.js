@@ -155,7 +155,11 @@ const first = (...xs) => xs.find(x => x != null) ?? null;
 // additional effect": per 1000 quality, whole numbers only). _level and _quality are the ones used.
 // A gem marked corrupted counts as "corrupted" for them (Atziri's Rule: corrupted_spell_skill_gem_level_+).
 // note: the level a corruption itself gave is the gem's own, as you set it
-export function gemStats(g, sum = {}) {
+// split: the quality's modifiers of the kind the tree, gear or a support give (skills.json quality_generic: Enfeeble's
+// base_mana_cost_-%, Thunderous Leap's slam_aftershock_chance_%) not in st but in st._mods, which skill() counts with its
+// other modifiers as a support's; a stat the skill has itself (Raise Zombie's number of zombies) stays its own
+const QG = new Set(SK.quality_generic || []);
+export function gemStats(g, sum = {}, split = false) {
   const d = SK.skills[g.name] || {}, tags = [...GEM[g.name]?.tags || d.tags || [], ...g.corrupted ? ['corrupted'] : []], end = '_skill_gem_level_+';
   // (a support's "+1 to Level of Supported Fire Skills": supported_fire_skill_gem_level_+; supported_active_: any)
   const fits = w => w === 'all' || w === 'supported' || w === 'active' || tags.includes(w) || w === 'elemental' && ['fire', 'cold', 'lightning'].some(e => tags.includes(e));
@@ -165,9 +169,9 @@ export function gemStats(g, sum = {}) {
   level += v(sum, 'supported_active_skill_gem_level_+_if_' + ['no_other_supports', 'one_other_support', 'two_other_supports'][(g.supports || []).filter(Boolean).length - 1]);
   if (GEM[g.name]?.specific && GEM[g.name].specific === sum['unique_jewel_specific_skill_level_+_skill']) level += v(sum, 'unique_jewel_specific_skill_level_+_level');   // Prism of Belief
   const quality = (g.quality || 0) + v(sum, 'all_skill_gem_quality_+', 'supported_active_skill_gem_quality_%');
-  const st = { ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[g.level] || {}), _level: level, _quality: quality };
+  const st = { ...(d.constant || {}), ...(d.levels?.[level] || d.levels?.[g.level] || {}), _level: level, _quality: quality, _mods: {} };
   for (const q of [d.quality, sum.ascendancy_gemling_enable_thaumaturgy_quality_stats && d.alt_quality])
-    for (const [k, x] of Object.entries(q || {})) st[k] = (st[k] || 0) + Math.trunc(x * quality / 1000);
+    for (const [k, x] of Object.entries(q || {})) { const to = split && QG.has(k) && !(k in st) ? st._mods : st; to[k] = (to[k] || 0) + Math.trunc(x * quality / 1000); }
   const P = g.part && d.parts?.[g.part];   // a part of the gem (Earthshatter's spike): its own stats over the gem's
   // a part converting its damage itself: its conversion instead of the gem's (Elemental Sundering's fire and lightning
   // explosions, the gem's own the cold one)
@@ -181,10 +185,10 @@ export function gemStats(g, sum = {}) {
 // Blasphemy's: its amount per curse socketed in it (the build b's gems in it). note: rounded to the nearest, as Path of Building 2 does
 // Atziri's Communion: no Spirit, its % of maximum life per base Spirit instead (life: that %)
 export function reservation(g, sum = {}, b, life = false, maxLife) {
-  const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';
+  const st = gemStats(g, sum), id = 'base_spirit_reservation_efficiency_+%';   // with its quality's (Bind Spectre's, Mirage Archer's)
   // Prism Guardian: Buff skills' own per 100 maximum life (maxLife: character() gives it, which asks for this itself)
   const PG = sum['buff_skills_spirit_reservation_efficiency_+%_per_100_maximum_life'], perLife = PG && b && GEM[g.name]?.tags?.includes('buff') ? PG * Math.floor((maxLife ?? character(b, sum).life ?? 0) / 100) : 0;
-  const eff = perLife + (st[id] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
+  const eff = perLife + (st[id] || 0) + (st['base_reservation_efficiency_+%'] || 0) + v(sum, id, 'base_reservation_efficiency_+%', ...(GEM[g.name]?.tags || []).map(t => `reservation_efficiency_+%_of_${t}_skills`));
   // Skeletal Warrior: its first minions reserve no Spirit. note: the planner has no number of minions per gem; those first ones
   const own = (st.first_X_minions_have_0_base_spirit_reservation ? 0 : spectreSpirit(g.spectre, st._spirit || 0)) + (st.blasphemy_base_spirit_reservation_per_socketed_curse || 0) * (b?.gems || []).filter(x => x.meta === g.name).length
     + (sum.keystone_ancestral_bond ? 75 * (totem(g, sum)?.limit || 0) : 0);   // Ancestral Bond: 75 Spirit per totem, every one it can have placed
@@ -1279,7 +1283,8 @@ export function skill(g, b, treeGear) {
   const T = [...PT ? PT.types || [] : [...G.types || [], ...!g.asHit && d.hit?.types || []], ...own.includes('meta') ? [] : metaAdds(b, g)];
   const sp = (g.supports || []).filter((n, i, a) => !T.length || GEM[n] && canSupport(GEM[n], new Set([...T, ...a.flatMap((m, j) => j === i ? [] : GEM[m]?.adds || [])])));   // those that apply to it
   const { sum, fin, mods, finals, twice = new Set(), own: supOwn = {} } = withSupports({ ...g, supports: sp }, treeGear, b?.wset);
-  const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
+  const st = { ...gemStats(g, sum, true), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
+  for (const [k, x] of Object.entries(st._mods)) if (k.endsWith('_final')) { fin[k] = (fin[k] || 0) + x; finals[k] = (finals[k] || 0) + x; } else sum[k] = (sum[k] || 0) + x;   // its quality's modifiers
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
   const ownTotem = !own.includes('meta') && d.totem || null, gt = PT?.types?.length ? PT.types : G.types || [];
@@ -1491,7 +1496,7 @@ export function skill(g, b, treeGear) {
   const rath = spell && !own.includes('channelling') && (sum['spell_damage_+%_per_100_max_life_with_non_channelling_skills'] || sum['spell_critical_strike_chance_+%_per_100_max_life_with_non_channelling_skills']) ? Math.floor((character(b, sum).life || 0) / 100) : 0;   // Rathpith Globe: per 100 maximum Life, Non-Channelling Spells
   const incOf = (t, dot = false) => inc(sum, 'damage_+%', dmgTags) + rath * v(sum, 'spell_damage_+%_per_100_max_life_with_non_channelling_skills') + (tags.includes('bow') && sum.arrow_speed_additive_modifiers_also_apply_to_bow_damage ? v(sum, 'base_projectile_speed_+%') : 0) + (tags.includes('projectile') && sum.projectile_speed_additive_modifiers_also_apply_to_projectile_damage ? projInc : 0) + compInc + borrowed + perTotem + perAttr + trigSpell + (spell && out.lifeCost > 0 ? v(sum, 'spell_damage_+%_with_spells_that_cost_life') : 0) + (attack && /^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_skills_damage_+%_while_holding_shield') : 0) + (dual ? v(sum, 'damage_while_dual_wielding_+%') : 0) + (spell && (weaponStats(b.items)?.tags || []).includes('weapon') && !weaponStats(b.items).tags.includes('ranged') ? v(sum, 'spell_damage_+%_while_wielding_melee_weapon') : 0) + v(sum, `${t}_damage_+%`) + inc(typed[t], 'damage_+%', dmgTags) + (t !== 'physical' && t !== 'chaos' ? v(sum, 'elemental_damage_+%') + (attack ? v(sum, 'elemental_damage_with_attack_skills_+%') : 0) : 0) + mod(mods, 'INC', dmgMods(t), has(dot));
   const dual = w && weaponStats({ weapon: b.items?.offhand });   // a weapon in each hand
-  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + perX('str', 'unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength') / 100) * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
+  const scale = (t, dot = false) => (1 + v(st, 'active_skill_damage_+%_final') / 100) * (1 + v(st, `active_skill_${t}_damage_+%_final`) / 100) * (1 + (dual ? v(st, 'active_skill_damage_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'damage_+%', tags, t) * mod(mods, 'MORE', dmgMods(t), has(dot)) * metaDmg * measured * (1 + perX('str', 'unique_facebreaker_unarmed_attack_damage_+1%_final_per_X_strength') / 100) * (wild ? 1.5 : 1) * (1 + rage * (100 + rageEffect) / 1e4)
     * (1 + incOf(t, dot) / 100);
   const noEl = !!sum.deal_no_elemental_damage;   // Splinter of Lorrata
   for (const t of DMG) {
@@ -1526,7 +1531,7 @@ export function skill(g, b, treeGear) {
   const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
     + (per ? Math.floor((per.attrs?.dex || 0) / 25) * v(sum, 'attack_speed_+%_per_25_dex') + Math.floor((per.accuracy || 0) / 200) * v(sum, 'attack_speed_+%_per_200_accuracy_rating') : 0);
   if (attack && (w || shield || flaskThrow)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : flaskThrow ? 1000 / st.main_hand_base_weapon_attack_duration_ms : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + (sum.additive_modifiers_to_minion_attack_speed_also_affect_you ? v(sum, 'minion_attack_speed_+%', 'minion_attack_and_cast_speed_+%') : 0) + speedInc + perTotemSpeed + atkSp) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed * dwd;
-  else if (CT) out.speed = 1000 / CT * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd * metaCast;
+  else if (CT) out.speed = 1000 / CT * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * (1 + v(st, 'active_skill_cast_speed_+%_final') / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd * metaCast;
   if (byTotem && out.speed) out.speed *= 1 + v(sum, 'ascendency_tactician_totem_skill_speed_+%_final') / 100;   // Tactician's Cannons, Ready!: more skill speed of totems' skills
   // "+X seconds to Total Attack / Cast Time" (Leap Slam, Rolling Slam, Comet): added to the use time whatever the speed (PoB2's TotalAttackTime)
   const addT = v(st, 'total_attack_time_+_ms', 'total_cast_time_+_ms') / 1000; if (addT && out.speed) { out.speed = 1 / (1 / out.speed + addT); out.addT = addT; }   // addT: Energy counts it double (scene.js)
@@ -1559,7 +1564,7 @@ export function skill(g, b, treeGear) {
   const baseCrit = (shield || flaskThrow) && st._attack_crit ? st._attack_crit / 100 : attack && w ? (sum.override_weapon_base_critical_strike_chance && !unarmed ? sum.override_weapon_base_critical_strike_chance / 100 : w.crit) + (unarmed && tags.includes('melee') ? v(sum, 'base_melee_critical_strike_chance_while_unarmed_%') : 0) : first(spell && sum.base_spell_critical_strike_chance_override_permyriad ? sum.base_spell_critical_strike_chance_override_permyriad / 100 : null, st._spell_crit != null ? st._spell_crit / 100 : null, st.base_critical_strike_chance != null ? st.base_critical_strike_chance / 100 : null);
   if (baseCrit != null) {
     const addCrit = (inc(sum, 'additional_critical_strike_chance_permyriad', tags) + v(sum, 'additional_base_critical_strike_chance')) / 100;   // the tree's "+% to Critical Hit Chance" of attacks, of Herald skills: added to the base chance
-    out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, (baseCrit + addCrit) * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + rath * v(sum, 'spell_critical_strike_chance_+%_per_100_max_life_with_non_channelling_skills') + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit));
+    out.crit = mods.some(m => m[0] === 'NeverCrit') || sum.resolute_technique ? 0 : Math.min(sum['maximum_critical_strike_chance_is_%_from_support_garukhans_resolve'] || 100, (baseCrit + addCrit) * (1 + (inc(sum, 'critical_strike_chance_+%', tags) + rath * v(sum, 'spell_critical_strike_chance_+%_per_100_max_life_with_non_channelling_skills') + (tags.includes('ballista') ? v(sum, 'ballista_critical_hit_chance_+%') : 0) + (attack && dual ? v(sum, 'critical_strike_chance_while_dual_wielding_+%') : 0) + mod(mods, 'INC', ['CritChance'], hit)) / 100) * mod(mods, 'MORE', ['CritChance'], hit) * (1 + v(st, 'active_skill_critical_strike_chance_+%_final') / 100));
     if (attack && sum['attack_crit_chance_override_%'] && out.crit) out.crit = sum['attack_crit_chance_override_%'];   // Maligaro's Virtuosity: the attacks' chance is that
     out.critBonus = sum.no_critical_strike_multiplier || attack && w?.noCritBonus ? 0 : sum.critical_strike_multiplier_is_250 ? 250 : (100 + (attack && w?.critBonus || 0) + inc(sum, 'critical_strike_multiplier_+', tags) + (tags.includes('ballista') ? v(sum, 'ballista_critical_damage_+%') : 0) + (attack && tags.includes('dagger') ? v(sum, 'critical_strike_multiplier_with_dagger_+') : 0) + (sum['critical_damage_+%_per_50_current_life'] ? Math.floor(character(b, sum).life / 50) * sum['critical_damage_+%_per_50_current_life'] : 0) + mod(mods, 'INC', ['CritMultiplier'], hit) + mod(mods, 'BASE', ['CritMultiplier'], hit)) * mod(mods, 'MORE', ['CritMultiplier'], hit) * (1 + v(sum, 'infernalist_critical_strike_multiplier_+%_final') / 100);   // Infernalist: more
   }
@@ -1653,7 +1658,7 @@ export function skill(g, b, treeGear) {
     + (attack ? v(sum, 'base_attack_damage_penetrates_elemental_resist_%') + (w?.pen?.[e] || 0) : 0)]));
   if (attack && b.items?.weapon && sum['reduce_enemy_chaos_resistance_with_weapons_%']) out.pen.chaos = sum['reduce_enemy_chaos_resistance_with_weapons_%'];   // "Damage with Weapons Penetrates Chaos Resistance" (a Fists of Stone modifier)
   if (d.totem && d.cast_time_ms) out.placeTime = d.cast_time_ms / 1000 / (1 + v(sum, 'summon_totem_cast_speed_+%') / 100);   // placing the totem: the gem's cast time, faster with totem placement speed
-  out.projSpeed = (1 + projInc / 100) * (1 + v(finals, 'support_faster_projectiles_projectile_speed_+%_final') / 100) * (1 + v(finals, 'support_slower_projectiles_projectile_speed_+%_final') / 100);   // Projectile Acceleration, Deceleration: more, less
+  out.projSpeed = (1 + projInc / 100) * (1 + v(st, 'active_skill_projectile_speed_+%_final') / 100) * (1 + v(finals, 'support_faster_projectiles_projectile_speed_+%_final') / 100) * (1 + v(finals, 'support_slower_projectiles_projectile_speed_+%_final') / 100);   // Projectile Acceleration, Deceleration: more, less
   for (const el of ['fire', 'cold', 'lightning']) if (sum['penetrate_elemental_resistance_%_while_shapeshifted']) out.when.push({ stat: 'penetrate_elemental_resistance_%_while_shapeshifted', cond: [{ type: 'Condition', var: 'Shapeshifted' }], val: sum['penetrate_elemental_resistance_%_while_shapeshifted'], what: 'pen', el });
   if (sum['damage_+%_vs_immobilised_enemies_while_shapeshifted']) out.when.push({ stat: 'damage_+%_vs_immobilised_enemies_while_shapeshifted', cond: [{ type: 'Condition', var: 'Shapeshifted' }, { type: 'ActorCondition', actor: 'enemy', var: 'Immobilised' }], val: sum['damage_+%_vs_immobilised_enemies_while_shapeshifted'], what: 'damage', w: out.incW });
   if (sum['lightning_penetration_%_while_on_low_mana']) out.when.push({ stat: 'lightning_penetration_%_while_on_low_mana', cond: [{ type: 'Condition', var: 'LowMana' }], val: sum['lightning_penetration_%_while_on_low_mana'], what: 'pen', el: 'lightning' });
@@ -1687,7 +1692,7 @@ export function skill(g, b, treeGear) {
   const sec = (k, m = 1) => st[k] ? st[k] / 1000 * m : null, both = (...k) => v(st, ...k) + v(sum, ...k);
   const durMore = Math.max(0, 1 + (both('skill_effect_duration_+%') + (curse ? v(sum, 'base_curse_duration_+%', 'curse_skill_effect_duration_+%') : 0)
     + (mark ? v(sum, 'mark_skill_duration_+%') : 0) + ['banner', 'hazard', 'grenade'].reduce((t, x) => t + (own.includes(x) ? v(sum, `${x}_duration_+%`, `${x}_skill_duration_+%`) : 0), 0)
-    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (own.includes('shapeshift') ? v(sum, 'skill_effect_duration_+%_when_using_shapeshift_skills') : 0) + (own.includes('minion') ? v(sum, 'base_minion_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
+    + (own.includes('chaos') ? v(sum, 'chaos_skill_effect_duration_+%') : 0) + (own.includes('shapeshift') ? v(sum, 'skill_effect_duration_+%_when_using_shapeshift_skills') : 0) + (own.includes('minion') ? v(sum, 'base_minion_duration_+%') : 0) + (GEM[g.name]?.types?.includes('Offering') ? v(sum, 'offering_duration_+%') : 0)) / 100) * (1 + (own.includes('plant') ? v(sum, 'plant_skill_effect_duration_+%_final_from_archon_of_nature') : 0) / 100) * (wild ? .25 : 1) * (1 + v(st, 'active_skill_quality_duration_+%_final') / 100) * Object.entries(finals).reduce((m, [k, x]) => /skill_effect(?:_and_damaging_ailment)?_duration_\+%_final$/.test(k) ? m * (1 + x / 100) : m, 1);
   const spProj = spell && gt.includes('Projectile');   // Snakepit: Projectiles from Spells chain once more or cannot, Fork or cannot
   out.shape = { chains: (spProj && sum.projectiles_from_spells_cannot_chain ? 0 : 1) * (both('number_of_chains') + (spProj ? v(sum, 'number_of_additional_chains_for_spell_projectiles') : 0) + (attack ? v(sum, 'attacks_num_of_additional_chains') : 0) + (own.includes('lightning') ? v(sum, 'lightning_skill_additional_chains') : 0)) * (1 + (finals['support_dominus_grasp_chain_count_+%_final'] || 0) / 100),   // Dominus' Grasp: 100% more times
     ground: 1 + v(sum, 'ground_effect_duration_+%') / 100,   // Persistent / Lasting Ground
@@ -1734,7 +1739,7 @@ export function skill(g, b, treeGear) {
   // curse duration (Abiding Hex), all endurance charges for life (Rally); the chance to keep them (Perpetual Charge) or
   // double the benefit (Heightened Charges), life lost per 5 Rage (Medved's). more: an extra charge (Charge Profusion)
   // (read from the supports' own stats: PoB2 reads some as conditional mods, which leave them out of sum)
-  const sup = k => sp.reduce((t, n) => t + (SK.skills[n]?.constant?.[k] || 0), 0), all2 = k => sup(k) + v(treeGear, k);
+  const sup = k => sp.reduce((t, n) => t + (SK.skills[n]?.constant?.[k] || 0), 0), all2 = k => sup(k) + v(treeGear, k) + v(st, k) + v(st._mods, k);   // the supports', the tree's and gear's, the gem's own (its quality's too)
   out.onHit = { rage: sup('gain_x_rage_on_melee_hit'), ragePct: all2('gain_x%_of_maximum_rage_on_melee_hit'),
     breakEndurance: all2('chance_to_gain_endurance_charge_on_armour_break_%'), stunEndurance: all2('chance_to_gain_endurance_charge_on_heavy_stunning_non_unique_enemy_%'),
     stunEnduranceUnique: all2('gain_x_endurance_charges_on_heavy_stunning_unique_enemy'), perfectEndurance: all2('chance_to_gain_endurance_charge_on_perfect_timing_hit_%'),
@@ -1772,7 +1777,7 @@ export function skill(g, b, treeGear) {
   out.more = { one: all2('chance_to_gain_1_more_charge_%'), random: all2('chance_to_gain_1_more_random_charge_%') };
   // Combo (keywords.json): built by Strikes, lost after the skill's delay without gaining any (Flow: slower), what it
   // needs to be used (Combo Finisher), the chance of one more (Practiced Combo)
-  out.combo = { strike: !all2('area_of_effect_+%_per_combo_stack') && (own.includes('strike') || attack && !!all2('can_gain_combo_from_any_attack_hit')), more: all2('additional_combo_gain_on_hit'), esSooner: -all2('add_X_ms_to_energy_shield_recharge_delay_per_combo_spent') / 1000, decay: (all2('base_combo_stacks_decay_delay_ms') + v(st, 'base_combo_stacks_decay_delay_ms')) / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
+  out.combo = { strike: !all2('area_of_effect_+%_per_combo_stack') && (own.includes('strike') || attack && !!all2('can_gain_combo_from_any_attack_hit')), more: all2('additional_combo_gain_on_hit'), esSooner: -all2('add_X_ms_to_energy_shield_recharge_delay_per_combo_spent') / 1000, decay: all2('base_combo_stacks_decay_delay_ms') / 1000 / Math.max(.01, 1 + all2('combo_falloff_speed_+%') / 100),
     need: all2('support_combo_finisher_required_number_of_combo_stacks') + v(st, 'active_skill_required_number_of_combo_stacks'),   /* Combo Finisher; Tempest Bell and Mantra of Destruction's own */ extra: all2('additional_combo_gain_chance_%') };
   out.leech = { life: leechOf('life'), mana: leechOf('mana'), keep: !!v(sum, 'life_leech_from_source_not_removed_at_full_life') };
   // a minion gem: the hits are its minion's (the DPS one minion's)
@@ -1823,11 +1828,16 @@ export function skill(g, b, treeGear) {
   }
   // what the skill gets for the charges it consumes (all you have: a count the player gives; the scene spends its own):
   // Ancestral Cry's longer duration per endurance charge, Spiral Volley's more damage when it consumes frenzy charges
-  // and per charge. note: Spiral Volley's chains per charge, Rain of Arrows' projectiles, Barrage's repeats, Spell
-  // Totem's and Pinnacle of Power's are the scene's only
-  for (const [k, c, what, at] of [['ancestral_cry_duration_+%_final_per_removable_endurance_charge', 'Endurance', 'duration'],
-    ['spiral_volley_damage_+%_final_when_frenzy_charges_consumed', 'Frenzy', 'damage', 1], ['spiral_volley_damage_+%_final_per_frenzy_charge_consumed', 'Frenzy', 'damage']])
-    if (st[k]) out.when.push({ stat: k, cond: [{ type: at ? 'MultiplierThreshold' : 'Multiplier', var: c + 'ChargesConsumed', threshold: at }], val: st[k], skill: g.name, what, w: what === 'damage' ? Object.fromEntries(DMG.map(t => [t, 1])) : 1 });
+  // and per charge, and its chains (Spiral Volley), its arrows (Rain of Arrows); a Spell Totem's more damage per power
+  // charge for the spell it casts, its totem's life per endurance charge; Pinnacle of Power's more elemental damage
+  // per power charge, for every skill. note: Barrage's repeats are for its Empowered attack: the scene's only, as every Empowered bonus
+  const PP = (b?.gems || []).find(x => x.name === 'Pinnacle of Power'), EL = { fire: 1, cold: 1, lightning: 1 };
+  for (const [k, c, what, at, G = g, S = st, w] of [['ancestral_cry_duration_+%_final_per_removable_endurance_charge', 'Endurance', 'duration'],
+    ['spiral_volley_damage_+%_final_when_frenzy_charges_consumed', 'Frenzy', 'damage', 1], ['spiral_volley_damage_+%_final_per_frenzy_charge_consumed', 'Frenzy', 'damage'],
+    ['spiral_volley_X_chains_per_frenzy_charge_consumed', 'Frenzy', 'chains'], ['rain_of_arrows_projectile_count_multiplier_per_frenzy_charge', 'Frenzy', 'projectiles'], ['spell_totem_maximum_life_+%_final_per_endurance_charge_consumed', 'Endurance', 'totemLife'],
+    ...meta?.name === 'Spell Totem' && byTotem ? [['spell_totem_damage_+%_final_per_power_charge_consumed', 'Power', 'damage', 0, meta, gemStats(meta)]] : [],
+    ...PP && DMG.some(t => EL[t] && out.hits?.[t]) ? [['elemental_power_elemental_damage_+%_final_per_power_charge', 'Power', 'damage', 0, PP, gemStats(PP), EL]] : []])
+    if (S[k]) out.when.push({ stat: k, cond: [{ type: at ? 'MultiplierThreshold' : 'Multiplier', var: c + 'ChargesConsumed', threshold: at || undefined }], val: S[k], skill: G.name, what, w: w || (what === 'damage' ? Object.fromEntries(DMG.map(t => [t, 1])) : 1) });
   // the planner's conditions (b.conds: the states the player says hold, a count for a "per" one): the bonuses of out.when
   // they meet count in the numbers, as the scene's when() does on each hit. One not set counts as not met
   if (b?.conds && out.when.length) {
@@ -1842,6 +1852,8 @@ export function skill(g, b, treeGear) {
       else if (w.what === 'pen') out.pen[w.el] = (out.pen[w.el] || 0) + pct;
       else if (w.what === 'gain') ex.push([w.from, w.to, pct]);
       else if (w.what === 'duration' && out.shape?.duration) out.shape.duration *= 1 + pct / 100;
+      else if (w.what === 'chains' && out.shape) out.shape.chains += pct;
+      else if (w.what === 'projectiles' && out.shape?.projectiles) out.shape.projectiles = Math.round(out.shape.projectiles * (1 + pct / 100));
       else if (out[w.what] != null) out[w.what] *= 1 + pct / 100 * w.w;
     }
     for (const [from, to, p] of ex) if (H[from]) H[to] = H[from].map((x, i) => (H[to]?.[i] || 0) + x * p / 100);   // gained as extra: of the damage after the rest, as the scene's
@@ -2021,7 +2033,7 @@ function ailments(st, sum, finals, tags, flags = new Set()) {
 function minionLife(st, sum, id, finals = {}) {
   const m = enemy(id), level = SK.minion_level?.[st._level - 1]; if (!m || !level) return null;
   const ms = minionStats(st, { ...sum, ...finals }, {});   // a support's "more" life too (Loyalty, Minion Mastery)
-  return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100)
+  return Math.round(Math.floor(monster(level, 'AllyLife') * m.life) * (1 + v(sum, 'minion_maximum_life_+%') / 100) * (1 + v(st, 'active_skill_minion_life_+%_final') / 100)
     * Object.entries(ms).filter(([k]) => /^max(imum)?_life_\+%_final/.test(k)).reduce((t, [, x]) => t * (1 + x / 100), 1)
     * (sum.keystone_kulemaks_sovereignty && m.category === 'Undead' ? .75 : 1) * (ms.is_gigantic ? 1 + GIGANTIC / 100 : 1));   // Kulemak's Sovereignty: Undead minions 25% less
 }
@@ -2068,7 +2080,7 @@ function minionOf(st, sum, fin, id, at = {}, wAdd = null, key0 = null, si = 0) {
   const hits = {};
   for (const t of DMG) if (base[t][1]) hits[t] = base[t].map(x => Math.round(x * scale(t)));
   const both = v(sum, 'minion_attack_and_cast_speed_+%') + v(ms, 'skill_speed_+%');
-  const speed = a.attack ? (1 + (inc(ms, 'attack_speed_+%', tags) + both) / 100) * (1 + v(ms, 'attack_speed_+%_final_for_minions') / 100) : 1 + (inc(ms, 'cast_speed_+%', tags) + both) / 100;
+  const speed = a.attack ? (1 + (inc(ms, 'attack_speed_+%', tags) + both) / 100) * (1 + v(ms, 'attack_speed_+%_final_for_minions') / 100) * (1 + v(st, 'active_skill_minion_attack_speed_+%_final') / 100) : 1 + (inc(ms, 'cast_speed_+%', tags) + both) / 100;
   const period = st.living_lightning_beam_attack_time_ms ? st.living_lightning_beam_attack_time_ms / 1000 : a.period;   // Living Lightning: its beam's attack time
   // its resistances: the monster's own (up to the monsters' maximum, more with its maximum) and what the build gives minions
   const res = Object.fromEntries(['fire', 'cold', 'lightning', 'chaos'].map((e, i) => [e, Math.min((MON_K.monster_max_resistance ?? 75) + (e === 'chaos' ? 0 : v(ms, `base_maximum_${e}_damage_resistance_%`, 'additional_maximum_all_elemental_resistances_%')),
@@ -2218,4 +2230,7 @@ console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 
   console.assert(m.hitAs.perHit === s.hitAs.perHit && e(m) < e(s) && p.hitAs.perHit === s.hitAs.perHit && e(p) === e(s) && RS(['Pierce I']) === 1 && RS([]) === 0 && fitsGem(GEM['Pierce I'], typeSets('Rapid Shot')) && !canSupport(GEM['Pierce I'], new Set(GEM['Rapid Shot'].types)), 'supports per skill of a gem', m, p);
   // the charges it consumes (the planner's count): 50% more duration per endurance charge, 8 s -> 20 s with 3
   const D = n => skill({ name: 'Ancestral Cry', level: 10, supports: [] }, { gems: [], items: { weapon: newItem('Felled Greatclub') }, conds: n ? { '#EnduranceChargesConsumed': n } : null }, {}).shape.duration;
-  console.assert(D(0) === 8 && D(3) === 20, 'Ancestral Cry per endurance charge', D(0), D(3)); }
+  console.assert(D(0) === 8 && D(3) === 20, 'Ancestral Cry per endurance charge', D(0), D(3));
+  // Spiral Volley: a chain per frenzy charge; Rain of Arrows: 150% more arrows per one, as the scene rounds them
+  const C = (name, n) => skill({ name, level: 20, supports: [] }, { gems: [], items: {}, conds: n ? { '#FrenzyChargesConsumed': n } : null }, {}).shape;
+  console.assert(C('Spiral Volley', 3).chains === C('Spiral Volley').chains + 3 && C('Rain of Arrows', 3).projectiles === Math.round(C('Rain of Arrows').projectiles * 5.5), 'chains and arrows per frenzy charge'); }

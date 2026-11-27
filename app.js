@@ -3,7 +3,7 @@ import { initScene } from './scene.js';
 import { profile, chips } from './skillfx.js';
 import { statLines, shownLines, NAMES } from './stats.js';
 import { renderChar, skillTip } from './charpanel.js';
-import { gemName, withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf, subsOf, dealt } from './calc.js';
+import { gemName, withConds, skill, withSupports, character, attributes, recovery, snapshot, QUESTS, questPick, questStats, requiredLevel, skillStats, auraStats, linkMetas, usedBy, byHand, reservation, rageOf, ailmentDefence, inc, GEM, tributeOf, subsOf, dealt, gemStats } from './calc.js';
 import { PLACED, enemy, search as findEnemies, enemyStats, attacksOf, attackOf, versusPlayer, versusEnemy, RARITIES, rarityOf, MON_MODS, MAP, setMap, mapPlayer } from './enemies.js';
 import { SLOTS, initItems, slotOpen, gearStats, wornItems, statsOf, radiusOf, itemView, setNames, flaskOf, charmOf, swapSet, pieceDef, isQuiver, isFocus, baseOf, known, parseWaystone, formsOf, radiusNamed, socketStats, SOCKETABLES, CHAKRA } from './items.js';
 import { initSkills } from './skills.js';
@@ -288,20 +288,21 @@ function geo(g) {
   if (LR) T['base_skill_area_of_effect_+%'] = (T['base_skill_area_of_effect_+%'] || 0) + (T['light_radius_+%'] || 0) * LR / 100;
   const FX = T['unarmed_attack_area_of_effect_+1%_per_X_intelligence'], b0 = B();   // Facebreaker: unarmed attacks' area per X Intelligence
   if (FX && !b0.items?.weapon && tags.includes('attack')) T['attack_area_of_effect_+%'] = (T['attack_area_of_effect_+%'] || 0) + Math.floor((character(b0, T).attrs?.int || 0) / FX);
-  const { sum, finals } = withSupports(g, T);  // supports' area / speed count
+  const { sum, finals } = withSupports(g, T), gs = gemStats(g, sum), own = [...Object.entries(finals), ...Object.entries(gs)];  // supports' area / speed count; the gem's own (its quality's too)
   // the supports' more / less area (Concentrated Area 50% less, Echoing Cry, Spell Cascade...; not Branching Fissures', only its branches')
-  const moreArea = Object.entries(finals).reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1 + (d.levels?.[g.level]?.['area_of_effect_+%_final_from_whirling_assault_level'] || 0) / 100);   // Whirling Assault's own, by its level
-  const R = Object.values(d.radius || {}), base = d.radius?.[g.level] ?? (R.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level
-  const moreSpeed = Object.entries(finals).reduce((m, [k, v]) => k.endsWith('projectile_speed_+%_final') && !k.includes('randomise') ? m * (1 + v / 100) : m, 1);   // Projectile Acceleration / Deceleration
-  const rad = b => b ? Math.floor(b * Math.sqrt(Math.max(0, (1 + inc(sum, 'area_of_effect_+%', tags) / 100) * moreArea))) / 10 : 0;
-  const speed = d.projectile_speed && d.projectile_speed * (1 + (inc(sum, 'projectile_speed_+%', tags) + (tags.includes('bow') ? sum['base_arrow_speed_+%'] || 0 : 0)) / 100) * moreSpeed / 10;
+  const moreArea = own.reduce((m, [k, v]) => (k.endsWith('area_of_effect_+%_final') || k === 'support_astral_projection_aoe_+%_final') && !k.startsWith('branching_fissure') ? m * (1 + v / 100) : m, 1 + (d.levels?.[g.level]?.['area_of_effect_+%_final_from_whirling_assault_level'] || 0) / 100);   // Whirling Assault's own, by its level
+  const R = Object.values(d.radius || {}), AOE = 'active_skill_base_area_of_effect_radius', P = d.parts?.[g.part], r0 = P ? (P.levels?.[g.level] || {})[AOE] ?? P.constant?.[AOE] : d.radius?.[g.level] ?? (R.length === 1 ? R[0] : undefined);   // a single-level skill (Mana Flare) at any gem level; a part's own (the skills tab)
+  const base = r0 != null && !P ? r0 + (gs[AOE] || 0) - ((d.levels?.[gs._level] || d.levels?.[g.level] || {})[AOE] ?? d.constant?.[AOE] ?? 0) : r0;   // and its quality's (Leylines, Infernal Cry)
+  const moreSpeed = own.reduce((m, [k, v]) => k.endsWith('projectile_speed_+%_final') && !k.includes('randomise') ? m * (1 + v / 100) : m, 1);   // Projectile Acceleration / Deceleration
+  const rad = b => b ? Math.floor(b * Math.sqrt(Math.max(0, (1 + (inc(sum, 'area_of_effect_+%', tags) + inc(gs, 'area_of_effect_+%', tags)) / 100) * moreArea))) / 10 : 0;
+  const speed = d.projectile_speed && d.projectile_speed * (1 + (inc(sum, 'projectile_speed_+%', tags) + inc(gs, 'projectile_speed_+%', tags) + (tags.includes('bow') ? sum['base_arrow_speed_+%'] || 0 : 0)) / 100) * moreSpeed / 10;
   return {
     radiusFromData: base != null,
     // area modifiers scale area, so radius scales with the square root, in whole game units (the game's window:
     // Cluster Grenade 25 x sqrt(1.24) = 27.8 -> 2.7 m)
     radius: base != null ? rad(base) : 0,
     // its secondary radius (a storm's area, Firestorm's; or its strikes', Thunderstorm's), with the same modifiers
-    radius2: rad(d.levels?.[g.level]?.active_skill_base_secondary_area_of_effect_radius ?? d.constant?.active_skill_base_secondary_area_of_effect_radius),
+    radius2: rad(gs.active_skill_base_secondary_area_of_effect_radius),
     speed,
     // range: skill override, else speed × duration, else 150 units (GGG: default max projectile distance)
     range: d.projectile_range ? d.projectile_range / 10 : d.duration_ms && speed ? speed * d.duration_ms / 1000 : 15,

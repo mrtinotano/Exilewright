@@ -50,7 +50,7 @@ export const tabName = (x, G) => x?.['label_' + lang] || x?.label || tn(G);
 // side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill
 // details window, with a tab for each skill it sets off that deals damage (view: its key; Ancestral Cry's Volcanic Steps)
 function details(g, b, sum, geo, view) {
-  const G = GEM[g.name] || {}, main = skill(g, b, sum), subs = subsOf(g, main), sub = subs.find(x => x.key === view), s = sub?.s || main, st = s.stats, geom = sub ? {} : geo?.(g) || {};
+  const G = GEM[g.name] || {}, main = skill(g, b, sum), subs = subsOf(g, main), sub = subs.find(x => x.key === view), s = sub?.s || main, st = s.stats, P = sub && SK.skills[g.name]?.parts?.[sub.key], geom = sub && !P ? {} : geo?.(P ? { ...g, part: sub.key } : g) || {};   // a part's own radius; the gem's hit (Volcanic Steps) has none in the data
   const desc = sub ? sub.tab?.['description_' + lang] || sub.tab?.description || '' : descOf(G);
   const tabs = subs.length ? `<div class="dtabs">${[{ key: '', tab: SK.skills[g.name]?.tab }, ...subs].map(x => `<button data-dtab="${esc(x.key)}"${(sub?.key || '') === x.key ? ' class="on"' : ''}>${esc(tabName(x.tab, G))}</button>`).join('')}</div>` : '';
   const sec = (title, rows) => (rows = rows.filter(Boolean)).length
@@ -58,7 +58,7 @@ function details(g, b, sum, geo, view) {
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
   const cost = st._cost && Object.entries(st._cost).map(([k, v]) => t(/life/i.test(k) ? '{0} life' : /es|energy/i.test(k) ? '{0} energy shield' : '{0} mana', v)).join(', ');
   const sups = (g.supports || []).filter(n => GEM[n]);
-  const lines = shownLines(st, g.name), spirit = reservation(g, sum, b), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
+  const lines = P ? shownLines({ ...P.constant, ...P.levels?.[st._level] }, sub.key) : shownLines({ ...st, ...st._mods }, g.name), spirit = reservation(g, sum, b), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
   return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(gemName(g))}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
     ${tabs}${desc ? `<p class="ddesc">${kwHtml(desc)}</p>` : ''}
     ${sec('Damage', [
@@ -86,10 +86,10 @@ function details(g, b, sum, geo, view) {
       s.ignite && ['Ignite duration', fmt(s.ignite.duration, 1) + ' s'],
     ])}
     ${(c => c ? `<h4>${t('Conditions')}</h4><p class="note">${t('Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.')}</p><div class="conds">${c}</div>` : '')(condRows(s, b, sum))}
-    ${sub ? '' : sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]]) + sec('Area & Duration', [
+    ${sub ? '' : sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]])}${sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
-      (d => d && ['Duration', fmt(d, 2) + ' s'])(s.shape?.duration || SK.skills[g.name]?.duration_ms / 1000),   // with its modifiers and the charges it consumes (Conditions)
-      geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
+      !sub && (d => d && ['Duration', fmt(d, 2) + ' s'])(s.shape?.duration || SK.skills[g.name]?.duration_ms / 1000),   // with its modifiers and the charges it consumes (Conditions)
+      !sub && geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
     ])}
     ${T ? sec('Totem', [
       ['Totem level', T.level], T.limit && ['Totem limit', T.limit], T.duration && ['Totem duration', fmt(T.duration, 1) + ' s'],

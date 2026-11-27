@@ -1,4 +1,97 @@
 {
+ "quality_generic": [
+  "active_skill_attack_speed_+%_final",
+  "active_skill_base_physical_damage_%_to_convert_to_cold",
+  "active_skill_base_physical_damage_%_to_convert_to_fire",
+  "active_skill_bleeding_effect_+%_final",
+  "active_skill_cast_speed_+%_final",
+  "active_skill_damage_+%_final",
+  "active_skill_electrocutes_as_though_dealt_damage_+%_final",
+  "active_skill_hit_damage_freeze_multiplier_+%_final",
+  "active_skill_hit_damage_stun_multiplier_+%_final",
+  "active_skill_ignite_effect_+%_final",
+  "active_skill_physical_damage_+%_final",
+  "active_skill_poison_effect_+%_final",
+  "additional_infusion_gain_chance_%",
+  "armour_break_amount_+%",
+  "armour_break_for_%_of_poison_damage_over_poison_duration",
+  "armour_break_physical_damage_%_dealt_as_armour_break",
+  "attack_speed_+%",
+  "attacks_chance_to_blind_on_hit_%",
+  "aura_effect_+%",
+  "base_aggravate_bleeding_on_attack_hit_chance_%",
+  "base_cast_speed_+%",
+  "base_chance_to_daze_%",
+  "base_chance_to_not_consume_corpse_%",
+  "base_cooldown_speed_+%",
+  "base_curse_duration_+%",
+  "base_mana_cost_-%",
+  "base_maximum_seals_for_skill",
+  "base_number_of_crossbow_bolts",
+  "base_number_of_zombies_allowed",
+  "base_poison_duration_+%",
+  "base_projectile_speed_+%",
+  "base_reduce_enemy_cold_resistance_%",
+  "base_reservation_efficiency_+%",
+  "base_secondary_skill_effect_duration",
+  "base_skill_area_of_effect_+%",
+  "base_skill_cost_efficiency_+%",
+  "base_spirit_reservation_efficiency_+%",
+  "bell_hit_limit",
+  "chance_%_to_double_effect_of_removing_charges",
+  "chance_for_exerted_attacks_to_not_reduce_count_%",
+  "chance_for_extra_damage_roll_with_lightning_damage_%",
+  "chance_to_gain_1_more_charge_%",
+  "chance_to_gain_1_more_frenzy_charge_%",
+  "chance_to_gain_1_more_random_charge_%",
+  "chance_to_not_consume_glory_%",
+  "chance_to_not_consume_infusion_%",
+  "chance_to_retain_40%_of_glory_on_use_%",
+  "charge_skip_consume_chance_%",
+  "curse_delay_+%",
+  "curse_effect_+%",
+  "damage_+%_vs_frozen_enemies",
+  "dummy_stat_display_nothing",
+  "energy_generated_+%",
+  "freeze_duration_+%",
+  "frozen_monsters_take_increased_damage",
+  "hazard_rearm_%_chance",
+  "hit_damage_immobilisation_multiplier_+%",
+  "ice_crystal_maximum_life_+%",
+  "impale_magnitude_+%",
+  "impale_on_hit_%_chance",
+  "mark_effect_+%",
+  "melee_range_+",
+  "minion_attack_speed_+%",
+  "minion_cast_speed_+%",
+  "minion_maximum_life_%_to_gain_as_maximum_energy_shield",
+  "minion_movement_speed_+%",
+  "movement_speed_penalty_+%_while_performing_action",
+  "number_of_chains",
+  "perfect_timing_window_ms_+%",
+  "poison_effect_+%_vs_non_poisoned_enemies",
+  "presence_area_+%",
+  "projectile_base_number_of_targets_to_pierce",
+  "projectile_number_to_split",
+  "recover_%_maximum_life_on_cull",
+  "recover_%_maximum_mana_on_cull",
+  "remnant_effect_+%",
+  "remnant_pickup_range_+%",
+  "shock_duration_+%",
+  "shock_effect_+%",
+  "skill_additional_fissure_chance_%",
+  "skill_detonation_time_+%",
+  "skill_effect_duration_+%",
+  "skill_speed_+%",
+  "slam_aftershock_chance_%",
+  "spell_skill_%_chance_to_fire_8_additional_projectiles_in_nova",
+  "spell_skills_fire_2_additional_projectiles_final_chance_%",
+  "spells_chance_to_hinder_on_hit_%",
+  "stun_threshold_+%_while_channelling",
+  "totem_life_+%",
+  "totem_skill_area_of_effect_+%",
+  "totems_spells_cast_speed_+%_per_active_totem"
+ ],
  "move_icon": "Art/2DArt/SkillIcons/iconmoveonly.dds",
  "charge_icons": {
   "frenzy": "Art/2DArt/BuffIcons/chargedex.dds",
@@ -23362,6 +23455,9 @@
    "meta_support": null
   },
   "Mirage Deadeye": {
+   "quality": {
+    "base_skill_effect_duration": 50000
+   },
    "cast_time_ms": 0,
    "constant": {
     "skill_desired_amount_override": 1
@@ -49083,6 +49179,9 @@
    "quality": {
     "skill_effect_duration_+%": 2000
    },
+   "alt_quality": {
+    "number_of_chains": 100
+   },
    "cast_time_ms": 1000,
    "constant": {
     "active_skill_base_area_of_effect_radius": 60,
@@ -50768,6 +50867,9 @@
   "Rain of Blades": {
    "quality": {
     "base_cooldown_speed_+%": 1000
+   },
+   "alt_quality": {
+    "hit_damage_immobilisation_multiplier_+%": 1500
    },
    "cast_time_ms": 1000,
    "constant": {
@@ -63396,6 +63498,9 @@
   "Blasphemy": {
    "quality": {
     "base_reservation_efficiency_+%": 500
+   },
+   "alt_quality": {
+    "curse_effect_+%": 1000
    },
    "cast_time_ms": 0,
    "constant": {
@@ -84547,6 +84652,13 @@
    "meta_support": null
   },
   "Pounce": {
+   "quality": {
+    "skill_wolf_mark_damage_taken_+%_per_nearby_enemy": 50,
+    "skill_wolf_mark_damage_taken_+%_cap": 750
+   },
+   "alt_quality": {
+    "number_of_wolves_allowed": 200
+   },
    "cast_time_ms": 1000,
    "constant": {
     "total_attack_time_+_ms": 200,
@@ -86302,6 +86414,9 @@
   "Ferocious Roar": {
    "quality": {
     "bear_warcry_gain_X_centirage_per_enemy_power": 5000
+   },
+   "alt_quality": {
+    "base_cooldown_speed_+%": 2000
    },
    "cast_time_ms": 1100,
    "constant": {
@@ -88335,6 +88450,9 @@
   "Spell Totem": {
    "quality": {
     "base_totem_duration": 200000
+   },
+   "alt_quality": {
+    "totems_spells_cast_speed_+%_per_active_totem": 500
    },
    "cast_time_ms": 500,
    "constant": {
@@ -111903,6 +112021,9 @@
    "quality": {
     "base_number_of_crossbow_bolts": 100
    },
+   "alt_quality": {
+    "active_skill_base_area_of_effect_radius": 500
+   },
    "cast_time_ms": 800,
    "constant": {
     "base_number_of_crossbow_bolts": 1,
@@ -112951,6 +113072,9 @@
   "Hailstorm Rounds": {
    "quality": {
     "base_number_of_crossbow_bolts": 250
+   },
+   "alt_quality": {
+    "base_reduce_enemy_cold_resistance_%": 3000
    },
    "cast_time_ms": 1000,
    "constant": {
@@ -115659,6 +115783,9 @@
   "Shockburst Rounds": {
    "quality": {
     "base_number_of_crossbow_bolts": 200
+   },
+   "alt_quality": {
+    "active_skill_area_of_effect_+%_final": 1500
    },
    "cast_time_ms": 1000,
    "constant": {
@@ -132298,6 +132425,9 @@
   "Bloodhound's Mark": {
    "quality": {
     "hunters_mark_%_of_phys_damage_over_time_as_build_up": 2500
+   },
+   "alt_quality": {
+    "active_skill_physical_damage_+%_final": 1000
    },
    "cast_time_ms": 500,
    "constant": {

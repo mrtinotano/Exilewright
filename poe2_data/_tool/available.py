@@ -506,7 +506,10 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
                     del lv[k]
         part_levels = {l: x for l, x in part_levels.items() if x}
     p = proj_by_id.get('metadata/projectiles/' + g['name'].replace(' ', '').replace("'", '').lower())
-    q = next((quality_tab[i] for i in [fx['GrantedEffect'], *fx['AdditionalGrantedEffects'][:1]] if i in quality_tab), {})
+    # the quality of the first of the gem's skills that has one, and the Gemling's of the first that has one (Blasphemy's
+    # is its curses', Bloodhound's Mark's its explosion's)
+    qs = [quality_tab[i] for i in [fx['GrantedEffect'], *fx['AdditionalGrantedEffects']] if i in quality_tab]
+    q = {**next(iter(qs), {}), **next(({'AltStats': x['AltStats'], 'AltStatValuesPermille': x['AltStatValuesPermille']} for x in qs if x.get('AltStats')), {})}
     acts = [active_skills[x['ActiveSkill']] for x in effects if x['ActiveSkill'] is not None]
     prev = skills.get(g['name'])   # one name for several gems (Axe Slash: one hand axes, two axes, two hand axes)
     skills[g['name']] = {
@@ -626,7 +629,14 @@ _tmpl = load('BuffTemplates')
 lesser_shrines = [{'id': r['Id'], 'duration': r['Duration'], 'name': buff_defs[t['BuffDefinition']]['Name'], **tr(load_langs('BuffDefinitions'), t['BuffDefinition']),
                    'stats': {sid(k): x for k, x in zip(buff_defs[t['BuffDefinition']]['Stats'], t['Buff_StatValues']) if x and sid(k) != 'has_shrine_effect'}}
                   for r in load('Shrines') if r['IsLesserShrine'] for t in [_tmpl[r['Player_ShrineBuffsKey']]]]
-save('skills.json', {'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # the bar's Move, on left click by default (the game's icon; no table names it)
+# the stats a gem's quality gives that are modifiers of the kind the tree, gear or a support also give (curse_effect_+%,
+# base_mana_cost_-%, slam_aftershock_chance_%): calc.js counts those with the skill's other modifiers, as a support's
+_support_names = {g['name'] for g in gems if g['kind'] == 'support'}
+_generic = ({sid(m[f'Stat{i}']) for m in mods for i in range(1, 7) if m.get(f'Stat{i}') is not None}
+            | {sid(x) for p in passives for x in p['Stats']}
+            | {k for n in _support_names for d in [skills.get(n) or {}] for k in [*d.get('constant', {}), *(k for lv in d.get('levels', {}).values() for k in lv)]})
+quality_generic = sorted({k for d in skills.values() for q in ('quality', 'alt_quality') for k in d.get(q, {}) if k in _generic})
+save('skills.json', {'quality_generic': quality_generic, 'move_icon': 'Art/2DArt/SkillIcons/iconmoveonly.dds',   # the bar's Move, on left click by default (the game's icon; no table names it)
                      'charge_icons': {c: _buff_icon[c + '_charge'] for c in ('frenzy', 'power', 'endurance')},
                      # the Elemental Infusions you have: their buff's icon and name (BuffDefinitions), in every language
                      'infusions': {e: {'icon': _buff_icon[e + '_infusion'], 'name': buff_defs[k]['Name'], **tr(load_langs('BuffDefinitions'), k)}
