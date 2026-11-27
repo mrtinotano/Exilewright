@@ -15,7 +15,7 @@ import * as THREE from 'three';
 import { t, esc, tn, fmt, cap } from './i18n.js';
 import { K as GAME, enemy, monSkill, addStats, MON_MODS, modStats, mapGround, enemyStats, attackOf, attacksOf, hitChance, hitRaw, playerHitChance, playerTakes, enemyTakes, blockChance, deflection, armourNow } from './enemies.js';
 import { SIM, AILMENT, STATE, GROUND, GROUND_EL, KIND, CHARGE, profile } from './skillfx.js';
-import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem, makeEffigy } from './scenefx.js';
+import { css, createFx, buildArena, ROOM, makeDummy, makeMinion, makeTotem, makeEffigy, makeBanner } from './scenefx.js';
 import { makeHumanoid, clipOf } from './humanoid.js';
 import { settings, keyName, slotKeys, slotName } from './settings.js';
 import { armourItems } from './items.js';
@@ -4799,6 +4799,28 @@ export function initScene(el, api) {
     const T = W?.X.got ? gainAs(S, W.X.got, st['twister_gain_%_elemental_damage_of_corresponding_type']) : S;
     for (let k = 0; k < n; k++) vortex(T, { x: pp.x, z: pp.z }, S.A, durOf(S), { dir: a0 + (k - (n - 1) / 2) * spread, speed: st.twister_base_movement_speed / 10, every: st.twister_hit_interval_ms / 1000, mult });
   };
+  // Banners as the game's (reservation_banners). Defiance Banner (banner_Defensive.ao, aura_defiance.ao): its pennant
+  // quartered grey and dark blue (BannerSkillDefensive_colour) on its pole's wood (BannerSkillPole_colour), unrolling as
+  // it is placed (unroll_01) in dust and rock debris (placeBanner.pet: 0.14 / 0.11 / 0.07, brightened here as the scene's
+  // smoke is unlit; sparks 1 / 0.78 / 0.57), spikes of light at 0.06 s for 0.25 s (placeDefiance_Impact: 0.75 / 0.8 / 1),
+  // a shimmering wave for 1 s and its ring for 0.3 s (0.8 / 0.84 / 1); its Aura a pale blue glow over its area (0.7 / 0.8
+  // / 1) and, at its foot, its sign on the ground and sparks for 0.06-0.75 s (0.5 / 0.61 / 1). note: the counts, speeds
+  // and sizes are the scene's
+  const BANNERS = { 'Defiance Banner': { quarters: ['#6b675f', '#272b37'], trim: '#3e3b34', pole: 0x524638, aura: 0xb3ccff, spark: 0x809cff, flash: 0xbfccff, ring: 0xccd6ff } };
+  function bannerPlace(c, R, L) {
+    const q = { x: c.x, y: .15, z: c.z };
+    fx.emit(14, { p: q, r: .3, v: 2, up: .8, life: .9, size: .4, grow: 1.6, c: 0x4a3a24, smoke: true, a: .45, drag: 2 });
+    fx.emit(8, { p: q, r: .2, v: 2.5, up: 2.5, life: .8, size: .06, c: 0x5c5248, g: 9 }); fx.emit(10, { p: q, r: .2, v: 3, up: 2, life: .6, size: .05, c: 0xffc791, k: 2.2, g: 4 });
+    fx.ring(c, .2, R * .5, L.ring, .3, { a: .5 }); later(.03, () => fx.ring(c, .3, R, L.aura, 1, { a: .15 }));
+    later(.06, () => {
+      fx.glow({ x: c.x, y: 1.4, z: c.z }, .8, L.flash, .25, 2);
+      for (let i = 0; i < 8; i++) { const a = i * TAU / 8; fx.streak(V(c.x, 1.3, c.z), V(c.x + Math.sin(a) * 1.2, 1.3 + rnd(-.5, .8), c.z + Math.cos(a) * 1.2), L.flash, .25, .03, 1.4); }
+    });
+  }
+  function bannerAura(e, L, dt) {
+    if ((e.pulse = (e.pulse || 0) - dt) <= 0) { e.pulse = 1; fx.disc(e.c, e.R, L.aura, 1.1, { a: .03 }); fx.disc(e.c, .9, L.aura, 1.1, { a: .2 }); }
+    if (Math.random() < dt * 20) fx.emit(1, { p: { x: e.c.x, y: .1, z: e.c.z }, r: .6, v: .4, up: 1.2, life: .5, size: .04, c: L.spark, k: 2.4 });
+  }
   // a Banner: placed where you stand for its duration, its Aura granting you its buff while you are within its area
   // (its base_skill_buff_<stat>_to_apply, and Refraction's Refractive Plating), one of each Banner at a time. Refraction
   // III: the enemies in its area have its Exposure per 1000 of your armour, up to 80% (its text)
@@ -4811,12 +4833,17 @@ export function initScene(el, api) {
     const RX = su['support_tempered_valour_banner_applies_%_elemental_exposure_per_1000_armour'];
     const BN = 1 + (S.dmg?.sum?.number_of_additional_banners_allowed || 0), BO = objs.filter(o => o.banner && o.name === S.name && !o.dead);   // the tree's +N placed Banners
     if (!S.dmg?.sum?.unlimited_banners_allowed) BO.slice(0, Math.max(0, BO.length - BN + 1)).forEach(o => o.dead = true);   /* Tactician: any number */
-    const c = { x: pp.x, z: pp.z }, g = holder(c), R = S.A, ring = fx.decal(c, R, 'outline', 'gold', { a: .35, rot: 0 });
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, 3.2), new THREE.MeshStandardMaterial({ color: 0x6a5a3a })); pole.position.y = 1.6;
-    const flag = new THREE.Mesh(new THREE.BoxGeometry(.04, 1.1, .8), new THREE.MeshStandardMaterial({ color: fx.color(S.el === 'physical' ? 'gold' : S.el, 1), emissive: 0x201000 })); flag.position.set(0, 2.5, .42);
-    g.add(pole, flag); fx.ring(c, .2, R, 'gold', .5); say(t('{0} active', S.label), 'gold');
-    thing(g, durOf(S), { name: S.name, banner: give, R, c, off: () => { ring.remove(); const B = sheet().bannerBack, N = gloryNeed(S); if (B) me.glory[S.name] = Math.min(N, (me.glory[S.name] || 0) + N * B / 100); }, tick(dt) {   // the tree's Glory back on its expiry
-      flag.rotation.y = Math.sin(time * 2) * .15;
+    const L = BANNERS[S.name], c = { x: pp.x, z: pp.z }, g = holder(c), R = S.A, ring = fx.decal(c, R, 'outline', L ? L.aura : 'gold', { a: L ? .15 : .35, rot: 0 }), t0 = time;
+    let flag, M;
+    if (L) { M = makeBanner(fx, L); M.group.rotation.y = facing; g.add(M.group); bannerPlace(c, R, L); }
+    else {
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(.04, .05, 3.2), new THREE.MeshStandardMaterial({ color: 0x6a5a3a })); pole.position.y = 1.6;
+      flag = new THREE.Mesh(new THREE.BoxGeometry(.04, 1.1, .8), new THREE.MeshStandardMaterial({ color: fx.color(S.el === 'physical' ? 'gold' : S.el, 1), emissive: 0x201000 })); flag.position.set(0, 2.5, .42);
+      g.add(pole, flag); fx.ring(c, .2, R, 'gold', .5);
+    }
+    say(t('{0} active', S.label), 'gold');
+    const e = thing(g, durOf(S), { name: S.name, banner: give, R, c, off: () => { ring.remove(); M?.dispose(); const B = sheet().bannerBack, N = gloryNeed(S); if (B) me.glory[S.name] = Math.min(N, (me.glory[S.name] || 0) + N * B / 100); }, tick(dt) {   // the tree's Glory back on its expiry
+      if (L) { M.hang.scale.y = Math.min(1, (time - t0) / .4); M.hang.rotation.x = Math.sin(time * 2) * .05; bannerAura(e, L, dt); } else flag.rotation.y = Math.sin(time * 2) * .15;   // its pennant unrolls (unroll_01)
       if (RX) { const x = Math.min(80, RX * Math.floor(withCharms(sheet()).armour / 1000)); if (x) for (const d of inside(c, R)) expo(d, ELEM, x, .5); } } });
   };
   // Leylines: while it is on, a leyline of its ground units (its least distance apart) across its reveal radius around
@@ -5029,7 +5056,7 @@ export function initScene(el, api) {
   // Align Fate: while it is on, a visage of you every its delay (more often per Spell it could cast, and by your cooldown
   // recovery) casts one of your Spells (by hand, not channelled, without a cooldown) at the nearest enemy; casting that
   // Spell yourself before the next visage Empowers it for its more damage (use)
-  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence', 'Crackling Palm']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
+  const NOMARK = new Set(["Alchemist's Boon", 'Align Fate', 'Archmage', 'Arctic Armour', 'Attrition', 'Azmerian Swarms', 'Barkskin', 'Berserk', 'Black Powder Blitz', 'Blasphemy', 'Blink', 'Blood Boil', 'Called Shots', 'Charge Regulation', 'Combat Frenzy', 'Convalescence', 'Crackling Palm', 'Defiance Banner']);   // persistent skills with nothing of theirs on you in the game (K.toggle)
   const SILENT = new Set(['Attrition', 'Azmerian Swarms', 'Azmerian Wolf', 'Barkskin', 'Berserk', 'Cackling Companions', 'Called Shots', 'Spectre: {0}']);   // persistent skills with no flash of theirs as they are turned on (K.toggle)
   // Animus Splinters' cost: Runic Ward, its share of the total base costs of the skills socketed in it
   // (meta_skill_base_costs_equals_%...; its CostTypes: Ward). note: those skills' costs as the build has them

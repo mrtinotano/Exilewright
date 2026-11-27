@@ -666,6 +666,26 @@ export function makeEffigy(fx, c) {
   return { group: g, draw: P.draw, dispose() { g.parent?.remove(g); eyes.forEach(o => o.traverse(m => m.material?.dispose())); P.dispose(); } };
 }
 
+// A Banner as the game's (Art/Models/Effects/BannerSkill, 2.2 m): a pole with a crossbar, its 0.74 m pennant hanging
+// from it, quartered in the banner's colours with a trim and a fringe (L: its look, the means of its textures)
+export function makeBanner(fx, L) {
+  const g = new THREE.Group(), wood = std(L.pole, .85, .2);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(.035, .045, 2.2, 6), wood); pole.position.y = 1.1;
+  const bar = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .86, 6), wood); bar.rotation.z = Math.PI / 2; bar.position.set(0, 2.02, .05);
+  const map = tex(128, 256, (c, w, h) => {
+    const cut = h * .72, mid = h * .4;
+    c.beginPath(); c.moveTo(0, 0); c.lineTo(w, 0); c.lineTo(w, cut); c.lineTo(w / 2, h * .94); c.lineTo(0, cut); c.closePath(); c.save(); c.clip();
+    const q = (x, y, ww, hh, col) => { c.fillStyle = col; c.fillRect(x, y, ww, hh); };
+    q(0, 0, w / 2, mid, L.quarters[0]); q(w / 2, 0, w / 2, mid, L.quarters[1]); q(0, mid, w / 2, h, L.quarters[1]); q(w / 2, mid, w / 2, h, L.quarters[0]);
+    c.restore(); c.strokeStyle = L.trim; c.lineWidth = 6; c.stroke();
+    c.lineWidth = 2; for (let x = 4; x < w; x += 6) { const y0 = x < w / 2 ? cut + (h * .94 - cut) * x / (w / 2) : cut + (h * .94 - cut) * (w - x) / (w / 2); c.beginPath(); c.moveTo(x, y0); c.lineTo(x, y0 + h * .06); c.stroke(); }
+  });
+  const flag = new THREE.Mesh(new THREE.PlaneGeometry(.74, 1.48), new THREE.MeshStandardMaterial({ map, transparent: true, alphaTest: .5, side: THREE.DoubleSide, roughness: .9 }));
+  const hang = new THREE.Group(); hang.position.set(0, 2.0, .07); flag.position.y = -.74; hang.add(flag);
+  g.add(pole, bar, hang); shadow(g);
+  return { group: g, hang, dispose() { g.parent?.remove(g); map.dispose(); flag.material.dispose(); } };
+}
+
 export function makeTotem(fx, c, ballista, up) {   // up: an upward ballista (Artillery Ballista), its bow raised on a round base
   const M = mats(), g = new THREE.Group();
   const mesh = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); g.add(o); return o; };
