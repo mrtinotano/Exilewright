@@ -3015,10 +3015,6 @@ export function initScene(el, api) {
   // 1, lightning 0.15 / 0.24 / 1). note: its ring's width and height, how fast its embers rise and its ribbons' rate are the scene's
   const ESTORM = { fire: { core: 0xff5e1a, hi: 0xffb89c, ribbon: 0xff5e1a, wave: 0xff5e1a }, cold: { core: 0x80b3ff, hi: 0xc9deff, ribbon: 0x808cff, wave: 0x66a3ff },
     lightning: { core: 0x1a30ff, hi: 0x9ca6ff, ribbon: 0x6666ff, wave: 0x263dff, bolt: true } };
-  function stormStart(el, c, R) {
-    const L = ESTORM[el];
-    later(.35, () => { fx.ring(c, R * .2, R, L.wave, .5, { a: .7 }); fx.glow({ x: c.x, y: .6, z: c.z }, R * .8, L.wave, .5, 2.2); });
-  }
   const STORM_ARC = new THREE.TorusGeometry(1, .09, 6, 32, 2.4).rotateX(Math.PI / 2);
   // its storm is a ring round its area spinning low over the ground (as the game's): its core's torn rings (8, each
   // spinning and fading in and out over its life, at its own radius and height in the ring) and its 128 embers circling it,
@@ -3033,11 +3029,11 @@ export function initScene(el, api) {
     const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size: .09, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
     pts.userData.own = true; g.add(pts);
-    return { arcs, em, pos, col, geo, R, c: fx.color(L.core, 2) };
+    return { arcs, em, pos, col, geo, R, L, c: fx.color(L.core, 2) };
   }
   function stormArc(A, R) { const r = R * rnd(.7, 1); A.m.position.y = rnd(.15, .6); A.m.scale.set(r, rnd(.8, 1.6), r); A.m.rotation.y = rnd(TAU); }
-  function stormLook(el, c, s, dt, B) {
-    const L = ESTORM[el], R = B.R;
+  function stormLook(c, dt, B) {
+    const { L, R } = B;
     for (const A of B.arcs) {
       if ((A.age += dt) > A.life) { A.age = 0; A.life = rnd(1.2, 1.5); stormArc(A, R); }
       A.m.rotation.y -= TAU * dt; A.m.material.opacity = Math.sin(Math.PI * A.age / A.life) * .5;
@@ -3062,9 +3058,9 @@ export function initScene(el, api) {
     if (!D || !spend({ id: 'Elemental Storm', cooldown: D.cooldown, uses: D.uses })) return;
     const T = asTrig(S, { ...D, id: 'Elemental Storm' }), X = partOf(T, `ElementalStorm${cap(el)}Player`); if (!X) return;
     const c = { x: d.pos.x, z: d.pos.z }, st = D.stats; let tk = 0;
-    stormStart(el, c, T.A);
-    const g = holder(c), B = stormBody(el, g, T.A);
-    thing(g, st.base_skill_effect_duration / 1000, { tick(dt, e) { stormLook(el, c, e.s, dt, B); if ((tk -= dt) <= 0) { tk = st.tornado_base_damage_interval_ms / 1000; area(c, T.A, X); } } });
+    const g = holder(c), B = stormBody(el, g, T.A), W = B.L.wave;
+    later(.35, () => { fx.ring(c, T.A * .2, T.A, W, .5, { a: .7 }); fx.glow({ x: c.x, y: .6, z: c.z }, T.A * .8, W, .5, 2.2); });   // its wave as it starts
+    thing(g, st.base_skill_effect_duration / 1000, { tick(dt) { stormLook(c, dt, B); if ((tk -= dt) <= 0) { tk = st.tornado_base_damage_interval_ms / 1000; area(c, T.A, X); } } });
   }
   // Bursting Fen Toad's toad (exploding_poison_toad: Murkshaft UniqueExplodingToadHeld, GiantUglyToadCritter): it
   // emerges, hops at 0.79, 1.25 and 1.8 s and bursts at 2.1 s (its animation's hop and contact events), swelling first
@@ -4351,9 +4347,50 @@ export function initScene(el, api) {
       if (P.from) { const q = objs.find(o => o.proj && o.name === P.from && !o.dead); if (q) { c = { x: q.pos.x, z: q.pos.z }; say(t('{0} erupts from {1}', S.label, labelOf(P.from)), S.el); } }
       const R = stageR(S), dur = Math.min(.5, .12 + R * .045);
       if (S.name === 'Consecrate') { consecrate(c, R); ground('consecrated', c, R, durOf(S), S); return; }   // only its ground, for its duration
-      // Elemental Sundering: its pulse deals nothing; it Consumes the Freeze, Shock and Ignite of the enemies in it, nearest
+      // Elemental Sundering's look (spear_extract_elements; its tutorial video). Where the spear is plunged (spear_surge,
+  // ground_decal): its ribbons for 0.8-0.9 s from 0.3 s (fire 1 / 0.47 / 0.08, cold, lightning), cracked glowing ground for
+  // 2 s (1 / 0.48 / 0.1), a flash of spikes for 0.2 s (0.65 / 0.79 / 1), rocks for 2-4 s, dust for 0.8-1.6 s, bolts for
+  // 0.15-0.55 s and 64 embers for 1.5-2 s; its pulse (ground_wave) a ring for 0.4 s (1 / 0.51 / 0.15 through 0.15 / 0.24 /
+  // 1) and cold smoke for 1 s from 0.1 s (0.36 / 0.4 / 0.46). Each ailment it consumes charges the enemy (charge_X: a glow
+  // for 1 s and 16 ribbons for 1-1.1 s; fire 1 / 0.37 / 0.1, cold 0.7 / 0.82 / 1, lightning 0.15 / 0.24 / 1), then it
+  // explodes (explosion_X, lightning's elemental_discharge lightning_aoe): a flash for 0.15 s, a wave for 0.45-0.5 s, a ring
+  // for 0.3 s and a sphere for 0.5 s, cold with 128 flakes of snow for 1.5-2.5 s, fire with 128 sparks for 1-2 s, lightning
+  // with 64 sparks for 1.5-3 s and 32 bolts dropping for 0.15-0.55 s. note: the explosion at the end of its 1 s charge, as
+  // in the video (the data gives no delay: the ailment is kept meanwhile, elemental_sundering_pause_ailment); counts per
+  // second, sizes and speeds are the scene's
+  const SUND = { fire: { glow: 0xff5e1a, ribbon: 0xff7814, flash: 0xff7033, ring: 0xff8f26, spark: 0xff4714 }, cold: { glow: 0xb3d1ff, ribbon: 0xb3d1ff, flash: 0x99c2ff, ring: 0xb3d1ff, spark: 0xe0edff },
+    lightning: { glow: 0x263dff, ribbon: 0x263dff, flash: 0x2129ff, ring: 0x333bff, spark: 0x99a6ff, bolt: 0x404dff }, ground: 0xff7a1a, spike: 0xa6c9ff, smoke: 0x5c6675, wave: 0xff8226 };
+  function sunderPulse(c, R) {
+    const q = { x: c.x, y: .3, z: c.z };
+    later(.3, () => { for (const el of ['fire', 'cold', 'lightning']) fx.emit(2, { p: q, r: .1, v: 1, up: 3, life: rnd(.8, .9), size: .2, c: SUND[el].ribbon, c2: 'white', k: 2.2, drag: 2 }); });
+    fx.disc(c, 1.2, SUND.ground, 2, { tex: 'cracks', a: .8, hold: .5, k: 1.4 });
+    later(.05, () => fx.spikes(c, .6, { n: 7, h: .7, w: .06, c: SUND.spike, dur: .2 }));
+    fx.emit(8, { p: q, r: .2, v: 2.5, up: 4, life: rnd(2, 4), size: .1, c: 'dust', c2: 0x6b5f50, g: 12, drag: .5, k: 1 });
+    fx.emit(8, { p: { x: c.x, y: .1, z: c.z }, r: .3, v: 1.2, up: .8, life: rnd(.8, 1.6), size: .8, grow: 2, c: 'dust', smoke: true, a: .4, drag: 1.2 });
+    for (let i = 0; i < 4; i++) { const a = rnd(TAU); fx.bolt(V(c.x, .1, c.z), V(c.x + Math.cos(a) * rnd(.4, 1), rnd(.1, .6), c.z + Math.sin(a) * rnd(.4, 1)), SUND.lightning.bolt, rnd(.15, .55), .02, .2); }
+    fx.emit(64, { p: q, r: .2, v: 2, up: 2, life: rnd(1.5, 2), size: .04, c: SUND.ground, c2: 'white', k: 2.4, drag: 1.5 });
+    fx.ring(c, .3, R, SUND.wave, .4, { a: .8 }); fx.ring(c, .2, R * .9, SUND.lightning.glow, .4, { a: .5 });
+    later(.1, () => fx.emit(6, { p: { x: c.x, y: .15, z: c.z }, r: R * .5, v: R, life: 1, size: 1.2, grow: 1.8, c: SUND.smoke, smoke: true, a: .3, drag: 1.5, flat: true }));
+  }
+  function sunderCharge(d, el) {
+    const L = SUND[el];
+    fx.glow(chest(d), .7, L.glow, 1, 2);
+    for (let i = 0; i < 16; i++) later(i / 16, () => { if (!d.dead) fx.emit(1, { p: chest(d), r: .35, v: .6, up: 1.2, life: rnd(1, 1.1) * .5, size: .16, c: L.ribbon, c2: 'white', k: 2.4, drag: 2 }); });
+  }
+  function sunderBlast(p, R, el) {
+    const L = SUND[el], q = { x: p.x, y: .6, z: p.z };
+    fx.glow(q, R * .9, L.flash, .15, 3); fx.flash(q, L.flash, 30 + R * 12, .3, 8 + R * 3); shake = Math.max(shake, Math.min(.35, R * .1));
+    fx.ring(p, R * .2, R, L.ring, .5, { a: .8 }); later(.05, () => fx.ring(p, .1, R * .7, L.ring, .3, { k: 2.6 })); fx.ball(q, R * .45, L.glow, .5, 2);
+    if (el === 'cold') fx.emit(128, { p: q, r: R * .4, v: R * 1.5, up: 1, life: rnd(1.5, 2.5), size: .05, c: L.spark, c2: 'white', g: 1, drag: 1.5 });
+    else if (el === 'fire') later(.05, () => fx.emit(128, { p: q, r: .2, v: R * 3, up: 2.5, life: rnd(1, 2), size: .04, c: L.spark, c2: 'white', k: 2.6, g: 5, drag: 1.5 }));
+    else {
+      fx.emit(64, { p: q, r: .3, v: R * 2, up: 1.5, life: rnd(1.5, 3), size: .04, c: L.spark, c2: 'white', k: 2.4, drag: 1.5 });
+      for (let i = 0; i < 12; i++) later(rnd(.2), () => { const a = rnd(TAU), r = R * rnd(.1, .9), x = p.x + Math.cos(a) * r, z = p.z + Math.sin(a) * r; fx.bolt(V(x, rnd(2, 3), z), V(x, .05, z), L.bolt, rnd(.15, .55), .03, .25); });
+    }
+  }
+  // Elemental Sundering: its pulse deals nothing; it Consumes the Freeze, Shock and Ignite of the enemies in it, nearest
       // first, each an explosion of that element around the enemy (the cold one the gem's, the others its parts), up to its
-      // most, with its more damage from a Unique
+      // most, with its more damage from a Unique; each ailment is kept while the enemy charges and consumed as it explodes
       // note: its pulse's radius is PoB2's (Skills/act_dex.lua ElementalSunderingPlayer "Pulse": 50), scaled as its explosion's;
       // the ailments of allies and corpses are not in the scene
       // Bone Cage: its ring of bone spikes around you (up to its rings, a new one ends the last) for its duration; a spike an
@@ -4390,11 +4427,12 @@ export function initScene(el, api) {
       const ES = S.dmg?.stats?.elemental_sundering_number_of_explosion_allowed;
       if (ES) {
         const st = S.dmg.stats, pr = 5 * S.A / (st.active_skill_base_area_of_effect_radius / 10), by = { freeze: S, ignite: partOf(S, 'ElementalSunderingFirePlayer'), shock: partOf(S, 'ElementalSunderingLightningPlayer') };
-        fx.ring(c, .3, pr, S.el, .4, { a: .6 }); let n = ES;
+        sunderPulse(c, pr); let n = ES;
         for (const d of inside(c, pr).sort((p, q) => dist(p.pos, c) - dist(q.pos, c))) for (const s of ['freeze', 'shock', 'ignite']) if (n > 0 && has(d, s)) {
-          n--; consume(d, S, s);
-          const X = by[s], p = { x: d.pos.x, z: d.pos.z }, gm = uniqueMore(d, st['elemental_sundering_damage_+%_final_if_created_from_unique']);
-          later(.1, () => { pop(p, X.A, X.el); boom(p, X.A, { ...X, gm: (X.gm ?? 1) * gm }, { noPay: true }); });
+          n--; d.st[s] = Math.max(d.st[s], 1.05);   // kept while it charges (elemental_sundering_pause_ailment), consumed as it explodes
+          const X = by[s], el = { freeze: 'cold', shock: 'lightning', ignite: 'fire' }[s], gm = uniqueMore(d, st['elemental_sundering_damage_+%_final_if_created_from_unique']);
+          sunderCharge(d, el);
+          later(1, () => { consume(d, S, s); const p = { x: d.pos.x, z: d.pos.z }; sunderBlast(p, X.A, el); area(p, X.A, { ...X, gm: (X.gm ?? 1) * gm }, { noPay: true }); });   // where the enemy is by then
         }
         return;
       }
