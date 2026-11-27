@@ -2,11 +2,11 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, esc, tn, fmt, lang, kwPlain, kwHtml } from './i18n.js';
-import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport, condKey, GEM, gemName, subsOf, subDamage } from './calc.js';
+import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, condKey, GEM, gemName, subsOf, subDamage, typeSets, fitsGem } from './calc.js';
 import { BINDABLE, enemy } from './enemies.js';
 // a bindable monster as the picker lists it: varieties of one name (their skills differ) by the tail of their game id
 const spLabel = m => m ? m.variant ? `${m.name} (${m.variant})` : m.name : '';
-export { canSupport, GEM };
+export { GEM };
 import { shownLines } from './stats.js';
 import { dpsDiff, impactLine } from './impact.js';
 import { SK } from './skilldata.js';
@@ -36,7 +36,7 @@ function condRows(s, b, sum) {
   const by = new Map();
   for (const w of s.when || []) {
     if (!w.cond.every(c => /^(?:Actor)?Condition$|^Multiplier/.test(c.type))) continue;   // a buff's, a distance's: calc.js never counts them
-    let lines = w.gem && GEM[w.gem] ? [`${tn(GEM[w.gem])}: ${supportText(GEM[w.gem])}`] : w.stat ? shownLines({ [w.stat]: w.val }) : [];   // a support's: its description (its stats have no text)
+    let lines = w.gem && GEM[w.gem] ? [`${tn(GEM[w.gem])}: ${supportText(GEM[w.gem])}`] : w.stat ? shownLines({ [w.stat]: w.val }, w.skill) : [];   // a support's: its description (its stats have no text); a skill's own stat: its .csd text (w.skill)
     if (!lines.length && w.stat) lines = shownLines(Object.fromEntries(Object.entries(sum).filter(([k]) => k.endsWith(w.stat))));   // inc()'s families: the build's own stats of it
     for (const c of w.cond) { const k = condKey(c); if (!by.has(k)) by.set(k, new Set()); lines.forEach(l => by.get(k).add(l)); }
   }
@@ -88,7 +88,7 @@ function details(g, b, sum, geo, view) {
     ${(c => c ? `<h4>${t('Conditions')}</h4><p class="note">${t('Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.')}</p><div class="conds">${c}</div>` : '')(condRows(s, b, sum))}
     ${sub ? '' : sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]]) + sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
-      SK.skills[g.name]?.duration_ms && ['Duration', fmt(SK.skills[g.name].duration_ms / 1000, 2) + ' s'],
+      (s.shape?.duration || SK.skills[g.name]?.duration_ms) && ['Duration', fmt(s.shape?.duration || SK.skills[g.name].duration_ms / 1000, 2) + ' s'],   // with its modifiers and the charges it consumes (Conditions)
       geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
     ])}
     ${T ? sec('Totem', [
@@ -121,7 +121,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
       const sups = g.supports.map(n => n && GEM[n]);
       if (!holder) sups.forEach(s => s && colour(s) && used[colour(s)]++);
       const own = held[0] || g;   // a meta gem's supports are for the skill in it: its types say which fit
-      const types = new Set([...(GEM[own.name].types || []), ...(held[0] ? GEM[g.name].holds?.adds || [] : []), ...sups.flatMap(s => s?.adds || [])]);   // and those the meta gem gives it
+      const types = typeSets(own.name, [...(held[0] ? GEM[g.name].holds?.adds || [] : []), ...sups.flatMap(s => s?.adds || [])]);   // its skills', and the types the meta gem gives it
       // a skill put in a meta gem (Mortar Cannon's Cluster Grenade): the meta gem's sockets and supports are its own
       // Bind Spectre: the monster whose spirit it holds (the game's: bound from a corpse, the gem then "Spectre: <monster>")
       const spec = g.name === 'Bind Spectre' || g.spectre ? `<label class="smeta">${t('Its monster')} <input list="spectreNames" data-gi="${gi}" data-k="spectre" value="${esc(spLabel(enemy(g.spectre)))}" placeholder="${t('Search enemy…')}"></label>` : '';
@@ -136,7 +136,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
       if (open?.[0] === gi) {   // only supports this skill can take, with icon, what they do and what they would do to its DPS
         const gain = name => { const supports = [...g.supports]; supports[open[1]] = name; return impactLine(dpsDiff(skill(own, b, sum).dps, skill({ ...own, supports }, b, sum).dps)); };
         const fams = new Set(sups.flatMap((s, i) => s && i !== open[1] ? s.family : []));
-        const opts = SUPPORTS.filter(s => canSupport(s, types) && !s.family.some(f => fams.has(f)))
+        const opts = SUPPORTS.filter(s => fitsGem(s, types) && !s.family.some(f => fams.has(f)))
           .sort((x, y) => tn(x).localeCompare(tn(y)));
         const item = s => {
           const c = colour(s), what = supportText(s) || gemLines(s.name, 1).join(' · ');

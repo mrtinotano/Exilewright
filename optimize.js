@@ -3,10 +3,10 @@
 // what the calculation (calc.js) says is best, so they only see what the planner calculates: a passive or support
 // whose effect is conditional or not modelled counts as nothing.
 // No DOM here: optview.js is the screen, app.js owns the build.
-import { skill, character, attributes, supportKnown, metaAdds, subDamage, dotSum } from './calc.js';
+import { skill, character, attributes, supportKnown, metaAdds, subDamage, dotSum, typeSets, fitsGem } from './calc.js';
 import { typical, hitChanceExact, playerTakes, K, TYPES } from './enemies.js';
 import { SK } from './skilldata.js';
-import { GEM, SUPPORTS, colour, canSupport } from './skills.js';
+import { GEM, SUPPORTS, colour } from './skills.js';
 
 // ---------- objectives
 // skill: needs a skill of the build. dec: decimals when shown. unit: printed after the number
@@ -175,8 +175,8 @@ export async function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets
   const f = names => score(key, b, sum, { ...g, supports: names });
   const base = f([]);
   if (base == null) return { error: skill({ ...g, supports: [] }, b, sum).reason || 'This skill does not deal direct damage' };
-  const types = new Set([...G.types || [], ...metaAdds(b, g)]);   // in a meta gem, also the types it gives the skill
-  const fit = SUPPORTS.filter(s => canSupport(s, types) && (lineage || !s.lineage) && (limited || !limitsUse(s.name)));
+  const types = typeSets(g.name, metaAdds(b, g));   // each of its skills', in a meta gem with the types it gives the skill
+  const fit = SUPPORTS.filter(s => fitsGem(s, types) && (lineage || !s.lineage) && (limited || !limitsUse(s.name)));
   const known = fit.filter(s => supportKnown(s.name));
   let at = performance.now();
   const rate = async lists => {
@@ -202,8 +202,8 @@ export async function bestSupports({ b, g, sum, key = 'dps', sockets = g.sockets
   const list = [], names = [], used = new Set(), need = { str: 0, dex: 0, int: 0 };
   const walk = from => {
     if (names.length) {
-      const all = new Set([...types, ...names.flatMap(n => GEM[n].adds || [])]);   // a support may change the skill's types for the others
-      if (all.size === types.size || names.every(n => canSupport(GEM[n], all))) list.push([...names]);
+      const more = n => names.flatMap(m => m === n ? [] : GEM[m].adds || []);   // a support may change the skill's types for the others
+      if (names.every(n => !more(n).length || fitsGem(GEM[n], types.map(T => new Set([...T, ...more(n)]))))) list.push([...names]);
     }
     if (names.length >= sockets) return;
     for (let i = from; i < top.length; i++) {
