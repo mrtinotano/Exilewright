@@ -3005,6 +3005,29 @@ export function initScene(el, api) {
       later(.22, () => fx.ring(p, .2, R * .8, L.bolt, rnd(.09, .25), { a: .7, y: .5 }));
     }
   }
+  // Ember Fusillade's look (fire_blazingcluster: projectile.ao, projectile_explosion.ao, ember_target_marker.epk,
+  // infusion_lightning.epk; no tutorial video). Casting, fire flows in your hand for 0.51 s (blazing_cluster.atl
+  // L_Flow_Fire, surgeChargingCore). Each Ember is summoned in strings for 0.15-0.45 s (1 / 0.67 / 0.3), then waits a core
+  // (1 / 0.4 / 0.14) in idle flames for 0.5-0.8 s (1 / 0.43 / 0.11) and sparks for 0.5-1.25 s (1 / 0.67 / 0.3); as it
+  // fires it leaves flames for 0.25-0.75 s and sparks for 0.25-1.25 s (clusterEnd), its target marked (a ring for 0.15 s
+  // from 0.15 s and 4 ribbons spiralling in for 0.3-0.6 s, 1 / 0.35 / 0.07) and it flies trailing its ribbon (1 / 0.54 /
+  // 0.17) and sparks; with a Lightning Infusion, bolts for 0.15-0.5 s (0.1 / 0.15 / 1) and a blue glow (0.1 / 0.19 / 1). Its
+  // impact: flames for 0.2-0.6 s (1 / 0.38 / 0.11), sparks for 0.35-1.25 s and strings for 0.35-0.9 s, a burst sphere for
+  // 0.35 s (its emissive 82 / 28.33 / 5.33) and a ring for 0.28 s from 0.05 s. note: where each Ember waits over you, the
+  // counts, sizes and speeds are the scene's
+  const EMB = { core: 0xff6624, string: 0xffab4d, flame: 0xff6e1c, ribbon: 0xff8a2b, mark: 0xff5912, burst: 0xff5811, impact: 0xff611c, bolt: 0x1a26ff, glow: 0x1a30ff };
+  const emberAt = (F, i) => { const a = i * 1.3 + F.g.rotation.y; return V(pp.x + Math.sin(a) * .8, 2.4 + (i % 3) * .15, pp.z + Math.cos(a) * .8); };
+  function emberMark(d) {
+    const q = chest(d);
+    later(.15, () => fx.ring(d.pos, .1, .6, EMB.mark, .15, { a: .8, y: q.y }));
+    fx.emit(4, { p: q, r: .6, v: -1.6, life: rnd(.3, .6), size: .1, c: EMB.mark, c2: 'white', k: 2.2, drag: 1 });
+  }
+  function emberHit(p, R) {
+    const q = { x: p.x, y: .4, z: p.z };
+    fx.emit(10, { p: q, r: R * .3, v: .8, up: 1.4, life: rnd(.2, .6), size: .35, grow: 1.6, c: EMB.impact, c2: EMB.string, k: 2.2, drag: 1 });
+    later(.05, () => { fx.emit(32, { p: q, r: .15, v: R * 3, up: 2, life: rnd(.35, 1.25), size: .04, c: EMB.string, c2: 'white', k: 2.6, g: 5, drag: 1.5 }); fx.emit(8, { p: q, r: .1, v: R * 2.5, up: 1, life: rnd(.35, .9), size: .06, c: EMB.string, k: 2.4, drag: 2.5 }); });
+    fx.ball(q, R * .4, EMB.burst, .35, 2.2); later(.05, () => fx.ring(p, R * .3, R, EMB.burst, .28, { a: .7 }));
+  }
   // Elemental Expression's look (its elemental_strike effects, with the Invoker's materials; no tutorial video). Fiery
   // Explosion (fire_explode.ao, midline.pet): a flash for 0.12 s, a column of flame for 0.6 s (1 / 0.58 / 0.16), tufts of
   // flame for 0.4-0.8 s, a ring of dark smoke for 1.25-1.75 s, 128 sparks for 0.15-0.55 s and more for 1.5-2.5 s (1 / 0.28 /
@@ -4876,22 +4899,29 @@ export function initScene(el, api) {
         const g = new THREE.Group();
         F = fus[S.name] = { g, n: 0, beam: false, e: thing(g, Infinity, { name: S.name, tick(dt, e) {
           g.position.set(pp.x, 0, pp.z); g.rotation.y += dt * 1.5;
+          for (let i = 0; i < F.n; i++) if (Math.random() < dt * 6) { const q = emberAt(F, i); fx.emit(1, { p: q, r: .06, v: .2, up: .6, life: rnd(.5, .8), size: .16, c: EMB.flame, c2: EMB.string, k: 2.2, drag: 1 }); if (Math.random() < .5) fx.emit(1, { p: q, r: .05, v: .5, up: .4, life: rnd(.5, 1.25), size: .03, c: EMB.string, c2: 'white', k: 2.4, drag: 1 }); }   // its idle flames and sparks
           if (time < F.at) return; e.dead = true;
           const first = near(F.at0, SIM.snap) || near(pp, SIM.castRange), seen = new Set(), every = (st.blazing_cluster_delay_between_projectiles_ms || 100) / 1000, R2 = (st.blazing_cluster_subsequent_targeting_radius || 0) / 10;
-          const X = F.beam && partOf(F.S, 'EmberFusilladeBeamPlayer');
+          const X = F.beam && partOf(F.S, 'EmberFusilladeBeamPlayer'), at = Array.from({ length: F.n }, (_, i) => emberAt(F, i));
           for (let k = 0; k < F.n; k++) later(k * every, () => {
-            const d = k && first ? dummies.find(e => !e.dead && !seen.has(e) && dist(e.pos, first.pos) <= R2) || first : first; if (d) seen.add(d);
-            const to = d ? { x: d.pos.x, z: d.pos.z } : around(pp, 4), Y = { ...F.S, mult: F.S.mult * (1 + (st['ember_fusillade_damage_+%_final_per_ember_fired'] || 0) * k / 100) };
-            lob(fx.orb('fire', .16), V(pp.x, 2.4, pp.z), V(to.x, .2, to.z), .35, 1.2, () => {
-              boom(to, S.A, Y);
+            const d = k && first ? dummies.find(e => !e.dead && !seen.has(e) && dist(e.pos, first.pos) <= R2) || first : first; if (d) { seen.add(d); emberMark(d); }
+            const to = d ? { x: d.pos.x, z: d.pos.z } : around(pp, 4), Y = { ...F.S, mult: F.S.mult * (1 + (st['ember_fusillade_damage_+%_final_per_ember_fired'] || 0) * k / 100) }, from = at[k];
+            fx.emit(6, { p: from, r: .1, v: .6, up: .5, life: rnd(.25, .75), size: .2, c: EMB.flame, c2: EMB.string, k: 2.2, drag: 1 }); fx.emit(10, { p: from, r: .05, v: 1.2, up: .5, life: rnd(.25, 1.25), size: .03, c: EMB.string, c2: 'white', k: 2.4, drag: 1.5 });   // as it leaves
+            const m = fx.orb(F.beam ? EMB.glow : EMB.core, .16);
+            lob(m, from, V(to.x, .2, to.z), .35, 1.2, () => {
+              emberHit(to, S.A); area(to, S.A, Y);
               const e2 = X && near(to, 6); if (e2) chain(V(to.x, 1, to.z), e2, X, sh(X).chains || 0);
-            }, { trail: 'fire' });
+            }, { trail: EMB.ribbon, each() { if (Math.random() < .5) fx.emit(1, { p: m.position, r: .05, v: .4, life: rnd(.5, 1.25), size: .03, c: EMB.string, c2: 'white', k: 2.4, drag: 1 });
+              if (F.beam && Math.random() < .3) fx.bolt(m.position.clone(), m.position.clone().add(V(rnd(-.4, .4), rnd(-.4, .4), rnd(-.4, .4))), EMB.bolt, rnd(.15, .5), .02, .15); } });
           });
         } }) };
       }
       if (F.n < (st.blazing_cluster_maximum_number_of_projectiles_allowed || 1)) {
-        const m = fx.orb('fire', .16), a = F.n * 1.3; m.position.set(Math.sin(a) * .8, 2.4 + (F.n % 3) * .15, Math.cos(a) * .8); F.g.add(m); F.n++;
+        const m = fx.orb(EMB.core, .16), a = F.n * 1.3; m.position.set(Math.sin(a) * .8, 2.4 + (F.n % 3) * .15, Math.cos(a) * .8); m.visible = false; F.g.add(m);
+        const H = hand(), q = emberAt(F, F.n); fx.streak(H, q, EMB.string, rnd(.15, .45), .02, .6); later(.125, () => { m.visible = true; fx.emit(6, { p: q, r: .2, v: -.8, life: rnd(.3, .6), size: .2, c: EMB.flame, c2: EMB.string, k: 2.2, drag: 1 }); });   // summoned in its strings
+        F.n++;
       }
+      fx.glow(hand(), .5, EMB.flame, .51, 2.2);   // fire flowing in your hand
       F.at = time + (sh(S).duration || 1.3); F.at0 = { x: S.at.x, z: S.at.z }; F.S = S; if (S.infs?.includes('lightning')) F.beam = true;
     },
     // Snap: consumes the freeze, shock or ignite of the enemy at the cursor for a blast of that element (its cold hit, or
