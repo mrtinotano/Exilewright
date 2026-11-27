@@ -107656,6 +107656,212 @@
     "c": [
      "10"
     ],
+    "t": "[Warcry|Kriegsschrei]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Warcry|Kriegsschrei]-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Warcry|Kriegsschrei]-Dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Warcry|Kriegsschrei]-Dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_duration_+%_final_per_removable_endurance_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d}% verlängerte [Warcry|Kriegsschrei]-Dauer pro verbrauchter [Charges|Widerstands-Ladung]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verbraucht alle [Charges|Widerstands-Ladungen], um die [Warcry|Kriegsschrei]-Dauer um {0}% pro Ladung zu verlängern",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_non_skill_physical_to_fire_convert_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Teil des in [Fire|Feuer]schaden [Conversion|umgewandelten] [Physical|physischen] Schadens@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Conversion|Wandelt] {0}% des [Physical|physischen Schadens] von [AncestralBoost|durch Ahnen verstärkten] [Attack|Angriffen] in [Fire|Feuer]schaden um",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_triggers_shockwave_every_X_units_travelled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Trigger|Löst] jeden {0} zurückgelegten Meter 'Vulkanische Schritte' aus",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|Löst] alle {0} zurückgelegten Meter 'Vulkanische Schritte' aus",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Wirkungsradius@{0}m",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_non_skill_physical_to_fire_convert_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Conversion|Umwandlung] von [Physical|physischem] in [Fire|Feuer]schaden@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Conversion|Wandelt] {0}% des [Physical|physischen] Schadens in [Fire|Feuer]schaden um",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "[Slam|Hieb]radius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -107890,6 +108096,88 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer der Apokalypse beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer der Apokalypse beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_the_elements_base_trigger_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "-1000",
+     "gem_quality"
+    ],
+    "t": "{0:-d} Sekunde zwischen den [Trigger|Auslösungen]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:-d} Sekunden zwischen den [Trigger|Auslösungen]",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Trigger|Löst] jede {0} Sekunde eine von drei Katastrophen aus",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|Löst] alle {0} Sekunden eine von drei Katastrophen aus",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -107966,6 +108254,66 @@
     ],
     "t": "Hagelsturm erzeugt {0} Eisbrocken",
     "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Blitzeinschlag-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Blitzeinschlag-Radius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -108232,6 +108580,36 @@
   ],
   "skill": [
    "Armour Breaker"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Bolzen-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bolzen-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siege Ballista"
   ]
  },
  {
@@ -109014,6 +109392,86 @@
   ],
   "skill": [
    "Blood Boil"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Mark|Mal]-Dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Mark|Mal]-Dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bloodhound's Mark"
+  ]
+ },
+ {
+  "stats": [
+   "hunters_mark_%_of_phys_damage_over_time_as_build_up"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[HeavyStun|Schwerer Betäubungs]aufbau durch [BloodLoss|Blutverlust]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Mark|Maltragendes] Ziel erhält [HeavyStun|schweren Betäubungs]aufbau in Höhe von\\n{0}% des [BloodLoss|Blutverlusts]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bloodhound's Mark"
+  ]
+ },
+ {
+  "stats": [
+   "hunters_mark_%_of_max_threshold_to_trigger_explosion_on_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[BloodLoss|Blutverlust]-Schwelle für Explosion bei Tod@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wird [MarkActivate|aktiviert], wenn [Mark|Maltragender] Gegner [HeavyStun|schwer betäubt] wird\\nWird [MarkActivate|aktiviert], wenn [Mark|Maltragender] Gegner stirbt, wenn er mindestens {0}% [HeavyStun|schweren Betäubungs]aufbau durch [BloodLoss|Blutverlust] hatte\\n[Trigger|Löst] bei [MarkActivate|Aktivierung] Blutexplosion aus",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bloodhound's Mark"
   ]
  },
  {
@@ -110236,6 +110694,78 @@
  },
  {
   "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Abklingzeit beträgt {0} Sekunden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Convalescence"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "{0:+d} Sekunde zur [Buff|Stärkungs]dauer",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Sekunden zur [Buff|Stärkungs]dauer",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Convalescence"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -110414,6 +110944,312 @@
   "skill": [
    "Decompose",
    "Decompose"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Illusionsdauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Illusionsdauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_to_create_additional_remnant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "{0:+d}% Chance, einen zusätzlichen [Remnant|Überrest] zu erzeugen",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% Chance, einen zusätzlichen [Remnant|Überrest] zu erzeugen",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Illusionsdauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Illusionsdauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dark Effigy"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Aura|Aura]-Radius des Banners beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Aura|Aura]-Radius des Banners beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_armour_evasion_+%_final_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Aura gewährt {0}% mehr [Armour|Rüstung] und [Evasion|Ausweichwert]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Aura gewährt {0}% weniger [Armour|Rüstung] und [Evasion|Ausweichwert]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_movement_speed_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Aura gewährt {0}% erhöhte Bewegungsgeschwindigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Aura gewährt {0}% verringerte Bewegungsgeschwindigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Bannerdauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bannerdauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
   ]
  },
  {
@@ -110715,6 +111551,130 @@
   ],
   "skill": [
    "Disengage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Aura|Aura]-Radius des Banners beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Aura|Aura]-Radius des Banners beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_additional_maximum_all_elemental_resistances_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Aura gewährt {0:+d}% zu allen [MaximumResistances|maximalen Elementarwiderständen]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_ailment_threshold_+%_final_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Aura gewährt {0}% mehr [AilmentThreshold|Schwelle für elementare Beeinträchtigungen]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Aura gewährt {0}% weniger [AilmentThreshold|Schwelle für elementare Beeinträchtigungen]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_flask_charge_per_min_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Aura gewährt {0} [Flask|Fläschchen]füllungen pro Sekunde",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Bannerdauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bannerdauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
   ]
  },
  {
@@ -113164,6 +114124,92 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fortifying Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#",
+     "#"
+    ],
+    "t": "Feuert {0} Fragmente pro Schuss",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "0"
+    ],
+    "t": "Feuert {0:+d} Fragmente pro Schuss",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "projectile_base_number_of_targets_to_pierce"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Bolzen [Pierce|durchbohren] {0} Ziel",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Bolzen [Pierce|durchbohren] {0} Ziele",
+    "h": [
+     "canonical_line"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10",
      "gem_quality"
     ],
@@ -114296,6 +115342,25 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "Feuert {0} Bolzen pro Explosion",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Galvanic Shards"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -114953,6 +116018,66 @@
   ],
   "skill": [
    "Grim Pillars"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hailstorm Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Regenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Regenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hailstorm Rounds"
   ]
  },
  {
@@ -115622,6 +116747,32 @@
  },
  {
   "stats": [
+   "projectile_base_number_of_targets_to_pierce"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Bolzen [Pierce|durchbohren] {0} Ziel",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Bolzen [Pierce|durchbohren] {0} Ziele",
+    "h": [
+     "canonical_line"
+    ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -116109,6 +117260,38 @@
     "c": [
      "10"
     ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragments Of The Past",
+   "Escape Shot",
+   "Ice-Tipped Arrows"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "Nova-Radius beträgt {0} Meter",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116446,6 +117629,78 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "Bolzen zerschmettern bei Aufprall und verursachen Schaden in einem {0}-Meter-Kegel",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incendiary Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "Feuert {0} Fragmente pro Schuss",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incendiary Shot"
+  ]
+ },
+ {
+  "stats": [
+   "ignite_duration_+%_per_shotgun_pellet_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Verlängerte [Ignite|Entzündungs]dauer für jedes Fragment in einem Treffer@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0:+d}% verlängerte [Ignite|Entzündungs]dauer für jedes Fragment in einem einzigen Treffer",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "{0}% verlängerte [Ignite|Entzündungs]dauer für jedes Fragment in einem einzigen Treffer",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incendiary Shot"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "Kegellänge beträgt {0} Meter",
@@ -116768,6 +118023,36 @@
     "t": "Destabilisiert Gegner für {0} Sekunden",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Infernal Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
      "1"
     ]
    }
@@ -117751,6 +119036,120 @@
   ],
   "skill": [
    "Living Bomb"
+  ]
+ },
+ {
+  "stats": [
+   "igneous_shield_charge_up_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Verstärkt [Shield|Schild] vollständig in {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Verstärkt [Shield|Schild] vollständig in {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Magma Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "igneous_shield_charge_up_time_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "{0}% verringerte Verstärkungszeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% verringerte Verstärkungszeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% erhöhte Verstärkungszeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Magma Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "skill_igneous_shield_grants_block_chance_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "{0:+d}% erhöhte [Block|Block]chance",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "Gewährte erhöhte [Block|Block]chance@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Gewährt {0}% erhöhte [Block|Block]chance",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Gewährt {0}% verringerte [Block|Block]chance",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Magma Barrier"
   ]
  },
  {
@@ -119338,6 +120737,56 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bolzen zerschmettern bei Aufprall und verursachen Schaden in einem {0}-Meter-Kegel",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Permafrost Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#",
+     "#"
+    ],
+    "t": "Feuert {0} Fragmente pro Schuss",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "0"
+    ],
+    "t": "Feuert {0:+d} Fragmente pro Schuss",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Permafrost Bolts"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -119966,6 +121415,36 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rain of Blades"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120103,6 +121582,37 @@
   ],
   "skill": [
    "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Sperre beim Erreichen maximaler [Heat|Hitze]@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Kann für {0} Sekunden nicht feuern oder nachladen,\\nnachdem maximale [Heat|Hitze] erreicht wurde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Shot"
   ]
  },
  {
@@ -120583,6 +122093,53 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Curse|Fluch]dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Curse|Fluch]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Repulsion"
+  ]
+ },
+ {
+  "stats": [
+   "curse_repulsion_applies_X_fragility"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Curse|Fluch] wendet {0} Zerbrechlichkeit an",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Repulsion"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120633,6 +122190,81 @@
   ],
   "skill": [
    "Repulsion"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Wirkungsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Requiem"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Pein wirkt sich auf innerhalb {0} Meter Radius des Ziels aus",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Requiem"
   ]
  },
  {
@@ -120807,6 +122439,60 @@
   ],
   "skill": [
    "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Bolzen-Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bolzen-Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Artillery Ballista"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "Modifikatoren der Anzahl von abgefeuerten [Projectile|Projektilen] gelten stattdessen\\nfür die Anzahl von [Hit|Treffern] pro Salve",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Hit|Trifft] {0} Mal pro Salve\\nModifikatoren der Anzahl von abgefeuerten [Projectile|Projektilen] gelten stattdessen\\nfür die Anzahl von [Hit|Treffern] pro Salve",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Artillery Ballista"
   ]
  },
  {
@@ -122328,6 +124014,56 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "Feuert Bolzen auf jeden Gegner innerhalb eines Radius von {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siege Cascade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Bolzen-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bolzen-Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siege Cascade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "Siegelradius beträgt {0} Meter",
@@ -123745,6 +125481,85 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "Feuert {0} Bolzen",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Dauer geladener Bolzen beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Dauer geladener Bolzen beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124163,6 +125978,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Temper Weapon"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124411,6 +126256,193 @@
   ],
   "skill": [
    "Temporal Rift"
+  ]
+ },
+ {
+  "stats": [
+   "mana_required_to_activate_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Kann nicht gezaubert werden, wenn Ihr weniger als {0} Mana habt\\nKann nicht gezaubert werden, wenn bereits aktiv",
+    "h": []
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Zielradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Zielradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_spawn_meteor_every_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Sternenregen-[Trigger|Auslöser]intervall@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Trigger|Löst] jede Sekunde Sternenregen aus und zielt auf Gegner, wenn möglich",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|Löst] alle {0} Sekunden Sternenregen aus und zielt auf Gegner, wenn möglich",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_meteor_frequency_+%_per_enemy_in_walking_calamity_radius",
+   "walking_calamity_meteor_frequency_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "[Trigger|Auslöser]frequenz pro extra Gegner im Radius (max.)@{0}% ({1}%)",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "{0}% erhöhte Sternenregen-[Trigger|Auslöser]frequenz pro Gegner im Radius nach dem ersten, bis zu einem Maximum von {1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_every"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Erforderliche Sternenregen-[Trigger|Auslösungen] pro großem Stern@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "Erfordert {0:+d} Sternenregen-[Trigger|Auslösungen] pro großem Stern",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Sternenfall erzeugt alle {0} [Trigger|Auslösungen] einen großen Stern",
+    "h": []
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_same_target_prevention_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Ziel-Intervall von großen Sternen@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Sternenregen kann nicht für mehr als einen großen Stern pro Ziel jede {0} Sekunde [Trigger|ausgelöst] werden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Sternenregen kann nicht mehr als einmal alle {0} Sekunden mit großen Sternen auf denselben Gegner zielen",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
   ]
  },
  {
@@ -125349,6 +127381,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Schockwellenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shockwave Totem"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10",
      "gem_quality"
     ],
@@ -125678,6 +127740,53 @@
  },
  {
   "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|Löst] beim Aufsammeln eines [Remnant|Überrests] 'Explosive Umwandlung' aus",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shattering Palm"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -125704,6 +127813,196 @@
   ],
   "skill": [
    "Molten Shower"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "{0:+d} Meter zum Explosionsradius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "Explosionsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "wind_dancer_area_of_effect_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Wirkungsbereich pro Phase@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Wirkungsbereich pro Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Wirkungsbereich pro Phase",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "wind_dancer_damage_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr Schaden pro Phase@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr Schaden pro Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger Schaden pro Phase",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "wind_dancer_knockback_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Mehr [Knockback|Rückstoß]distanz pro Phase@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "{0}% mehr [Knockback|Rückstoß]distanz pro Phase",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "{0}% weniger [Knockback|Rückstoß]distanz pro Phase",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Säulenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Säulenradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "His Winnowing Flame"
   ]
  },
  {
@@ -126203,6 +128502,23 @@
   ],
   "skill": [
    "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|Löst] bei [Hit|Treffer] mit einem [Attack|Angriff] 'Rune manifestieren' aus",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Verisium Manifestations"
   ]
  },
  {
@@ -126949,6 +129265,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Strahl-Zielradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Strahl-Zielradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Voltaic Barrier"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -127146,6 +129492,263 @@
  },
  {
   "stats": [
+   "walking_calamity_spawn_meteor_every_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Meteor-[Trigger|Auslöser]intervall@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Trigger|Löst] jede Sekunde einen Meteor aus",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|Löst] alle {0} Sekunden einen Meteor aus",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_every"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Meteore zwischen jedem großen Meteor@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "-{0} Meteore fallen zwischen großen Meteoren",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "Alle {0} Meteore fällt ein großer Meteor",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Meteore fallen in {0} Meter Radius",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_meteor_frequency_+%_per_enemy_in_walking_calamity_radius",
+   "walking_calamity_meteor_frequency_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "Mehr Meteor-Frequenz pro zusätzlichem Gegner im Radius (max.)@{0}% ({1}%)",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "Meteore [Trigger|lösen] {0}% häufiger aus für jeden\\nzusätzlichen Gegner im Radius, bis zu {1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_same_target_prevention_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Ziel-Intervall von großen Meteoren@{0}s",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Große Meteore können nur einmal jede Sekunde auf\\neinen einzelnen Gegner zielen",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Große Meteore können nur einmal alle {0} Sekunden auf\\neinen einzelnen Gegner zielen",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkungs]dauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_base_rage_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Gewährte [Rage|Rausch]-Regeneration@{0}/s",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkung] gewährt {0} [Rage|Rausch] regeneriert pro Sekunde",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_non_skill_base_all_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "Als [Fire|Feuer]schaden [Gain|verursachter] Schaden@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[Buff|Stärkung] [Gain|verursacht] {0:+d}% des Schadens als [Fire|Feuer]schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|Stärkung] [Gain|verursacht] {0}% des Schadens als [Fire|Feuer]schaden",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -127202,6 +129805,147 @@
   ],
   "skill": [
    "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Aura|Aura]-Radius des Banners beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Aura|Aura]-Radius des Banners beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_attack_damage_+%_final_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Aura gewährt {0}% mehr [Attack|Angriffs]schaden",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Aura gewährt {0}% weniger [Attack|Angriffs]schaden",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_banner_accuracy_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Aura gewährt {0}% erhöhte [Accuracy|Treffgenauigkeit]",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Aura gewährt {0}% verringerte [Accuracy|Treffgenauigkeit]",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_banner_attack_speed_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "Aura gewährt {0}% erhöhte [Attack|Angriffs]geschwindigkeit",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "Aura gewährt {0}% verringerte [Attack|Angriffs]geschwindigkeit",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "Bannerdauer beträgt {0} Sekunde",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Bannerdauer beträgt {0} Sekunden",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
   ]
  },
  {
@@ -127962,6 +130706,36 @@
     ],
     "t": "[Buff|Stärkung] [Gain|verursacht] {0}% des Schadens als [Cold|Kälte]schaden",
     "h": []
+   }
+  ],
+  "skill": [
+   "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "Wirkungsradius beträgt {0} Meter",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [

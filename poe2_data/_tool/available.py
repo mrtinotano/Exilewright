@@ -393,6 +393,7 @@ art_variety = {}
 for r in (r for r in load('MonsterVarietiesArtVariations') if r['MonsterVarietiesKeys']):
     art_variety.setdefault(r['Id'], varieties[r['MonsterVarietiesKeys'][0]])
 skills, skill_csd = {}, {}
+labels, labels_tr = load('GrantedEffectLabels'), load_langs('GrantedEffectLabels')
 PART_FLAG = re.compile(r'^(never_|always_|active_skill_never_|cannot_|projectiles_fork|support_double_number_of_cooldown_uses|base_consume_|global_always_hit|global_cannot_crit|base_lightning_damage_can_electrocute|base_all_damage_can_pin|minions_are_gigantic|companions_are_gigantic)')
 PART_RULE = re.compile(r'consume|_vs_|against_|exposure|curse|freeze|shock|ignite|chill|stun|bleed|poison|electrocut|pins?_|armour_break|charge')
 def stat_levels(effects, sets):
@@ -464,6 +465,19 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     # rule of the skill (never_freeze, always_ignite, base_consume_enemy_shock_on_hit...) from all of its parts
     allfx = effects + [ge_tab[x] for x in fx['AdditionalGrantedEffects'] if ge_tab[x] not in effects and not ge_tab[x]['Id'].startswith(('Support', 'Triggered') if g['kind'] == 'support' else 'Support')]   # a support's triggered skills are skills of their own (below)
     more_sets = [i for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets'] if i not in sets]
+    # what the game's skill window shows of each stat set, one tab each: the set's own label (Warcry, Fire...), else
+    # its skill's name (Volcanic Eruption), in every language; that skill's types (an attack, triggered...) and use time
+    ge_of = {i: x for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets']}
+    def tab(i):
+        x, L = ge_of[i], ss_tab[i]['Label']
+        name = {'label': labels[L]['Text'], **tr(labels_tr, L, 'Text', 'label')} if L is not None else             {'label': active_skills[x['ActiveSkill']]['DisplayedName'], **tr(active_skills_tr, x['ActiveSkill'], 'DisplayedName', 'label')} if x['ActiveSkill'] is not None and active_skills[x['ActiveSkill']]['DisplayedName'] else {}
+        A = x['ActiveSkill'] if x is not e and x['ActiveSkill'] is not None and active_skills[x['ActiveSkill']]['Description'] else None   # a skill of its own: what it does (the gem's own is the gem's)
+        return {**name, **({'description': active_skills[A]['Description'], **tr(active_skills_tr, A, 'Description', 'description', keep=True)} if A is not None else {}),
+                'types': types(active_skills[x['ActiveSkill']]['ActiveSkillTypes']) if x['ActiveSkill'] is not None else [], 'cast_time_ms': x['CastTime']}
+    # the skill whose damage the gem's numbers are when it is not the gem's own (Ancestral Cry's Volcanic Steps, Temper
+    # Weapon's Combust): its tab, types and use time
+    hit_set = next((i for i in sets if not idle(i)), None)
+    hit = tab(hit_set) if hit_set is not None and (ge_of[hit_set] is not e or idle(e['StatSet'])) else None
     flags = sorted({k for x in allfx for i in [x['StatSet']] + x['AdditionalStatSets'] for k in map(sid, ss_tab[i]['ImplicitStats']) if PART_FLAG.search(k)})
     part, part_levels = {}, {}
     for i in more_sets:
@@ -473,7 +487,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
     part_levels = {l: x for l, x in part_levels.items() if x}
     # the gem's other parts with damage of their own (Earthshatter's spike, Forge Hammer's fissures): every stat of the
     # part and its multiplier per level, as the skill's (stat_levels)
-    parts = {ss_tab[i]['Id']: {'constant': c, 'levels': lv} for i in more_sets for c, lv in [stat_levels([], [i])]
+    parts = {ss_tab[i]['Id']: {'constant': c, 'levels': lv, **tab(i)} for i in more_sets for c, lv in [stat_levels([] if ge_of[i] in effects else [ge_of[i]], [i])]
              if any('_base_multiplier' in x or 'wild_beast_damage_+%_final' in x or any(k.startswith('spell_minimum_base_') or k.endswith('_damage_to_deal_per_minute') for k in x) for x in lv.values())}   # an attack's multiplier or a spell's own damage (Volcano's projectiles); Savage Fury's frenzy
     # the secondary radius of a part without damage of its own, as the skill's (Detonating Arrow's explosion: the arrow's damage)
     R2 = 'active_skill_base_secondary_area_of_effect_radius'
@@ -507,7 +521,7 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         'weapons': next((weapon_req[a['WeaponRequirements']] for a in acts if a['WeaponRequirements'] is not None), None),
         # what a meta gem does to the skill it uses: its own support part (GemEffects.AdditionalGrantedEffects named
         # Support...: Mortar Cannon's -50% more attack speed for the grenades it fires)
-        **({'flags': flags} if flags else {}), **({'part': part} if part else {}), **({'part_levels': part_levels} if part_levels else {}), **({'parts': parts} if parts else {}),
+        **({'flags': flags} if flags else {}), **({'part': part} if part else {}), **({'part_levels': part_levels} if part_levels else {}), **({'parts': parts} if parts else {}), **({'hit': hit} if hit else {}), **({'tab': t} if (t := tab(e['StatSet'])).get('label') and hit else {}),
         # the skill a support sets off (Fiery Death's explosion: TriggeredFieryDeathPlayer), its own constant stats
         **({'triggers': t} if g['kind'] == 'support' and (t := {ge_tab[x]['Id']: {sid(a): v for a, v in zip(ss_tab[ge_tab[x]['StatSet']]['ConstantStats'], ss_tab[ge_tab[x]['StatSet']]['ConstantStatsValues'])}
                                                                   for x in fx['AdditionalGrantedEffects'] if ge_tab[x]['Id'].startswith('Triggered')}) else {}),
@@ -525,9 +539,13 @@ for g in sorted(gems, key=lambda g: g['source'] == 'gem_cutting'):   # skills go
         skills[g['name']]['totem'] = {'life_mult': totem['LifeMultiplier'] / 100, 'ballista': 'is_ranged_attack_totem' in implicit,
                                       'armour': monster_types[totem['MonsterType']]['Armour']}   # MonsterTypes.Armour: 0 or 100 for totems
     # the skill's own stat texts (Berserk's Rage effect, Virtuous Barrier's Motes): ActiveSkills.StatDescription
-    csd = next((a['StatDescription'] for a in acts if a['StatDescription']), '')
+    # (the gem's own skill's first, then those of the skills it sets off: Ancestral Cry's, then Volcanic Steps')
+    own_act = [active_skills[e['ActiveSkill']]] if e['ActiveSkill'] is not None else []
+    csds = [a['StatDescription'] for a in own_act + acts + [active_skills[x['ActiveSkill']] for x in allfx if x['ActiveSkill'] is not None] if a['StatDescription']]
+    csd = next((a['StatDescription'] for a in acts if a['StatDescription']), '')   # its radius rule (below): the skill whose numbers the gem's are
+    for c in dict.fromkeys(c.lower() for c in csds if 'specific_skill_stat_descriptions' in c.lower()):
+        skill_csd.setdefault(c, []).append(g['name'])
     if 'specific_skill_stat_descriptions' in csd.lower():
-        skill_csd.setdefault(csd.lower(), []).append(g['name'])
         # the radius the game's skill window shows is the one the skill's .csd gives a table_only row ("Orb radius@{0}m"):
         # the secondary one when only that has a row (Orb of Storms: 3.6 m, its 5.6 m is not shown)
         if os.path.exists(os.path.join(ROOT, 'files', csd.lower())):
@@ -982,7 +1000,7 @@ def monster_skill(e):
     })
 
 
-labels, world = load('GrantedEffectLabels'), load('WorldAreas')
+world = load('WorldAreas')
 # the projectile a monster skill fires: its "monster_projectile_variation" number -> Projectiles row
 shots_spell, shots_attack = ({r['Id']: proj_tab[r['Projectile']]['ProjectileSpeed'] for r in load(t) if r['Projectile'] is not None}
                              for t in ('MonsterProjectileSpell', 'MonsterProjectileAttack'))

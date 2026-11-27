@@ -1020,5 +1020,8 @@
  "Items changed: {0}": "変更したアイテム: {0}",
  "Additional physical damage reduction": "追加物理ダメージ軽減率",
  "Its monster": "モンスター",
- "{0}: choose its monster in the Skills tab": "{0}：スキルタブでモンスターを選択"
+ "{0}: choose its monster in the Skills tab": "{0}：スキルタブでモンスターを選択",
+ "Average Damage per Hit": "ヒットあたりの平均ダメージ",
+ "per hit": "ヒットあたり",
+ "Damage of the skills it sets off": "このスキルが発動するスキルのダメージ"
 }

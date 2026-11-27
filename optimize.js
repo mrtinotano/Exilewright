@@ -3,7 +3,7 @@
 // what the calculation (calc.js) says is best, so they only see what the planner calculates: a passive or support
 // whose effect is conditional or not modelled counts as nothing.
 // No DOM here: optview.js is the screen, app.js owns the build.
-import { skill, character, attributes, supportKnown, metaAdds } from './calc.js';
+import { skill, character, attributes, supportKnown, metaAdds, subDamage } from './calc.js';
 import { typical, hitChanceExact, playerTakes, K, TYPES } from './enemies.js';
 import { SK } from './skilldata.js';
 import { GEM, SUPPORTS, colour, canSupport } from './skills.js';
@@ -32,8 +32,9 @@ export function toughness(c) {
   const lands = hitChanceExact(m.accuracy, c.evasion, c.evadeMax) / 100 * (1 - clamp(c.block || 0, 0, c.blockMax ?? K.player_max_block ?? 50) / 100 * (1 - (c.blockTaken || 0) / 100));
   return lost > 0 && lands > 0 ? 1 / (lost * lands) : 0;
 }
-// hits and damage over time of a skill, per second (null: the skill deals no damage the app can work out)
-export const damage = s => { const dot = Object.values(s.dot).reduce((x, y) => x + y, 0); return s.dps == null && !dot ? null : (s.dps || 0) + dot; };
+// hits and damage over time of a skill, per second (null: the skill deals no damage the app can work out); a gem with no
+// damage of its own, what the skills it sets off deal (calc.js subDamage: Ancestral Cry's Volcanic Steps and Eruption)
+export const damage = s => { const dot = Object.values(s.dot).reduce((x, y) => x + y, 0); return s.dps == null && !dot ? subDamage(s)?.v ?? null : (s.dps || 0) + dot; };
 // the number an objective looks at, for build b with summed stats `sum` (g: the gem of b the skill objectives rate)
 export function score(key, b, sum, g) {
   if (key === 'dps') return damage(skill(g, b, sum));

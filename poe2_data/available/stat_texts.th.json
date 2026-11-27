@@ -107655,6 +107655,212 @@
     "c": [
      "10"
     ],
+    "t": "การ[Warcry|คำราม] มีรัศมี {0} เมตร​",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การ[Warcry|คำราม] มีรัศมี {0} เมตร​",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "การ[Warcry|คำราม] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การ[Warcry|คำราม] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_duration_+%_final_per_removable_endurance_charge"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "เพิ่มระยะเวลาของ การ[Warcry|คำราม] {0:+d}% ต่อจำนวน [Charges|Endurance Charge] ที่กลืนกิน",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "กลืนกิน [Charges|Endurance Charge] ทั้งหมดเพื่อเพิ่มระยะเวลาของ การ[Warcry|คำราม] {0}% ต่อจำนวน Charge",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_non_skill_physical_to_fire_convert_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "เปอร์เซ็นต์ของความเสียหาย [Physical|กายภาพ] ที่ถูก[Conversion|แปลง]เป็น [Fire|ไฟ]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Conversion|แปลง][Physical|ความเสียหาย กายภาพ] ด้วยการ[Attack|โจมตี]ที่[AncestralBoost|ได้รับพลัง] {0}% เป็น [Fire|ไฟ]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_triggers_shockwave_every_X_units_travelled"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Trigger|ทริกเกอร์] เท้าเพลิงภูเขาไฟ (Volcanic Steps) ในทุก {0} เมตรที่เดินทาง",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|ทริกเกอร์] เท้าเพลิงภูเขาไฟ (Volcanic Steps) ในทุก {0} เมตรที่เดินทาง",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "รัศมี ของจุดกระทบ@{0} ม.",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "ancestral_cry_non_skill_physical_to_fire_convert_%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ความเสียหาย [Physical|กายภาพ] ที่ถูก[Conversion|แปลง]เป็น [Fire|ไฟ]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Conversion|แปลง]ความเสียหาย [Physical|กายภาพ] {0}% เป็น [Fire|ไฟ]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Ancestral Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "การ[Slam|ทุบ] มีรัศมี {0} เมตร",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -107889,6 +108095,88 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "วินาศสันตะโร มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "วินาศสันตะโร มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "unleash_the_elements_base_trigger_frequency_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "-1000",
+     "gem_quality"
+    ],
+    "t": "ระยะเวลาระหว่าง การ[Trigger|ทริกเกอร์]แต่ละครั้ง {0:-d} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "ระยะเวลาระหว่าง การ[Trigger|ทริกเกอร์]แต่ละครั้ง {0:-d} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Trigger|ทริกเกอร์]หนึ่งในสามภัยพิบัติ ทุก {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|ทริกเกอร์]หนึ่งในสามภัยพิบัติ ทุก {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -107965,6 +108253,66 @@
     ],
     "t": "พายุลูกเห็บ สร้างก้อนน้ำแข็ง {0} ก้อน",
     "h": []
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Apocalypse"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ฟ้าคะนอง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ฟ้าคะนอง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [
@@ -108231,6 +108579,36 @@
   ],
   "skill": [
    "Armour Breaker"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ลูกศร มีรัศมีการระเบิด {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ลูกศร มีรัศมีการระเบิด {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siege Ballista"
   ]
  },
  {
@@ -109013,6 +109391,86 @@
   ],
   "skill": [
    "Blood Boil"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Mark|คำแช่ง] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Mark|คำแช่ง] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Bloodhound's Mark"
+  ]
+ },
+ {
+  "stats": [
+   "hunters_mark_%_of_phys_damage_over_time_as_build_up"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "การสะสมค่า[HeavyStun|สตันหนัก] จากการ[BloodLoss|ขาดเลือด]@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เป้าหมายที่ถูก[Mark|แช่ง] สะสมค่า[HeavyStun|สตันหนัก] เท่ากับ {0}% ของ การ[BloodLoss|ขาดเลือด]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bloodhound's Mark"
+  ]
+ },
+ {
+  "stats": [
+   "hunters_mark_%_of_max_threshold_to_trigger_explosion_on_death"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "เกณฑ์การ[BloodLoss|ขาดเลือด] ในการปล่อยระเบิดตอนตาย@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[MarkActivate|ออกฤทธิ์]เมื่อศัตรูที่ถูก[Mark|แช่ง]ติดสถานะ [HeavyStun|สตันหนัก]\\n[MarkActivate|ออกฤทธิ์]เมื่อศัตรูที่ถูก[Mark|แช่ง]ตาย หากมันมีการสะสมค่า[HeavyStun|สตันหนัก]อย่างน้อย {0}% จากการ[BloodLoss|ขาดเลือด]\\n[Trigger|ทริกเกอร์] ระเบิดเลือด เมื่อ[MarkActivate|ออกฤทธิ์]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Bloodhound's Mark"
   ]
  },
  {
@@ -110235,6 +110693,78 @@
  },
  {
   "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "คูลดาวน์ {0} วินาที",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Convalescence"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration",
+   "quality_display_base_skill_effect_duration_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000",
+     "0"
+    ],
+    "t": "ระยะเวลาของ [Buff|บัฟ] {0:+d} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "ระยะเวลาของ [Buff|บัฟ] {0:+d} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000",
+     "#"
+    ],
+    "t": "[Buff|บัฟ] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "[Buff|บัฟ] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Convalescence"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -110413,6 +110943,312 @@
   "skill": [
    "Decompose",
    "Decompose"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ร่างลวงตา มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ร่างลวงตา มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "chance_%_to_create_additional_remnant"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "มีโอกาสสร้าง [Remnant|หยาด] เพิ่มเติม 1 หยาด {0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "มีโอกาสสร้าง [Remnant|หยาด] เพิ่มเติม 1 หยาด {0}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Lingering Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "รัศมีระเบิด {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "รัศมีระเบิด {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ร่างลวงตา มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ร่างลวงตา มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Void Illusion"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "gem_quality"
+    ],
+    "t": "รัศมีจุดกระทบ {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "รัศมีจุดกระทบ {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dark Effigy"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Aura|ออร่า]ของธง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Aura|ออร่า]ของธง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_armour_evasion_+%_final_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ออร่ามอบม็อด: เพิ่ม[Armour|ค่าเกราะ]และ[Evasion|อัตราการหลบหลีก] อีก {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ออร่ามอบม็อด: ลด[Armour|ค่าเกราะ]และ[Evasion|อัตราการหลบหลีก] อีก {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_movement_speed_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ออร่ามอบม็อด: เพิ่มความเร็วในการเคลื่อนที่ {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ออร่ามอบม็อด: ลดความเร็วในการเคลื่อนที่ {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ธง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ธง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Defiance Banner"
   ]
  },
  {
@@ -110714,6 +111550,130 @@
   ],
   "skill": [
    "Disengage"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Aura|ออร่า]ของธง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Aura|ออร่า]ของธง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_additional_maximum_all_elemental_resistances_%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ออร่ามอบม็อด: [MaximumResistances|ค่าต้านทาน ทุกธาตุ สูงสุด] {0:+d}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_ailment_threshold_+%_final_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ออร่ามอบม็อด: เพิ่ม[AilmentThreshold|ความยากในการติด สถานะเจ็บป่วยธาตุ] อีก {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ออร่ามอบม็อด: ลด[AilmentThreshold|ความยากในการติด สถานะเจ็บป่วยธาตุ] อีก {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_flask_charge_per_min_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ออร่า มอบชาร์จ[Flask|ขวดยา] {0} ชาร์จต่อวินาที",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ธง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ธง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Dread Banner"
   ]
  },
  {
@@ -113164,6 +114124,92 @@
     "c": [
      "10"
     ],
+    "t": "คลื่นกระแทก มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "คลื่นกระแทก มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fortifying Cry"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#",
+     "#"
+    ],
+    "t": "ยิงสะเก็ด {0} ชิ้นในการยิงแต่ละครั้ง",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "0"
+    ],
+    "t": "ยิงสะเก็ด {0:+d} ชิ้นในการยิงแต่ละครั้ง",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "projectile_base_number_of_targets_to_pierce"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ลูกศร [Pierce|เจาะทะลุ] {0} เป้าหมาย",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ลูกศร [Pierce|เจาะทะลุ] {0} เป้าหมาย",
+    "h": [
+     "canonical_line"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragmentation Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "การปะทุ มีรัศมี {0} เมตร",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -114292,6 +115338,25 @@
  },
  {
   "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "ยิงสะเก็ด {0} ชิ้นในการยิงแต่ละครั้ง",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Galvanic Shards"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius",
    "quality_display_active_skill_base_area_of_effect_radius_is_gem"
   ],
@@ -114949,6 +116014,66 @@
   ],
   "skill": [
    "Grim Pillars"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hailstorm Rounds"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ฝนลูกศร มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ฝนลูกศร มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Hailstorm Rounds"
   ]
  },
  {
@@ -115618,6 +116743,32 @@
  },
  {
   "stats": [
+   "projectile_base_number_of_targets_to_pierce"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ลูกศร [Pierce|เจาะทะลุ] {0} เป้าหมาย",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ลูกศร [Pierce|เจาะทะลุ] {0} เป้าหมาย",
+    "h": [
+     "canonical_line"
+    ]
+   }
+  ],
+  "skill": [
+   "High Velocity Rounds"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -116105,6 +117256,38 @@
     "c": [
      "10"
     ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Fragments Of The Past",
+   "Escape Shot",
+   "Ice-Tipped Arrows"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
     "t": "พลังกระจาย มีรัศมี {0} เมตร",
     "h": [
      "divide_by_ten_1dp_if_required",
@@ -116442,6 +117625,78 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "ลูกศรแตกสลายเมื่อกระทบ เพื่อสร้างความเสียหายในทรงกรวย {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Incendiary Shot"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "ยิงสะเก็ด {0} ชิ้นในการยิงแต่ละครั้ง",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incendiary Shot"
+  ]
+ },
+ {
+  "stats": [
+   "ignite_duration_+%_per_shotgun_pellet_hit"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ระยะเวลา ของสถานะ [Ignite|ลุกไหม้] ที่เพิ่มขึ้น ต่อจำนวนสะเก็ดในการปะทะเดียว@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "เพิ่มระยะเวลาของสถานะ [Ignite|ลุกไหม้] {0:+d}% ต่อจำนวนสะเก็ดในการปะทะเดียว",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "เพิ่มระยะเวลาของสถานะ [Ignite|ลุกไหม้] {0}% ต่อจำนวนสะเก็ดในการปะทะเดียว",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Incendiary Shot"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "ทรงกรวย มีความยาว {0} เมตร",
@@ -116764,6 +118019,36 @@
     "t": "ทำให้ศัตรูสูญเสียความเสถียร {0} วินาที",
     "h": [
      "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Infernal Cry"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
      "1"
     ]
    }
@@ -117747,6 +119032,120 @@
   ],
   "skill": [
    "Living Bomb"
+  ]
+ },
+ {
+  "stats": [
+   "igneous_shield_charge_up_time_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "อัดพลังเต็มที่ให้[Shield|โล่]ใน {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "อัดพลังเต็มที่ให้[Shield|โล่]ใน {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Magma Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "igneous_shield_charge_up_time_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "ลดเวลาในการอัดพลัง {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดเวลาในการอัดพลัง {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มเวลาในการอัดพลัง {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Magma Barrier"
+  ]
+ },
+ {
+  "stats": [
+   "skill_igneous_shield_grants_block_chance_+%"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "gem_quality"
+    ],
+    "t": "เพิ่มโอกาส[Block|บล็อค] {0:+d}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "table_only"
+    ],
+    "t": "การเพิ่มโอกาส[Block|บล็อค] ที่ได้รับ@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ทำให้มีโอกาส[Block|บล็อค] เพิ่มขึ้น {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ทำให้มีโอกาส[Block|บล็อค] ลดลง {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Magma Barrier"
   ]
  },
  {
@@ -119334,6 +120733,56 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ลูกศรแตกสลายเมื่อกระทบ เพื่อสร้างความเสียหายในทรงกรวย {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Permafrost Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows",
+   "quality_display_base_number_of_projectiles_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#",
+     "#"
+    ],
+    "t": "ยิงสะเก็ด {0} ชิ้นในการยิงแต่ละครั้ง",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "#",
+     "0"
+    ],
+    "t": "ยิงสะเก็ด {0:+d} ชิ้นในการยิงแต่ละครั้ง",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Permafrost Bolts"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -119962,6 +121411,36 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Buff|บัฟ] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|บัฟ] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rain of Blades"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120099,6 +121578,37 @@
   ],
   "skill": [
    "Raise Zombie"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ล็อกหน้าไม้ เมื่อ[Heat|ความร้อน]เต็ม@{0} วิ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ไม่สามารถยิงหรือรีโหลดได้ {0} วินาที\\nเมื่อ[Heat|ความร้อน]เต็ม",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Rapid Shot"
   ]
  },
  {
@@ -120579,6 +122089,53 @@
  },
  {
   "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Curse|คำสาป] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Repulsion"
+  ]
+ },
+ {
+  "stats": [
+   "curse_repulsion_applies_X_fragility"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Curse|คำสาป] สร้างสถานะ อ่อนแอ {0} ระดับ",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Repulsion"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -120629,6 +122186,81 @@
   ],
   "skill": [
    "Repulsion"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "รัศมีจุดกระทบ {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "รัศมีจุดกระทบ {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Requiem"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ความระทม กระทบในรัศมี {0} เมตรของเป้าหมาย",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Requiem"
   ]
  },
  {
@@ -120803,6 +122435,60 @@
   ],
   "skill": [
    "Righteous Descent"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "จุดกระทบของสายฟ้าฟาด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "จุดกระทบของสายฟ้าฟาด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Artillery Ballista"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1"
+    ],
+    "t": "ม็อดที่ส่งผลต่อ จำนวนของ[Projectile|โพรเจกไทล์]ที่ยิง ส่งผลต่อ จำนวนของการ[Hit|ปะทะ]ต่อระลอก แทน",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "[Hit|ปะทะ] {0} ครั้งต่อจำนวนระลอก\\nม็อดที่ส่งผลต่อ จำนวนของ[Projectile|โพรเจกไทล์]ที่ยิง ส่งผลต่อ จำนวนของการ[Hit|ปะทะ]ต่อระลอก แทน",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Artillery Ballista"
   ]
  },
  {
@@ -122324,6 +124010,56 @@
   "rows": [
    {
     "c": [
+     "#"
+    ],
+    "t": "ยิงลูกศรไปยังศัตรูทุกตัวในรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siege Cascade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_secondary_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ลูกศร มีรัศมีการระเบิด {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ลูกศร มีรัศมีการระเบิด {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Siege Cascade"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10"
     ],
     "t": "ตราสัญลักษณ์ มีรัศมี {0} เมตร",
@@ -123741,6 +125477,85 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "base_number_of_projectiles",
+   "skill_can_fire_arrows"
+  ],
+  "rows": [
+   {
+    "c": [
+     "2|#",
+     "#"
+    ],
+    "t": "ยิงลูกศร {0} ดอก",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ลูกศรอัดพลัง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ลูกศรอัดพลัง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Stormblast Bolts"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124159,6 +125974,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Temper Weapon"
+  ]
+ },
+ {
+  "stats": [
    "base_skill_effect_duration"
   ],
   "rows": [
@@ -124407,6 +126252,193 @@
   ],
   "skill": [
    "Temporal Rift"
+  ]
+ },
+ {
+  "stats": [
+   "mana_required_to_activate_skill"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ไม่สามารถร่ายได้หากคุณมีมานาต่ำกว่า {0}\\nไม่สามาถร่ายได้หากทำงานอยู่",
+    "h": []
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "การเลือกเป้าหมาย มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การเลือกเป้าหมาย มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_spawn_meteor_every_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ช่วงเวลาระหว่างการ[Trigger|ทริกเกอร์]ดาราร่วงหล่น@{0} วิ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Trigger|ทริกเกอร์] ดาราร่วงหล่น (Starfall) ทุกวินาที โดยจะเลือกศัตรูเป็นเป้าหมายหากเป็นไปได้",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|ทริกเกอร์] ดาราร่วงหล่น (Starfall) ทุก {0} วินาที โดยจะเลือกศัตรูเป็นเป้าหมายหากเป็นไปได้",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_meteor_frequency_+%_per_enemy_in_walking_calamity_radius",
+   "walking_calamity_meteor_frequency_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "ความถี่ในการ[Trigger|ทริกเกอร์] ต่อจำนวนศัตรูเพิ่มเติมในรัศมี (สูงสุด)@{0}% ({1}%)",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "เพิ่มความถี่ในการ[Trigger|ทริกเกอร์]ดาราร่วงหล่น {0}% ต่อจำนวนศัตรูในรัศมีหลังจากตัวแรก สูงสุด {1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_every"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "[Trigger|ทริกเกอร์] ดาราร่วงหล่นที่จำเป็น ต่อดาราใหญ่ 1 ลูก@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "จำนวนของการ[Trigger|ทริกเกอร์] ดาราร่วงหล่น ต่อดาราใหญ่ 1 ลูก {0:+d}",
+    "h": []
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "ดาราร่วงหล่น สร้างดาราใหญ่ ทุก {0} ที่ถูก[Trigger|ทริกเกอร์]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_same_target_prevention_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ช่วงเวลาระหว่างการเปลี่ยนเป้าหมาย ของดาราใหญ่@{0} วิ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ไม่สามารถ[Trigger|ทริกเกอร์] ดาราร่วงหล่น ให้เกิดดาราใหญ่ได้เกิน 1 ลูก ต่อเป้าหมายหนึ่งทุก {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ดาราร่วงหล่น ไม่สามารถส่งดาราใหญ่ไปยังเป้าหมายตัวเดียวกันได้เกิน 1 ครั้งต่อ {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "The Stars Answer"
   ]
  },
  {
@@ -125345,6 +127377,36 @@
   "rows": [
    {
     "c": [
+     "10"
+    ],
+    "t": "คลื่นกระแทก มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "คลื่นกระแทก มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shockwave Totem"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
      "10",
      "table_only"
     ],
@@ -125674,6 +127736,53 @@
  },
  {
   "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|ทริกเกอร์] ระเบิดแปรผัน (Transmutation Explosion) เมื่อเก็บ[Remnant|หยาด]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Explosive Transmutation"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Shattering Palm"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -125700,6 +127809,196 @@
   ],
   "skill": [
    "Molten Shower"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius",
+   "quality_display_active_skill_base_area_of_effect_radius_is_gem"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10",
+     "0"
+    ],
+    "t": "รัศมีระเบิด {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "0"
+    ],
+    "t": "รัศมีระเบิด {0:+d} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "10",
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#",
+     "#"
+    ],
+    "t": "ระเบิด มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "wind_dancer_area_of_effect_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "พื้นที่ส่งผล ที่เพิ่มขึ้น อีก ต่อจำนวนสเตจ@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มพื้นที่ส่งผล อีก {0}% ต่อจำนวนสเตจ",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดพื้นที่ส่งผล อีก {0}% ต่อจำนวนสเตจ",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "wind_dancer_damage_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ความเสียหาย ที่เพิ่มขึ้น อีก ต่อจำนวนสเตจ@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มความเสียหาย อีก {0}% ต่อจำนวนสเตจ",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดความเสียหาย อีก {0}% ต่อจำนวนสเตจ",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "wind_dancer_knockback_+%_final_per_stage"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ระยะทางของการ[Knockback|ผลักออกไป] ที่เพิ่มขึ้น อีก ต่อจำนวนสเตจ@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "เพิ่มระยะทางของการ [Knockback|ผลักออกไป] อีก {0}% ต่อจำนวนสเตจ",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ลดระยะทางของการ [Knockback|ผลักออกไป] {0}% ต่อจำนวนสเตจ",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Wind Dancer"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "แท่น มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "แท่น มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "His Winnowing Flame"
   ]
  },
  {
@@ -126199,6 +128498,23 @@
   ],
   "skill": [
    "Vaulting Impact"
+  ]
+ },
+ {
+  "stats": [
+   "skill_specific_stat_description_mode"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|ทริกเกอร์] สำแดงอักขระ (Manifest Rune) เมื่อ[Hit|ปะทะ]ด้วยการ[Attack|โจมตี]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Verisium Manifestations"
   ]
  },
  {
@@ -126943,6 +129259,36 @@
  },
  {
   "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "การเลือกเป้าหมายของลำแสง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "การเลือกเป้าหมายของลำแสง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Voltaic Barrier"
+  ]
+ },
+ {
+  "stats": [
    "base_secondary_skill_effect_duration"
   ],
   "rows": [
@@ -127140,6 +129486,263 @@
  },
  {
   "stats": [
+   "walking_calamity_spawn_meteor_every_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ช่วงเวลาระหว่างการ[Trigger|ทริกเกอร์]อุกกาบาต@{0} วิ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Trigger|ทริกเกอร์] อุกกาบาต ทุก 1 วินาที",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Trigger|ทริกเกอร์] อุกกาบาต ทุก {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_every"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "จำนวนอุกกาบาตระหว่างอุกกาบาตใหญ่แต่ละลูก@{0}",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "อุกกาบาตตก -{0} ลูกระหว่างอุกกาบาตใหญ่แต่ละลูก",
+    "h": [
+     "negate",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "2|#"
+    ],
+    "t": "อุกกาบาตใหญ่ตก 1 ลูก ต่ออุกกาบาตที่ตกทุก {0} ลูก",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#"
+    ],
+    "t": "อุกกาบาต ตกในรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_meteor_frequency_+%_per_enemy_in_walking_calamity_radius",
+   "walking_calamity_meteor_frequency_+%_cap"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#",
+     "1|#",
+     "table_only"
+    ],
+    "t": "ความถี่ในการเรียกอุกกาบาต ที่เพิ่มขึ้น อีก ต่อจำนวนศัตรูเพิ่มเติมในรัศมี (สูงสุด)@{0}% ({1}%)",
+    "h": []
+   },
+   {
+    "c": [
+     "1|#",
+     "1|#"
+    ],
+    "t": "อุกกาบาต [Trigger|ทริกเกอร์] ด้วยความถี่ที่ เพิ่มขึ้น อีก {0}%\\nต่อจำนวนศัตรูเพิ่มเติมในรัศมี สูงสุด {1}%",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_large_meteor_same_target_prevention_duration_ms"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "ช่วงเวลาระหว่างการเปลี่ยนเป้าหมาย ของอุกกาบาตใหญ่@{0} วิ",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "อุกกาบาตใหญ่ เล็งเป้าหมายไปยังศัตรูตัวหนึ่งได้เพียง 1 ครั้ง ทุก 1 วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "อุกกาบาตใหญ่ เล็งเป้าหมายไปยังศัตรูตัวหนึ่งได้เพียง 1 ครั้ง ทุก {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "[Buff|บัฟ] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|บัฟ] มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_base_rage_regeneration_per_minute"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "การฟื้นฟูสถานะ [Rage|คลั่ง] ทีได้รับ@{0}/วิ",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|บัฟ]มอบม็อด: ฟื้นฟูสถานะ [Rage|คลั่ง] {0} ระดับ ต่อวินาที",
+    "h": [
+     "per_minute_to_per_second_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "walking_calamity_non_skill_base_all_damage_%_to_gain_as_fire"
+  ],
+  "rows": [
+   {
+    "c": [
+     "#",
+     "table_only"
+    ],
+    "t": "การ[Gain|เสริม]ความเสียหายเป็น [Fire|ไฟ] ที่ได้รับ@{0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#",
+     "gem_quality"
+    ],
+    "t": "[Buff|บัฟ]มอบม็อด: นำความเสียหาย {0:+d}% ไป[Gain|เสริม]เป็น [Fire|ไฟ]",
+    "h": []
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Buff|บัฟ]มอบม็อด: นำความเสียหาย {0}% ไป[Gain|เสริม]เป็น [Fire|ไฟ]",
+    "h": []
+   }
+  ],
+  "skill": [
+   "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
    "active_skill_base_area_of_effect_radius"
   ],
   "rows": [
@@ -127196,6 +129799,147 @@
   ],
   "skill": [
    "Walking Calamity"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "[Aura|ออร่า]ของธง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "[Aura|ออร่า]ของธง มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_attack_damage_+%_final_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ออร่ามอบม็อด: เพิ่มความเสียหาย [Attack|โจมตี] อีก {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ออร่ามอบม็อด: ลดความเสียหาย [Attack|โจมตี] อีก {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_banner_accuracy_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ออร่ามอบม็อด: เพิ่ม[Accuracy|อัตราความแม่นยำ] {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ออร่ามอบม็อด: ลด[Accuracy|อัตราความแม่นยำ] {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_buff_banner_attack_speed_+%_to_apply"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1|#"
+    ],
+    "t": "ออร่ามอบม็อด: เพิ่มความเร็วในการ[Attack|โจมตี] {0}%",
+    "h": []
+   },
+   {
+    "c": [
+     "#|-1"
+    ],
+    "t": "ออร่ามอบม็อด: ลดความเร็วในการ[Attack|โจมตี] {0}%",
+    "h": [
+     "negate",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
+  ]
+ },
+ {
+  "stats": [
+   "base_skill_effect_duration"
+  ],
+  "rows": [
+   {
+    "c": [
+     "1000"
+    ],
+    "t": "ธง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "ธง มีระยะเวลา {0} วินาที",
+    "h": [
+     "milliseconds_to_seconds_2dp_if_required",
+     "1"
+    ]
+   }
+  ],
+  "skill": [
+   "War Banner"
   ]
  },
  {
@@ -127956,6 +130700,36 @@
     ],
     "t": "[Buff|บัฟ]มอบม็อด: นำความเสียหาย {0}% ไป[Gain|เสริม]เป็น [Cold|น้ำแข็ง]",
     "h": []
+   }
+  ],
+  "skill": [
+   "Lunar Blessing"
+  ]
+ },
+ {
+  "stats": [
+   "active_skill_base_area_of_effect_radius"
+  ],
+  "rows": [
+   {
+    "c": [
+     "10"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
+   },
+   {
+    "c": [
+     "#"
+    ],
+    "t": "จุดกระทบ มีรัศมี {0} เมตร",
+    "h": [
+     "divide_by_ten_1dp_if_required",
+     "1"
+    ]
    }
   ],
   "skill": [

@@ -1020,5 +1020,8 @@
  "Items changed: {0}": "更换的物品：{0}",
  "Additional physical damage reduction": "額外物理傷害減免",
  "Its monster": "怪物",
- "{0}: choose its monster in the Skills tab": "{0}：在技能分頁選擇怪物"
+ "{0}: choose its monster in the Skills tab": "{0}：在技能分頁選擇怪物",
+ "Average Damage per Hit": "每次擊中平均傷害",
+ "per hit": "每次擊中",
+ "Damage of the skills it sets off": "此技能觸發之技能的傷害"
 }

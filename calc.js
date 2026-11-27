@@ -1267,15 +1267,16 @@ export function skill(g, b, treeGear) {
   const st = { ...gemStats(g, sum), ...g.base };   // g.base: a triggered skill's base damage that comes from elsewhere (out.trig)
   // a totem that is not a meta gem uses the gem's own attack or spell itself (Shockwave Totem's quake, Artillery
   // Ballista's bolts, Dark Effigy's spell: available.py lays that part over the totem)
-  const ownTotem = !own.includes('meta') && d.totem || null, gt = G.types || [];
-  // a warcry's part with damage (Fortifying Cry's shockwave, Ancestral Cry's projectiles, Lunar Blessing's Moonbeams) is
-  // an attack with the weapon (PoB2's baseFlags attack), though the warcry itself is not
-  const attack = gt.includes('Attack') || !!ownTotem && gt.includes('SummonsAttackTotem') || !!g.part && gt.includes('Warcry'), spell = gt.includes('Spell') || !!ownTotem && !attack && own.includes('spell');
+  // a part of the gem (Ancestral Cry's Volcanic Eruption) or the skill whose damage the gem's numbers are (g.asHit: its
+  // Volcanic Steps) is an attack or a spell by its own skill's types, with its own use time (available.py tab)
+  const PT = g.part ? d.parts?.[g.part] : g.asHit ? d.hit : null, CT = PT?.cast_time_ms ?? d.cast_time_ms;
+  const ownTotem = !own.includes('meta') && d.totem || null, gt = PT?.types?.length ? PT.types : G.types || [];
+  const attack = gt.includes('Attack') || !!ownTotem && gt.includes('SummonsAttackTotem'), spell = gt.includes('Spell') || !!ownTotem && !attack && own.includes('spell');
   const wild = !!sum.keystone_wildsurge_incantation && spell && (own.includes('storm') || own.includes('plant'));   // Wildsurge Incantation: 50% more damage, 50% less cost, 75% less duration
   // flags of a support mod this skill meets: "hit" for its hits, "dot" for its damage over time, else what the skill is
   const has = dot => f => f === 'hit' ? !dot : f === 'dot' ? dot : f === 'attack' ? attack : f === 'spell' || f === 'cast' ? spell : own.includes(f);
   const hit = has(false), dmgMods = t => ['Damage', cap(t) + 'Damage', ...(t === 'physical' || t === 'chaos' ? [] : ['ElementalDamage'])];
-  const out = { attack, spell, stats: st, sum, finals, sup: supOwn, castTime: d.cast_time_ms ?? null, hits: {}, dot: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
+  const out = { attack, spell, stats: st, sum, finals, sup: supOwn, castTime: CT ?? null, hits: {}, dot: {}, avg: null, speed: null, crit: null, critBonus: null, dps: null, reason: null };
   // an empty main hand, for a skill used unarmed (WeaponRequirements ''): the class's own unarmed attack (Characters:
   // MinDamage-MaxDamage physical, WeaponSpeed ms, MaxAttackDistance; unarmed_base_critical_strike_chance)
   const cb = ascOf(b.asc).class_base, bare = attack && !b.items?.weapon && d.weapons?.includes('') && cb?.WeaponSpeed;
@@ -1510,7 +1511,7 @@ export function skill(g, b, treeGear) {
   const atkSp = tagSp + (/^(Shields|Bucklers)$/.test(classOf(b.items?.offhand)) ? v(sum, 'attack_speed_+%_while_holding_shield') : 0) + (dual ? v(sum, 'attack_speed_while_dual_wielding_+%') : 0)
     + (per ? Math.floor((per.attrs?.dex || 0) / 25) * v(sum, 'attack_speed_+%_per_25_dex') + Math.floor((per.accuracy || 0) / 200) * v(sum, 'attack_speed_+%_per_200_accuracy_rating') : 0);
   if (attack && (w || shield || flaskThrow)) out.speed = (shield ? 1000 / (d.cast_time_ms || 1000) : flaskThrow ? 1000 / st.main_hand_base_weapon_attack_duration_ms : w.attacks_per_second) * (1 + (inc(sum, 'attack_speed_+%', spTags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + (sum.additive_modifiers_to_minion_attack_speed_also_affect_you ? v(sum, 'minion_attack_speed_+%', 'minion_attack_and_cast_speed_+%') : 0) + speedInc + perTotemSpeed + atkSp) / 100) * (1 + v(st, 'active_skill_attack_speed_+%_final') / 100) * (1 + (dual ? v(st, 'active_skill_attack_speed_+%_final_while_dual_wielding') : 0) / 100) * more(fin, 'attack_speed_+%', tags) * speedMods * metaSpeed * dwd;
-  else if (d.cast_time_ms) out.speed = 1000 / d.cast_time_ms * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd * metaCast;
+  else if (CT) out.speed = 1000 / CT * (1 + (inc(sum, 'cast_speed_+%', tags) + v(sum, 'attack_and_cast_speed_+%', 'skill_speed_+%') + speedInc + tagSp + (tags.includes('cold') ? v(sum, 'cast_speed_for_cold_skills_+%') : 0)) / 100) * more(fin, 'cast_speed_+%', tags) * speedMods * dwd * metaCast;
   if (byTotem && out.speed) out.speed *= 1 + v(sum, 'ascendency_tactician_totem_skill_speed_+%_final') / 100;   // Tactician's Cannons, Ready!: more skill speed of totems' skills
   // "+X seconds to Total Attack / Cast Time" (Leap Slam, Rolling Slam, Comet): added to the use time whatever the speed (PoB2's TotalAttackTime)
   const addT = v(st, 'total_attack_time_+_ms', 'total_cast_time_+_ms') / 1000; if (addT && out.speed) { out.speed = 1 / (1 / out.speed + addT); out.addT = addT; }   // addT: Energy counts it double (scene.js)
@@ -1826,14 +1827,32 @@ export function skill(g, b, treeGear) {
     out.avg = Object.values(H).reduce((t, [lo, hi]) => t + (lo + hi) / 2, 0);
   }
   if (flags.has('global_cannot_crit')) out.crit = 0;
-  if (out.avg != null && out.speed) {
+  if (out.avg != null) {
     const c = (out.crit || 0) / 100, cb = (out.critBonus || 0) / 100, IC = c > 0 && c < 1 && sum['oracle_hits_eventually_crit_with_critical_strike_multiplier_+%_final_per_failed_roll'];
     // Oracle's Inevitable Critical Hits: the hits that fail re-roll until they crit, its less bonus per re-roll (as the scene: up to 99 re-rolls)
     let k = 1 + c * cb;
     if (IC) { k = c * (1 + cb); let q = 1 - c; for (let n = 1; n < 99; n++, q *= 1 - c) k += q * c * (1 + cb * Math.max(0, 1 + IC * n / 100)); k += q * (1 + cb * Math.max(0, 1 + IC * .99)); }
-    out.dps = out.avg * k * out.speed;
+    // a skill the gem sets off itself (Volcanic Steps): its average per hit, as the game's window, with no rate of its own
+    out.perHit = out.avg * k; out.triggered = !!PT && gt.includes('Triggered');
+    if (!out.triggered && out.speed) out.dps = out.perHit * out.speed;
   } else if (!out.reason && out.avg == null && !Object.keys(out.dot).length) out.reason = 'This skill does not deal direct damage';
+  // a gem whose own skill deals no damage (a warcry, a buff) with a skill that does laid over its numbers (Ancestral Cry's
+  // Volcanic Steps, Temper Weapon's Combust): that skill's hits as the gem's other tab
+  if (!g.part && !g.asHit && d.hit?.types?.some(x => x === 'Attack' || x === 'Spell') && out.avg == null && !Object.keys(out.dot).length && !out.minion) {
+    const H = skill({ ...g, asHit: true }, b, treeGear); if (H.avg != null || Object.keys(H.dot).length) out.hitAs = H;
+  }
   return out;
+}
+const dealt = x => !!x && (x.avg != null || Object.keys(x.dot).length > 0), dotSum = x => Object.values(x.dot).reduce((a, y) => a + y, 0);
+// the skills of a gem that deal damage besides its own (the game's skill window: a tab each): { key, tab (available.py:
+// label, label_<lang>, description, types), s (skill() of it) }
+export const subsOf = (g, s) => { const d = SK.skills[g.name] || {};
+  return [...dealt(s.hitAs) ? [{ key: 'hit', tab: d.hit, s: s.hitAs }] : [], ...Object.entries(s.parts || {}).filter(([, p]) => dealt(p)).map(([k, p]) => ({ key: k, tab: d.parts[k], s: p }))]; };
+// what a gem without damage of its own deals through them: the DPS of those with a rate of their own, else (all set off
+// by the gem: Volcanic Steps) their damage per hit (perHit). ponytail: one number of either kind, as the game gives no rate for those
+export function subDamage(s) {
+  const L = [s.hitAs, ...Object.values(s.parts || {})].filter(dealt), rate = L.filter(x => x.dps != null || dotSum(x));
+  return !L.length ? null : rate.length ? { v: rate.reduce((t, x) => t + (x.dps || 0) + dotSum(x), 0) } : { v: L.reduce((t, x) => t + (x.perHit || 0), 0), perHit: true };
 }
 
 // What the hits of a skill do with ailments, from the gem's own stats, its supports' and the tree's and gear's (sum): base
@@ -2163,3 +2182,7 @@ console.assert(attributes({ base_strength: 100, 'strength_and_dexterity_+%': 10 
 // Shackles of the Wretched: the curses you inflict are on you too (Thief's Torment: for half the time), no ailment again for 6 seconds
 { const b = { gems: [], items: {}, level: 80 }, R = s => recovery(character(b, s), s), a = R({ curses_reflected_to_self: 1, 'self_curse_duration_+%': -50, 'curse_effect_on_self_+%': -20, shock_prevention_ms_when_shocked: 6000 }), sm = R({ randomly_cursed_when_totems_die_curse_level: 1 }).soulCurse;
   console.assert(a.selfCurse.reflect && a.selfCurse.time === .5 && a.selfCurse.effect === .8 && a.ailPrevent.shock === 6000 && !a.ailPrevent.chill && !R({}).selfCurse.reflect && !R({}).soulCurse && sm.length > 3 && sm.every(x => x.s > 0 && x.C.effect === 1), 'Shackles of the Wretched, Thief, Soul Mantle', a.selfCurse, a.ailPrevent, sm); }
+// Ancestral Cry: the warcry deals nothing itself; its Volcanic Steps (an attack it sets off: the gem's numbers) and Volcanic
+// Eruption (a part) deal their damage per hit with no rate of their own (calc subsOf, subDamage)
+{ const s = skill({ name: 'Ancestral Cry', level: 10, supports: [] }, { gems: [], items: { weapon: newItem('Felled Greatclub') } }, {}), L = subsOf({ name: 'Ancestral Cry' }, s);
+  console.assert(s.avg == null && s.hitAs?.attack && s.hitAs.triggered && s.hitAs.dps == null && s.hitAs.perHit > 0 && L.length === 2 && L[1].s.attack && subDamage(s)?.perHit && subDamage(s).v === s.hitAs.perHit + L[1].s.perHit, 'Ancestral Cry', s, L); }

@@ -2,7 +2,7 @@
 // Everything from gems.json / skills.json (game tables): support compatibility (skill types, RPN with OR/AND/NOT),
 // support families, max sockets (Jeweller's Orb actions) and support gem capacity (ClientStrings: 5 attribute = 1).
 import { t, esc, tn, fmt, lang, kwPlain, kwHtml } from './i18n.js';
-import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport, condKey, GEM, gemName } from './calc.js';
+import { attributes, skill, reservation, totem, usedBy, metasFor, linkMetas, canSupport, condKey, GEM, gemName, subsOf, subDamage } from './calc.js';
 import { BINDABLE, enemy } from './enemies.js';
 // a bindable monster as the picker lists it: varieties of one name (their skills differ) by the tail of their game id
 const spLabel = m => m ? m.variant ? `${m.name} (${m.variant})` : m.name : '';
@@ -45,9 +45,14 @@ function condRows(s, b, sum) {
     return `<label class="cond"><input ${box} data-cond="${esc(k)}"><span>${L.size ? [...L].map(esc).join('<br>') : (k.startsWith('enemy:') ? t('Enemies') + ': ' : '') + esc(k.replace(/^enemy:|^#/, '').replace(/([a-z])([A-Z0-9])/g, '$1 $2'))}</span></label>`; }).join('');
 }
 
-// side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill details window
-function details(g, b, sum, geo) {
-  const G = GEM[g.name] || {}, s = skill(g, b, sum), st = s.stats, geom = geo?.(g) || {};
+// a tab of the game's skill window: its label (available.py), else the skill's name
+const tabName = (x, G) => x?.['label_' + lang] || x?.label || tn(G);
+// side panel (left, in place of the character sheet): every number of the selected skill, grouped like the game's skill
+// details window, with a tab for each skill it sets off that deals damage (view: its key; Ancestral Cry's Volcanic Steps)
+function details(g, b, sum, geo, view) {
+  const G = GEM[g.name] || {}, main = skill(g, b, sum), subs = subsOf(g, main), sub = subs.find(x => x.key === view), s = sub?.s || main, st = s.stats, geom = sub ? {} : geo?.(g) || {};
+  const desc = sub ? sub.tab?.['description_' + lang] || sub.tab?.description || '' : descOf(G);
+  const tabs = subs.length ? `<div class="dtabs">${[{ key: '', tab: SK.skills[g.name]?.tab }, ...subs].map(x => `<button data-dtab="${esc(x.key)}"${(sub?.key || '') === x.key ? ' class="on"' : ''}>${esc(tabName(x.tab, G))}</button>`).join('')}</div>` : '';
   const sec = (title, rows) => (rows = rows.filter(Boolean)).length
     ? `<h4>${t(title)}</h4>${rows.map(([k, v]) => `<div class="kv"${k === 'Damage per Second' ? ' data-why="dps"' : ''}><span>${t(k)}</span><b>${v}</b></div>`).join('')}` : '';
   const hits = Object.entries(s.hits), lo = hits.reduce((a, [, h]) => a + h[0], 0), hi = hits.reduce((a, [, h]) => a + h[1], 0);
@@ -55,16 +60,17 @@ function details(g, b, sum, geo) {
   const sups = (g.supports || []).filter(n => GEM[n]);
   const lines = shownLines(st, g.name), spirit = reservation(g, sum, b), T = totem(g, sum);   // at the level and quality the character uses it with (calc.js gemStats)
   return `<div class="dhead"><img src="${img(G.icon)}" alt=""><div><b>${esc(gemName(g))}</b><small>${t('Level')} ${st._level}${st._quality ? ` · ${t('Quality')} ${st._quality}%` : ''}</small></div></div>
-    ${descOf(G) ? `<p class="ddesc">${kwHtml(descOf(G))}</p>` : ''}
+    ${tabs}${desc ? `<p class="ddesc">${kwHtml(desc)}</p>` : ''}
     ${sec('Damage', [
-      ['Damage per Second', s.dps != null ? fmt(s.dps, 1) : '—'],
+      s.perHit != null && ['Average Damage per Hit', fmt(s.perHit, 1)],
+      !s.triggered && ['Damage per Second', s.dps != null ? fmt(s.dps, 1) : '—'],
       ['Total Combined Damage', hits.length ? `${fmt(lo)} – ${fmt(hi)}` : '—'],
       ...hits.map(([k, [a, z]]) => [DTYPE[k], `${fmt(a)} – ${fmt(z)}`]),
       s.totems > 0 && ['Active totems', s.totems],
       s.rage > 0 && ['Rage (more attack damage)', s.rage],
       s.rage > 0 && s.rageEffect > 0 && ['Increased Rage effect (Berserk)', s.rageEffect + '%'],
     ])}
-    ${sec('Speed', [
+    ${sub?.s.triggered ? sec('Speed', [s.cooldown && ['Cooldown time', fmt(s.cooldown / 1000, 2) + ' s']]) : sec('Speed', [
       !s.attack && ['Cast time', s.castTime ? fmt(s.castTime / 1000, 2) + ' s' : '—'],
       s.attack && s.useTime && ['Attack time', fmt(s.useTime, 2) + ' s'],
       [s.attack ? 'Attacks per second' : 'Uses per second', s.speed ? fmt(s.speed, 2) : '—'],
@@ -80,8 +86,8 @@ function details(g, b, sum, geo) {
       s.ignite && ['Ignite duration', fmt(s.ignite.duration, 1) + ' s'],
     ])}
     ${(c => c ? `<h4>${t('Conditions')}</h4><p class="note">${t('Tick what holds while you fight: its bonuses count in the damage of every skill. The simulator checks them on its own.')}</p><div class="conds">${c}</div>` : '')(condRows(s, b, sum))}
-    ${sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]])}
-    ${sec('Area & Duration', [
+    ${sub ? '' : sec('Cost & Reservation', [cost && ['Cost', cost], spirit && ['Reservation', t('{0} spirit', spirit)]])}
+    ${sub ? '' : sec('Area & Duration', [
       geom.radiusFromData && ['Radius', fmt(geom.radius, 1) + ' m'],
       SK.skills[g.name]?.duration_ms && ['Duration', fmt(SK.skills[g.name].duration_ms / 1000, 2) + ' s'],
       geom.speed && ['Projectile speed', fmt(geom.speed, 1) + ' m/s'],
@@ -102,6 +108,7 @@ function details(g, b, sum, geo) {
 export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, getVs = () => null) {   // getVs: the build the character panel compares with, { b, sum }
   let open = null;  // [gem index, socket index] being edited
   let sel = 0;      // skill shown in the details panel
+  let tab = '';     // and which of its tabs (details view)
   function render() {
     const b = getBuild(), sum = getSum(), attrs = attributes(sum, b.asc), used = { str: 0, dex: 0, int: 0 };
     linkMetas(b);
@@ -125,7 +132,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
         const s = sups[si];
         return `<span class="sockw"><button class="sock${open?.[0] === gi && open[1] === si ? ' on' : ''}" data-gi="${gi}" data-si="${si}" title="${s ? esc(tn(s)) + ' — ' + t('right click to remove') : t('Empty support socket')}" ${s && colour(s) ? `style="border-color:${ATTRS[colour(s)][2]}"` : ''}>${s ? `<img src="${img(s.icon)}" alt="">` : ''}</button>${s ? `<button class="sockx" data-unsup="${gi}:${si}" title="${t('Remove support')}">✕</button>` : ''}</span>`;
       }).join('');
-      const d = skill(g, b, sum), vs = getVs(), vg = vs && d.dps != null && vs.b.gems.find(x => x.name === g.name), vd = vg && skill(vg, vs.b, vs.sum).dps, dd = vd != null && Math.round(d.dps - vd);   // the same skill in the compared build
+      const d = skill(g, b, sum), sd = d.dps == null && subDamage(d), vs = getVs(), vg = vs && d.dps != null && vs.b.gems.find(x => x.name === g.name), vd = vg && skill(vg, vs.b, vs.sum).dps, dd = vd != null && Math.round(d.dps - vd);   // the same skill in the compared build
       let picker = '';
       if (open?.[0] === gi) {   // only supports this skill can take, with icon, what they do and what they would do to its DPS
         const gain = name => { const supports = [...g.supports]; supports[open[1]] = name; return impactLine(dpsDiff(skill(own, b, sum).dps, skill({ ...own, supports }, b, sum).dps)); };
@@ -144,7 +151,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
       return `<div class="skill${gi === sel ? ' sel' : ''}" data-sel="${gi}"><img class="sicon" src="${img(G.icon)}" alt="">
         <div class="sbody"><div class="shead">${t('LV')}: <input type="number" min="1" max="40" value="${g.level}" data-gi="${gi}" data-k="level">${d.stats?._level > g.level ? ` <b class="slv" title="${t('With the levels your passives and gear add')}">${d.stats._level}</b>` : ''} <span title="${t('Quality')}">Q:</span> <input type="number" min="0" max="40" value="${g.quality || 0}" data-gi="${gi}" data-k="quality" title="${t('Quality')}"> <label class="scor"><input type="checkbox"${g.corrupted ? ' checked' : ''} data-gi="${gi}" data-k="corrupted">${t('Corrupted')}</label> <b>${esc(gemName(g))}</b>
           ${spec}${inMeta}<span class="sockn"${holder ? ' hidden' : ''}>${t('sockets')} <select data-gi="${gi}" data-k="sockets">${Array.from({ length: SK.max_support_sockets }, (_, i) => i + 1).map(n => `<option ${n === g.sockets ? 'selected' : ''}>${n}</option>`).join('')}</select></span>
-          <b class="sdps" title="${esc(t(d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' + (dd ? `<i class="vs ${dd > 0 ? 'up' : 'dn'}" title="${esc(t('Compared with {0}', vs.b.name))}">${dd > 0 ? '+' : ''}${fmt(dd)}</i>` : '') : /weapon/.test(d.reason) ? `<small class="swhy">${esc(t(d.reason))}</small>` : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
+          <b class="sdps" title="${esc(t(sd ? 'Damage of the skills it sets off' : d.reason || 'DPS with your tree and gear'))}">${d.dps != null ? fmt(Math.round(d.dps)) + ' <small>DPS</small>' + (dd ? `<i class="vs ${dd > 0 ? 'up' : 'dn'}" title="${esc(t('Compared with {0}', vs.b.name))}">${dd > 0 ? '+' : ''}${fmt(dd)}</i>` : '') : sd ? `${fmt(Math.round(sd.v))} <small>${sd.perHit ? t('per hit') : 'DPS'}</small>` : /weapon/.test(d.reason) ? `<small class="swhy">${esc(t(d.reason))}</small>` : '— <small>DPS</small>'}</b><button class="sdel" data-del="${gi}" title="${t('Remove skill')}">✕</button></div>
         <div class="socks">${sockets}</div>${picker}</div></div>`;
     }).join('');
     const per = SK.support_capacity_per_attribute;
@@ -152,7 +159,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
     const give = grantedSkills(wornItems(b, getSum())).filter(([n]) => GEM[n] && !b.gems.some(g => g.name === n)).map(([n, slot, level]) =>
       `<p class="note">${t('Your {0} grants {1}: it is not in the build.', t(SLOTS[slot] || 'Jewel'), esc(tn(GEM[n])))} <button data-grant="${esc(n)}" data-level="${level || ''}">${t('Add')}</button></p>`).join('');
     const cur = b.gems[sel] && GEM[b.gems[sel].name]?.kind !== 'support' ? b.gems[sel] : null;
-    side.innerHTML = cur ? details(cur, b, sum, geo) : `<p class="note">${t('Select a skill to see all its stats.')}</p>`;
+    side.innerHTML = cur ? details(cur, b, sum, geo, tab) : `<p class="note">${t('Select a skill to see all its stats.')}</p>`;
     el.innerHTML = `<div class="skills"><div class="skadd"><input list="gemNames" placeholder="${t('Add skill…')}" id="gemSearch"><datalist id="spectreNames">${[...new Set(BINDABLE.map(spLabel))].map(n => `<option value="${esc(n)}">`).join('')}</datalist><datalist id="gemNames">${GEMS.filter(g => g.kind !== 'support')
       .map(g => `<option value="${esc(tn(g))}">`).join('')}</datalist></div>${give}${rows || `<p class="note">${t('No skills yet: type a gem name above.')}</p>`}
       <div class="cap">${t('Support gem capacity')}: ${Object.entries(ATTRS).map(([k, [a, , c]]) =>
@@ -161,7 +168,8 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
   }
   // remove a support: ✕ on the socket or in the details panel, or right click on the socket
   const unsup = (gi, si) => { const b = getBuild(), g = usedBy(b, gi) || b.gems[gi]; if (!g?.supports?.[si]) return false; g.supports[si] = null; open = null; changed(); render(); return true; };
-  side.addEventListener('click', e => { const x = e.target.closest('[data-unsup]'); if (x) unsup(...x.dataset.unsup.split(':').map(Number)); });
+  side.addEventListener('click', e => { const x = e.target.closest('[data-unsup]'); if (x) unsup(...x.dataset.unsup.split(':').map(Number));
+    const T = e.target.closest('[data-dtab]'); if (T) { tab = T.dataset.dtab; render(); } });
   side.addEventListener('change', e => {   // a condition ticked or counted in the details panel
     const x = e.target.closest('[data-cond]'); if (!x) return;
     const C = getBuild().conds ||= {}, k = x.dataset.cond, val = x.type === 'checkbox' ? x.checked ? 1 : null : x.value === '' ? null : Math.max(0, Math.floor(+x.value) || 0);
@@ -183,7 +191,7 @@ export function initSkills(el, side, getBuild, changed, getSum, addGem, geo, get
     const t = e.target.closest('.sock');
     if (!t) {   // anywhere else on a skill row (not its inputs) shows it in the details panel
       const row = e.target.closest('[data-sel]');
-      if (row && !e.target.closest('input, select, .suppick') && +row.dataset.sel !== sel) { sel = +row.dataset.sel; render(); }
+      if (row && !e.target.closest('input, select, .suppick') && +row.dataset.sel !== sel) { sel = +row.dataset.sel; tab = ''; render(); }
       return;
     }
     sel = +t.dataset.gi;

@@ -1020,5 +1020,8 @@
  "Items changed: {0}": "Изменённые предметы: {0}",
  "Additional physical damage reduction": "Дополнительное уменьшение получаемого физического урона",
  "Its monster": "Монстр",
- "{0}: choose its monster in the Skills tab": "{0}: выберите монстра на вкладке «Умения»"
+ "{0}: choose its monster in the Skills tab": "{0}: выберите монстра на вкладке «Умения»",
+ "Average Damage per Hit": "Средний урон за попадание",
+ "per hit": "за попадание",
+ "Damage of the skills it sets off": "Урон умений, которые она вызывает"
 }

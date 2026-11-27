@@ -1020,5 +1020,8 @@
  "Items changed: {0}": "ไอเทมที่เปลี่ยน: {0}",
  "Additional physical damage reduction": "เสริมค่าป้องกันกายภาพ",
  "Its monster": "มอนสเตอร์",
- "{0}: choose its monster in the Skills tab": "{0}: เลือกมอนสเตอร์ในแท็บสกิล"
+ "{0}: choose its monster in the Skills tab": "{0}: เลือกมอนสเตอร์ในแท็บสกิล",
+ "Average Damage per Hit": "ความเสียหายเฉลี่ยต่อการโจมตีที่ถูกเป้า",
+ "per hit": "ต่อการโจมตีที่ถูกเป้า",
+ "Damage of the skills it sets off": "ความเสียหายของสกิลที่สกิลนี้ทริกเกอร์"
 }

@@ -1020,5 +1020,8 @@
  "Items changed: {0}": "Objetos cambiados: {0}",
  "Additional physical damage reduction": "Reducción adicional de daño físico",
  "Its monster": "Su monstruo",
- "{0}: choose its monster in the Skills tab": "{0}: elige su monstruo en la pestaña Habilidades"
+ "{0}: choose its monster in the Skills tab": "{0}: elige su monstruo en la pestaña Habilidades",
+ "Average Damage per Hit": "Daño medio por golpe",
+ "per hit": "por golpe",
+ "Damage of the skills it sets off": "Daño de las habilidades que activa"
 }

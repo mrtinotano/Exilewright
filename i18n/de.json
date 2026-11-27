@@ -1020,5 +1020,8 @@
  "Items changed: {0}": "Geänderte Gegenstände: {0}",
  "Additional physical damage reduction": "Zusätzliche physische Schadensminderung",
  "Its monster": "Sein Monster",
- "{0}: choose its monster in the Skills tab": "{0}: Wähle sein Monster im Reiter Fertigkeiten"
+ "{0}: choose its monster in the Skills tab": "{0}: Wähle sein Monster im Reiter Fertigkeiten",
+ "Average Damage per Hit": "Durchschnittlicher Schaden pro Treffer",
+ "per hit": "pro Treffer",
+ "Damage of the skills it sets off": "Schaden der Fertigkeiten, die sie auslöst"
 }

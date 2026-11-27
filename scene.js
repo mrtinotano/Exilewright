@@ -480,7 +480,8 @@ export function initScene(el, api) {
     // Temper Weapon: an Empowered attack Combusts on its first hit (its chance): its own hit, fire, in its area around the enemy
     const CB = S.combust; if (CB && !CB.done && Math.random() * 100 < CB.T.dmg.stats['imbue_weapon_combust_trigger_chance_%']) { CB.done = true; const c = { x: d.pos.x, z: d.pos.z }; later(.05, () => boom(c, CB.T.A, CB.T)); }
     d.aggro = true;   // hit, it comes at you
-    const P = S.P, D = S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
+    // a gem with no hits of its own hits with the skill laid over it (calc.js hitAs: Temper Weapon's Combust, Volcanic Steps)
+    const P = S.P, D = S.dmg && !Object.keys(S.dmg.hits || {}).length && S.dmg.hitAs || S.dmg, own = !APPROX.has(S.src), A = own ? D?.ail : null;
     const real = own && !!D && Object.keys(D.hits).length > 0, raw = {};
     let overHit = 0;   // Amazon: a share of the chance to hit over 100% as critical hit chance
     if (own && (D ? D.attack : P.attack) && !A?.alwaysHit) {   // attacks roll your accuracy against its evasion; spells always hit
@@ -3515,7 +3516,7 @@ export function initScene(el, api) {
       // a damaging Warcry hits (Seismic Cry, Arctic Howl); Seismic Cry Heavy Stuns the enemies Primed for Stun and Arctic
       // Howl Freezes those Primed for Freeze (their descriptions; keywords.json PrimedStun)
       const real = Object.keys(S.dmg?.hits || {}).length > 0, PR = { 'Seismic Cry': 'stun', 'Arctic Howl': 'freeze' }[S.name];
-      for (const d of list) { d.wob = 1; if (real) hit(d, S); else for (const a of ailOf(S.P.els)) inflict(d, a, S);
+      for (const d of list) { d.wob = 1; if (real) hit(d, S);   // one that does not hit inflicts no ailment (Ancestral Cry's fire: none)
         if (PR && !d.dead && (d.bar[PR] || 0) >= PRIMED[d.stat.rarity]) { d.bar[PR] = 0; if (PR === 'stun') d.lock.stun = GC.HeavyStunModifierDuration; inflict(d, PR, S, 1, null, { dur: DUR[PR] }); }
         trigger(S, 'warcry', d); daze(d, S.dmg.sum?.support_dazed_cry_duration_ms / 1000); if (CY.debil) d.debil = time + DEBIL.time; if (CY.weak) weaken(d, CY.weak); }   // Dazing Cry; the tree's Debilitate and Critical Weakness
       // the attacks it Empowers: one per its Power of the enemies in its area, up to its cap (else the scene's 2); a Slam
