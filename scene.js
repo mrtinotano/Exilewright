@@ -3136,9 +3136,8 @@ export function initScene(el, api) {
   // data); its shimmer and the charged arrow's scorched path are left out; the counts, speeds and sizes are the scene's
   const DARR = { base: { head: 0xffae64 }, mid: { head: 0xff7033, ember: 0xff9e45 }, charged: { head: 0xff874d, ember: 0xff6626, lick: true },
     flame: 0xff9e45, lit: 0xff7033, ring: 0x806947, cone: 0x42240f, wind: 0x737373, flash: 0xffa633, burst: 0xff7033, wave: 0x80593f };
-  const daTip = () => { const h = hand(); return V(h.x + Math.sin(facing) * .6, h.y, h.z + Math.cos(facing) * .6); };
   function daCharge(c, k, dt) {
-    const q = daTip();
+    const h = hand(), q = V(h.x + Math.sin(facing) * .6, h.y, h.z + Math.cos(facing) * .6);
     if (Math.random() < dt * 30) fx.emit(1, { p: q, r: .03, v: .1, life: .15, size: .12 + k * .2, c: k >= 1 ? DARR.charged.head : DARR.base.head, c2: 'white', k: 2.4 });
     if (c.s > .3 && Math.random() < dt * 12) fx.emit(1, { p: q, r: .08, v: .4, up: .6, life: .5, size: .1, c: DARR.flame, k: 2, drag: 1 });
     if (c.s > .5 && Math.random() < dt * 8) fx.emit(1, { p: q, r: .1, v: .5, up: 1, life: 2, size: .03, c: DARR.flame, c2: 'white', k: 2.4, g: 1, drag: 1 });
