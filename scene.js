@@ -8255,13 +8255,19 @@ export function initScene(el, api) {
     // you are hit, and having lost one recently you regenerate its share of your evasion as energy shield
     if (!onS('Future-Past')) me.fpAt = null; else me.fpAt ??= time;   // its Hindsight from when it is on
     // Blasphemy: while it is on, the curses socketed in it curse the enemies within their own area around you, at its less
-    // effect. note: its own radius in the data (1 m) is not used: the curse's
+    // effect, each a curse of its own up to your curse limit. note: its own radius in the data (1 m) is not used: the
+    // curse's; a curse from it takes a free place only, not one of another curse (the game's order is not in the data)
     called();
     const BL = onS('Blasphemy'), BK = BL && 1 + BL.dmg.stats['support_blasphemy_curse_effect_+%_final'] / 100, blOn = new Set(); me.blas ||= {};
     if (BL) api.build().gems.forEach((g, i) => {
       const S = g.meta === 'Blasphemy' && base(i), C = S?.dmg?.curse; if (!S) return;
       blOn.add(S.name); const R = me.blas[S.name] ||= blasRing(S); R.move(pp); R.set(S.A);
-      for (const d of inside(pp, S.A)) if (!(C?.maxLevel && d.level > C.maxLevel)) { d.curse = { s: .2, label: S.label, C, k: (C?.effect ?? 1) * BK * d.stat.curseEffect }; hexMe(S.name, C, .2, BK); }
+      const ign = S.dmg?.sum?.curse_ignores_curse_limit, lim = ign || sheet().curseIgnore ? Infinity : sheet().curseLimit || 1;
+      for (const d of inside(pp, S.A)) if (!(C?.maxLevel && d.level > C.maxLevel) && !(S.name === 'Repulsion' && d.noRepulse > time)) {
+        const all = [d.curse, ...(d.hexes || [])].filter(Boolean), on = all.find(u => u.name === S.name), k = (C?.effect ?? 1) * BK * d.stat.curseEffect;
+        if (on?.blas) { on.s = .2; on.k = k; } else if (!on && all.length < lim) { hexOld(d, S.name, ign); d.curse = { s: .2, label: S.label, name: S.name, S, C, k, blas: true }; } else continue;
+        hexMe(S.name, C, .2, BK);
+      }
     });
     for (const k in me.blas) if (!blOn.has(k)) { me.blas[k].remove(); delete me.blas[k]; }
     // Her Declaration: while the buff it supports is on, an enemy that enters your Presence is Intimidated for its duration
