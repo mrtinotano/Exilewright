@@ -2536,6 +2536,48 @@ export function initScene(el, api) {
     }
     return false;
   }
+  // Earthshatter's look (warrior_earthshatter; its tutorial video). Its slam has no impact of its own (its art is none):
+  // its fissure starts with 32 sparks for 0.1-0.2 s (start_midup: 1 / 0.51 / 0.3), dust for 2 s (0.19) and rocks lying
+  // for 4-8 s (start_fwdline), jagged rock along it. Its spike (spike_01): a cluster of 47 grey spikes for its duration
+  // (Spike_01), rising with 2 streaks up for 0.7 s (summon_01: 1 / 0.79 / 0.7), a ring for 0.3 s (0.3 / 0.2 / 0.09),
+  // dust and rocks, sinking with dust and rocks (submerge_01). Shattered (shockwave_01): a blast down for 0.13 s (8 /
+  // 2.65 / 1.45), a flash for 0.28 s from 0.04 s, a ring for 0.3 s from 0.08 s, a wave for 0.55 s from 0.07 s, smoke for
+  // 1.3 s from 0.06 s, dust up and away for 2 s, embers for 1.85-3.5 s, rocks lying for 6-10 s and its crater for 5 s.
+  // note: its fissure's length and its spikes' size are the scene's (not in its data), as are the counts and speeds
+  const ESH = { spark: 0xff824d, dust: 0x303030, rock: 0x45423f, spike: 0x5c5853, streak: 0xffc9b3, ring: 0xffab4d, blast: 0xff542e, ember: 0xff7a3d };
+  const ES_CONE = new THREE.ConeGeometry(.12, 1, 5);
+  function esSpikes() {
+    const g = new THREE.Group(), mat = new THREE.MeshStandardMaterial({ color: ESH.spike, roughness: .8, flatShading: true });
+    for (let i = 0; i < 47; i++) {
+      const a = rnd(TAU), d = rnd(.7), m = new THREE.Mesh(ES_CONE, mat), h = rnd(.8, 2) * (1 - d * .6);
+      m.scale.set(1, h, 1); m.position.set(Math.cos(a) * d, h * .45, Math.sin(a) * d); m.rotation.set(Math.sin(a) * d * .9, 0, -Math.cos(a) * d * .9); m.castShadow = true; g.add(m);
+    }
+    return g;
+  }
+  function esStep(p, first) {
+    const q = { x: p.x, y: .1, z: p.z };
+    if (first) fx.emit(32, { p: q, r: .2, v: 3, up: 1.5, life: .15, size: .04, c: ESH.spark, c2: 'white', k: 2.4, drag: 2 });
+    fx.spikes(p, .45, { n: 4, h: .6, w: .1, dur: .9, dark: true, c: ESH.spike });
+    fx.emit(5, { p: q, r: .3, v: .6, up: .5, life: 2, size: .4, grow: 1.6, c: ESH.dust, smoke: true, a: .35, drag: 1.5 });
+    fx.emit(4, { p: q, r: .2, v: 1.5, up: 2, life: 6, size: .07, c: ESH.rock, smoke: true, a: .9, g: 9, drag: .4 });
+  }
+  function esRise(c) {
+    const q = { x: c.x, y: .2, z: c.z };
+    for (let i = 0; i < 2; i++) fx.streak(V(c.x, 0, c.z), V(c.x + rnd(-.2, .2), 2.4, c.z + rnd(-.2, .2)), ESH.streak, .7, .05, 1.2);
+    fx.ring(c, .2, 1.2, ESH.ring, .3, { a: .7 }); shake = Math.max(shake, .15);
+    fx.emit(28, { p: q, r: .5, v: 1.2, up: .8, life: 2, size: .5, grow: 1.6, c: ESH.dust, smoke: true, a: .35, drag: 1.5 });
+    fx.emit(10, { p: q, r: .3, v: 2, up: 2.5, life: 6, size: .08, c: ESH.rock, smoke: true, a: .9, g: 9, drag: .4 });
+  }
+  function esShatter(c, R) {
+    const q = { x: c.x, y: .6, z: c.z };
+    fx.glow(q, R, ESH.blast, .13, 3); later(.04, () => fx.glow(q, R * .8, ESH.ring, .28, 2.2)); shake = Math.max(shake, Math.min(.5, R * .15));
+    later(.08, () => fx.ring(c, .2, R * 1.2, ESH.ring, .3, { a: .8 })); later(.07, () => fx.ring(c, R * .3, R * 1.4, ESH.streak, .55, { a: .4, y: .4 }));
+    later(.06, () => fx.emit(20, { p: { x: c.x, y: .1, z: c.z }, r: .3, v: R * 3, up: .1, life: 1.3, size: .5, grow: 1.8, c: ESH.dust, smoke: true, a: .35, drag: 2, flat: true }));
+    later(.1, () => { fx.emit(28, { p: q, r: .4, v: 1, up: 1.5, life: 2, size: .5, grow: 1.6, c: ESH.dust, smoke: true, a: .35, drag: 1.2 }); fx.emit(28, { p: q, r: .4, v: 3, up: .3, life: 2, size: .4, grow: 1.6, c: ESH.dust, smoke: true, a: .3, drag: 1.5 }); });
+    fx.emit(24, { p: q, r: .3, v: 4, up: 3, life: 2.5, size: .04, c: ESH.ember, c2: 'white', k: 2.4, g: 2, drag: 1 });
+    fx.emit(24, { p: q, r: .3, v: 5, up: 3, life: 8, size: .09, c: ESH.spike, smoke: true, a: .95, g: 9, drag: .3 });
+    later(.1, () => fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032 }));
+  }
   // earthen objects (Earthshatter's spikes, Forge Hammer's hammer, Shield Wall's walls): up to the skill's limit, the oldest
   // goes; for its duration
   // up to a limit: the oldest of the objects f picks gives way
@@ -2546,15 +2588,15 @@ export function initScene(el, api) {
   const EARTH = { spike: new THREE.ConeGeometry(.35, 1.6, 6), hammer: new THREE.BoxGeometry(.7, .5, .4) };
   function earth(S, c, max, spike) {
     limit(o => o.earth && o.name === S.name, max, S);
-    const m = new THREE.Mesh(spike ? EARTH.spike : EARTH.hammer, new THREE.MeshStandardMaterial({ color: spike ? 0x6b5a48 : 0x3a3430, emissive: S.els.includes('fire') ? 0x5a1a04 : 0, roughness: .9, flatShading: true }));
-    m.position.set(c.x, spike ? .8 : .35, c.z); m.rotation.set(spike ? 0 : .5, rnd(TAU), 0); m.castShadow = true;
-    pop(c, .6, 'dust');
-    const e = thing(m, S.P.dur || SIM.lifetime, { r: .4, name: S.name, earth: S, near: p => dist(p, c),
+    const m = spike ? esSpikes() : new THREE.Mesh(EARTH.hammer, new THREE.MeshStandardMaterial({ color: 0x3a3430, emissive: S.els.includes('fire') ? 0x5a1a04 : 0, roughness: .9, flatShading: true }));
+    m.position.set(c.x, spike ? 0 : .35, c.z); m.rotation.set(spike ? 0 : .5, rnd(TAU), 0); m.castShadow = true;
+    if (spike) esRise(c); else pop(c, .6, 'dust');
+    const e = thing(m, S.P.dur || SIM.lifetime, { r: .4, name: S.name, earth: S, near: p => dist(p, c), off: () => { if (spike && !e.gone) esStep(c); },   // its spike sinks
       // a warcry near it shatters it: the spike's explosion, or the hammer's Molten Fissures in a spiral (calc.js parts)
       shatter() {
-        e.dead = true; pop(c, 1, 'dust'); const X = partOf(S, spike ? 'EarthshatterSpikePlayer' : 'ForgeHammerFissurePlayer'); if (!X) return;
+        e.dead = true; if (spike) e.gone = true; else pop(c, 1, 'dust'); const X = partOf(S, spike ? 'EarthshatterSpikePlayer' : 'ForgeHammerFissurePlayer'); if (!X) return;
         say(t('{0} shatters', S.label), X.el);
-        if (spike) return boom(c, X.A, X);
+        if (spike) { esShatter(c, X.A); return area(c, X.A, X); }
         const n = S.dmg.stats.base_number_of_fissures || 1, a0 = rnd(TAU);
         for (let k = 0; k < n; k++) later(k * .08, () => fissure(X, c, a0 + k * TAU / n, 5, X.A, 1, { dur: X.dmg.stats.base_skill_effect_duration / 1000, max: S.dmg.stats.forge_hammer_base_maximum_number_of_fissures }));
       } });
@@ -3723,7 +3765,8 @@ export function initScene(el, api) {
     }
     for (let k = 1; k <= len; k++) later(k * .06, () => {
       const p = { x: from.x + dx * k, z: from.z + dz * k };
-      pop(p, r, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, p) <= r + SIM.body) { seen.add(d); hit(d, S, { mult, noPay: true }); }
+      if (o.own) esStep(p, k === 1); else { pop(p, r, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); }
+      for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, p) <= r + SIM.body) { seen.add(d); hit(d, S, { mult, noPay: true }); }
     });
     // Branching Fissures: its number of secondary fissures off this one, with its less area and damage
     // note: where they branch, their angle and length are not in its data: evenly along it, alternating sides at 45°, half its length
@@ -4243,7 +4286,7 @@ export function initScene(el, api) {
       later(.12, () => {
         // Sunder: a sequence of its areas in front of you, each larger by its step, up to its number of enemies in each
         // releasing its shockwave (its part); a hit on fully broken armour Sunders it (its more physical damage taken)
-        const SW = S.dmg?.stats?.sunder_wave_max_steps;
+        const SW = S.dmg?.stats?.sunder_wave_max_steps, SPK = S.dmg?.stats?.spike_slam_max_spikes;
         if (SW) { const ss = S.dmg.stats, X = partOf(S, 'SunderShockwavePlayer'), XR = X && radOf(X); for (let k = 0; k < SW; k++) later(k * .12, () => {
           const r = R + k * ss['sunder_wave_radius_+_per_step'] / 10, q = { x: c.x + S.dx * R * 1.8 * k, z: c.z + S.dz * R * 1.8 * k };
           const there = inside(q, r);
@@ -4252,7 +4295,7 @@ export function initScene(el, api) {
           boom(q, r, S);
         }); }
         else if (P.aftershock) { eqHit(c, R); area(c, R, S); }
-        else boom(c, R, S);
+        else if (!SPK) boom(c, R, S);   // Earthshatter: its fissure is its hit
         // Supercharged Slam: an Aftershock per stage, each its delay later and its radius larger per previous one
         const ps = S.dmg?.part || {};
         for (let k = 1; k <= cs; k++) later(k * ps.aftershock_delay_ms / 1000, () => boom(c, R + k * ps['aftershock_radius_+_per_previous_aftershock'] / 10, S));
@@ -4280,7 +4323,7 @@ export function initScene(el, api) {
           if (X) spendRage(FS);
           for (const sgn of [-1, 1]) later(st.aftershock_delay_ms / 1000, () => { const a = a0 + sgn * off, q = { x: c.x + Math.sin(a) * gap, z: c.z + Math.cos(a) * gap }; boom(q, r, W); if (X) ground('jagged', q, r, durOf(X), W); });
         }
-        slammed(S, c, R); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); if (!P.aftershock) fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
+        slammed(S, c, R); if (S.chillFor) ground('chilled', c, R, S.chillFor, S); if (!P.aftershock && !SPK) fx.disc(c, R * 1.1, 0x0a0806, 5, { dark: true, tex: 'cracks', a: .85, hold: .6, y: .032, spin: 0 });
         // Starborn Onslaught: its fissures, lasting its duration up to its limit, and its stars falling one after another
         // (its first delay, its delay) between its inner and outer radius around the impact (its explosion part)
         // note: the branching of its fissures is not drawn
@@ -4289,13 +4332,14 @@ export function initScene(el, api) {
         // Fury of the Mountain: each pound a Molten Fissure off at random within its cone in front of you, lasting its
         // duration up to its most (note: one per pound, the data gives no number; their length is the scene's)
         else if (st.fury_of_the_mountain_base_maximum_number_of_fissures) { const h = st.bear_fury_of_the_mountain_front_facing_cone_angle * Math.PI / 360; fissure(S, c, Math.atan2(S.dx, S.dz) + rnd(-h, h), 5, S.A, 1, { dur: durOf(S), max: st.fury_of_the_mountain_base_maximum_number_of_fissures }); }
+        else if (SPK) fissure(S, c, Math.atan2(S.dx, S.dz), 5, R, 1, { own: true });   // Earthshatter: one fissure, its area, its damage
         else if (P.fissure) for (let j = -1; j <= 1; j++) fissure(S, c, Math.atan2(S.dx, S.dz) + j * .5, 5);
         if (X) for (let k = 0; k < stars; k++) later((st.empyrean_descent_secondary_explosions_initial_delay_ms + k * st.empyrean_descent_secondary_explosions_delay_ms) / 1000, () => {
           const a = rnd(TAU), r = rnd(st.empyrean_descent_secondary_explosions_inner_radius / 10, st.empyrean_descent_secondary_explosions_outer_radius / 10), q = V(c.x + Math.sin(a) * r, 0, c.z + Math.cos(a) * r);
           fx.streak(V(q.x + 2, 13, q.z - 1.5), q, 'cold', .16, .07, 1.8); later(.16, () => { pop(q, X.A, 'cold'); area(q, X.A, X); });
         });
         // the earthen object it leaves: Earthshatter's spike where its fissure ends, Forge Hammer's hammer where it lands
-        if (P.earthen) { const spike = !!st.spike_slam_max_spikes; earth(S, spike ? { x: c.x + S.dx * 5, z: c.z + S.dz * 5 } : c, spike ? st.spike_slam_max_spikes : st.forge_hammer_maximum_hammers, spike); }
+        if (P.earthen) { const spike = !!st.spike_slam_max_spikes; later(spike ? .3 : 0, () => earth(S, spike ? { x: c.x + S.dx * 5, z: c.z + S.dz * 5 } : c, spike ? st.spike_slam_max_spikes : st.forge_hammer_maximum_hammers, spike)); }   // the spike as its fissure ends
         // Earthquake: its Jagged Ground (its tertiary radius and duration, up to its most patches, never on one of its own)
         // erupts at its end in its Aftershock part, its radius its own per level added to the slam's (2.4-3 m at gem levels
         // 1-20 in the game's 0.3.0 notes; Path of Building's too), grown as the slam's by its increased area
