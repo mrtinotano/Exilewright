@@ -1279,7 +1279,7 @@ export function initScene(el, api) {
     return { dps, sim: Math.abs(S.mult - 1) > .001, el };
   }
   function dot(d, S) {
-    const o = d.dots.find(o => o.name === S.name), s = S.P.dur || 5, v = dotOf(d, S);
+    const o = d.dots.find(o => o.name === S.name), s = S.P.dur || durOf(S) || 5, v = dotOf(d, S);
     // Drain Ailments: a spell's damage over time Consumes an ailment of the enemy (one at random) for its more damage
     const DA = S.P.spell && S.dmg?.finals?.['support_drained_ailment_damage_over_time_+%_final_if_ailment_consumed'], on = DA ? DRAINED.filter(a => has(d, a)) : [];
     if (on.length) { consume(d, S, on[Math.floor(Math.random() * on.length)]); v.dps *= 1 + DA / 100; }
@@ -1806,13 +1806,20 @@ export function initScene(el, api) {
     }
     if (M?.bomb) { trigger(M.S, 'mark', d); later(.06, () => { say(t('{0} explodes on the kill', M.label), 'mark'); bombed(M, p); }); }
     const sp = d.dots.find(o => o.spread);
-    if (sp) {   // Contagion jumps to the neighbours and carries the other chaos debuffs with it; its own deals its more damage
-      // for each time it has spread, up to its most
-      const carry = d.dots.filter(o => o.spread || o.chaos), list = dummies.filter(e => !e.dead && dist(e.pos, p) <= 3.5);
-      for (const e of list) { fx.bolt(V(p.x, 1, p.z), chest(e), 'chaos', .28, .03, .4); for (const o of carry) if (!e.dots.some(x => x.name === o.name)) {
-        const v = dotOf(e, o.S), CS = o.spread && o.S.dmg?.stats, n = (o.spreads || 0) + 1;
-        if (CS?.['contagion_spread_magnitude_+%_final']) v.dps *= 1 + Math.min(CS['contagion_maximum_spread_magnitude_+%_final'], CS['contagion_spread_magnitude_+%_final'] * n) / 100;
-        e.dots.push({ ...o, s: 5, ...v, spreads: o.spread ? n : o.spreads }); } e.by = S; }
+    if (sp) {   // Contagion spreads itself, the curses and the other chaos debuffs on it to the enemies within its radius, refreshing
+      // their durations; its own deals its more damage for each time it has spread, up to its most. Its look: wisps
+      // bursting for 1-3 s and the rot on the ground (contagionWisps_death, deathGroundRot), wisps to each one it reaches
+      // with a flash on its skin (contagionWisps_spread)
+      const carry = d.dots.filter(o => o.spread || o.chaos), hexes = [...(d.hexes || [])].reverse().concat(d.curse || []), list = inside(p, sp.S.A).filter(e => e !== d), from = V(p.x, 1, p.z);
+      fx.emit(14, { p: from, r: .4, v: .8, up: .6, life: rnd(1, 3), size: .24, c: CONTAGION.wisp, k: 1.8, drag: 1 }); rotAt(p);
+      for (const e of list) { wisps(from, chest(e), 8); later(.25, () => fx.glow(chest(e), .9, CONTAGION.wisp, .4, 1.6));
+        for (const o of carry) {
+          const x = e.dots.find(x => x.name === o.name), s = durOf(o.S) || o.S.P.dur || 5, v = dotOf(e, o.S), CS = o.spread && o.S.dmg?.stats, n = (o.spreads || 0) + 1;
+          if (x) { x.s = s; continue; }
+          if (CS?.['contagion_spread_magnitude_+%_final']) v.dps *= 1 + Math.min(CS['contagion_maximum_spread_magnitude_+%_final'], CS['contagion_spread_magnitude_+%_final'] * n) / 100;
+          e.dots.push({ ...o, s, ...v, spreads: o.spread ? n : o.spreads }); }
+        for (const u of hexes) { e.hexes = [e.curse, ...(e.hexes || [])].filter(x => x && x.name !== u.name).slice(0, sheet().curseIgnore ? Infinity : (sheet().curseLimit || 1) - 1); e.curse = { ...u, s: u.full }; }
+        e.by = S; }
       if (list.length) say(t('{0} spreads to {1} enemies', sp.label, list.length), 'chaos');
     }
     if (S.P.gain && !S.P.corpse && !S.src && !KG.length && !['aura', 'mark'].includes(S.P.kind)) chargeBy(S.P.gain, S);   // not on top of its own (Killing Palm's)
@@ -3127,6 +3134,22 @@ export function initScene(el, api) {
       later(k / 24 * .2, () => fx.emit(1, { p: q, r: .05, v: .1, up: 6, life: rnd(.1, .35), size: .25, c: CONSEC.ring, k: 2.4, drag: 1 })); }   // its beams
     fx.emit(30, { p: { x: c.x, y: .6, z: c.z }, r: R * .8, v: .4, up: .2, life: 4, size: .05, c: CONSEC.spark, k: 2.4, drag: 4 });   // its sparks hanging
   }
+  // Contagion (chaos_contagion .ao/.pet): a single enemy at the cursor (its description); pale violet wisps from your hand
+  // to it (contagionWisps_cast: 12, for 0.75-1.2 s; their texture's violet, the lookup's 0.36 / 0.2 / 1), a dark violet rot on the ground under
+  // it from 0.3 s (castGroundRot 0.075 / 0 / 0.35, 2-2.5 s), its skin flashing violet (contagion_skin 0.36 / 0.2 / 1
+  // x 0.45) with wisps for 0.88-1.05 s; while it is on, the skin stays violet and wisps ooze from it for 3-4 s
+  // (contagionWisps_OOZE). note: with no enemy there it lands at the cursor and afflicts none
+  const CONTAGION = { wisp: 0x5c33ff, skin: [.36 * .45, .2 * .45, .45], rot: 0x130059 };
+  const wisps = (a, b, n) => { for (let i = 0; i < n; i++) { const t = (i + rnd()) / n, y = a.y + (b.y - a.y) * t;
+    later(t * .25, () => fx.emit(1, { p: { x: a.x + (b.x - a.x) * t, y, z: a.z + (b.z - a.z) * t }, r: .1, v: .2, up: .3, life: rnd(.75, 1.2), size: .22, c: CONTAGION.wisp, k: 1.8, drag: 1 })); } };
+  const rotAt = p => { const m = fx.decal(p, .9, 'patch', CONTAGION.rot, { dark: true, a: .8 }); later(rnd(2, 2.5), () => m.remove()); };
+  function contagion(S) {
+    const d = near(S.at, SIM.snap), q = d ? chest(d) : V(S.at.x, .3, S.at.z);
+    wisps(hand(), q, 12); later(.3, () => rotAt(d ? { ...d.pos } : S.at));
+    if (!d) return;
+    dot(d, S); d.wob = .5;
+    later(.25, () => { fx.glow(q, .9, CONTAGION.wisp, .4, 1.6); fx.emit(8, { p: q, r: .3, v: .4, up: .5, life: rnd(.88, 1.05), size: .2, c: CONTAGION.wisp, k: 1.8, drag: 1 }); });
+  }
   function crystal(S, p, dur, B = S, life = crystalLife(S)) {   // B: the skill its burst is (Grim Pillars' explosion part)
     const full = life;
     const m = new THREE.Mesh(ICE, new THREE.MeshStandardMaterial({ color: 0xbfe8ff, emissive: 0x2a6f9f, roughness: .1, transparent: true, opacity: .85, flatShading: true }));
@@ -3988,6 +4011,7 @@ export function initScene(el, api) {
       if (z.plant) planted(z);
     },
     dot(S) {
+      if (S.P.spread) return contagion(S);
       const R = S.A; let c = S.at;
       if (S.P.corpse) { c = useCorpse(S); if (!c) return; }
       fx.disc(c, R, S.el, .6, { tex: 'patch', a: .7 }); fx.ring(c, .2, R, S.el, .45);
@@ -6390,12 +6414,13 @@ export function initScene(el, api) {
     const nb = Math.min(10, d.dots.reduce((n, v) => n + (v.el === 'physical' ? v.stacks || 1 : 0), 0)); f.blood.visible = nb > 0;   // Corrupted Blood's orbs, one a debuff
     f.blood.children.forEach((o, i) => { const a = time * 1.6 + i / nb * Math.PI * 2; o.visible = i < nb; o.position.set(Math.cos(a) * .45, Math.sin(time * 3 + i) * .05, Math.sin(a) * .45); });
     if (d.flash > 0) e.setRGB(.9, .3, .2).multiplyScalar(d.flash / .18);
-    else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (st.poison > 0 || xd) e.setRGB(.1, .28, .04);
+    else if (st.ignite > 0) e.setRGB(.45, .13, 0); else if (st.shock > 0) e.setRGB(.12, .15, .4); else if (d.dots.some(v => v.spread)) e.setRGB(...CONTAGION.skin); else if (st.poison > 0 || xd) e.setRGB(.1, .28, .04);
     else if (st.chill > 0) e.setRGB(.05, .2, .35); else if (d.boils > 0) e.setRGB(...BOIL.skin).multiplyScalar(Math.min(1, .4 + d.boils * .15)); else e.setRGB(0, 0, 0);
     const p = { x: d.pos.x, y: .9 * d.sc, z: d.pos.z };
     if (st.ignite > 0 && Math.random() < dt * 22) fx.emit(1, { p, r: .25, h: .8, v: .2, up: 1.8, life: .5, size: .32, c: 'fire', c2: 'ember' });
     if (st.shock > 0 && Math.random() < dt * 9) fx.emit(2, { p, r: .3, h: 1, v: 1.6, life: .18, size: .13, c: 'lightning', c2: 'white', k: 3 });
     if (st.poison > 0 && Math.random() < dt * 8) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .8, life: .9, size: .16, c: 'poison' });
+    if (Math.random() < dt * 3 && d.dots.some(v => v.spread)) fx.emit(1, { p, r: .3, h: .8, v: .1, up: .2, life: rnd(3, 4), size: .18, c: CONTAGION.wisp, k: 1.6, drag: 1 });   // Contagion's oozing wisps
     if ((st.bleed > 0 || pd) && Math.random() < dt * 8) fx.emit(1, { p, r: .25, h: .6, v: .3, life: .6, size: .1, c: 'blood', g: 9, k: 1.2 });
     if ((st.chill > 0 || frozen) && Math.random() < dt * 6) fx.emit(1, { p, r: .4, h: 1.2, v: .1, up: -.3, life: 1, size: .12, c: 'ice' });
     if (xd && Math.random() < dt * 9) fx.emit(1, { p, r: .3, h: 1, v: .2, up: .7, life: .8, size: .2, c: 'chaos' });
