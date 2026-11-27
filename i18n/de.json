@@ -1032,5 +1032,8 @@
  "Used with weapon set:": "Benutzt mit Waffenset:",
  "Enabled": "Aktiviert",
  "Main Hand Accuracy Rating": "Haupthand: Treffgenauigkeit",
- "Estimated main hand Chance to Hit at {0}m": "Geschätzte Trefferchance der Haupthand bei {0}m"
+ "Estimated main hand Chance to Hit at {0}m": "Geschätzte Trefferchance der Haupthand bei {0}m",
+ "Pause": "Pausieren",
+ "Resume Game": "Zurück zum Spiel",
+ "Game Paused": "Spiel pausiert"
 }

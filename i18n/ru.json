@@ -1032,5 +1032,8 @@
  "Used with weapon set:": "Используется с набором оружия:",
  "Enabled": "Включено",
  "Main Hand Accuracy Rating": "Меткость оружия в правой руке",
- "Estimated main hand Chance to Hit at {0}m": "Ожидаемый шанс нанесения удара оружием в правой руке на расстоянии {0} м"
+ "Estimated main hand Chance to Hit at {0}m": "Ожидаемый шанс нанесения удара оружием в правой руке на расстоянии {0} м",
+ "Pause": "Пауза",
+ "Resume Game": "Вернуться в игру",
+ "Game Paused": "Игра приостановлена"
 }

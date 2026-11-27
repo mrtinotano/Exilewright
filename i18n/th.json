@@ -1032,5 +1032,8 @@
  "Used with weapon set:": "ใช้ร่วมกับชุดอาวุธ:",
  "Enabled": "เปิด",
  "Main Hand Accuracy Rating": "อัตราความแม่นยำ ของมือหลัก",
- "Estimated main hand Chance to Hit at {0}m": "โอกาสปะทะ ของมือหลัก โดยประมาณ ในระยะ {0} ม."
+ "Estimated main hand Chance to Hit at {0}m": "โอกาสปะทะ ของมือหลัก โดยประมาณ ในระยะ {0} ม.",
+ "Pause": "หยุดชั่วคราว",
+ "Resume Game": "เล่นเกมต่อ",
+ "Game Paused": "หยุดเกมชั่วคราว"
 }

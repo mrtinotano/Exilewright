@@ -1032,5 +1032,8 @@
  "Used with weapon set:": "Se usa con el set de armas:",
  "Enabled": "Activado",
  "Main Hand Accuracy Rating": "Precisión de la mano principal",
- "Estimated main hand Chance to Hit at {0}m": "Probabilidad estimada de la mano principal de impactar a {0} m"
+ "Estimated main hand Chance to Hit at {0}m": "Probabilidad estimada de la mano principal de impactar a {0} m",
+ "Pause": "Pausar",
+ "Resume Game": "Reanudar juego",
+ "Game Paused": "Juego pausado"
 }

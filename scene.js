@@ -169,6 +169,12 @@ export function initScene(el, api) {
   const logBtn = top.appendChild(Object.assign(document.createElement('button'), { className: 's-help', textContent: '≡', title: t('Combat log') }));
   const clogEl = el.appendChild(Object.assign(document.createElement('div'), { className: 's-note s-clog', hidden: true }));
   logBtn.onclick = () => { clogEl.hidden = !clogEl.hidden; logBtn.classList.toggle('on', !clogEl.hidden); };
+  // pause: time stands still (skills, buffs, enemies, the stats) and the frame stays, to look at it calmly; "Game Paused"
+  // over the scene meanwhile (the game's texts)
+  let paused = false;
+  const pauseBtn = top.appendChild(Object.assign(document.createElement('button'), { className: 's-help' }));
+  const pauseShow = () => { pauseBtn.textContent = paused ? '▶' : '⏸'; pauseBtn.title = t(paused ? 'Resume Game' : 'Pause'); pauseBtn.classList.toggle('on', paused); el.classList.toggle('paused', paused); el.dataset.paused = t('Game Paused'); };
+  pauseBtn.onclick = () => { paused = !paused; pauseShow(); }; pauseShow();
   clogEl.onclick = e => { if (e.target.dataset.clear != null) { clog = []; byS = {}; } };
   // a line per source and target: what they do within a second of their last line adds to it (damage over time ticks)
   const record = (k, src, tgt, n = 0, c = 'gold') => {
@@ -7863,9 +7869,11 @@ export function initScene(el, api) {
       size.w = w; size.h = h; renderer.setSize(w, h, false); composer?.setSize(w, h);
       cam.aspect = w / h; cam.updateProjectionMatrix(); fx.setViewport(dom.height, cam.fov);
     }
-    time += dt;
-    const LL = sheet().eternal && me.es > 0 ? me.life : null;
-    try { step(dt); if (LL != null) me.life = LL; } catch (e) { if (e.message !== lastErr) { lastErr = e.message; console.error('scene:', e); } }
+    if (!paused) {
+      time += dt;
+      const LL = sheet().eternal && me.es > 0 ? me.life : null;
+      try { step(dt); if (LL != null) me.life = LL; } catch (e) { if (e.message !== lastErr) { lastErr = e.message; console.error('scene:', e); } }
+    }
     composer ? composer.render(dt) : renderer.render(scene, cam);
   });
 
