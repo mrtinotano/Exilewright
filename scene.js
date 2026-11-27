@@ -8265,7 +8265,7 @@ export function initScene(el, api) {
       const ign = S.dmg?.sum?.curse_ignores_curse_limit, lim = ign || sheet().curseIgnore ? Infinity : sheet().curseLimit || 1;
       for (const d of inside(pp, S.A)) if (!(C?.maxLevel && d.level > C.maxLevel) && !(S.name === 'Repulsion' && d.noRepulse > time)) {
         const all = [d.curse, ...(d.hexes || [])].filter(Boolean), on = all.find(u => u.name === S.name), k = (C?.effect ?? 1) * BK * d.stat.curseEffect;
-        if (on?.blas) { on.s = .2; on.k = k; } else if (!on && all.length < lim) { hexOld(d, S.name, ign); d.curse = { s: .2, label: S.label, name: S.name, S, C, k, blas: true }; } else continue;
+        if (on?.blas) { on.s = .2; on.k = k; } else if (!on && all.length < lim) { d.hexes = all; d.curse = { s: .2, label: S.label, name: S.name, S, C, k, blas: true }; } else continue;
         hexMe(S.name, C, .2, BK);
       }
     });
