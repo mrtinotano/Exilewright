@@ -570,23 +570,27 @@ const openShare = async (exporting, again) => {
     pob.hidden = false;
     if (names.includes(again)) { pob.value = again; pob.onchange(); }
   });
-  // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
-  // a build's skills in the order of the game's skill panel (serve.py pob?order), when that answer is this character's
-  // (the same skill gems); a gem a meta gem holds (Cluster Grenade in Mortar Cannon) stays right after it
-  const inGameOrder = (b, order) => {
-    const top = b.gems.filter(g => !g.meta).map(g => g.name), at = n => order.indexOf(n), groups = [];
-    if (top.length !== order.length || !top.every(n => order.includes(n))) return;
+  // a build's skills in the order of the game's skill panel: first the skills the tree and items grant, in the order Path
+  // of Building 2 lists them (its groups with a source: the tree's, then the items'), then those in the skill slots, left
+  // to right (serve.py pob?order), when that answer is this character's (all its slotted gems in the build); a gem a meta
+  // gem holds (Cluster Grenade in Mortar Cannon) stays right after it. The game's panel, 27/11: Virtuous Barrier (tree),
+  // Runic Tempering (weapon swap), Rite of Restoration (body armour), then Freezing Mark, Mortar Cannon... by slot
+  const inGameOrder = (b, slots, granted) => {
+    const groups = [], at = n => granted.includes(n) ? granted.indexOf(n) : slots.includes(n) ? 1e3 + slots.indexOf(n) : 2e3;
+    if (!slots.every(n => b.gems.some(g => g.name === n))) return;
     for (const g of b.gems) if (g.meta && groups.length) groups.at(-1).push(g); else groups.push([g]);
     b.gems = groups.sort((x, y) => at(x[0].name) - at(y[0].name)).flat();
   };
+  // a build from Path of Building's XML; one picked there goes by its file's name, the one it was saved under
   const importXML = (xml, name, order) => {
+    const granted = [...new DOMParser().parseFromString(xml, 'text/xml').querySelectorAll('Skill[source]')].map(s => s.querySelector('Gem')?.getAttribute('nameSpec'));
     const ctx = shareCtx(), { build, warn, specs, active } = fromXML(xml, ctx, blank);
     if (name) build.name = name;
     // one from a Path of Building file replaces the build that came from that file (the newest, if several; before builds
     // kept their file, the one of the same name), so changing it there and importing it again updates it; Undo brings it back
     let upd = false, what = '';
     const put = (o, key) => {
-      if (order?.length) inGameOrder(o, order);
+      if (order?.length) inGameOrder(o, order, granted);
       if (!name) return addBuild(o);
       o.pob = key;
       const id = Object.keys(builds).filter(k => builds[k].pob === key || !builds[k].pob && builds[k].name === o.name).sort((x, y) => y - x)[0];

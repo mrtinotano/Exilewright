@@ -677,15 +677,15 @@ class Handler(SimpleHTTPRequestHandler):
         except OSError:   # no Path of Building 2 here
             names = []
         name = parse_qs(u.query).get('name', [''])[0]
-        if 'order' in parse_qs(u.query, keep_blank_values=True):   # that character's skill gems in the order of the game's skill panel (its slots left to right), then the rest
+        if 'order' in parse_qs(u.query, keep_blank_values=True):   # that character's skill gems in the game's skill slots, left to right
             try:
                 with open(POB_API, encoding='utf-8') as f:
                     j = json.load(f)
                 skills = (j.get('character') or j).get('skills') or []
             except (OSError, ValueError, AttributeError):
                 skills = []
-            slot = lambda s: s.get('x') if s.get('inventoryId') == 'SkillSlots' and isinstance(s.get('x'), int) else 99
-            return self.reply_json(200, json.dumps([s.get('typeLine') for s in sorted(skills, key=slot)]).encode())
+            slotted = [s for s in skills if s.get('inventoryId') == 'SkillSlots' and isinstance(s.get('x'), int)]
+            return self.reply_json(200, json.dumps([s.get('typeLine') for s in sorted(slotted, key=lambda s: s['x'])]).encode())
         if not name:
             return self.reply_json(200, json.dumps(names).encode())
         if name not in names:   # one of the list, never a path of the page's own
