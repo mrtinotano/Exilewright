@@ -4334,8 +4334,8 @@ export function initScene(el, api) {
     },
     sweep(S) {
       const half = coneHalf(S), R = S.R || meleeR(S), c = S.from, a0 = Math.atan2(S.dz, S.dx), ch = S.P.channel;
-      fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .2 : .7 });
-      fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
+      if (!S.own) fx.sector(c, S.dx, S.dz, R, half, S.el, ch ? .22 : .35, { grow: !ch, a: ch ? .2 : .7 });   // own: the skill draws its own look
+      if (!S.own) fx.emit(ch ? 7 : 24, { p: { x: c.x + S.dx * .8, y: 1, z: c.z + S.dz * .8 }, dir: V(S.dx * R * 2.2, .2, S.dz * R * 2.2), v: R * half * 1.1, life: .42, size: .32, c: S.el, c2: 'white', drag: .9 });
       if (ch) fx.emit(36, { p: { x: c.x + S.dx * .6, y: 1, z: c.z + S.dz * .6 }, r: .1, dir: V(S.dx * R * 1.7, .3, S.dz * R * 1.7), v: R * half * 1.3, life: .5, size: .2, grow: 4, k: 1.6, c: S.el, c2: S.el === 'fire' ? 'ember' : 'white', drag: .8 });   // a jet widening from the hand, as Incinerate's
       for (const d of inside(c, R)) if (inCone(c, a0, half, d.pos) && hit(d, S) && S.parries) d.parried = S.parries;
       touch({ x: c.x + S.dx * R * .55, z: c.z + S.dz * R * .55 }, R * .5, S);
@@ -5307,13 +5307,43 @@ export function initScene(el, api) {
         if (++hits >= st.bell_hit_limit + lasts(S)) e.dead = true;
       } });
   };
+  // Disengage's look (spear_disengage; its tutorial video). Its cone (area.ao, not scaled by its radius): 16 spikes
+  // shooting out over 0.15 s in a 0.12 turn arc ahead of you to 5 m, then 10 m, each for 0.15-0.35 s, lit orange by a
+  // glow for 0.12 s (1 / 0.34 / 0.2); 32 puffs of smoke for 3 s from 1 m out to 12 m in a 0.37-0.15 turn arc, 16 rocks
+  // lying for 7-9 s 2 m ahead and 32 sparks for 0.8-1.2 s (disengage_dust: 1 / 0.3 / 0.15). A Parried enemy's shockwave
+  // (shockwave.ao): a flash for 0.35 s from 0.04 s, a ring for 0.3 s from 0.08 s (1 / 0.58 / 0.2), a wave of smoke for
+  // 1.3 s from 0.06 s (0.2), 64 sparks for 2-3 s and a 0.125 s shake. note: its ground decal, its blurs and the spear's
+  // trail are left out; the shake's strength, the spikes' length, counts, speeds and sizes are the scene's
+  const DISG = { spike: 0x4a4542, glow: 0xff5733, spark: 0xff4d26, smoke: 0x5c5c5c, ring: 0xff9433 };
+  function disCone(c, dx, dz) {
+    const a0 = Math.atan2(dz, dx), at = (r, s) => V(c.x + Math.cos(a0 + s) * r, .3, c.z + Math.sin(a0 + s) * r);
+    fx.glow(at(1, 0), 1, DISG.glow, .12, 2.4);
+    for (let i = 0; i < 16; i++) later(i * .01, () => {
+      const s = rnd(-1, 1) * .12 * Math.PI, r = (5 + 5 * i / 15) * rnd(.8, 1), tip = at(r, s);
+      fx.streak(at(r * .3, s), tip, DISG.glow, rnd(.15, .35), .02, 1.2);
+      fx.emit(2, { p: tip, r: .2, v: 2, up: 1.5, life: 1, size: .04, c: DISG.spark, c2: 'white', k: 2.4, g: 3, drag: 1.5 });
+    });
+    for (let i = 0; i < 32; i++) later(i * .2 / 32, () => {
+      const k = i / 31, p = at(1 + 11 * k * rnd(.2, 1), rnd(-1, 1) * (.37 - .22 * k) * Math.PI);
+      fx.emit(1, { p: { ...p, y: .2 }, r: .3, v: .5, up: .4, life: 3, size: .6, grow: 1.8, c: DISG.smoke, smoke: true, a: .3, drag: 1.5 });
+    });
+    for (let i = 0; i < 16; i++) fx.emit(1, { p: at(rnd(2), rnd(-1, 1) * .15 * Math.PI), r: .1, v: 1, up: 2, life: 8, size: .07, c: DISG.spike, smoke: true, a: .9, g: 9, drag: .4 });
+  }
+  function disWave(p, R) {
+    const q = { x: p.x, y: .6, z: p.z };
+    later(.04, () => fx.glow(q, 1.2, 'white', .35, 2.4));
+    later(.06, () => fx.emit(20, { p: { x: p.x, y: .1, z: p.z }, r: .3, v: R * 2, up: .1, life: 1.3, size: .5, grow: 2, c: DISG.smoke, smoke: true, a: .35, drag: 1.5, flat: true }));
+    later(.08, () => fx.ring(p, .2, R, DISG.ring, .3, { a: .9 }));
+    fx.emit(64, { p: q, r: .2, v: 3, up: 2, life: 2.5, size: .04, c: DISG.spark, c2: 'white', k: 2.4, g: 4, drag: 1 });
+    shake = Math.max(shake, .15);
+  }
   // Disengage: its cone of spearpoints in front of you (its radius, its angle) as you leap back its path distance; each
   // Parried enemy it hits has the debuff consumed for its shockwave part and grants you its Frenzy Charges
   K.disengage = S => {
     const st = S.dmg?.stats || {}, c = { x: pp.x, z: pp.z }, R = st.disengage_cone_radius / 10, X = partOf(S, 'DisengageShockwavePlayer'), half = coneHalf({ cone: st.disengage_cone_angle });
     const parried = inside(c, R).filter(d => time < d.parried?.until && inCone(c, Math.atan2(S.dz, S.dx), half, d.pos));
-    K.sweep({ ...S, from: c, R, cone: st.disengage_cone_angle });
-    for (const d of parried) { d.parried = null; if (X) for (let k = Math.random() * 100 < (st['disengage_%_chance_for_additional_shockwave'] || 0) ? 2 : 1; k > 0; k--) boom({ x: d.pos.x, z: d.pos.z }, X.A, X); for (let k = st.consume_parry_debuff_on_hit_to_gain_X_frenzy_charges; k > 0; k--) chargeBy('frenzy', S); }
+    K.sweep({ ...S, from: c, R, cone: st.disengage_cone_angle, own: true }); disCone(c, S.dx, S.dz);
+    for (const d of parried) { d.parried = null; if (X) for (let k = Math.random() * 100 < (st['disengage_%_chance_for_additional_shockwave'] || 0) ? 2 : 1; k > 0; k--) { const q = { x: d.pos.x, z: d.pos.z }; disWave(q, X.A); area(q, X.A, X); } for (let k = st.consume_parry_debuff_on_hit_to_gain_X_frenzy_charges; k > 0; k--) chargeBy('frenzy', S); }
     const l = st.leap_maximum_allowed_path_distance / 10;
     move = { from: c, to: { x: c.x - S.dx * l, z: c.z - S.dz * l }, k: 0, dur: .3, h: 1.2, S, seen: new Set() };
   };
