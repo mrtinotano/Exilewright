@@ -68,6 +68,7 @@ Usage: python3 serve.py [port] [overlay] [app] [open]   (default port 8765; open
 """
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from types import SimpleNamespace
 from urllib.parse import urlparse, parse_qs, quote
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
@@ -977,6 +978,24 @@ def policy():
     return (f"default-src 'self'; script-src 'self' {hashes}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
             "connect-src 'self' data: blob:; media-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'; "
             "frame-ancestors 'none'")
+
+
+def checks():
+    """what the app's safety rests on, looked at every start, so that a change that undoes it cannot go unseen: no code
+    but this server's runs in the page, the page reaches no other server, and only the page is answered. When one of
+    these fails, the change that made it fail is what is wrong: SECURITY.md and AGENTS.md say why each is there"""
+    rules = re.sub(r"'sha256-[^']*'", '', policy())
+    assert "'unsafe-" not in rules.split('script-src')[1].split(';')[0], 'policy: scripts by file or by hash only, never unsafe-inline or unsafe-eval'
+    assert '*' not in rules and '//' not in rules and "frame-ancestors 'none'" in rules, 'policy: no other server, no frame'
+    asks = lambda path, **h: Handler.mine(SimpleNamespace(path=path, headers={'Host': '127.0.0.1:8765', **{k.replace('_', '-'): v for k, v in h.items()}}))
+    assert (asks('/backup') and asks('/backup', Origin='http://127.0.0.1:8765', Sec_Fetch_Site='same-origin')
+            and asks('/', Sec_Fetch_Site='cross-site', Sec_Fetch_Dest='document')), 'mine: the page itself is answered'
+    assert not (asks('/backup', Origin='https://example.com') or asks('/backup', Sec_Fetch_Site='cross-site', Sec_Fetch_Dest='document')
+                or asks('/', Sec_Fetch_Site='cross-site', Sec_Fetch_Dest='iframe') or asks('/backup', Sec_Fetch_Site='same-site')
+                or asks('/backup', Host='example.com:8765')), 'mine: another site, a frame, another port or a name pointed at this computer is not'
+
+
+checks()
 
 
 def game_folder():

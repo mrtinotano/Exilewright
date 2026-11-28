@@ -42,9 +42,31 @@ npm for the app) served by one Python file, `serve.py`, from `app/`. Read `READM
 - **Generated files are not edited by hand.** Change the script in `poe2_data/_tool/` and regenerate.
 - **One key press, one action.** The app never reads the game's memory or screen and never sends input on its own,
   following GGG's rules for third-party tools.
-- **No code in the markup, and what comes from outside is data.** The page goes with a Content-Security-Policy
-  (`policy` in `serve.py`): `onclick=""`, `onerror=""` and the like do not run, so use listeners (a picture that may be
-  missing gets `data-may-miss`). A build, a shared code or a listing goes through `clean()` (`app.js`) and `esc()`
-  before it is markup. The server answers only its own page (`Handler.mine`): keep new endpoints behind it.
+- **Security is not traded for convenience** (see Security below).
 - Keep it small: plain JavaScript and the standard library, no new dependencies.
 - Code, comments and commit messages are in English.
+
+## Security
+The app runs on people's own computers, next to their game and their files. No change may weaken any of this; if a
+task seems to need it, stop and ask the maintainer first.
+- **Local only.** The server listens on `127.0.0.1`, never on another interface.
+- **Only its own page is answered.** `do_GET` and `do_POST` begin with `Handler.mine()` (Host, Origin and
+  Sec-Fetch-Site). A new endpoint goes behind it. No CORS headers.
+- **No code in the markup.** The page goes with a Content-Security-Policy (`policy` in `serve.py`): only the server's
+  own scripts and the inline ones of `index.html` (by their hash) run. Never `'unsafe-inline'` or `'unsafe-eval'` for
+  scripts, never another host. So `onclick=""`, `onerror=""` and the like do not run: use listeners (a picture that may
+  be missing gets `data-may-miss`), and nothing is loaded from a CDN.
+- **What comes from outside is data, never code**: an imported build or code, the trade site's and poe2scout's
+  answers, the clipboard. It goes through `clean()` (`app.js`) and `esc()` before it is markup; no `eval`, no
+  `new Function`. A build the page cannot show is not kept (`addBuild`).
+- **Files the server writes** have a fixed folder and extension and a checked name. No endpoint reads, writes or runs a
+  path the page gives.
+- **What goes out** goes to the fixed hosts in `serve.py` only, never to an address the page gives whole, and never
+  with an account's cookie, session, password or token.
+- **The updater** takes only `Exilewright-setup.exe` from this repository's releases, over HTTPS, when the user asks.
+- **The app's window** exposes nothing of Python to the page (no `js_api`).
+- **The build's packages** stay at the versions of `packaging/requirements.txt`; raise them on purpose.
+- **No secrets** (tokens, keys, e-mail addresses) in a commit.
+
+`checks()` in `serve.py` runs at every start and stops the server when the policy or `mine()` is weakened; `clean` and
+`onSet` have `console.assert` checks of their own. When one fails, fix the change, never the check.
