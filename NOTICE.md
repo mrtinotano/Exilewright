@@ -7,18 +7,18 @@ The MIT license in `LICENSE` covers the code of Exilewright only. Not covered:
   Exilewright is a fan-made tool, not affiliated with or endorsed by
   Grinding Gear Games.
 
-- mannequin.glb is the mannequin, with three of its animations, of the
+- app/models/mannequin.glb is the mannequin, with three of its animations, of the
   Universal Animation Library by Quaternius (https://quaternius.com),
   CC0 1.0 (public domain).
 
-- wolf.glb is the Wolf of Quaternius' Animated Animal Pack
+- app/models/wolf.glb is the Wolf of Quaternius' Animated Animal Pack
   (https://quaternius.com, from https://poly.pizza/m/P1gU3Qkr9r), CC0 1.0
   (public domain).
 
-- three/ is three.js r160 (https://threejs.org), (c) 2010-2023 three.js
-  authors, under the MIT license in three/LICENSE.
+- app/three/ is three.js r160 (https://threejs.org), (c) 2010-2023 three.js
+  authors, under the MIT license in app/three/LICENSE.
 
-- moves.json holds fourteen animations of the KayKit Adventurers Character
+- app/models/moves.json holds fourteen animations of the KayKit Adventurers Character
   Pack and five of the KayKit Character Animations pack (the bow's and a
   two-handed slice), both by
   Kay Lousberg (https://www.kaylousberg.com), CC0 1.0 (public domain), turned

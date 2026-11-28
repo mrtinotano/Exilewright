@@ -1,7 +1,7 @@
 # moves.json, the moves the simulator's figure plays (humanoid.js MOVES): clips of a KayKit character or animation file
 # (GLB; CC0, see NOTICE.md), each turned into turns of the figure's own joints, 30 a second.
-#   python moves.py Knight.glb moves.json Clip...   adds the clips to those moves.json has
-#   python moves.py Knight.glb moves.json           lists the file's clips: when each hand is fastest and furthest forward
+#   python tools/moves.py Knight.glb app/models/moves.json Clip...   adds the clips to those moves.json has
+#   python tools/moves.py Knight.glb app/models/moves.json           lists the file's clips: when each hand is fastest and furthest forward
 #   python moves.py Knight.glb ? Clip...            the hands through those clips, every other frame
 # A clip may be 'A@first-last+B@first-last': A to its last frame, then B from its first, one fading into the other.
 # What moves.json holds:

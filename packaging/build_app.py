@@ -1,8 +1,8 @@
 """Builds the app (needs PyInstaller and pywebview: python -m venv .venv-build, then
-.venv-build/Scripts/pip install pyinstaller pywebview, then .venv-build/Scripts/python build_app.py):
+.venv-build/Scripts/pip install pyinstaller pywebview, then .venv-build/Scripts/python packaging/build_app.py):
   dist/Exilewright/Exilewright.exe     the program (its folder is what the installer installs)
   dist/Exilewright-portable.zip         the same folder with a "portable" file: it keeps its data next to the exe
-  dist/Exilewright-setup.exe            the installer (installer.iss): it needs Inno Setup 6, and ends in an error without it"""
+  dist/Exilewright-setup.exe            the installer (packaging/installer.iss): it needs Inno Setup 6, and ends in an error without it"""
 import glob
 import os
 import re
@@ -10,10 +10,10 @@ import shutil
 import subprocess
 import sys
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # the repository: dist/ and build/ are made there
 import PyInstaller.__main__
-data = ['index.html', 'LICENSE', 'NOTICE.md', 'mannequin.glb', 'wolf.glb', 'moves.json', 'three', 'i18n', os.path.join('poe2_data', 'available'), *glob.glob('*.js')]
-PyInstaller.__main__.run(['serve.py', '--name', 'Exilewright', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', 'icon.ico',
+data = ['LICENSE', 'NOTICE.md', 'app', os.path.join('poe2_data', 'available')]
+PyInstaller.__main__.run(['serve.py', '--name', 'Exilewright', '--onedir', '--windowed', '--noconfirm', '--clean', '--icon', os.path.join('packaging', 'icon.ico'),
                           *[f'--add-data={d}{os.pathsep}{d if os.path.isdir(d) else "."}' for d in data]])
 app = os.path.join('dist', 'Exilewright')
 open(os.path.join(app, 'portable'), 'w').close()
@@ -24,6 +24,6 @@ iscc = next((p for p in map(os.path.expandvars, (r'%ProgramFiles(x86)%\Inno Setu
              if os.path.isfile(p)), shutil.which('iscc'))
 if iscc:
     version = re.search(r"^VERSION = '([\d.]+)'", open('serve.py', encoding='utf-8').read(), re.M)[1]
-    subprocess.run([iscc, '/Q', f'/DAppVersion={version}', 'installer.iss'], check=True)
+    subprocess.run([iscc, '/Q', f'/DAppVersion={version}', os.path.join('packaging', 'installer.iss')], check=True)
 else:
     sys.exit('No Inno Setup 6: no installer (the portable zip is there)')   # an error: a release needs it

@@ -446,7 +446,7 @@ def tongue():
 def words(text):
     """a text of this server's own in the app's words for it (i18n/<code>.json)"""
     try:
-        with open(os.path.join(HERE, 'i18n', TONGUE + '.json'), encoding='utf-8') as f:
+        with open(os.path.join(APP, 'i18n', TONGUE + '.json'), encoding='utf-8') as f:
             return json.load(f).get(text) or text
     except (OSError, ValueError):
         return text
@@ -552,8 +552,9 @@ VERSION = '0.85'   # the app's version: the window's title, the update check and
 RELEASES = 'mrtinotano/Exilewright'   # the GitHub repository whose latest release is the newest version
 # poe2scout asks those who keep using its API for contact information in the User-Agent: where the app lives
 SCOUT_UA = {'User-Agent': f'Exilewright/{VERSION} (+https://github.com/{RELEASES})'}
-FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (build_app.py): the files are inside it
+FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (packaging/build_app.py): the files are inside it
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
+APP = os.path.join(HERE, 'app')   # the page: index.html, its scripts, translations and models
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
 BACKUP_LOCK = threading.Lock()   # two saves at once (two windows) would write the same temporary file
 SOUND_MAX = 10 << 20   # the biggest sound of the user's own the Filter tab copies into the game's folder: the most a POST may bring
@@ -598,6 +599,10 @@ class Handler(SimpleHTTPRequestHandler):
     # the browser, and the page does not start
     extensions_map = {**SimpleHTTPRequestHandler.extensions_map, '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json',
                       '.glb': 'model/gltf-binary', '.webp': 'image/webp', '.wav': 'audio/wav', '.ico': 'image/x-icon'}
+
+    def translate_path(self, path):   # the page is app/; the game's data (poe2_data/) and docs/ sit next to it, at the same address
+        p = super().translate_path(path)
+        return os.path.join(HERE, os.path.relpath(p, APP)) if urlparse(path).path.split('/')[1] in ('poe2_data', 'docs') else p
 
     def end_headers(self):
         self.send_header('Cache-Control', 'no-store')
@@ -1088,7 +1093,7 @@ except OSError:
     pass
 port = 8767 if 'app' in ARGS else next((int(a) for a in ARGS if a.isdigit()), 8765)
 try:
-    server = Server(('127.0.0.1', port), partial(Handler, directory=HERE))
+    server = Server(('127.0.0.1', port), partial(Handler, directory=APP))
 except OSError:   # the app is open already: one more window of it
     if 'app' not in ARGS:
         raise

@@ -246,8 +246,8 @@ The project does not take pull requests: they are closed on their own, so please
   `python3 serve.py overlay`.
 
 ### Build the release
-`build_app.py` makes `dist/Exilewright/Exilewright.exe`, a portable zip and the installer (`installer.iss`, which needs
-Inno Setup 6). It needs PyInstaller and pywebview (see the top of `build_app.py`). The version is `VERSION` in
+`packaging/build_app.py` makes `dist/Exilewright/Exilewright.exe`, a portable zip and the installer (`packaging/installer.iss`, which needs
+Inno Setup 6). It needs PyInstaller and pywebview (see the top of `packaging/build_app.py`). The version is `VERSION` in
 `serve.py`: the window title, the update check and the installer take it from there.
 
 ### Regenerate the data after a game patch

@@ -202,7 +202,7 @@ const MOVES = {
   castNova: [['Spellcast_Long', .15]], shout: [['Cheer', .1]], gouge: [['Melee_Dualwield_Attack_Slice', .33]],
 };
 let moves = null;
-fetch('moves.json').then(r => r.json()).then(j => { moves = j; console.assert(Object.values(MOVES).flat().every(([m]) => j.clips[m]), 'moves.json lacks a move'); }).catch(() => {});   // without them: the poses alone
+fetch('models/moves.json').then(r => r.json()).then(j => { moves = j; console.assert(Object.values(MOVES).flat().every(([m]) => j.clips[m]), 'moves.json lacks a move'); }).catch(() => {});   // without them: the poses alone
 
 // The clip a skill plays, from its kind and tags and the family of the weapon in hand; null: a leap or a dash,
 // which shows the pose of its own movement.
@@ -256,7 +256,7 @@ export function makeHumanoid(fx) {
   for (const n of ['body', ...ORDER]) { JW[n] = new THREE.Quaternion(); JA[n] = new THREE.Quaternion(); }
   const BONE = { hips: 'hips', spine: 'spine001', chest: 'spine003', head: 'head' }, NEXT = { sh: 'forearm', el: 'hand', ha: 'f_middle01', hip: 'shin', kn: 'foot' };
   for (const S of 'LR') for (const [j, b] of [['sh', 'upper_arm'], ['el', 'forearm'], ['ha', 'hand'], ['hip', 'thigh'], ['kn', 'shin'], ['ft', 'foot']]) BONE[j + S] = b + S;
-  import('three/addons/loaders/GLTFLoader.js').then(({ GLTFLoader }) => new GLTFLoader().load('mannequin.glb', ({ scene: model, animations }) => {
+  import('three/addons/loaders/GLTFLoader.js').then(({ GLTFLoader }) => new GLTFLoader().load('models/mannequin.glb', ({ scene: model, animations }) => {
     root.add(model); root.updateWorldMatrix(true, true);
     const inv = root.matrixWorld.clone().invert(), bones = [], B = n => model.getObjectByName('DEF-' + n), P = n => B(n).getWorldPosition(new THREE.Vector3()).applyMatrix4(inv), d = (a, b) => P(b).sub(P(a));
     model.traverse(o => {

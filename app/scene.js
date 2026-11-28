@@ -1778,7 +1778,7 @@ export function initScene(el, api) {
   // smoke (0.19 / 0.47 / 1). The wolf is Quaternius' (wolf.glb, CC0) with its walk, gallop and bite.
   // note: its size is not in the data (1.6 m long here)
   const PACK = { fur: 0x756e6c, light: 0xb0a9a5, spirit: 0x5c99ff, wispA: 0x1299ff, wispB: 0x144acc, smoke: 0x3078ff };
-  const wolfGlb = fetch('wolf.glb').then(r => r.arrayBuffer()), gltfL = import('three/addons/loaders/GLTFLoader.js').then(m => new m.GLTFLoader());
+  const wolfGlb = fetch('models/wolf.glb').then(r => r.arrayBuffer()), gltfL = import('three/addons/loaders/GLTFLoader.js').then(m => new m.GLTFLoader());
   const packIn = p => { fx.emit(24, { p: { x: p.x, y: .4, z: p.z }, r: .6, v: .6, up: 1.2, life: .9, size: .5, grow: 1.6, c: PACK.smoke, smoke: true, a: .5, drag: 1 }); fx.glow({ x: p.x, y: .6, z: p.z }, 1.6, PACK.spirit, .4, 2); };
   function wolfLook(P = PACK, len = 1.6, summon = packIn) {   // P: its colours (wisps only with P.wispA), len: its length in metres
     let mx, acts, cur, last, bite = 0;

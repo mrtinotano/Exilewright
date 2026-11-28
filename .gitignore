@@ -11,7 +11,7 @@ __pycache__/
 # Path of Building 2 files downloaded by poe2_data/_tool/pob2.py (re-downloaded when missing or a week old)
 poe2_data/pob2_cache/
 
-# the app window profile (serve.py app) and the executable build (build_app.py)
+# the app window profile (serve.py app) and the executable build (packaging/build_app.py)
 profile/
 build/
 dist/
