@@ -994,8 +994,9 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     return gains.get(k); };
   const pickList = (slot, q = '') => { q = q.trim().toLowerCase();
     return listOf(slot).filter(o => !q || o.key.includes(q)).map(o => `${o.html}<span data-g="${esc(o.v)}"></span></span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
-  // each candidate's gains are a whole calculation of the build: filled in a few at a time after the panel shows, not
-  // before (the bases and uniques to pick, the saved items, what each affix to add would change)
+  // each candidate's gains are a whole calculation of the build: filled in after the panel shows, not before (the bases
+  // and uniques to pick, the saved items, what each affix to add would change). One at a time, so the page answers
+  // between two of them, and only while this view is the one shown: opening its tab renders it again
   let fillRun = 0;
   const fillOne = s => {
     if (s.dataset.g != null) s.outerHTML = impactLine(gain(s.closest('.picklist').dataset.slot, make(s.dataset.g), s.dataset.g));
@@ -1005,8 +1006,8 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
   };
   function fillGains() {
     const run = ++fillRun, todo = [...el.querySelectorAll('.picklist [data-g], [data-stash], option[data-add]')];
-    const next = () => { if (run !== fillRun) return;
-      for (const s of todo.splice(0, 4)) fillOne(s);
+    const next = () => { if (run !== fillRun || el.hidden || !todo.length) return;
+      fillOne(todo.shift());
       if (todo.length) setTimeout(next); };
     setTimeout(next);
   }
