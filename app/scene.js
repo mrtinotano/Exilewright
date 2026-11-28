@@ -3321,6 +3321,24 @@ export function initScene(el, api) {
   // 1 / 0.64 / 0.35, fire 1 / 0.35 / 0.07 and 1 / 0.59 / 0.22, cold 0.75 / 0.77 / 1 and 0.8 / 0.88 / 1, lightning 0.07 /
   // 0.13 / 1 and 0.3 / 0.41 / 1). note: the counts, sizes and speeds are the scene's
   const EREL = { glow: 0xffc045, shell: 0xffdb80, glint: 0xffb357, physical: [0xffad59, 0xffa359], fire: [0xff5912, 0xff9638], cold: [0xbfc4ff, 0xcce0ff], lightning: [0x1221ff, 0x4d69ff] };
+  // Enervating Nova's look (lightning_enervating_nova): the staff slams down (cast_slam: a flash for 0.1 s, a half-sphere
+  // spike for 0.15 s, 4 bolts dropping to the ground for 0.15-0.55 s), then nova_aoe: a dark scorched ring on the ground for
+  // 3 s (nova_main_ring, albedo 0.01), lightning arcs out to its edge for 0.25 s (nova_lightning 0.23 / 0.35 / 1), 64 bolts
+  // flung outward over 0.3 s (nova_bolts 0.044 / 0.054 / 0.2), 256 sparks drifting for up to 3 s (nova_sparks
+  // 0.15 / 0.24 / 1), 32 streaks (0.1 / 0.22 / 1) and 32 bits of rock for 0.25 s. note: the bolts drawn are fewer (32) and
+  // their lengths, from its secondary radius to its edge, the scene's
+  const ENOVA = { bolt: 0x3845ff, arc: 0x395aff, spark: 0x263cff, streak: 0x1a37ff, scorch: 0x030303, rock: 0x2b2d33 };
+  function enervLook(c, R, r2, dur) {
+    const G = V(c.x, .05, c.z), H = hand();
+    fx.glow({ x: c.x, y: .3, z: c.z }, 1.8, 'white', .1, 3); fx.ball({ x: c.x, y: 0, z: c.z }, .55, ENOVA.arc, .15); fx.flash(c, ENOVA.arc, 40 + R * 10, .35, 6 + R * 2);
+    for (let k = 0; k < 4; k++) fx.bolt(H, G, ENOVA.bolt, rnd(.15, .55), .03, .3);
+    const sc = fx.decal(c, R, 'ring', ENOVA.scorch, { dark: true, a: .85 }); later(2.5, () => sc.remove());
+    fx.ring(c, r2, R, ENOVA.arc, dur + .1, { k: 2.6 });
+    for (let k = 0; k < 32; k++) later(rnd(.3), () => { const a = rnd(TAU), q = rnd(r2 * .5, r2); fx.bolt(V(c.x + Math.cos(a) * q, .2, c.z + Math.sin(a) * q), V(c.x + Math.cos(a) * R, .1, c.z + Math.sin(a) * R), ENOVA.bolt, rnd(.25, .5), .025, .25); });
+    fx.emit(256, { p: { x: c.x, y: .3, z: c.z }, r: R, h: .4, v: .8, up: .3, life: 2.2, size: .05, c: ENOVA.spark, c2: 'white', k: 2.4, drag: 1.5 });
+    fx.emit(32, { p: { x: c.x, y: .25, z: c.z }, r: r2, v: R / .2, flat: true, life: .2, size: .14, c: ENOVA.streak, c2: 'white', k: 2.6, drag: 2 });
+    fx.emit(32, { p: { x: c.x, y: .1, z: c.z }, r: R * .8, v: 1.5, up: 3, life: .25, size: .07, c: ENOVA.rock, smoke: true, a: 1, g: 12 });
+  }
   function erelUse() { const H = hand(); fx.glow(H, .9, EREL.glow, 1, 2.2); fx.emit(8, { p: H, r: .1, v: 1.5, up: 2.5, life: .7, size: .05, c: EREL.shell, k: 1.6, g: 9, drag: .5 }); }
   function erelMuzzle(el, at) {
     const H = hand(), l = dist(at, pp) || 1, dx = (at.x - pp.x) / l, dz = (at.z - pp.z) / l, q = { x: H.x + dx * .3, y: H.y, z: H.z + dz * .3 }, C = EREL[el] || EREL.physical;
@@ -4514,13 +4532,16 @@ export function initScene(el, api) {
         }
         return;
       }
-      fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: S.el === 'cold' || S.el === 'lightning' ? .15 : .35 }); fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);   // cold and lightning: the shards and forks below are their look
-      if (S.el === 'cold') fx.shards(c, R, dur); else if (S.el === 'lightning') fx.forks(c, R);
-      fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
       // Enervating Nova: none within its secondary radius; beyond it, more damage with distance up to its most at the edge
       // (linear: note: the curve is not in the data), and the enemies hit can be Electrocuted by any lightning damage for
       // its duration (afflict)
       const EN = S.dmg?.stats?.['new_shock_nova_distance_based_damage_+%_final'], r2 = EN != null && Math.min(R * .9, S.G?.radius2 || radOf(S));
+      if (EN != null) enervLook(c, R, r2, dur);
+      else {
+        fx.ring(c, .2, R, S.el, dur + .15, { k: 2.8 }); fx.disc(c, R, S.el, dur + .25, { a: S.el === 'cold' || S.el === 'lightning' ? .15 : .35 }); fx.flash(c, S.el, 30 + R * 10, .35, 6 + R * 2);   // cold and lightning: the shards and forks below are their look
+        if (S.el === 'cold') fx.shards(c, R, dur); else if (S.el === 'lightning') fx.forks(c, R);
+        fx.emit(Math.min(120, 20 + R * 14), { p: { x: c.x, y: .4, z: c.z }, v: R / dur * .8, flat: true, life: dur, size: .22, c: S.el, c2: 'white', drag: .5 });
+      }
       for (const d of inside(c, R)) {   // the wave reaches the near ones first
         const dd = dist(d.pos, c); if (EN != null && dd < r2) continue;
         later(dd / R * dur, () => { if (EN == null) return hit(d, S); if (hit(d, S, { mult: 1 + EN / 100 * clamp((dd - r2) / (R - r2), 0, 1) })) d.enerv = time + durOf(S); });
