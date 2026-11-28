@@ -3314,6 +3314,20 @@ export function initScene(el, api) {
         frag(to, X.A, Math.max(0, st.base_skill_detonation_time / 1000 - .3), q => boom(q, X.A, { ...X, once }, { noPay: true })));
     }
   }
+  // Emergency Reload's look (crossbow_emergencyreload; its tutorial video): used, your crossbow glows gold (weaponGlow_Skin
+  // 6 / 4.52 / 1.6, over 1 s) and spent bolt shells fly off it for 0.7 s (crossbowReload 1 / 0.86 / 0.5); each bolt it
+  // empowers fires with an extra flash at the muzzle in its element (extraMuzzle_X: sparks for 0.08-0.12 s, a glint for
+  // 0.2 s from 0.05 s and a ring for 0.25-0.35 s, 1 / 0.7 / 0.34, strings for 0.35-1.25 s; physical 1 / 0.68 / 0.35 and
+  // 1 / 0.64 / 0.35, fire 1 / 0.35 / 0.07 and 1 / 0.59 / 0.22, cold 0.75 / 0.77 / 1 and 0.8 / 0.88 / 1, lightning 0.07 /
+  // 0.13 / 1 and 0.3 / 0.41 / 1). note: the counts, sizes and speeds are the scene's
+  const EREL = { glow: 0xffc045, shell: 0xffdb80, glint: 0xffb357, physical: [0xffad59, 0xffa359], fire: [0xff5912, 0xff9638], cold: [0xbfc4ff, 0xcce0ff], lightning: [0x1221ff, 0x4d69ff] };
+  function erelUse() { const H = hand(); fx.glow(H, .9, EREL.glow, 1, 2.2); fx.emit(8, { p: H, r: .1, v: 1.5, up: 2.5, life: .7, size: .05, c: EREL.shell, k: 1.6, g: 9, drag: .5 }); }
+  function erelMuzzle(el, at) {
+    const H = hand(), l = dist(at, pp) || 1, dx = (at.x - pp.x) / l, dz = (at.z - pp.z) / l, q = { x: H.x + dx * .3, y: H.y, z: H.z + dz * .3 }, C = EREL[el] || EREL.physical;
+    fx.emit(8, { p: q, dir: V(dx * 4, .3, dz * 4), r: .05, v: 1.5, life: rnd(.08, .12), size: .04, c: C[0], c2: 'white', k: 2.5, drag: 3 });
+    later(.05, () => fx.glow(q, .5, EREL.glint, .2, 2)); fx.ring(q, .05, .35, EREL.glint, rnd(.25, .35), { a: .8, y: q.y });
+    fx.emit(6, { p: q, dir: V(dx * 2, .3, dz * 2), r: .05, v: .6, life: rnd(.35, 1.25), size: .05, c: C[1], k: 2.2, drag: 2 });
+  }
   // Armour Piercing Rounds' look (crossbow_armour_piercing: muzzle_rapid, rapid_shot, rapid_trail, rapid_impact and
   // rapid_pierce, riven_debuff): a pale blue flash at the crossbow's muzzle with an orange-red ring and pale sparks
   // (MF_rapidFlash 0.75 / 0.81 / 1, MF_rapidRing 1 / 0.36 / 0.21), each bolt a pale blue head (0.56 / 0.72 / 1) trailing a
@@ -4830,7 +4844,7 @@ export function initScene(el, api) {
       if (st['triggered_rain_of_blades_%'] != null) { me.blades = { until: time + durOf(S), S }; return say(t('{0} active', S.label), 'gold'); }
       // Emergency Reload: every clip reloaded, and your crossbow ammunition's bolts deal its more damage for its duration (use)
       const ER = st['emergency_reload_damage_+%_final'];
-      if (ER) { for (const k in clips) delete clips[k]; me.ereload = { until: time + durOf(S), more: 1 + ER / 100 }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: durOf(S) }); return say(t('{0} active', S.label), 'gold'); }
+      if (ER) { erelUse(); for (const k in clips) delete clips[k]; me.ereload = { until: time + durOf(S), more: 1 + ER / 100 }; setBuff({ label: S.label, name: S.name, c: css('gold'), s: durOf(S) }); return say(t('{0} active', S.label), 'gold'); }
       if (S.name === 'Barrage') barrageReady(S.spent > 0); else { fx.ring(pp, 1.8, .3, S.el, .4); fx.pillar(pp, .5, 2.6, S.el, .35, 2); }
       // Barrage: repeats from its stats (else the scene's 2, one more per charge spent: Unleash), each with its less damage
       // Ice-Tipped Arrows: its number of your next projectile attacks are empowered, for its duration (icetip)
@@ -6417,7 +6431,7 @@ export function initScene(el, api) {
     if (BY) { charges[BY]--; chargesSpent(1, BY); say(t('{0} spends {1} charges', S.label, 1), 'gold'); }
     if (RG) { spendRage(ER); say(`${S.label}: −${ER} ${t('Rage')}`, 'blood'); }
     Object.assign(S, o); if (o.more) S.mult *= o.more;
-    if (S.dmg?.clip && time < me.ereload?.until) S.mult *= me.ereload.more;   // Emergency Reload's empowered bolts
+    if (S.dmg?.clip && time < me.ereload?.until) { S.mult *= me.ereload.more; erelMuzzle(S.el, o.at || cursor); }   // Emergency Reload's empowered bolts
     if (time < me.wildUntil) S.mult *= me.wildMore;   // Savage Fury's frenzy
     aim(S, o.at || cursor);
     if (!auto && astral(S)) S.from = { ...S.at };   // Astral Projection: the Nova where you aim, not around you
@@ -6509,8 +6523,10 @@ export function initScene(el, api) {
         if (me.drink[0] && SU['support_uhtreds_chalice_damage_+%_final_during_life_flask']) S.mult *= 1 + SU['support_uhtreds_chalice_damage_+%_final_during_life_flask'] / 100; }
       if (S.dmg?.sum?.gain_X_tasalios_perfection_on_perfect_timing) S.mult *= 1 + TASALIO.more * (me.tasalio || 0) / 100;
       if (P.spell && S.dmg?.sum?.gain_X_wildshard_stacks_on_cast) me.wildshard = (me.wildshard || 0) + S.dmg.sum.gain_X_wildshard_stacks_on_cast;   // Sione's Temper
-      facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); goal = null; walk = false;
-      if (!auto) { const T = S.dmg?.speed > 0 ? 1 / S.dmg.speed : SIM.castTime; me.actEnd = time + T; player.act(CLIP_OF[S.name] || clipOf(P, S.kind, player.family()), T); player.setColor(S.el); }   // what you use yourself is what the figure plays
+      // an Instant skill (its gem's type: Emergency Reload, Pinnacle of Power...) has no use time: it neither stops nor turns you
+      const instant = api.info(S.g)?.gem?.types?.includes('Instant');
+      if (!instant) { facing = Math.atan2(S.dx, S.dz); castAt = time; me.act = actMove(S); goal = null; walk = false; }
+      if (!auto && !instant) { const T = S.dmg?.speed > 0 ? 1 / S.dmg.speed : SIM.castTime; me.actEnd = time + T; player.act(CLIP_OF[S.name] || clipOf(P, S.kind, player.family()), T); player.setColor(S.el); }   // what you use yourself is what the figure plays
       if (P.absorbs) S = absorb(S, pp, 1);
       // what was waiting for this skill: an element from a buff, the aftershock of a warcry, the repeats of Barrage / Unleash
       // Triskelion Cascade, Barrage: their share of the empowered skill's use time added to their last use's cooldown (up to its most)
