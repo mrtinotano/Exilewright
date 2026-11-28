@@ -368,7 +368,7 @@ export function initScene(el, api) {
   };
   function wipe() { dummies.forEach(d => d.fig.dispose()); dummies = []; hudT = 0; }
   function heal() { const c = sheet(); me.maxL = c.life || 0; me.maxE = c.es || 0; me.maxM = c.mana || 0; me.life = me.maxL; me.es = me.maxE; me.mana = me.maxM; me.rage = me.boast = me.rhythm = me.fervour = me.finality = 0; me.hexes = me.prev = me.whisp = me.drain = null; me.manaLog = null; me.armCut = me.armBroken = 0; me.hurt = -9; me.widow = 0; me.esHurt = me.esRech = null; me.ward = me.maxW = c.ward || 0;
-    Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
+    Object.assign(me, { wounds: [], slams: 0, owls: 0, owlT: 0, mount: 0, mountUntil: 0, flame: 0, vol: 0, volPower: null, jade: 0, jadeIn: null, jadeOn: null, seeds: 0, locust: 0, pinn: null, iron: 0, heat: 0, angAt: time, requiem: 0, fpAt: null, sight: 0, kaom: null, calamity: null, chayula: null, demon: null, rifts: [], incs: [], bark: [], arctic: 0, wind: 0, travAt: {}, voltAt: {}, st: {}, mag: {}, burn: {}, flam: [], leech: noLeech(), bar: {}, lock: {}, stuns: [], fl: [null, null], drink: [], cc: [null, null, null], cu: [], guard: 0, quill: undefined, runes: [], mimics: [], fuel: {}, fuelAt: {}, inf: {}, infUsed: -99, glory: {}, gloryAt: {}, aff: { fire: 0, cold: 0, lightning: 0 }, affAt: {}, sealAt: {} }); }
   // Rage (calc.js rageOf): Berserk's part only while it is on; gaining any holds off its loss for the delay
   const shifted = () => (me.form || me.demon) && sheet().shift;   // the tree's while Shapeshifted (calc.js recovery shift)
   const rageMax = () => { const R = sheet().rage; return R?.base ? R.base + (R.berserk && tog[R.berserk.name] ? R.berserk.max : 0) + (shifted()?.rage || 0) + (time - (me.gloryUsed ?? -99) <= 20 ? R.glory || 0 : 0) : 0; };   // the tree's more if you used a Glory skill in the last 20 s
@@ -5473,12 +5473,28 @@ export function initScene(el, api) {
     if ((me.jadeIn = (me.jadeIn ?? J.every / 1000) - dt) > 0) return;
     me.jadeIn = J.every / 1000; me.jade++;
   }
+  // Its look (warbringer/encased_jade): jade grows over you in a second (jadeShards_fadein: rock shards, up to 6 at a
+  // time for 1 s, 0.45 s each; jadeSurface_Skin over the figure, its colour 0.29 / 0.46 / 0.21) and you stay jade while
+  // its Guard lasts; then the shell shatters (jadeShatter: 85 pieces lying 3-5 s; jadeShards_fadeout: 1-6 shards a
+  // time for 0.5 s). It has no movement speed while using it: it roots you for its use time
+  const JADEFX = { skin: 0x4a7436, glow: 0x1f6b2e, shard: 0x809a6f };
+  const JADE_C = new THREE.Color(JADEFX.skin), JADE_G = new THREE.Color(JADEFX.glow);
+  let jadeK = 0;
+  const jadeShards = n => fx.emit(n, { p: { x: pp.x, y: .2, z: pp.z }, r: .35, h: 1.5, v: .6, life: .45, size: .09, c: JADEFX.shard, c2: JADEFX.skin, k: 1.1, drag: 1 });
   K.jade = S => {
     const n = me.jade; me.jade = 0; if (!n) return;
     const g = me.maxL * n * S.dmg.stats['maximum_life_%_damage_absorbed_per_jade_consumed'] / 100;
-    guardFor(g, durOf(S));
-    fx.glow({ x: pp.x, y: 1.2, z: pp.z }, 1.2, 'cold', .5); say(t('{0}: {1} Jade consumed', S.label, n), 'cold');
+    guardFor(g, durOf(S)); me.jadeOn = me.guard > 0 ? time : null;
+    for (let k = 0; k < 10; k++) later(k / 10, () => jadeShards(Math.floor(rnd(7))));
+    say(t('{0}: {1} Jade consumed', S.label, n), 'cold');
   };
+  function jadeLook(dt) {   // the shell: 0 to 1 over you, and its shattering when its Guard is gone
+    if (me.jadeOn != null && !(me.guard > 0)) {
+      me.jadeOn = null; jadeK = 0; fx.shatter(pp, { n: 85, c: JADEFX.skin, e: JADEFX.glow, life: [3, 5] });
+      for (let k = 0; k < 5; k++) later(k / 10, () => jadeShards(1 + Math.floor(rnd(6))));
+    }
+    return jadeK = me.jadeOn != null ? Math.min(1, jadeK + dt) : 0;
+  }
   // Wardbound Minions: it spends all your Runic Ward (its cost with it), one caster per its Ward spent, up to its most,
   // each for its duration and at most its number of casts
   K.wardbound = S => {
@@ -6232,12 +6248,12 @@ export function initScene(el, api) {
       if (Math.random() < .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.7), z: pp.z }, r: .3, up: 1.4, v: .25, life: .8, size: .14, c: CHAYULA.string, c2: CHAYULA.violet, k: 2, drag: 1 });
     }
     const bk = barkK = Math.max(0, Math.min(1, barkK + (onS('Barkskin') ? dt : -dt * 2)));   // grows over you in a second
-    const dk = demonLook(dt);
-    if (!k && !w && !bk && !dk && !player.kaomed) return;
-    player.kaomed = k > 0 || w > 0 || bk > 0 || dk > 0; barkU.barkK.value = bk; barkU.barkT.value = time; player.group.scale.setScalar(1 + .2 * k);
+    const dk = demonLook(dt), jd = jadeLook(dt);
+    if (!k && !w && !bk && !dk && !jd && !player.kaomed) return;
+    player.kaomed = k > 0 || w > 0 || bk > 0 || dk > 0 || jd > 0; barkU.barkK.value = bk; barkU.barkT.value = time; player.group.scale.setScalar(1 + .2 * k);
     player.group.traverse(m => { if (!m.isSkinnedMesh || !m.material?.emissive) return; const M = m.material, u = M.userData;
       if (!u.c0) { u.c0 = M.color.clone(); u.e0 = M.emissive.clone(); u.i0 = M.emissiveIntensity; } if (!u.bark) { u.bark = true; barkSkin(M); }
-      M.color.copy(u.c0).lerp(KAOM_SKIN, k).lerp(WG, w * .6); M.emissive.copy(u.e0).lerp(KG, k).lerp(WG, w); M.emissiveIntensity = u.i0 * (1 - Math.max(k, w)) + k * (.22 + .08 * Math.sin(time * 7)) + w * .9; });
+      M.color.copy(u.c0).lerp(KAOM_SKIN, k).lerp(WG, w * .6).lerp(JADE_C, jd * .9); M.emissive.copy(u.e0).lerp(KG, k).lerp(WG, w).lerp(JADE_G, jd); M.emissiveIntensity = u.i0 * (1 - Math.max(k, w, jd)) + k * (.22 + .08 * Math.sin(time * 7)) + w * .9 + jd * .35; });
     if (w && Math.random() < w * .5) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 1.8), z: pp.z }, r: .3, up: 1, v: .2, life: .7, size: .12, c: WG.getHex(), k: 1.8, drag: 1 });   // its runes, embers rising off you
     if (k && Math.random() < k * .6) fx.emit(1, { p: { x: pp.x, y: rnd(.3, 2), z: pp.z }, r: .35, up: 1.2, v: .3, life: .6, size: .12, c: 'fire', c2: 'ember', k: 1.6, drag: 1 });
   }

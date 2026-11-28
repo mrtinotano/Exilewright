@@ -359,19 +359,20 @@ export function createFx(scene) {
     // shards (100, 4-6 s) thrown out tumbling (3.14-12.57 rad/s) to lie on the ground, snow (82.5, 1.35-2.65 s, 0.88/0.93/1
     // to 0.6/0.76/1) and smoke (65, 4-6 s, 0.24/0.25/0.28). note: their speeds and sizes are the scene's, and the chunk's
     // mesh (shatterChunk.fmt) a rough gem here
-    shatter(p) {
-      const N = 200, mat = new THREE.MeshStandardMaterial({ color: 0xd8ecff, roughness: .12, metalness: .05, emissive: 0x3a6a9a, emissiveIntensity: .35, transparent: true, opacity: .9 });
+    // o (another's shell, Encase in Jade): { n chunks, no shards, snow nor smoke, c, e (emissive), life [min, max] }
+    shatter(p, o = {}) {
+      const J = o.n, N = J || 200, mat = new THREE.MeshStandardMaterial({ color: o.c ?? 0xd8ecff, roughness: .12, metalness: .05, emissive: o.e ?? 0x3a6a9a, emissiveIntensity: .35, transparent: true, opacity: .9 });
       const m = new THREE.InstancedMesh(CHUNK, mat, N), P = [];
       for (let i = 0; i < N; i++) {
-        const big = i < 100, a = rnd(TAU), v = rnd(.8, 3.2);
+        const big = J || i < 100, a = rnd(TAU), v = rnd(.8, 3.2);
         P.push({ p: new THREE.Vector3(p.x + rnd(-.25, .25), rnd(.2, 1.5), p.z + rnd(-.25, .25)), v: new THREE.Vector3(Math.cos(a) * v, rnd(1, 3.5), Math.sin(a) * v),
           s: big ? new THREE.Vector3(1, rnd(.7, 1.3), 1).multiplyScalar(rnd(.05, .13)) : new THREE.Vector3(.25, 1, .25).multiplyScalar(rnd(.06, .12)),
           q: new THREE.Quaternion().setFromAxisAngle(tp.set(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize(), rnd(TAU)),
-          ax: new THREE.Vector3(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize(), w: rnd(3.14, 12.57), life: big ? rnd(8, 12) : rnd(4, 6) });
+          ax: new THREE.Vector3(rnd(-1, 1), rnd(-1, 1), rnd(-1, 1)).normalize(), w: rnd(3.14, 12.57), life: o.life ? rnd(...o.life) : big ? rnd(8, 12) : rnd(4, 6) });
       }
-      emit(82, { p: { x: p.x, y: .3, z: p.z }, r: .4, h: 1.2, v: 2, up: .8, life: 2.2, size: .35, grow: 2.2, c: 0xe0edff, c2: 0x99c2ff, smoke: true, a: .55, drag: 1.6 });
-      emit(65, { p: { x: p.x, y: .2, z: p.z }, r: .5, h: 1, v: .8, up: .5, life: 5, size: .9, grow: 2.4, c: 0x3d4047, smoke: true, a: .3, drag: 1 });
-      return add(m, 12, (k, e, dt) => {
+      if (!J) emit(82, { p: { x: p.x, y: .3, z: p.z }, r: .4, h: 1.2, v: 2, up: .8, life: 2.2, size: .35, grow: 2.2, c: 0xe0edff, c2: 0x99c2ff, smoke: true, a: .55, drag: 1.6 });
+      if (!J) emit(65, { p: { x: p.x, y: .2, z: p.z }, r: .5, h: 1, v: .8, up: .5, life: 5, size: .9, grow: 2.4, c: 0x3d4047, smoke: true, a: .3, drag: 1 });
+      return add(m, o.life?.[1] ?? 12, (k, e, dt) => {
         for (let i = 0; i < N; i++) {
           const c = P[i];
           if (c.p.y > c.s.y * .5) { c.v.y -= 9.8 * dt; c.p.addScaledVector(c.v, dt); c.q.premultiply(tq2.setFromAxisAngle(c.ax, c.w * dt)); c.p.y = Math.max(c.p.y, c.s.y * .5); }   // till it lies on the ground
