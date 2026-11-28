@@ -4028,7 +4028,7 @@ export function initScene(el, api) {
     }
     for (let k = 1; k <= len; k++) later(k * .06, () => {
       const p = { x: from.x + dx * k, z: from.z + dz * k };
-      if (o.own) esStep(p, k === 1); else { pop(p, r, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); }
+      if (o.step) o.step(p, dx, dz); else if (o.own) esStep(p, k === 1); else { pop(p, r, S.el); fx.pillar(p, .25, 1.6, S.el, .25, 2.4); }
       for (const d of dummies) if (!d.dead && !seen.has(d) && dist(d.pos, p) <= r + SIM.body) { seen.add(d); hit(d, S, { mult, noPay: true }); }
     });
     // Branching Fissures: its number of secondary fissures off this one, with its less area and damage
@@ -6064,10 +6064,42 @@ export function initScene(el, api) {
   // up to its most at once. Every its interval a vine (its part) lashes at an enemy within the part's radius of it, up to
   // their most at once, hitting and slowing it per vine for the vine's duration. Overgrown: more vines, and its duration
   // runs slower
+  // Its look (druid_vines; its tutorial video): cast, spores burst from your hand (onACT_Arm: 256 for 0.65 s) and roots
+  // break out at your feet (onACT_GrdRoots: 8 for 1 s); along its fissure a path of dark vines lit yellow-green
+  // (vinePath: vineGeo roots, their glow 0.6 / 1 / 0.14, over cracks) grows in over 1 s and stays for its duration, with
+  // embers rising (18 a 7 m, 4 s, 0.75 / 1 / 0.27), dust (7, 1.5 s, 0.17 grey) and small rocks (11, the scene's 1 s); each
+  // vine that lashes an enemy coils up round it (grasping_Vines: 1.2 s) with an impact (hit_Impact: 0.375 s) and blood.
+  // note: the vines' shapes (the game's vineGeo mesh) are curved tubes here, their number per metre the scene's
+  const VINE = { root: 0x2f3a1a, glow: 0x99ff25, ember: 0xbeff45, dust: 0x2c2c2c, rock: 0x3a3630, blood: 0x7a0a05 };
+  const vineMat = () => new THREE.MeshStandardMaterial({ color: VINE.root, emissive: VINE.glow, emissiveIntensity: .7, roughness: .7, transparent: true });
+  function vineTube(pts, w) { const c = new THREE.CatmullRomCurve3(pts), g = new THREE.TubeGeometry(c, pts.length * 6, w, 5, false); return g; }
+  function vineStep(p, dx, dz, dur) {   // a metre of its path: a few vines lying along it, growing in, sinking at the end
+    const g = new THREE.Group(), m = vineMat(); g.position.set(p.x, 0, p.z);
+    for (let i = 0; i < 5; i++) {
+      const s = rnd(-.35, .35), pts = [];
+      for (let j = 0; j <= 4; j++) { const f = j / 4 - .5, side = s + rnd(-.18, .18); pts.push(V(dx * f * 1.2 - dz * side, rnd(.02, .12) + Math.sin(f * Math.PI + .5) * .06, dz * f * 1.2 + dx * side)); }
+      const t = new THREE.Mesh(vineTube(pts, rnd(.025, .05)), m); t.userData.own = true; g.add(t);
+    }
+    g.scale.setScalar(.01);
+    fx.add(g, dur, (k, e) => { const t = e.t; g.scale.setScalar(Math.max(.01, Math.min(1, t / .3))); g.position.y = -.15 * Math.max(0, (t - dur + .5) / .5); m.emissiveIntensity = .45 + .25 * Math.sin(t * 3 + p.x); if (k >= 1) fx.drop(g); });   // drop: its tubes' geometry with it
+    fx.emit(3, { p: { x: p.x, y: .1, z: p.z }, r: .4, v: .15, up: .5, life: 3, size: .05, c: VINE.ember, k: 2, drag: 1 });
+    fx.emit(1, { p: { x: p.x, y: .1, z: p.z }, r: .3, v: .4, up: .4, life: 1.5, size: .7, grow: 1.8, c: VINE.dust, smoke: true, a: .4, drag: 1.5 });
+    fx.emit(2, { p: { x: p.x, y: .1, z: p.z }, r: .3, v: 1, up: 2, life: .5, size: .06, c: VINE.rock, smoke: true, a: 1, g: 10 });
+  }
+  function vineGrasp(d) {   // a vine coiling up round the enemy it lashes
+    const pts = [], r = .35 * d.sc, h = 1.4 * d.sc, a0 = rnd(TAU);
+    for (let j = 0; j <= 16; j++) { const f = j / 16, a = a0 + f * TAU * 1.6, q = r * (1 - f * .4); pts.push(V(Math.cos(a) * q, f * h, Math.sin(a) * q)); }
+    const geo = vineTube(pts, .035), m = new THREE.Mesh(geo, vineMat()), N = geo.index.count; m.position.set(d.pos.x, 0, d.pos.z); geo.setDrawRange(0, 0);
+    fx.add(m, 1.2, k => { geo.setDrawRange(0, Math.ceil(N * Math.min(1, k * 4) / 6) * 6); m.material.opacity = k > .7 ? (1 - k) / .3 : 1; }, true);
+    fx.ring(d.pos, .2, .8 * d.sc, VINE.glow, .375, { a: .7 });
+    fx.emit(5, { p: chest(d), r: .2, v: 1.2, up: .5, life: .6, size: .08, c: VINE.blood, smoke: true, a: .9, g: 9 });
+  }
   K.entangle = S => {
     const st = S.dmg.stats, X = partOf(S, 'EntangleVinePlayer'), xs = X.dmg.stats, ang = Math.atan2(S.dx, S.dz), a = { x: pp.x, z: pp.z }, b = { x: a.x + Math.sin(ang) * S.A, z: a.z + Math.cos(ang) * S.A }, dur = durOf(S);
     limit(o => o.entangle && o.name === S.name, st.base_number_of_entangle_roots_allowed, S);
-    fissure(S, a, ang, S.A, radOf(S), 1, { dur, max: st.base_number_of_entangle_roots_allowed });
+    const H = hand(); fx.emit(60, { p: H, r: .1, v: 2, up: .5, life: .65, size: .05, c: VINE.ember, c2: 'white', k: 2.2, drag: 2 });
+    for (let i = 0; i < 8; i++) { const q = rnd(TAU); vineStep({ x: a.x + Math.cos(q) * .4, z: a.z + Math.sin(q) * .4 }, Math.cos(q), Math.sin(q), 1); }
+    fissure(S, a, ang, S.A, radOf(S), 1, { dur, max: st.base_number_of_entangle_roots_allowed, step: (p, dx, dz) => vineStep(p, dx, dz, dur) });
     let k = 0, vines = [];
     planted(thing(holder(a), dur, { name: S.name, entangle: true, plant: S, c: { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 }, R: S.A / 2, tick(dt, e) {
       presence(e); if (e.overgrown) e.s += dt * st['entangle_duration_speed_+%_when_wet'] / 100;
@@ -6076,7 +6108,7 @@ export function initScene(el, api) {
       if (vines.length >= xs.entangle_vines_maximum_number_of_vines_allowed + (e.overgrown ? xs.entangle_vines_additional_number_of_vines_allowed_when_wet : 0)) return;
       const d = dummies.filter(d => !d.dead && segDist(d.pos, a, b) <= X.A + SIM.body).sort((p, q) => p.slows.length - q.slows.length)[0]; if (!d) return;
       const v = { until: time + xs.entangle_vine_duration_ms / 1000, pct: xs['entangle_base_movement_speed_+%_final_per_applied_stack'] * slowK(S) }; vines.push(v); d.slows.push(v);
-      fx.streak(V(d.pos.x, 0, d.pos.z), V(d.pos.x, 1.2, d.pos.z), 'poison', .14, .05, .6); hit(d, X);
+      vineGrasp(d); hit(d, X);
     } }));
   };
   // Tame Beast: its wisps engulf the Rare Beast nearest your aim, Hindering it by its % for its duration. note: capturing
