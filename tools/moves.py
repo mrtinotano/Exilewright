@@ -2,7 +2,7 @@
 # (GLB; CC0, see NOTICE.md), each turned into turns of the figure's own joints, 30 a second.
 #   python tools/moves.py Knight.glb app/models/moves.json Clip...   adds the clips to those moves.json has
 #   python tools/moves.py Knight.glb app/models/moves.json           lists the file's clips: when each hand is fastest and furthest forward
-#   python moves.py Knight.glb ? Clip...            the hands through those clips, every other frame
+#   python tools/moves.py Knight.glb ? Clip...                       the hands through those clips, every other frame
 # A clip may be 'A@first-last+B@first-last': A to its last frame, then B from its first, one fading into the other.
 # What moves.json holds:
 #   Knight.glb (KayKit Adventurers 1.0): 1H_Melee_Attack_Slice_Diagonal 1H_Melee_Attack_Slice_Horizontal
