@@ -364,7 +364,7 @@ function renderSceneSkills() {
       G.duration ? `<span>${t('duration')} <b>${fmt(G.duration, G.duration % 1 ? 1 : 0)} s</b></span>` : '',
     ].join('');
     return `<div class="sk-card el-${P.el || 'none'}${i === on ? ' on' : ''}" data-card="${i}">
-      <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" onerror="this.remove()">` : ''}${key(i) ? `<i>${key(i)}</i>` : ''}</span>
+      <div class="sk-head"><span class="sk-ico">${inf.icon ? `<img src="${inf.icon}" alt="" data-may-miss>` : ''}${key(i) ? `<i>${key(i)}</i>` : ''}</span>
         <span class="sk-name"><span data-tip="${i}">${esc(inf.label)}</span><small>${t('Level')} ${g.level}</small></span>
         ${s.dps != null ? `<b class="sdps" data-dps="${i}">${fmt(s.dps)} <small>DPS</small></b>` : ''}</div>
       <div class="chips">${chips(P).map(([text, cls, arg]) => `<span class="chip ${cls}">${esc(t(text, arg ? t(arg) : undefined))}</span>`).join('')}</div>
@@ -534,7 +534,11 @@ function changes(a, b) {
 const addBuild = b => {
   const same = Object.keys(builds).find(id => sig(builds[id]) === sig(b));
   if (same) { select(same); return builds[same]; }
-  let n = Date.now(); while (builds[n]) n++; const id = String(n); builds[id] = b; save(); select(id); return null;
+  let n = Date.now(); while (builds[n]) n++; const id = String(n), was = cur; builds[id] = b; save();
+  // a build the page cannot show (a file from elsewhere: damaged, or made to break it) is not kept: being the last one
+  // open, it would stop the app at every start
+  try { select(id); } catch (err) { delete builds[id]; store(); select(was); throw err; }
+  return null;
 };
 // one panel, with what the header button asked for: taking a build in, or giving this one out
 // again: a Path of Building file to import at once (Update from Path of Building)
@@ -664,9 +668,12 @@ const openShare = async (exporting, again) => {
 $('importBtn').onclick = () => openShare(false);
 $('exportBtn').onclick = () => openShare(true);
 $('importFile').onchange = async e => {
-  const x = JSON.parse(await e.target.files[0].text());   // one build, or a backup of all of them ({ builds: [...] }): added to the ones there are
-  for (const b of Array.isArray(x?.builds) ? x.builds : [x]) if (b && typeof b === 'object') addBuild({ ...blank(), ...b });   // one already here is not added again
-  e.target.value = ''; document.getElementById('sharePanel')?.remove();
+  try {
+    const x = JSON.parse(await e.target.files[0].text());   // one build, or a backup of all of them ({ builds: [...] }): added to the ones there are
+    for (const b of Array.isArray(x?.builds) ? x.builds : [x]) if (b && typeof b === 'object') addBuild({ ...blank(), ...b });   // one already here is not added again
+    document.getElementById('sharePanel')?.remove();
+  } catch (err) { const m = document.querySelector('#sharePanel [data-inmsg]'); if (m) m.textContent = t('Could not import: {0}', err.message); }
+  e.target.value = '';
 };
 
 // ---------- passive tree (canvas 2D), drawn like the in-game tree

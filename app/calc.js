@@ -110,7 +110,10 @@ const GRANTS = { 'support_precision_accuracy_rating_+%': 'accuracy_rating_+%', '
   'support_minion_damage_spirit_cost_minion_damage_+%_while_missing_mana': 'minion_damage_+%_while_missing_mana', 'support_mothers_ward_base_duration_ms': 'mothers_ward_ms' };
 // a gem used with the weapon set in hand (g.wset: 1 or 2, none both; the game's "Used with weapon set:"): a persistent
 // skill of the other set is off, a skill of only the other set is worked out as with that set in hand (skill())
-export const onSet = (b, g) => !g?.wset || g.wset === (b?.wset === 2 ? 2 : 1);
+// note: anything but 1 or 2 is both sets. A build file with another value there had skill() swap sets without end,
+// and the app would not start again
+export const onSet = (b, g) => g?.wset !== 1 && g?.wset !== 2 || g.wset === (b?.wset === 2 ? 2 : 1);
+console.assert(onSet({}, { wset: 'x' }) && onSet({ wset: 2 }, {}) && onSet({}, { wset: 1 }) && !onSet({}, { wset: 2 }) && onSet({ wset: 2 }, { wset: 2 }), 'onSet');
 const isOn = g => g.enabled !== false;   // not turned off (g.enabled false, the game's or PoB's)
 const live = (b, g) => isOn(g) && onSet(b, g);   // on and of the weapon set in hand
 let SUM_OF = null;

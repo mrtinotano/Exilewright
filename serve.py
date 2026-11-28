@@ -1,5 +1,8 @@
 """Local server for the app; no-store so edited files show up on a normal reload.
 
+It listens on this computer only (127.0.0.1) and answers only the page it serves (Handler.mine): no other site's page
+open in the browser. The page goes with a Content-Security-Policy (policy): no script but this server's runs in it.
+
 /share/upload?site=<id> (POST, body = build code) and /share/download?url=<link> (GET) talk to the build sites
 for the page: browsers block those calls from another origin (CORS). Only the sites below are reachable.
 Endpoints are the ones Path of Building 2 uses (src/Modules/BuildSiteTools.lua).
@@ -68,7 +71,9 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs, quote
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+import base64
 import ctypes
+import hashlib
 import json
 import os
 import queue
@@ -555,6 +560,7 @@ SCOUT_UA = {'User-Agent': f'Exilewright/{VERSION} (+https://github.com/{RELEASES
 FROZEN = getattr(sys, 'frozen', False)   # the executable PyInstaller makes (packaging/build_app.py): the files are inside it
 HERE = sys._MEIPASS if FROZEN else os.path.dirname(os.path.abspath(__file__))
 APP = os.path.join(HERE, 'app')   # the page: index.html, its scripts, translations and models
+PAGE = {os.path.normcase(APP), os.path.normcase(os.path.join(APP, 'index.html'))}   # the page's document, at / or by its name: policy() goes with it
 ARGS = sys.argv[1:] + (['app'] if FROZEN else [])
 BACKUP_LOCK = threading.Lock()   # two saves at once (two windows) would write the same temporary file
 SOUND_MAX = 10 << 20   # the biggest sound of the user's own the Filter tab copies into the game's folder: the most a POST may bring
@@ -606,6 +612,8 @@ class Handler(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header('Cache-Control', 'no-store')
+        if os.path.normcase(self.translate_path(self.path)).rstrip('\\/') in PAGE:
+            self.send_header('Content-Security-Policy', policy())
         super().end_headers()
 
     if FROZEN:   # the executable's log is a file: not every request the page makes, only the ones that go wrong
@@ -674,7 +682,11 @@ class Handler(SimpleHTTPRequestHandler):
         127.0.0.1, nor from another site's page open in the same browser. Asked of every request (do_GET, do_POST): the
         clipboard, the user's builds and files, the trade site in the user's name are for that page only"""
         host = self.headers.get('Host', '')
-        return host.rsplit(':', 1)[0] in ('127.0.0.1', 'localhost') and self.headers.get('Origin') in (None, 'http://' + host)
+        # what the browser says of who asks (Sec-Fetch-Site): a picture, a frame or a link on another site's page asks
+        # without an Origin. Its link to the page itself still opens it (the README's), nothing else of this server
+        link = self.headers.get('Sec-Fetch-Dest') == 'document' and urlparse(self.path).path == '/'
+        return (host.rsplit(':', 1)[0] in ('127.0.0.1', 'localhost') and self.headers.get('Origin') in (None, 'http://' + host)
+                and (self.headers.get('Sec-Fetch-Site') in (None, 'same-origin', 'none') or link))
 
     def do_pob(self, u):
         try:
@@ -953,6 +965,18 @@ class Handler(SimpleHTTPRequestHandler):
             self.reply(200, prefix + call(post, (field + code).encode()).decode().strip())
         except Exception as e:
             self.reply(502, str(e))
+
+
+def policy():
+    """the page's Content-Security-Policy. Scripts: this server's files and the ones written in index.html itself (by
+    their hash, read each time: the file may have been edited), so markup that got into the page from outside (a shared
+    build, a listing) runs none; and the page asks nothing of another server, nor shows inside another site's page"""
+    with open(os.path.join(APP, 'index.html'), 'rb') as f:
+        inline = re.findall(rb'<script[^>]*>(.*?)</script>', f.read().replace(b'\r\n', b'\n'), re.S)
+    hashes = ' '.join(f"'sha256-{base64.b64encode(hashlib.sha256(s).digest()).decode()}'" for s in inline if s.strip())
+    return (f"default-src 'self'; script-src 'self' {hashes}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+            "connect-src 'self' data: blob:; media-src 'self' data: blob:; object-src 'none'; base-uri 'none'; form-action 'none'; "
+            "frame-ancestors 'none'")
 
 
 def game_folder():

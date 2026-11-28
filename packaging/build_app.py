@@ -1,5 +1,5 @@
-"""Builds the app (needs PyInstaller and pywebview: python -m venv .venv-build, then
-.venv-build/Scripts/pip install pyinstaller pywebview, then .venv-build/Scripts/python packaging/build_app.py):
+"""Builds the app (needs PyInstaller and pywebview, at the versions of packaging/requirements.txt: python -m venv .venv-build,
+then .venv-build/Scripts/pip install -r packaging/requirements.txt, then .venv-build/Scripts/python packaging/build_app.py):
   dist/Exilewright/Exilewright.exe     the program (its folder is what the installer installs)
   dist/Exilewright-portable.zip         the same folder with a "portable" file: it keeps its data next to the exe
   dist/Exilewright-setup.exe            the installer (packaging/installer.iss): it needs Inno Setup 6, and ends in an error without it"""

@@ -42,5 +42,9 @@ npm for the app) served by one Python file, `serve.py`, from `app/`. Read `READM
 - **Generated files are not edited by hand.** Change the script in `poe2_data/_tool/` and regenerate.
 - **One key press, one action.** The app never reads the game's memory or screen and never sends input on its own,
   following GGG's rules for third-party tools.
+- **No code in the markup, and what comes from outside is data.** The page goes with a Content-Security-Policy
+  (`policy` in `serve.py`): `onclick=""`, `onerror=""` and the like do not run, so use listeners (a picture that may be
+  missing gets `data-may-miss`). A build, a shared code or a listing goes through `clean()` (`app.js`) and `esc()`
+  before it is markup. The server answers only its own page (`Handler.mine`): keep new endpoints behind it.
 - Keep it small: plain JavaScript and the standard library, no new dependencies.
 - Code, comments and commit messages are in English.

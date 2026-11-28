@@ -271,7 +271,7 @@ export function initScene(el, api) {
   // with the skill put on it (click its slot to choose); a skill new to the build takes the first free slot, as in the game.
   // Move is one of them, on left click to begin with: a skill put there replaces it, and you walk only with the slot that
   // has Move. -> gem index, MOVED (-1) or null
-  const MOVE = '@move', MOVED = -1, moveImg = `<img src="${esc(api.moveIcon || '')}" alt="" draggable="false" onerror="this.remove()">`;
+  const MOVE = '@move', MOVED = -1, moveImg = `<img src="${esc(api.moveIcon || '')}" alt="" draggable="false" data-may-miss>`;
   function barNow() {
     const gems = api.build().gems, own = slots(), names = own.map(i => gems[i].name), B = api.bar?.() || {};
     const s = slotKeys().map((_, k) => B.slots?.[k] ?? null), seen = [...(B.seen || [])];
@@ -7259,7 +7259,7 @@ export function initScene(el, api) {
       if (i === MOVED) return `<button class="s-slot" data-k="${k}" title="${esc(t('Move'))}">${moveImg}<b>${keyLabel(k)}</b></button>`;
       const g = gems[i], inf = api.info(g), P = prof(g, inf), B = base(i), GN = gloryNeed(B), gl = GN && Math.floor(me.glory[g.name] || 0);
       const poor = B && me.maxM && !tog[g.name] && !sheet().flame && costOf(B).cost > me.mana;   // not enough mana for it: greyed, as in the game
-      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}${GN && gl < GN || poor ? ' dim' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" onerror="this.remove()">` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${GN ? `<i class="gl" title="${esc(t('Glory'))}">${gl}/${Math.ceil(GN)}</i>` : ''}<b>${keyLabel(k)}</b></button>`;
+      return `<button class="s-slot${i === sel ? ' on' : ''}${tog[g.name] ? ' act' : ''}${GN && gl < GN || poor ? ' dim' : ''}" data-k="${k}" data-i="${i}" style="--c:${css(P.el)}">${inf.icon ? `<img src="${esc(inf.icon)}" alt="" draggable="false" data-may-miss>` : ''}<span>${esc(inf.label.slice(0, 3))}</span>${GN ? `<i class="gl" title="${esc(t('Glory'))}">${gl}/${Math.ceil(GN)}</i>` : ''}<b>${keyLabel(k)}</b></button>`;
     }).join('') : `<span class="note">${t(gems.length ? 'No skill of the build is used by hand: they are always on.' : 'Add skills in the Skills tab.')}</span>`));
     put(buffEl, effects()); put(badEl, ailing());
     put(logEl, logs.filter(l => time - l.at < 9).map(l => `<div style="--c:${l.c}"${time - l.at > 5 ? ' class="old"' : ''}>${esc(l.text)}${l.n > 1 ? ` ×${l.n}` : ''}</div>`).join(''));
@@ -7304,8 +7304,8 @@ export function initScene(el, api) {
   // corner, the seconds left under it, its name over it; a minion skill's, the life of its minions under it, as the game's
   // your Runic Ward on the life orb, as the game's HUD: its rune (orb_wardbg / orb_wardfill), lit from the bottom as far
   // as the ward is full. note: how the game lights a part-full rune is not in the data: bottom up as the orb's fill
-  const wardRune = p => `<span class="s-ward"><img src="${esc(api.wardOrb?.('bg') || '')}" alt="" draggable="false" onerror="this.remove()"><img src="${esc(api.wardOrb?.('fill') || '')}" alt="" draggable="false" onerror="this.remove()" style="clip-path:inset(${(100 - p).toFixed(1)}% 0 0 0)"></span>`;
-  const one = (img, c, title, n, s, bad, hp) =>`<span class="s-buff${bad ? ' bad' : ''}" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" onerror="this.remove()">` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${hp != null ? `<b class="hp" style="--hp:${(hp * 100).toFixed(1)}%"></b>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
+  const wardRune = p => `<span class="s-ward"><img src="${esc(api.wardOrb?.('bg') || '')}" alt="" draggable="false" data-may-miss><img src="${esc(api.wardOrb?.('fill') || '')}" alt="" draggable="false" data-may-miss style="clip-path:inset(${(100 - p).toFixed(1)}% 0 0 0)"></span>`;
+  const one = (img, c, title, n, s, bad, hp) =>`<span class="s-buff${bad ? ' bad' : ''}" style="--c:${c}" title="${esc(title)}">${img ? `<img src="${esc(img)}" alt="" draggable="false" data-may-miss>` : `<i>${esc(title.slice(0, 2))}</i>`}${n ? `<em>${n}</em>` : ''}${hp != null ? `<b class="hp" style="--hp:${(hp * 100).toFixed(1)}%"></b>` : ''}${s != null ? `<small>${Math.ceil(s)}s</small>` : ''}</span>`;
   function effects() {
     const b = [], icon = n => { const g = gemBy(n), inf = g && api.info(g); return inf ? inf.buff || inf.icon : ''; };
     for (const c in charges) if (charges[c]) b.push(one(api.chargeIcon?.(c), css(CHC[c]), `${t(CHARGE[c])} ${charges[c]}/${maxC(c)}`, charges[c]));
@@ -8152,7 +8152,7 @@ export function initScene(el, api) {
     const f = charms()[n]; if (!f) return '';
     const left = charmLeft(n);
     return `<span class="s-flask s-charm${me.cu[n] ? ' act' : ''}${left < f.per ? ' low' : ''}" title="${esc(f.name)} ${Math.floor(left)}/${f.max}">`
-      + `${f.img ? `<img src="${esc(f.img)}" alt="" draggable="false" onerror="this.remove()">` : ''}<i style="height:${(100 - left / f.max * 100).toFixed(1)}%"></i></span>`;
+      + `${f.img ? `<img src="${esc(f.img)}" alt="" draggable="false" data-may-miss>` : ''}<i style="height:${(100 - left / f.max * 100).toFixed(1)}%"></i></span>`;
   }
   // a flask on the bar: its art darkened above the charges it has, its key under it
   function flaskHtml(n) {
@@ -8160,7 +8160,7 @@ export function initScene(el, api) {
     if (!f) return `<button class="s-flask none" data-f="${n}" title="${esc(t('{0}: nothing equipped', flaskName(n)))}">${key}</button>`;
     const left = flaskLeft(n);
     return `<button class="s-flask${me.drink[n] || f.always ? ' act' : ''}${left < f.per ? ' low' : ''}" data-f="${n}" title="${esc(flaskName(n))} ${Math.floor(left)}/${f.max}">`
-      + `${f.img ? `<img src="${esc(f.img)}" alt="" draggable="false" onerror="this.remove()">` : ''}<i style="height:${(100 - left / f.max * 100).toFixed(1)}%"></i>${key}</button>`;
+      + `${f.img ? `<img src="${esc(f.img)}" alt="" draggable="false" data-may-miss>` : ''}<i style="height:${(100 - left / f.max * 100).toFixed(1)}%"></i>${key}</button>`;
   }
   // the map's ground (enemies.js mapGround): one patch of each kind it has, of the game's radius, each 8 m from the middle
   // of the room (the simulator's own layout: an area has several). Laid again when the map changes; Reset leaves them

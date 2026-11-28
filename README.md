@@ -34,6 +34,8 @@ Grinding Gear Games; support stat readings come from Path of Building Community 
 2. Run it. It needs no admin rights and adds Exilewright to the Start menu.
 
 Windows may warn that the app is not recognised, because it is not signed: "More info" → "Run anyway".
+For the same reason, download it only from this page: a copy from anywhere else cannot be told from the real one
+(see [SECURITY.md](SECURITY.md)).
 
 - It opens in a window of its own (WebView2, part of Windows), with the size and place it last had.
 - Your builds and settings are kept in `%LOCALAPPDATA%\Exilewright`.
@@ -247,7 +249,8 @@ The project does not take pull requests: they are closed on their own, so please
 
 ### Build the release
 `packaging/build_app.py` makes `dist/Exilewright/Exilewright.exe`, a portable zip and the installer (`packaging/installer.iss`, which needs
-Inno Setup 6). It needs PyInstaller and pywebview (see the top of `packaging/build_app.py`). The version is `VERSION` in
+Inno Setup 6). It needs PyInstaller and pywebview, at the versions of `packaging/requirements.txt` (see the top of
+`packaging/build_app.py`). The version is `VERSION` in
 `serve.py`: the window title, the update check and the installer take it from there.
 
 ### Regenerate the data after a game patch

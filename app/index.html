@@ -491,10 +491,14 @@
 </style>
 </head>
 <body>
-<div id="boot"><p class="dots"><i>.</i><i>.</i><i>.</i></p><p hidden data-t>Exilewright could not start. Close it and open it again; if it happens again, install the latest version.</p><pre hidden></pre><button hidden onclick="this.parentNode.remove()">×</button></div>
+<div id="boot"><p class="dots"><i>.</i><i>.</i><i>.</i></p><p hidden data-t>Exilewright could not start. Close it and open it again; if it happens again, install the latest version.</p><pre hidden></pre><button hidden>×</button></div>
 <script>
   // an error of the page's code, or code that does not load, while it starts (a picture that is missing is not one)
+  // note: no code in the markup itself (onclick="", onerror=""): the server's Content-Security-Policy (serve.py policy)
+  // lets none run, so that markup from outside that got into the page could not either
+  document.querySelector('#boot button').onclick = e => e.target.parentNode.remove();
   for (const k of ['error', 'unhandledrejection']) addEventListener(k, e => {
+    if (e.target.dataset?.mayMiss != null) return e.target.remove();   // a picture marked data-may-miss: not every skill has one
     const b = document.getElementById('boot');
     if (!b || e.target !== window && e.target.tagName !== 'SCRIPT') return;
     for (const x of b.children) x.hidden = x === b.firstElementChild;
