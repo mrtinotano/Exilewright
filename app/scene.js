@@ -7095,8 +7095,12 @@ export function initScene(el, api) {
   // video): its runes (eleweakness_area, elementalweakness) three colours by the game's colour mask (color_msk, its
   // material's 1.25 / 0.25 / 0.025, 0.1 / 0.25 / 1, 0.35 / 0.45 / 1), baked into their pictures; its surge 1 / 0.58 / 0.4,
   // its orb fire (1 / 0.12 / 0.005) in a cold glow (0.35 / 0.4 / 0.8); no sparkles. note: its widening ring in the mask's
-  // blue (0.1 / 0.25 / 1), the colour of most of its runes' ring
+  // blue (0.1 / 0.25 / 1), the colour of most of its runes' ring.
+  // Enfeeble's (enfeeble_aoe.ao, enfeeble_surge_wave.ao, orbs/enfeeble.ao; its tutorial video): as Despair's, in its
+  // yellow-green: its runes (enfeeble_area, enfeeble: base rune 2.15 / 3 / 1), its ring (4.5 / 7 / 0.5), sparkles
+  // (4 / 5 / 1), its orb (3.5 / 4 / 1) and its surge (0.875 / 1 / 0.75)
   const CURSE_LOOK = { Despair: { rune: 'despair', ring: 0x4412ff, spark: 0x3928ff, orb: 0x7020ff, wave: 0xcc99ff },
+    Enfeeble: { rune: 'enfeeble', tint: 0xb7ff55, ring: 0xa4ff12, spark: 0xccff33, orb: 0xdfff40, wave: 0xdfffbf },
     'Elemental Weakness': { rune: 'elementalweakness', area: 'eleweakness_area', tint: 0xffffff, ring: 0x1a40ff, orb: 0xff1f01, glow: 0x5966cc, sym: 0xffffff, wave: 0xff9466 } };
   const curseTex = r => artTex('curse_' + r, `particles/curses_02/area/curse_runes/${r}_dxt1`);
   function hexArea(L, c, R, wait) {
