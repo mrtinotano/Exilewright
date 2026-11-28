@@ -993,24 +993,24 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
     if (!gains.has(k)) gains.set(k, diff(now, snapOf({ ...getBuild().items, [slot]: it })));
     return gains.get(k); };
   const pickList = (slot, q = '') => { q = q.trim().toLowerCase();
-    return listOf(slot).filter(o => !q || o.key.includes(q)).map(o => `${o.html}<span data-g="${esc(o.v)}"></span></span></li>`).join('') || `<li class="note">${t('No results')}</li>`; };
-  // each candidate's gains are a whole calculation of the build: filled in after the panel shows, not before (the bases
-  // and uniques to pick, the saved items, what each affix to add would change). One at a time, so the page answers
-  // between two of them, and only while this view is the one shown: opening its tab renders it again
-  let fillRun = 0;
+    return listOf(slot).filter(o => !q || o.key.includes(q)).map(o => o.html + '</span></li>').join('') || `<li class="note">${t('No results')}</li>`; };
+  // a candidate's gains are a whole calculation of the build: worked out only for what is looked at, one at a time (the
+  // page answers between two of them): a saved item while it is in sight, what each affix to add would change once the
+  // pointer or the focus is on their list. The bases and uniques to pick show none: they are several hundred a slot
+  const todo = new Set(); let timer = 0;
   const fillOne = s => {
-    if (s.dataset.g != null) s.outerHTML = impactLine(gain(s.closest('.picklist').dataset.slot, make(s.dataset.g), s.dataset.g));
-    else if (s.dataset.stash != null) { const i = +s.dataset.stash, it = (getBuild().stash || [])[i], to = it && whereTo(it); s.outerHTML = to ? impactLine(gain(to, it, 'stash' + i), 3) : ''; }
+    if (s.dataset.stash != null) { const i = +s.dataset.stash, it = (getBuild().stash || [])[i], to = it && whereTo(it); s.outerHTML = to ? impactLine(gain(to, it, 'stash' + i), 3) : ''; }
     else { const slot = s.parentElement.dataset.slot, it = getBuild().items?.[slot], a = AFFIX[s.value]; delete s.dataset.add; if (!it || !a) return;
       const does = impactText(gain(slot, { ...it, mods: [...it.mods || [], { id: a.id, values: fixVals(a.stats) }] }, '+' + a.id)); if (does) s.textContent += ' → ' + does; }
   };
-  function fillGains() {
-    const run = ++fillRun, todo = [...el.querySelectorAll('.picklist [data-g], [data-stash], option[data-add]')];
-    const next = () => { if (run !== fillRun || el.hidden || !todo.length) return;
-      fillOne(todo.shift());
-      if (todo.length) setTimeout(next); };
-    setTimeout(next);
-  }
+  const next = () => { timer = 0; const [s] = todo; if (!s || el.hidden) return todo.clear();
+    todo.delete(s); if (s.isConnected) fillOne(s);
+    timer = setTimeout(next); };
+  const inSight = new IntersectionObserver(es => { for (const e of es) e.isIntersecting ? todo.add(e.target) : todo.delete(e.target); timer ||= setTimeout(next); });
+  function fillGains() { todo.clear(); inSight.disconnect(); for (const s of el.querySelectorAll('[data-stash]')) inSight.observe(s); }
+  for (const k of ['pointerover', 'focusin']) el.addEventListener(k, e => { if (e.target.dataset.act !== 'add') return;
+    for (const o of e.target.querySelectorAll('[data-add]')) todo.add(o);
+    timer ||= setTimeout(next); });
 
   // the sockets of an item (it.socketed): a list of what goes in its class (runes, soul cores, idols... by kind) for each,
   // with what it gives there; and with Runic Meridians the rune tattoos for its slot (b.chakra)
@@ -1187,7 +1187,7 @@ export function initItems(el, getBuild, changed, jewelSockets, snapOf, tree, tra
 
   el.addEventListener('input', e => {
     const t = e.target;
-    if (t.dataset.act === 'filter') { el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value); fillGains(); }
+    if (t.dataset.act === 'filter') el.querySelector(`.picklist[data-slot="${t.dataset.slot}"]`).innerHTML = pickList(t.dataset.slot, t.value);
     if (t.dataset.act === 'paste' && t.value.trim()) paste(t.value);
   });
   const put = (slot, it) => wear(getBuild(), slot, it, giant(), staffFocus());
